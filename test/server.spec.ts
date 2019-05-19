@@ -10,13 +10,13 @@
 import * as test from 'japa'
 import * as supertest from 'supertest'
 import { createServer } from 'http'
-import { Router } from '../src/Router/Router'
+import { Router } from '../src/Router'
 import { Ioc } from '@adonisjs/fold'
 import * as proxyaddr from 'proxy-addr'
 
 import { ServerConfig, HttpContextContract } from '@poppinss/http-server/contracts'
 import { MiddlewareStore } from '../src/Server/MiddlewareStore'
-import { Server } from '../src/Server/Server'
+import { Server } from '../src/Server'
 import { routePreProcessor } from '../src/Server/routePreProcessor'
 import { HttpContext } from '../src/HttpContext'
 

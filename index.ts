@@ -13,7 +13,7 @@
 
 /// <reference path="./src/contracts.ts" />
 
-export { Router } from './src/Router/Router'
+export { Router } from './src/Router'
 export {
   RouteContract,
   RouteGroupContract,

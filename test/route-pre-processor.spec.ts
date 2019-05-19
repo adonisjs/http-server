@@ -8,7 +8,7 @@
  */
 
 import * as test from 'japa'
-import { Router } from '../src/Router/Router'
+import { Router } from '../src/Router'
 import { Ioc } from '@adonisjs/fold'
 
 import { MiddlewareStore } from '../src/Server/MiddlewareStore'

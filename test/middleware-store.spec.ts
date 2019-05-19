@@ -9,7 +9,7 @@
 
 import * as test from 'japa'
 import { Ioc } from '@adonisjs/fold'
-import { Router } from '../src/Router/Router'
+import { Router } from '../src/Router'
 
 import { finalMiddlewareHandler } from '../src/Server/finalMiddlewareHandler'
 import { MiddlewareStore } from '../src/Server/MiddlewareStore'

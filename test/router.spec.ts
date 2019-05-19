@@ -8,7 +8,7 @@
  */
 
 import * as test from 'japa'
-import { Router } from '../src/Router/Router'
+import { Router } from '../src/Router'
 import { BriskRoute } from '../src/Router/BriskRoute'
 import { RouteResource } from '../src/Router/Resource'
 import { RouteGroup } from '../src/Router/Group'
