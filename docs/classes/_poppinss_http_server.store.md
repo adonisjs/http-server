@@ -22,6 +22,8 @@ store.add({
 store.match('posts/1', 'GET')
 ```
 
+## Type parameters
+#### Context 
 ## Hierarchy
 
 **Store**
@@ -45,7 +47,7 @@ store.match('posts/1', 'GET')
 
 ###  add
 
-▸ **add**(route: *`RouteDefination`*): `this`
+▸ **add**(route: *`RouteDefination`<`Context`>*): `this`
 
 Adds a route to the store for all the given HTTP methods. Also an array of tokens is generated for the route pattern. The tokens are then matched against the URL to find the appropriate route.
 
@@ -65,7 +67,7 @@ store.add({
 
 | Name | Type |
 | ------ | ------ |
-| route | `RouteDefination` |
+| route | `RouteDefination`<`Context`> |
 
 **Returns:** `this`
 
@@ -74,7 +76,7 @@ ___
 
 ###  match
 
-▸ **match**(url: *`string`*, method: *`string`*, domain?: *`undefined` \| `string`*): `null` \| `MatchedRoute`
+▸ **match**(url: *`string`*, method: *`string`*, domain?: *`undefined` \| `string`*): `null` \| `MatchedRoute`<`Context`>
 
 Matches the url, method and optionally domain to pull the matching route. `null` is returned when unable to match the URL against registered routes.
 
@@ -86,7 +88,7 @@ Matches the url, method and optionally domain to pull the matching route. `null`
 | method | `string` |
 | `Optional` domain | `undefined` \| `string` |
 
-**Returns:** `null` \| `MatchedRoute`
+**Returns:** `null` \| `MatchedRoute`<`Context`>
 
 ___
 

@@ -23,9 +23,9 @@
   "devDependencies": {
     "@adonisjs/fold": "^5.0.9",
     "@adonisjs/mrm-preset": "^2.0.3",
-    "@poppinss/logger": "^1.0.0",
-    "@poppinss/request": "^1.0.3",
-    "@poppinss/response": "^1.0.2",
+    "@poppinss/logger": "^1.0.1",
+    "@poppinss/request": "^1.0.4",
+    "@poppinss/response": "^1.0.3",
     "@types/node": "^12.0.2",
     "commitizen": "^3.1.1",
     "cz-conventional-changelog": "^2.1.0",
@@ -74,7 +74,7 @@
     "anyBranch": false
   },
   "dependencies": {
-    "@poppinss/utils": "^1.0.0",
+    "@poppinss/utils": "^1.0.1",
     "co-compose": "^5.1.1",
     "haye": "^2.0.2",
     "lodash": "^4.17.11",

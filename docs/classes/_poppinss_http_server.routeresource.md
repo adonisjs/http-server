@@ -9,6 +9,8 @@ Resource route helps in defining multiple conventional routes. The support for s
 const resource = new RouteResource('articles', 'ArticlesController')
 ```
 
+## Type parameters
+#### Context 
 ## Hierarchy
 
  `Macroable`
@@ -17,7 +19,7 @@ const resource = new RouteResource('articles', 'ArticlesController')
 
 ## Implements
 
-* `RouteResourceContract`
+* `RouteResourceContract`<`Context`>
 
 ## Index
 
@@ -55,7 +57,7 @@ const resource = new RouteResource('articles', 'ArticlesController')
 
 ###  constructor
 
-⊕ **new RouteResource**(_resource: *`string`*, _controller: *`string`*, _namespace: *`string`*, _globalMatchers: *`Matchers`*, _shallow?: *`boolean`*): [RouteResource](_poppinss_http_server.routeresource.md)
+⊕ **new RouteResource**(_resource: *`string`*, _controller: *`string`*, _namespace: *`string`*, _globalMatchers: *`RouteMatchers`*, _shallow?: *`boolean`*): [RouteResource](_poppinss_http_server.routeresource.md)
 
 **Parameters:**
 
@@ -64,7 +66,7 @@ const resource = new RouteResource('articles', 'ArticlesController')
 | _resource | `string` | - |
 | _controller | `string` | - |
 | _namespace | `string` | - |
-| _globalMatchers | `Matchers` | - |
+| _globalMatchers | `RouteMatchers` | - |
 | `Default value` _shallow | `boolean` | false |
 
 **Returns:** [RouteResource](_poppinss_http_server.routeresource.md)
@@ -77,7 +79,7 @@ ___
 
 ###  routes
 
-**● routes**: *[Route](_poppinss_http_server.route.md)[]* =  []
+**● routes**: *[Route](_poppinss_http_server.route.md)<`Context`>[]* =  []
 
 ___
 <a id="_getters"></a>

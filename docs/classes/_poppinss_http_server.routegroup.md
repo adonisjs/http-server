@@ -4,6 +4,8 @@
 
 Group class exposes the API to take action on a group of routes. The group routes must be pre-defined using the constructor.
 
+## Type parameters
+#### Context 
 ## Hierarchy
 
  `Macroable`
@@ -12,7 +14,7 @@ Group class exposes the API to take action on a group of routes. The group route
 
 ## Implements
 
-* `RouteGroupContract`
+* `RouteGroupContract`<`Context`>
 
 ## Index
 
@@ -50,13 +52,13 @@ Group class exposes the API to take action on a group of routes. The group route
 
 ###  constructor
 
-⊕ **new RouteGroup**(routes: *([Route](_poppinss_http_server.route.md) \| [RouteResource](_poppinss_http_server.routeresource.md) \| [BriskRoute](_poppinss_http_server.briskroute.md))[]*): [RouteGroup](_poppinss_http_server.routegroup.md)
+⊕ **new RouteGroup**(routes: *([Route](_poppinss_http_server.route.md)<`Context`> \| [RouteResource](_poppinss_http_server.routeresource.md)<`Context`> \| [BriskRoute](_poppinss_http_server.briskroute.md)<`Context`>)[]*): [RouteGroup](_poppinss_http_server.routegroup.md)
 
 **Parameters:**
 
 | Name | Type |
 | ------ | ------ |
-| routes | ([Route](_poppinss_http_server.route.md) \| [RouteResource](_poppinss_http_server.routeresource.md) \| [BriskRoute](_poppinss_http_server.briskroute.md))[] |
+| routes | ([Route](_poppinss_http_server.route.md)<`Context`> \| [RouteResource](_poppinss_http_server.routeresource.md)<`Context`> \| [BriskRoute](_poppinss_http_server.briskroute.md)<`Context`>)[] |
 
 **Returns:** [RouteGroup](_poppinss_http_server.routegroup.md)
 
@@ -68,7 +70,7 @@ ___
 
 ###  routes
 
-**● routes**: *([Route](_poppinss_http_server.route.md) \| [RouteResource](_poppinss_http_server.routeresource.md) \| [BriskRoute](_poppinss_http_server.briskroute.md))[]*
+**● routes**: *([Route](_poppinss_http_server.route.md)<`Context`> \| [RouteResource](_poppinss_http_server.routeresource.md)<`Context`> \| [BriskRoute](_poppinss_http_server.briskroute.md)<`Context`>)[]*
 
 ___
 <a id="_getters"></a>

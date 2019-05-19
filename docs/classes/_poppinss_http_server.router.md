@@ -12,13 +12,15 @@ router.get('/', async function () {
 })
 ```
 
+## Type parameters
+#### Context 
 ## Hierarchy
 
 **Router**
 
 ## Implements
 
-* `RouterContract`
+* `RouterContract`<`Context`>
 
 ## Index
 
@@ -111,7 +113,7 @@ ___
 
 ###  routes
 
-**● routes**: *([Route](_poppinss_http_server.route.md) \| [RouteResource](_poppinss_http_server.routeresource.md) \| [BriskRoute](_poppinss_http_server.briskroute.md) \| [RouteGroup](_poppinss_http_server.routegroup.md))[]* =  []
+**● routes**: *([Route](_poppinss_http_server.route.md)<`Context`> \| [RouteResource](_poppinss_http_server.routeresource.md)<`Context`> \| [RouteGroup](_poppinss_http_server.routegroup.md)<`Context`> \| [BriskRoute](_poppinss_http_server.briskroute.md)<`Context`>)[]* =  []
 
 Collection of routes, including route resource and route group. To get a flat list of routes, call `router.toJSON()`
 
@@ -123,7 +125,7 @@ ___
 
 ###  any
 
-▸ **any**(pattern: *`string`*, handler: *`any`*): [Route](_poppinss_http_server.route.md)
+▸ **any**(pattern: *`string`*, handler: *`RouteHandlerNode`<`Context`>*): [Route](_poppinss_http_server.route.md)<`Context`>
 
 Define a route that handles all common HTTP methods
 
@@ -132,9 +134,9 @@ Define a route that handles all common HTTP methods
 | Name | Type |
 | ------ | ------ |
 | pattern | `string` |
-| handler | `any` |
+| handler | `RouteHandlerNode`<`Context`> |
 
-**Returns:** [Route](_poppinss_http_server.route.md)
+**Returns:** [Route](_poppinss_http_server.route.md)<`Context`>
 
 ___
 <a id="commit"></a>
@@ -152,7 +154,7 @@ ___
 
 ###  destroy
 
-▸ **destroy**(pattern: *`string`*, handler: *`any`*): [Route](_poppinss_http_server.route.md)
+▸ **destroy**(pattern: *`string`*, handler: *`RouteHandlerNode`<`Context`>*): [Route](_poppinss_http_server.route.md)<`Context`>
 
 Define `DELETE` route
 
@@ -161,16 +163,16 @@ Define `DELETE` route
 | Name | Type |
 | ------ | ------ |
 | pattern | `string` |
-| handler | `any` |
+| handler | `RouteHandlerNode`<`Context`> |
 
-**Returns:** [Route](_poppinss_http_server.route.md)
+**Returns:** [Route](_poppinss_http_server.route.md)<`Context`>
 
 ___
 <a id="find"></a>
 
 ###  find
 
-▸ **find**(url: *`string`*, method: *`string`*, domain?: *`undefined` \| `string`*): `null` \| `MatchedRoute`
+▸ **find**(url: *`string`*, method: *`string`*, domain?: *`undefined` \| `string`*): `null` \| `MatchedRoute`<`Context`>
 
 Find route for a given URL, method and optionally domain
 
@@ -182,14 +184,14 @@ Find route for a given URL, method and optionally domain
 | method | `string` |
 | `Optional` domain | `undefined` \| `string` |
 
-**Returns:** `null` \| `MatchedRoute`
+**Returns:** `null` \| `MatchedRoute`<`Context`>
 
 ___
 <a id="fortesting"></a>
 
 ###  forTesting
 
-▸ **forTesting**(pattern?: *`undefined` \| `string`*, methods?: *`string`[]*, handler?: *`any`*): [Route](_poppinss_http_server.route.md)
+▸ **forTesting**(pattern?: *`undefined` \| `string`*, methods?: *`string`[]*, handler?: *`RouteHandlerNode`<`Context`>*): [Route](_poppinss_http_server.route.md)<`Context`>
 
 Creates a route when writing tests and auto-commits it to the routes store. Do not use this method inside your routes file.
 
@@ -201,16 +203,16 @@ The global matchers doesn't work for testing routes and hence you have define in
 | ------ | ------ |
 | `Optional` pattern | `undefined` \| `string` |
 | `Optional` methods | `string`[] |
-| `Optional` handler | `any` |
+| `Optional` handler | `RouteHandlerNode`<`Context`> |
 
-**Returns:** [Route](_poppinss_http_server.route.md)
+**Returns:** [Route](_poppinss_http_server.route.md)<`Context`>
 
 ___
 <a id="get"></a>
 
 ###  get
 
-▸ **get**(pattern: *`string`*, handler: *`any`*): [Route](_poppinss_http_server.route.md)
+▸ **get**(pattern: *`string`*, handler: *`RouteHandlerNode`<`Context`>*): [Route](_poppinss_http_server.route.md)<`Context`>
 
 Define `GET` route
 
@@ -219,16 +221,16 @@ Define `GET` route
 | Name | Type |
 | ------ | ------ |
 | pattern | `string` |
-| handler | `any` |
+| handler | `RouteHandlerNode`<`Context`> |
 
-**Returns:** [Route](_poppinss_http_server.route.md)
+**Returns:** [Route](_poppinss_http_server.route.md)<`Context`>
 
 ___
 <a id="group"></a>
 
 ###  group
 
-▸ **group**(callback: *`function`*): [RouteGroup](_poppinss_http_server.routegroup.md)
+▸ **group**(callback: *`function`*): [RouteGroup](_poppinss_http_server.routegroup.md)<`Context`>
 
 Creates a group of routes. A route group can apply transforms to routes in bulk
 
@@ -238,7 +240,7 @@ Creates a group of routes. A route group can apply transforms to routes in bulk
 | ------ | ------ |
 | callback | `function` |
 
-**Returns:** [RouteGroup](_poppinss_http_server.routegroup.md)
+**Returns:** [RouteGroup](_poppinss_http_server.routegroup.md)<`Context`>
 
 ___
 <a id="namespace"></a>
@@ -262,7 +264,7 @@ ___
 
 ###  on
 
-▸ **on**(pattern: *`string`*): [BriskRoute](_poppinss_http_server.briskroute.md)
+▸ **on**(pattern: *`string`*): [BriskRoute](_poppinss_http_server.briskroute.md)<`Context`>
 
 Returns a brisk route instance for a given URL pattern
 
@@ -272,14 +274,14 @@ Returns a brisk route instance for a given URL pattern
 | ------ | ------ |
 | pattern | `string` |
 
-**Returns:** [BriskRoute](_poppinss_http_server.briskroute.md)
+**Returns:** [BriskRoute](_poppinss_http_server.briskroute.md)<`Context`>
 
 ___
 <a id="patch"></a>
 
 ###  patch
 
-▸ **patch**(pattern: *`string`*, handler: *`any`*): [Route](_poppinss_http_server.route.md)
+▸ **patch**(pattern: *`string`*, handler: *`RouteHandlerNode`<`Context`>*): [Route](_poppinss_http_server.route.md)<`Context`>
 
 Define `PATCH` route
 
@@ -288,16 +290,16 @@ Define `PATCH` route
 | Name | Type |
 | ------ | ------ |
 | pattern | `string` |
-| handler | `any` |
+| handler | `RouteHandlerNode`<`Context`> |
 
-**Returns:** [Route](_poppinss_http_server.route.md)
+**Returns:** [Route](_poppinss_http_server.route.md)<`Context`>
 
 ___
 <a id="post"></a>
 
 ###  post
 
-▸ **post**(pattern: *`string`*, handler: *`any`*): [Route](_poppinss_http_server.route.md)
+▸ **post**(pattern: *`string`*, handler: *`RouteHandlerNode`<`Context`>*): [Route](_poppinss_http_server.route.md)<`Context`>
 
 Define `POST` route
 
@@ -306,16 +308,16 @@ Define `POST` route
 | Name | Type |
 | ------ | ------ |
 | pattern | `string` |
-| handler | `any` |
+| handler | `RouteHandlerNode`<`Context`> |
 
-**Returns:** [Route](_poppinss_http_server.route.md)
+**Returns:** [Route](_poppinss_http_server.route.md)<`Context`>
 
 ___
 <a id="put"></a>
 
 ###  put
 
-▸ **put**(pattern: *`string`*, handler: *`any`*): [Route](_poppinss_http_server.route.md)
+▸ **put**(pattern: *`string`*, handler: *`RouteHandlerNode`<`Context`>*): [Route](_poppinss_http_server.route.md)<`Context`>
 
 Define `PUT` route
 
@@ -324,16 +326,16 @@ Define `PUT` route
 | Name | Type |
 | ------ | ------ |
 | pattern | `string` |
-| handler | `any` |
+| handler | `RouteHandlerNode`<`Context`> |
 
-**Returns:** [Route](_poppinss_http_server.route.md)
+**Returns:** [Route](_poppinss_http_server.route.md)<`Context`>
 
 ___
 <a id="resource"></a>
 
 ###  resource
 
-▸ **resource**(resource: *`string`*, controller: *`string`*): [RouteResource](_poppinss_http_server.routeresource.md)
+▸ **resource**(resource: *`string`*, controller: *`string`*): [RouteResource](_poppinss_http_server.routeresource.md)<`Context`>
 
 Registers a route resource with conventional set of routes
 
@@ -344,14 +346,14 @@ Registers a route resource with conventional set of routes
 | resource | `string` |
 | controller | `string` |
 
-**Returns:** [RouteResource](_poppinss_http_server.routeresource.md)
+**Returns:** [RouteResource](_poppinss_http_server.routeresource.md)<`Context`>
 
 ___
 <a id="route-1"></a>
 
 ###  route
 
-▸ **route**(pattern: *`string`*, methods: *`string`[]*, handler: *`any`*): [Route](_poppinss_http_server.route.md)
+▸ **route**(pattern: *`string`*, methods: *`string`[]*, handler: *`RouteHandlerNode`<`Context`>*): [Route](_poppinss_http_server.route.md)<`Context`>
 
 Add route for a given pattern and methods
 
@@ -361,16 +363,16 @@ Add route for a given pattern and methods
 | ------ | ------ |
 | pattern | `string` |
 | methods | `string`[] |
-| handler | `any` |
+| handler | `RouteHandlerNode`<`Context`> |
 
-**Returns:** [Route](_poppinss_http_server.route.md)
+**Returns:** [Route](_poppinss_http_server.route.md)<`Context`>
 
 ___
 <a id="shallowresource"></a>
 
 ###  shallowResource
 
-▸ **shallowResource**(resource: *`string`*, controller: *`string`*): [RouteResource](_poppinss_http_server.routeresource.md)
+▸ **shallowResource**(resource: *`string`*, controller: *`string`*): [RouteResource](_poppinss_http_server.routeresource.md)<`Context`>
 
 Register a route resource with shallow nested routes.
 
@@ -381,7 +383,7 @@ Register a route resource with shallow nested routes.
 | resource | `string` |
 | controller | `string` |
 
-**Returns:** [RouteResource](_poppinss_http_server.routeresource.md)
+**Returns:** [RouteResource](_poppinss_http_server.routeresource.md)<`Context`>
 
 ___
 <a id="tojson"></a>

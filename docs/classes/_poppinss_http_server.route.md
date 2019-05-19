@@ -15,6 +15,8 @@ route
   })
 ```
 
+## Type parameters
+#### Context :  `any`
 ## Hierarchy
 
  `Macroable`
@@ -23,7 +25,7 @@ route
 
 ## Implements
 
-* `RouteContract`
+* `RouteContract`<`Context`>
 
 ## Index
 
@@ -63,7 +65,7 @@ route
 
 ###  constructor
 
-⊕ **new Route**(_pattern: *`string`*, _methods: *`string`[]*, _handler: *`any`*, _namespace: *`string`*, _globalMatchers: *`Matchers`*): [Route](_poppinss_http_server.route.md)
+⊕ **new Route**(_pattern: *`string`*, _methods: *`string`[]*, _handler: *`any`*, _namespace: *`string`*, _globalMatchers: *`RouteMatchers`*): [Route](_poppinss_http_server.route.md)
 
 **Parameters:**
 
@@ -73,7 +75,7 @@ route
 | _methods | `string`[] |
 | _handler | `any` |
 | _namespace | `string` |
-| _globalMatchers | `Matchers` |
+| _globalMatchers | `RouteMatchers` |
 
 **Returns:** [Route](_poppinss_http_server.route.md)
 
@@ -217,11 +219,11 @@ ___
 
 ###  toJSON
 
-▸ **toJSON**(): `RouteDefination`
+▸ **toJSON**(): `RouteDefination`<`Context`>
 
 Returns \[\[RouteDefination\]\] that can be passed to the [Store](_poppinss_http_server.store.md) for registering the route
 
-**Returns:** `RouteDefination`
+**Returns:** `RouteDefination`<`Context`>
 
 ___
 <a id="where"></a>
