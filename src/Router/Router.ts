@@ -16,11 +16,11 @@
 import { stringify } from 'querystring'
 import { Exception } from '@poppinss/utils'
 import {
-  Matchers,
+  RouteMatchers,
   RouteNode,
   RouterContract,
   MatchedRoute,
-  LookupNode,
+  RouteLookupNode,
   RouteHandlerNode,
 } from '@poppinss/http-server/contracts'
 
@@ -62,7 +62,7 @@ export class Router<Context> implements RouterContract<Context> {
   /**
    * Global matchers to test route params against regular expressions.
    */
-  private _matchers: Matchers = {}
+  private _matchers: RouteMatchers = {}
 
   /**
    * Store with tokenized routes
@@ -73,7 +73,7 @@ export class Router<Context> implements RouterContract<Context> {
    * Lookup store to find route by it's name, handler or pattern
    * and then form a complete URL from it
    */
-  private _lookupStore: LookupNode<Context>[] = []
+  private _lookupStore: RouteLookupNode<Context>[] = []
 
   /**
    * A boolean to tell the router that a group is in

@@ -10,11 +10,12 @@
 * For the full copyright and license information, please view the LICENSE
 * file that was distributed with this source code.
 */
+
 /// <reference path="../contracts.ts" />
 
 import { singular } from 'pluralize'
 import { Macroable } from 'macroable'
-import { Matchers, RouteResourceContract } from '@poppinss/http-server/contracts'
+import { RouteMatchers, RouteResourceContract } from '@poppinss/http-server/contracts'
 
 import { Route } from './Route'
 
@@ -38,7 +39,7 @@ export class RouteResource<Context> extends Macroable implements RouteResourceCo
     private _resource: string,
     private _controller: string,
     private _namespace: string,
-    private _globalMatchers: Matchers,
+    private _globalMatchers: RouteMatchers,
     private _shallow = false,
   ) {
     super()

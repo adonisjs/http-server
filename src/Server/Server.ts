@@ -1,11 +1,17 @@
-/*
- * @adonisjs/server
- *
- * (c) Harminder Virk <virk@adonisjs.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
+/**
+ * @module @poppinss/http-server
  */
+
+/*
+* @poppinss/http-server
+*
+* (c) Harminder Virk <virk@adonisjs.com>
+*
+* For the full copyright and license information, please view the LICENSE
+* file that was distributed with this source code.
+*/
+
+/// <reference path="../contracts.ts" />
 
 import { Server as HttpsServer } from 'https'
 import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
@@ -14,10 +20,9 @@ import {
   ServerContract,
   MiddlewareStoreContract,
   ServerConfig,
-  BeforeHookNode,
-  AfterHookNode,
+  HookNode,
   HttpContextContract,
-  ErrorHandleNode,
+  ErrorHandlerNode,
  } from '@poppinss/http-server/contracts'
 
 import { Middleware } from 'co-compose'
@@ -52,8 +57,8 @@ export class Server<Context extends HttpContextContract> implements ServerContra
    * Hooks to be executed before and after the request
    */
   private _hooks: {
-    before: BeforeHookNode<Context>[],
-    after: AfterHookNode<Context>[],
+    before: HookNode<Context>[],
+    after: HookNode<Context>[],
   } = {
     before: [],
     after: [],
@@ -79,7 +84,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
   /**
    * Value of error handler is again decided inside [[Server.optimize]] method.
    */
-  private _errorHandler: ErrorHandleNode<Context>
+  private _errorHandler: ErrorHandlerNode<Context>
 
   /**
    * The server itself doesn't create the http server instance. However, the consumer
@@ -189,7 +194,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
    * Define hooks to be executed as soon as a new request
    * has been received
    */
-  public before (cb: BeforeHookNode<Context>): this {
+  public before (cb: HookNode<Context>): this {
     this._hooks.before.push(cb)
     return this
   }
@@ -199,7 +204,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
    * can modify the lazy response. However, it shouldn't write the
    * response to the socket.
    */
-  public after (cb: AfterHookNode<Context>): this {
+  public after (cb: HookNode<Context>): this {
     this._hooks.after.push(cb)
     return this
   }
@@ -208,7 +213,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
    * Define custom error handler to handler all errors
    * occurred during HTTP request
    */
-  public onError (cb: ErrorHandleNode<Context>): this {
+  public onError (cb: ErrorHandlerNode<Context>): this {
     this._errorHandler = cb
     return this
   }

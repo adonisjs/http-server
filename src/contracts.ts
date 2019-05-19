@@ -3,13 +3,13 @@
  */
 
 /*
- * @poppinss/http-server
- *
- * (c) Harminder Virk <virk@adonisjs.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+* @poppinss/http-server
+*
+* (c) Harminder Virk <virk@adonisjs.com>
+*
+* For the full copyright and license information, please view the LICENSE
+* file that was distributed with this source code.
+*/
 
 declare module '@poppinss/http-server/contracts' {
   import { Server as HttpsServer } from 'https'
@@ -35,23 +35,18 @@ declare module '@poppinss/http-server/contracts' {
    * Before hooks are executed before finding the route or finding
    * middleware
    */
-  type BeforeHookNode<Context> = (ctx: Context) => Promise<void>
-
-  /**
-   * After hooks are executed after controller has done it's job
-   */
-  type AfterHookNode<Context> = (ctx: Context) => Promise<void>
+  type HookNode<Context> = (ctx: Context) => Promise<void>
 
   /**
    * Error handler node
    */
-  type ErrorHandleNode<Context> = (error: any, ctx: Context) => Promise<any>
+  type ErrorHandlerNode<Context> = (error: any, ctx: Context) => Promise<any>
 
   /**
-   * Lookup node is used to find the routes using handler,
-   * pattern or name.
+   * Route look node is used to find the routes using
+   * handler, pattern or name.
    */
-  type LookupNode<Context> = {
+  type RouteLookupNode<Context> = {
     handler: RouteHandlerNode<Context>,
     pattern: string,
     domain: string,
@@ -61,7 +56,7 @@ declare module '@poppinss/http-server/contracts' {
   /**
    * Shape of route param matchers
    */
-  type Matchers = {
+  type RouteMatchers = {
     [param: string]: RegExp,
   }
 
@@ -122,14 +117,6 @@ declare module '@poppinss/http-server/contracts' {
       [domain: string]: DomainNode<Context>,
     },
   }
-  /**
-   * Constructor contracts are required, since all Route classes has macros
-   * support.
-   */
-  interface BriskRouteConstructorContract extends MacroableConstructorContract {}
-  interface RouteGroupConstructorContract extends MacroableConstructorContract {}
-  interface RouteResourceConstructorContract extends MacroableConstructorContract {}
-  interface RouteConstructorContract extends MacroableConstructorContract {}
 
   /**
    * Route defination returned as a result of `route.toJSON` method
@@ -137,7 +124,7 @@ declare module '@poppinss/http-server/contracts' {
   type RouteDefination<Context> = RouteNode<Context> & {
     methods: string[],
     domain?: string,
-    matchers: Matchers,
+    matchers: RouteMatchers,
   }
 
   /**
@@ -209,10 +196,10 @@ declare module '@poppinss/http-server/contracts' {
     Resource = RouteResourceContract<Context>,
     Brisk = BriskRouteContract<Context>,
   > {
-    BriskRoute: BriskRouteConstructorContract,
-    RouteGroup: RouteGroupConstructorContract,
-    RouteResource: RouteResourceConstructorContract,
-    Route: RouteConstructorContract,
+    BriskRoute: MacroableConstructorContract,
+    RouteGroup: MacroableConstructorContract,
+    RouteResource: MacroableConstructorContract,
+    Route: MacroableConstructorContract,
     routes: (
       RouteContract<Context> |
       RouteResourceContract<Context> |
@@ -244,11 +231,11 @@ declare module '@poppinss/http-server/contracts' {
    */
   interface ServerContract<Context extends HttpContextContract> {
     instance?: HttpServer | HttpsServer,
-    onError (cb: ErrorHandleNode<Context>): this
+    onError (cb: ErrorHandlerNode<Context>): this
     handle (req: IncomingMessage, res: ServerResponse): Promise<void>
     optimize (): void
-    before (cb: BeforeHookNode<Context>): this
-    after (cb: AfterHookNode<Context>): this
+    before (cb: HookNode<Context>): this
+    after (cb: HookNode<Context>): this
   }
 
   /**

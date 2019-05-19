@@ -14,7 +14,7 @@
 /// <reference path="../contracts.ts" />
 
 import { Macroable } from 'macroable'
-import { RouteDefination, Matchers, RouteContract } from '@poppinss/http-server/contracts'
+import { RouteDefination, RouteMatchers, RouteContract } from '@poppinss/http-server/contracts'
 
 import { dropSlash } from '../helpers'
 
@@ -49,7 +49,7 @@ export class Route<Context extends any> extends Macroable implements RouteContra
    * store. The matchers list is populated by
    * calling `where` method
    */
-  private _matchers: Matchers = {}
+  private _matchers: RouteMatchers = {}
 
   /**
    * A custom prefix. Usually added to a group of
@@ -80,7 +80,7 @@ export class Route<Context extends any> extends Macroable implements RouteContra
     private _methods: string[],
     private _handler: any,
     private _namespace: string,
-    private _globalMatchers: Matchers,
+    private _globalMatchers: RouteMatchers,
   ) {
     super()
   }
@@ -90,7 +90,7 @@ export class Route<Context extends any> extends Macroable implements RouteContra
    * matchers. The local copy is given preference over the global
    * one's
    */
-  private _getMatchers (): Matchers {
+  private _getMatchers (): RouteMatchers {
     return Object.assign({}, this._globalMatchers, this._matchers)
   }
 

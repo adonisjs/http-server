@@ -15,7 +15,7 @@
 
 import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
-import { BriskRouteContract, Matchers, RouteHandlerNode } from '@poppinss/http-server/contracts'
+import { BriskRouteContract, RouteMatchers, RouteHandlerNode } from '@poppinss/http-server/contracts'
 
 import { Route } from './Route'
 import { exceptionCodes } from '../helpers'
@@ -47,7 +47,7 @@ export class BriskRoute<Context> extends Macroable implements BriskRouteContract
   constructor (
     private _pattern: string,
     private _namespace: string,
-    private _globalMatchers: Matchers,
+    private _globalMatchers: RouteMatchers,
   ) {
     super()
   }
