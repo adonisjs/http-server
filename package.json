@@ -67,5 +67,12 @@
   "np": {
     "contents": ".",
     "anyBranch": false
+  },
+  "dependencies": {
+    "@poppinss/utils": "^1.0.0",
+    "lodash": "^4.17.11",
+    "macroable": "^2.0.2",
+    "matchit": "git+https://github.com/thetutlage/matchit.git",
+    "pluralize": "^7.0.0"
   }
 }
