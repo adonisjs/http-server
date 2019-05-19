@@ -11,7 +11,7 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="./contracts.ts" />
+/// <reference path="../contracts.ts" />
 
 import { stringify } from 'querystring'
 import { Exception } from '@poppinss/utils'
@@ -21,6 +21,7 @@ import {
   RouterContract,
   MatchedRoute,
   LookupNode,
+  RouteHandlerNode,
 } from '@poppinss/http-server/contracts'
 
 import { Route } from './Route'
@@ -28,7 +29,7 @@ import { RouteResource } from './Resource'
 import { RouteGroup } from './Group'
 import { BriskRoute } from './BriskRoute'
 import { Store } from './Store'
-import { toRoutesJSON, exceptionCodes } from './helpers'
+import { toRoutesJSON, exceptionCodes } from '../helpers'
 
 /**
  * Router class exposes unified API to create new routes, group them or
@@ -42,12 +43,12 @@ import { toRoutesJSON, exceptionCodes } from './helpers'
  * })
  * ```
  */
-export class Router implements RouterContract {
+export class Router<Context> implements RouterContract<Context> {
   /**
    * Collection of routes, including route resource and route
    * group. To get a flat list of routes, call `router.toJSON()`
    */
-  public routes: (Route | RouteResource | RouteGroup | BriskRoute)[] = []
+  public routes: (Route<Context> | RouteResource<Context> | RouteGroup<Context> | BriskRoute<Context>)[] = []
 
   /**
    * Exposing BriskRoute, RouteGroup and RouteResource constructors
@@ -66,13 +67,13 @@ export class Router implements RouterContract {
   /**
    * Store with tokenized routes
    */
-  private _store: Store = new Store()
+  private _store: Store<Context> = new Store()
 
   /**
    * Lookup store to find route by it's name, handler or pattern
    * and then form a complete URL from it
    */
-  private _lookupStore: LookupNode[] = []
+  private _lookupStore: LookupNode<Context>[] = []
 
   /**
    * A boolean to tell the router that a group is in
@@ -90,7 +91,7 @@ export class Router implements RouterContract {
    * a group. Once we pass them to the group, this array
    * will be free.
    */
-  private _groupRoutes: (Route | RouteResource | BriskRoute)[] = []
+  private _groupRoutes: (Route<Context> | RouteResource<Context> | BriskRoute<Context>)[] = []
 
   /**
    * A counter to create unique routes during tests
@@ -100,17 +101,17 @@ export class Router implements RouterContract {
   /**
    * A handler to handle routes created for testing
    */
-  private _testsHandler = () => {
+  private _testsHandler: RouteHandlerNode<Context> = async () => {
     return 'handled by tests handler'
   }
 
-  constructor (private _routeProcessor?: (route: RouteNode) => void) {
+  constructor (private _routeProcessor?: (route: RouteNode<Context>) => void) {
   }
 
   /**
    * Add route for a given pattern and methods
    */
-  public route (pattern: string, methods: string[], handler: any): Route {
+  public route (pattern: string, methods: string[], handler: RouteHandlerNode<Context>): Route<Context> {
     const route = new Route(pattern, methods, handler, this._namespace, this._matchers)
 
     if (this._inGroup) {
@@ -125,42 +126,42 @@ export class Router implements RouterContract {
   /**
    * Define a route that handles all common HTTP methods
    */
-  public any (pattern: string, handler: any): Route {
+  public any (pattern: string, handler: RouteHandlerNode<Context>): Route<Context> {
     return this.route(pattern, ['HEAD', 'OPTIONS','GET', 'POST', 'PUT', 'PATCH', 'DELETE'], handler)
   }
 
   /**
    * Define `GET` route
    */
-  public get (pattern: string, handler: any): Route {
+  public get (pattern: string, handler: RouteHandlerNode<Context>): Route<Context> {
     return this.route(pattern, ['GET'], handler)
   }
 
   /**
    * Define `POST` route
    */
-  public post (pattern: string, handler: any): Route {
+  public post (pattern: string, handler: RouteHandlerNode<Context>): Route<Context> {
     return this.route(pattern, ['POST'], handler)
   }
 
   /**
    * Define `PUT` route
    */
-  public put (pattern: string, handler: any): Route {
+  public put (pattern: string, handler: RouteHandlerNode<Context>): Route<Context> {
     return this.route(pattern, ['PUT'], handler)
   }
 
   /**
    * Define `PATCH` route
    */
-  public patch (pattern: string, handler: any): Route {
+  public patch (pattern: string, handler: RouteHandlerNode<Context>): Route<Context> {
     return this.route(pattern, ['PATCH'], handler)
   }
 
   /**
    * Define `DELETE` route
    */
-  public destroy (pattern: string, handler: any): Route {
+  public destroy (pattern: string, handler: RouteHandlerNode<Context>): Route<Context> {
     return this.route(pattern, ['DELETE'], handler)
   }
 
@@ -168,7 +169,7 @@ export class Router implements RouterContract {
    * Creates a group of routes. A route group can apply transforms
    * to routes in bulk
    */
-  public group (callback: () => void): RouteGroup {
+  public group (callback: () => void): RouteGroup<Context> {
     if (this._inGroup) {
       throw new Exception('Cannot create nested route groups', 500, exceptionCodes.E_NESTED_ROUTE_GROUPS)
     }
@@ -206,7 +207,7 @@ export class Router implements RouterContract {
   /**
    * Registers a route resource with conventional set of routes
    */
-  public resource (resource: string, controller: string): RouteResource {
+  public resource (resource: string, controller: string): RouteResource<Context> {
     const resourceInstance = new RouteResource(resource, controller, this._namespace, this._matchers)
 
     if (this._inGroup) {
@@ -221,7 +222,7 @@ export class Router implements RouterContract {
   /**
    * Register a route resource with shallow nested routes.
    */
-  public shallowResource (resource: string, controller: string): RouteResource {
+  public shallowResource (resource: string, controller: string): RouteResource<Context> {
     const resourceInstance = new RouteResource(resource, controller, this._namespace, this._matchers, true)
 
     if (this._inGroup) {
@@ -236,7 +237,7 @@ export class Router implements RouterContract {
   /**
    * Returns a brisk route instance for a given URL pattern
    */
-  public on (pattern: string): BriskRoute {
+  public on (pattern: string): BriskRoute<Context> {
     const briskRoute = new BriskRoute(pattern, this._namespace, this._matchers)
 
     if (this._inGroup) {
@@ -329,7 +330,7 @@ export class Router implements RouterContract {
   /**
    * Find route for a given URL, method and optionally domain
    */
-  public find (url: string, method: string, domain?: string): null | MatchedRoute {
+  public find (url: string, method: string, domain?: string): null | MatchedRoute<Context> {
     return this._store.match(url, method, domain)
   }
 
@@ -411,7 +412,11 @@ export class Router implements RouterContract {
    * created to test the route functionality, they should be created to
    * test middleware or validators by hitting a route from outside in.
    */
-  public forTesting (pattern?: string, methods?: string[], handler?: any): Route {
+  public forTesting (
+    pattern?: string,
+    methods?: string[],
+    handler?: RouteHandlerNode<Context>,
+  ): Route<Context> {
     pattern = pattern || `_test_${this._testRoutePatternCounter++}`
     methods = methods || ['GET']
     handler = handler || this._testsHandler

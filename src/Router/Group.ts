@@ -11,7 +11,7 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="./contracts.ts" />
+/// <reference path="../contracts.ts" />
 
 import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
@@ -20,7 +20,7 @@ import { RouteGroupContract } from '@poppinss/http-server/contracts'
 import { Route } from './Route'
 import { RouteResource } from './Resource'
 import { BriskRoute } from './BriskRoute'
-import { exceptionCodes } from './helpers'
+import { exceptionCodes } from '../helpers'
 
 function missingRouteName () {
   return new Exception(
@@ -35,11 +35,11 @@ function missingRouteName () {
  * of routes. The group routes must be pre-defined using
  * the constructor.
  */
-export class RouteGroup extends Macroable implements RouteGroupContract {
+export class RouteGroup<Context> extends Macroable implements RouteGroupContract<Context> {
   protected static _macros = {}
   protected static _getters = {}
 
-  constructor (public routes: (Route | RouteResource | BriskRoute)[]) {
+  constructor (public routes: (Route<Context> | RouteResource<Context> | BriskRoute<Context>)[]) {
     super()
   }
 
@@ -47,7 +47,11 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * Invokes a given method with params on the route instance or route
    * resource instance
    */
-  private _invoke (route: Route | RouteResource | BriskRoute, method: string, params: any[]) {
+  private _invoke (
+    route: Route<Context> | RouteResource<Context> | BriskRoute<Context>,
+    method: string,
+    params: any[],
+  ) {
     if (route instanceof RouteResource) {
       route.routes.forEach((child) => {
         this._invoke(child, method, params)

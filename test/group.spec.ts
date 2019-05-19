@@ -11,11 +11,12 @@ import * as test from 'japa'
 import { RouteGroup } from '../src/Router/Group'
 import { Route } from '../src/Router/Route'
 import { RouteResource } from '../src/Router/Resource'
-import { toRoutesJSON } from '../src/Router/helpers'
+import { toRoutesJSON } from '../src/helpers'
 
 test.group('Route Group', () => {
   test('add matcher for the given route', (assert) => {
-    function handler () {}
+    async function handler () {}
+
     const group = new RouteGroup([new Route('/:id', ['GET'], handler, 'App/Controllers/Http', {})])
     group.where('id', '[a-z]')
 
@@ -38,7 +39,7 @@ test.group('Route Group', () => {
   })
 
   test('prepend middleware to existing route middleware', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const route = new Route('/:id', ['GET'], handler, 'App/Controllers/Http', {})
     route.middleware('auth')
@@ -63,7 +64,7 @@ test.group('Route Group', () => {
   })
 
   test('prepend name to the existing route names', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const route = new Route('/:id', ['GET'], handler, 'App/Controllers/Http', {})
     route.as('list')
@@ -88,7 +89,7 @@ test.group('Route Group', () => {
   })
 
   test('define routes prefix', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const route = new Route('/:id', ['GET'], handler, 'App/Controllers/Http', {})
     const group = new RouteGroup([route])
@@ -111,7 +112,7 @@ test.group('Route Group', () => {
   })
 
   test('define routes domain', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const route = new Route('/:id', ['GET'], handler, 'App/Controllers/Http', {})
     const group = new RouteGroup([route])
@@ -319,7 +320,7 @@ test.group('Route Group', () => {
   })
 
   test('define routes namespace', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const route = new Route('/:id', ['GET'], handler, 'App/Controllers/Http', {})
     const group = new RouteGroup([route])

@@ -11,12 +11,12 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="./contracts.ts" />
+/// <reference path="../contracts.ts" />
 
 import { Macroable } from 'macroable'
 import { RouteDefination, Matchers, RouteContract } from '@poppinss/http-server/contracts'
 
-import { dropSlash } from './helpers'
+import { dropSlash } from '../helpers'
 
 /**
  * Route class is used to construct consistent [[RouteDefination]] using
@@ -34,7 +34,7 @@ import { dropSlash } from './helpers'
  *   })
  * ```
  */
-export class Route extends Macroable implements RouteContract {
+export class Route<Context extends any> extends Macroable implements RouteContract<Context> {
   protected static _macros = {}
   protected static _getters = {}
 
@@ -165,7 +165,7 @@ export class Route extends Macroable implements RouteContract {
    * Returns [[RouteDefination]] that can be passed to the [[Store]] for
    * registering the route
    */
-  public toJSON (): RouteDefination {
+  public toJSON (): RouteDefination<Context> {
     return {
       domain: this._domain,
       pattern: this._getPattern(),

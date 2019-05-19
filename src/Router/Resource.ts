@@ -10,7 +10,7 @@
 * For the full copyright and license information, please view the LICENSE
 * file that was distributed with this source code.
 */
-/// <reference path="./contracts.ts" />
+/// <reference path="../contracts.ts" />
 
 import { singular } from 'pluralize'
 import { Macroable } from 'macroable'
@@ -28,11 +28,11 @@ import { Route } from './Route'
  * const resource = new RouteResource('articles', 'ArticlesController')
  * ```
  */
-export class RouteResource extends Macroable implements RouteResourceContract {
+export class RouteResource<Context> extends Macroable implements RouteResourceContract<Context> {
   protected static _macros = {}
   protected static _getters = {}
 
-  public routes: Route[] = []
+  public routes: Route<Context>[] = []
 
   constructor (
     private _resource: string,
@@ -48,7 +48,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
   /**
    * Add a new route for the given pattern, methods and controller action
    */
-  private _makeRoute (pattern, methods, action, baseName) {
+  private _makeRoute (pattern: string, methods: string[], action: string, baseName: string) {
     const route = new Route(pattern, methods, `${this._controller}.${action}`, this._namespace, this._globalMatchers)
     route.as(`${baseName}.${action}`)
     this.routes.push(route)
@@ -66,7 +66,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
       .join('/')}/${mainResource}`
 
     const memberBaseUrl = this._shallow ? mainResource : baseUrl
-    const baseName = this._shallow ? mainResource : this._resource
+    const baseName = this._shallow ? mainResource! : this._resource
 
     this._makeRoute(baseUrl, ['GET'], 'index', this._resource)
     this._makeRoute(`${baseUrl}/create`, ['GET'], 'create', this._resource)
@@ -80,7 +80,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
   /**
    * Filter the routes based on their partial names
    */
-  private _filter (names, inverse) {
+  private _filter (names: string[], inverse: boolean) {
     return this.routes.filter((route) => {
       const match = names.find((name) => route.name.endsWith(name))
       return inverse ? !match : match

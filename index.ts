@@ -11,7 +11,7 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="./src/Router/contracts.ts" />
+/// <reference path="./src/contracts.ts" />
 
 export { Router } from './src/Router/Router'
 export {

@@ -7,6 +7,29 @@
 
 Node.js HTTP server with a slick router used by AdonisJs. Think of it as a more features ExpressJs style server written in Typescript.
 
+```
+Context
+  -> add to context
+RouteGroup
+  -> extend route group
+Route
+  -> extend route
+RouteResource
+  -> extend route resource
+BriskRoute
+  -> extend brisk route
+Server
+  -> cannot be extended
+MiddlewareStore
+  -> cannot be extended
+Route Handler
+  -> cannot be extended or changed
+Middleware Handler
+  -> cannot be extended or changed
+Hook Handler
+  -> cannot be extended or changed
+```
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of contents

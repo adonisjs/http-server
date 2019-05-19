@@ -12,7 +12,7 @@ import { Store } from '../src/Router/Store'
 
 test.group('Store | add', () => {
   test('add route without explicit domain', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const store = new Store()
     store.add({
@@ -55,7 +55,7 @@ test.group('Store | add', () => {
   })
 
   test('add route with custom domain', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const store = new Store()
     store.add({
@@ -99,7 +99,7 @@ test.group('Store | add', () => {
   })
 
   test('raise error when route with duplicate pattern', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = {
       pattern: '/',
       methods: ['GET'],
@@ -118,7 +118,7 @@ test.group('Store | add', () => {
   })
 
   test('work fine when pattern is same but method is different', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = {
       pattern: '/',
       methods: ['GET'],
@@ -180,7 +180,7 @@ test.group('Store | add', () => {
   })
 
   test('work fine when pattern is same but domain is different', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = {
       pattern: '/',
       methods: ['GET'],
@@ -254,7 +254,7 @@ test.group('Store | add', () => {
 
 test.group('Store | match', () => {
   test('match url for given method', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const store = new Store()
     store.add({
@@ -279,7 +279,7 @@ test.group('Store | match', () => {
   })
 
   test('match url with params', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const store = new Store()
     store.add({
@@ -306,7 +306,7 @@ test.group('Store | match', () => {
   })
 
   test('match url with optional params', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const store = new Store()
     store.add({
@@ -344,7 +344,7 @@ test.group('Store | match', () => {
   })
 
   test('match routes from top to bottom', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const store = new Store()
     store.add({
@@ -380,7 +380,7 @@ test.group('Store | match', () => {
   })
 
   test('test url against matchers', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const store = new Store()
     store.add({
@@ -420,7 +420,7 @@ test.group('Store | match', () => {
   })
 
   test('match domain for urls', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const store = new Store()
     store.add({
@@ -457,7 +457,7 @@ test.group('Store | match', () => {
   })
 
   test('match for dynamic domains', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const store = new Store()
     store.add({
@@ -487,7 +487,7 @@ test.group('Store | match', () => {
   })
 
   test('return null when unable to match the route domain', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const store = new Store()
     store.add({
@@ -503,7 +503,7 @@ test.group('Store | match', () => {
   })
 
   test('return null when unable to match the method', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const store = new Store()
     store.add({
@@ -519,7 +519,7 @@ test.group('Store | match', () => {
   })
 
   test('return null when unable to match the route url', (assert) => {
-    function handler () {}
+    async function handler () {}
 
     const store = new Store()
     store.add({

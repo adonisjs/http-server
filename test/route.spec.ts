@@ -12,7 +12,7 @@ import { Route } from '../src/Router/Route'
 
 test.group('Route', () => {
   test('create a basic route', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = new Route('/', ['GET'], handler, 'App/Controllers/Http', {})
 
     assert.deepEqual(route.toJSON(), {
@@ -30,7 +30,7 @@ test.group('Route', () => {
   })
 
   test('prefix route', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = new Route('/', ['GET'], handler, 'App/Controllers/Http', {})
     route.prefix('admin')
 
@@ -49,7 +49,7 @@ test.group('Route', () => {
   })
 
   test('handle leading slash in pattern', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = new Route('/blog', ['GET'], handler, 'App/Controllers/Http', {})
 
     assert.deepEqual(route.toJSON(), {
@@ -67,7 +67,7 @@ test.group('Route', () => {
   })
 
   test('handle leading slash in pattern along with prefix', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = new Route('/blog', ['GET'], handler, 'App/Controllers/Http', {})
     route.prefix('admin')
 
@@ -86,7 +86,7 @@ test.group('Route', () => {
   })
 
   test('define matchers for params', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = new Route('posts/:id', ['GET'], handler, 'App/Controllers/Http', {})
     route.where('id', '^[a-z]+$')
 
@@ -107,7 +107,7 @@ test.group('Route', () => {
   })
 
   test('define global matchers for params', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = new Route('posts/:id', ['GET'], handler, 'App/Controllers/Http', {
       id: /^[a-z]+$/,
     })
@@ -129,7 +129,7 @@ test.group('Route', () => {
   })
 
   test('give preference to local matcher over global', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = new Route('posts/:id', ['GET'], handler, 'App/Controllers/Http', {
       id: /^[a-z]+$/,
     })
@@ -152,7 +152,7 @@ test.group('Route', () => {
   })
 
   test('define route domain', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = new Route('posts/:id', ['GET'], handler, 'App/Controllers/Http', {})
     route.domain('foo.com')
 
@@ -171,7 +171,7 @@ test.group('Route', () => {
   })
 
   test('define an array of route middleware', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = new Route('posts/:id', ['GET'], handler, 'App/Controllers/Http', {})
     route.middleware(['auth', 'acl:admin'])
 
@@ -190,7 +190,7 @@ test.group('Route', () => {
   })
 
   test('define route middleware as a string', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = new Route('posts/:id', ['GET'], handler, 'App/Controllers/Http', {})
     route.middleware('auth')
 
@@ -209,7 +209,7 @@ test.group('Route', () => {
   })
 
   test('give name to the route', (assert) => {
-    function handler () {}
+    async function handler () {}
     const route = new Route('posts/:id', ['GET'], handler, 'App/Controllers/Http', {})
     route.as('showPost')
 

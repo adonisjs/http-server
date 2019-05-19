@@ -11,14 +11,14 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="./contracts.ts" />
+/// <reference path="../contracts.ts" />
 
 import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
-import { BriskRouteContract, Matchers } from '@poppinss/http-server/contracts'
+import { BriskRouteContract, Matchers, RouteHandlerNode } from '@poppinss/http-server/contracts'
 
 import { Route } from './Route'
-import { exceptionCodes } from './helpers'
+import { exceptionCodes } from '../helpers'
 
 /**
  * Brisk route enables you to expose expressive API for
@@ -28,7 +28,7 @@ import { exceptionCodes } from './helpers'
  * to render a view without defining a controller method or
  * closure.
  */
-export class BriskRoute extends Macroable implements BriskRouteContract {
+export class BriskRoute<Context> extends Macroable implements BriskRouteContract<Context> {
   protected static _macros = {}
   protected static _getters = {}
 
@@ -42,9 +42,13 @@ export class BriskRoute extends Macroable implements BriskRouteContract {
   /**
    * Reference to route instance. Set after `setHandler` is called
    */
-  public route: null | Route = null
+  public route: null | Route<Context> = null
 
-  constructor (private _pattern: string, private _namespace: string, private _globalMatchers: Matchers) {
+  constructor (
+    private _pattern: string,
+    private _namespace: string,
+    private _globalMatchers: Matchers,
+  ) {
     super()
   }
 
@@ -54,7 +58,11 @@ export class BriskRoute extends Macroable implements BriskRouteContract {
    * readable error message when `setHandler` is called for multiple
    * times.
    */
-  public setHandler (handler: any, invokedBy: string, methods?: string[]): Route {
+  public setHandler (
+    handler: RouteHandlerNode<Context>,
+    invokedBy: string,
+    methods?: string[],
+  ): Route<Context> {
     if (this.route) {
       throw new Exception(
         `\`Route.${invokedBy}\` and \`${this._invokedBy}\` cannot be called together`,

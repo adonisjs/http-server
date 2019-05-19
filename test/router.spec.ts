@@ -118,8 +118,8 @@ test.group('Router | add', () => {
   test('raise error when route name is duplicate', (assert) => {
     const router = new Router()
 
-    router.get('/', function handler () {}).as('home')
-    router.get('home', function handler () {}).as('home')
+    router.get('/', async function handler () {}).as('home')
+    router.get('home', async function handler () {}).as('home')
 
     const fn = () => router.commit()
     assert.throw(fn, 'Duplicate route name `home`')
@@ -129,7 +129,7 @@ test.group('Router | add', () => {
     assert.plan(1)
 
     const router = new Router()
-    function handler () {}
+    async function handler () {}
 
     try {
       router.group(() => {
@@ -146,7 +146,7 @@ test.group('Router | add', () => {
     assert.plan(1)
 
     const router = new Router()
-    function handler () {}
+    async function handler () {}
 
     try {
       router.group(() => {
@@ -164,7 +164,7 @@ test.group('Router | add', () => {
     assert.plan(1)
 
     const router = new Router()
-    function handler () {}
+    async function handler () {}
 
     try {
       router.group(() => {
@@ -203,7 +203,7 @@ test.group('Router | commit', () => {
   test('commit routes to the store', (assert) => {
     const router = new Router()
 
-    function handler () {}
+    async function handler () {}
     router.get('/', handler)
     router.commit()
 
@@ -243,7 +243,7 @@ test.group('Router | commit', () => {
   test('commit routes group to the store', (assert) => {
     const router = new Router()
 
-    function handler () {}
+    async function handler () {}
     router.group(() => {
       router.get('/', handler)
     }).prefix('api')
@@ -842,7 +842,7 @@ test.group('Router | commit', () => {
   test('do not commit route when deleted flag is set to true', (assert) => {
     const router = new Router()
 
-    function handler () {}
+    async function handler () {}
     const route = router.get('/', handler)
     route.deleted = true
 
@@ -1056,7 +1056,7 @@ test.group('Router | commit', () => {
     const router = new Router()
     router.where('id', '^[a-z]+')
 
-    function handler () {}
+    async function handler () {}
     router.get('/:id', handler)
     router.commit()
 
@@ -1290,7 +1290,7 @@ test.group('Router | urlFor', () => {
 
   test('define brisk route', (assert) => {
     const router = new Router()
-    function handler () {}
+    async function handler () {}
 
     router.on('/').setHandler(handler, 'render')
     assert.deepEqual(router.toJSON(), [
@@ -1311,7 +1311,7 @@ test.group('Router | urlFor', () => {
 
   test('define brisk route inside a group', (assert) => {
     const router = new Router()
-    function handler () {}
+    async function handler () {}
 
     router.group(() => {
       router.on('/').setHandler(handler, 'render').as('root')
@@ -1335,7 +1335,7 @@ test.group('Router | urlFor', () => {
 
   test('register brisk route to store', (assert) => {
     const router = new Router()
-    function handler () {}
+    async function handler () {}
 
     router.group(() => {
       router.on('/').setHandler(handler, 'render').as('root')

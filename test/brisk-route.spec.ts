@@ -13,7 +13,7 @@ import { BriskRoute } from '../src/Router/BriskRoute'
 test.group('Brisk Route', () => {
   test('define handler for the route', (assert) => {
     const brisk = new BriskRoute('/', 'App/Controllers/Http', {})
-    function handler () {}
+    async function handler () {}
 
     const route = brisk.setHandler(handler, 'render')
     assert.deepEqual(route.toJSON(), {
@@ -32,7 +32,7 @@ test.group('Brisk Route', () => {
 
   test('setting handler multiple times must result in error', (assert) => {
     const brisk = new BriskRoute('/', 'App/Controllers/Http', {})
-    function handler () {}
+    async function handler () {}
 
     brisk.setHandler(handler, 'render')
     const fn = () => brisk.setHandler(handler, 'respond')

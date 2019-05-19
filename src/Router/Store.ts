@@ -11,41 +11,20 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="./contracts.ts" />
+/// <reference path="../contracts.ts" />
 
 import { pick, cloneDeep } from 'lodash'
 import * as matchit from 'matchit'
 import { Exception } from '@poppinss/utils'
-import { RouteDefination, RouteNode, MatchedRoute } from '@poppinss/http-server/contracts'
-import { exceptionCodes } from './helpers'
-
-/**
- * An object of routes for a given HTTP method
- */
-type MethodNode = {
-  tokens: any[],
-  routes: {
-    [pattern: string]: RouteNode,
-  },
-}
-
-/**
- * Each domain node will have an object of methods and then
- * a nested object of routes
- */
-type DomainNode = {
-  [method: string]: MethodNode,
-}
-
-/**
- * Routes tree is a domain of DomainNodes
- */
-type RoutesTree = {
-  tokens: any[],
-  domains: {
-    [domain: string]: DomainNode,
-  },
-}
+import {
+  RouteDefination,
+  RouteNode,
+  MatchedRoute,
+  DomainNode,
+  MethodNode,
+  RoutesTree,
+} from '@poppinss/http-server/contracts'
+import { exceptionCodes } from '../helpers'
 
 /**
  * Store class is used to store a list of routes, along side with their tokens
@@ -70,14 +49,14 @@ type RoutesTree = {
  * store.match('posts/1', 'GET')
  * ```
  */
-export class Store {
-  public tree: RoutesTree = { tokens: [], domains: {} }
+export class Store<Context> {
+  public tree: RoutesTree<Context> = { tokens: [], domains: {} }
 
   /**
    * Returns the domain node for a given domain. If domain node is missing,
    * it will added to the routes object and tokens are also generated
    */
-  private _getDomainNode (domain: string): DomainNode {
+  private _getDomainNode (domain: string): DomainNode<Context> {
     if (!this.tree.domains[domain]) {
       /**
        * The tokens are required to match dynamic domains
@@ -93,7 +72,7 @@ export class Store {
    * Returns the method node for a given domain and method. If method is
    * missing, it will be added to the domain node
    */
-  private _getMethodRoutes (domain: string, method: string): MethodNode {
+  private _getMethodRoutes (domain: string, method: string): MethodNode<Context> {
     const domainNode = this._getDomainNode(domain)
     if (!domainNode[method]) {
       domainNode[method] = { tokens: [], routes: {} }
@@ -119,7 +98,7 @@ export class Store {
    * })
    * ```
    */
-  public add (route: RouteDefination): this {
+  public add (route: RouteDefination<Context>): this {
     /**
      * Create a copy of route properties by cherry picking
      * fields. We create the copy outside the forEach
@@ -136,7 +115,7 @@ export class Store {
       'meta',
       'middleware',
       'name',
-    ])) as RouteNode
+    ])) as RouteNode<Context>
 
     route.methods.forEach((method) => {
       const methodRoutes = this._getMethodRoutes(route.domain || 'root', method)
@@ -175,7 +154,7 @@ export class Store {
    * route. `null` is returned when unable to match the URL against
    * registered routes.
    */
-  public match (url: string, method: string, domain?: string): null | MatchedRoute {
+  public match (url: string, method: string, domain?: string): null | MatchedRoute<Context> {
     /**
      * Start by matching the domain and return null, if unable to find
      * the domain
