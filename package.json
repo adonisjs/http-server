@@ -2,6 +2,13 @@
   "name": "@poppinss/http-server",
   "version": "0.0.0",
   "description": "Extracted copy of AdonisJs HTTP server along with it's router",
+  "main": "build/index.js",
+  "files": [
+    "build/adonis-typings/index.d.ts",
+    "build/src",
+    "build/index.d.ts",
+    "build/index.js"
+  ],
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
@@ -23,9 +30,7 @@
   "devDependencies": {
     "@adonisjs/fold": "^5.0.9",
     "@adonisjs/mrm-preset": "^2.0.3",
-    "@poppinss/logger": "^1.0.1",
-    "@poppinss/request": "^1.0.4",
-    "@poppinss/response": "^1.0.3",
+    "@poppinss/logger": "^1.0.3",
     "@types/node": "^12.0.2",
     "commitizen": "^3.1.1",
     "cz-conventional-changelog": "^2.1.0",
@@ -52,12 +57,6 @@
       ".ts"
     ]
   },
-  "main": "build/index.js",
-  "files": [
-    "build/src",
-    "build/index.d.ts",
-    "build/index.js"
-  ],
   "husky": {
     "hooks": {
       "pre-commit": "doctoc README.md --title='## Table of contents' && git add README.md",
@@ -74,6 +73,8 @@
     "anyBranch": false
   },
   "dependencies": {
+    "@poppinss/request": "^1.0.6",
+    "@poppinss/response": "^1.0.5",
     "@poppinss/utils": "^1.0.1",
     "co-compose": "^5.1.1",
     "haye": "^2.0.2",

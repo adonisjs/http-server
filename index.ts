@@ -14,6 +14,11 @@
 /// <reference path="./src/contracts.ts" />
 
 export { Router } from './src/Router'
+export { Server } from './src/Server'
+export { MiddlewareStore } from './src/Server/MiddlewareStore'
+export { HttpContext } from './src/HttpContext'
+export { routePreProcessor } from './src/Server/routePreProcessor'
+
 export {
   RouteContract,
   RouteGroupContract,

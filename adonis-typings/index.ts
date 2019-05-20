@@ -7,13 +7,19 @@
 * file that was distributed with this source code.
 */
 
-/**
- * Http context module
- */
+/// <reference path="../src/contracts.ts" />
+/// <reference types="@poppinss/response/build/adonis-typings" />
+/// <reference types="@poppinss/request/build/adonis-typings" />
+
 declare module '@ioc:Adonis/Src/HttpContext' {
-  /// <reference path="./src/contracts.ts" />
   import { HttpContextContract as BaseContextContract } from '@poppinss/http-server/contracts'
-  interface HttpContextContract extends BaseContextContract {}
+  import { ResponseContract } from '@ioc:Adonis/Src/Response'
+  import { RequestContract } from '@ioc:Adonis/Src/Request'
+
+  interface HttpContextContract extends BaseContextContract {
+    response: ResponseContract,
+    request: RequestContract,
+  }
 }
 
 /**
@@ -21,7 +27,6 @@ declare module '@ioc:Adonis/Src/HttpContext' {
  * this codebase.
  */
 declare module '@ioc:Adonis/Src/Route' {
-  /// <reference path="./src/contracts.ts" />
   import {
     RouteContract as BaseRouteContract,
     RouteGroupContract as BaseGroupContract,
@@ -53,7 +58,6 @@ declare module '@ioc:Adonis/Src/Route' {
  * Http server module
  */
 declare module '@ioc:Adonis/Src/Server' {
-  /// <reference path="./src/contracts.ts" />
   import { ServerContract as BaseServerContract } from '@poppinss/http-server/contracts'
   import { HttpContextContract } from '@ioc:Adonis/Src/HttpContext'
 
@@ -67,7 +71,6 @@ declare module '@ioc:Adonis/Src/Server' {
  * Middleware store contract to register middleware
  */
 declare module '@ioc:Adonis/Src/MiddlewareStore' {
-  /// <reference path="./src/contracts.ts" />
   import { MiddlewareStoreContract as BaseMiddlewareContract } from '@poppinss/http-server/contracts'
   import { HttpContextContract } from '@ioc:Adonis/Src/HttpContext'
 
