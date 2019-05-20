@@ -16,12 +16,21 @@
 import { RouteNode, HttpContextContract } from '@poppinss/http-server/contracts'
 import { RequestContract } from '@poppinss/request'
 import { ResponseContract } from '@poppinss/response'
+import { LoggerContract } from '@poppinss/logger'
 
+/**
+ * Http context is passed to all route handlers, middleware,
+ * error handler and server hooks.
+ */
 export class HttpContext implements HttpContextContract {
   public params?: any
   public subdomains?: any
   public route?: RouteNode<this>
 
-  constructor (public request: RequestContract, public response: ResponseContract) {
+  constructor (
+    public request: RequestContract,
+    public response: ResponseContract,
+    public logger: LoggerContract,
+  ) {
   }
 }

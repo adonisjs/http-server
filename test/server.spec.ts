@@ -10,15 +10,16 @@
 import * as test from 'japa'
 import * as supertest from 'supertest'
 import { createServer } from 'http'
-import { Router } from '../src/Router'
 import { Ioc } from '@adonisjs/fold'
+import { getLogger } from '@poppinss/logger'
 import * as proxyaddr from 'proxy-addr'
-
 import { ServerConfig, HttpContextContract } from '@poppinss/http-server/contracts'
-import { MiddlewareStore } from '../src/Server/MiddlewareStore'
+
 import { Server } from '../src/Server'
-import { routePreProcessor } from '../src/Server/routePreProcessor'
+import { Router } from '../src/Router'
 import { HttpContext } from '../src/HttpContext'
+import { MiddlewareStore } from '../src/Server/MiddlewareStore'
+import { routePreProcessor } from '../src/Server/routePreProcessor'
 
 const config: ServerConfig = {
   etag: false,
@@ -30,12 +31,19 @@ const config: ServerConfig = {
   allowMethodSpoofing: false,
 }
 
+const logger = getLogger({
+  name: 'http-server',
+  enabled: true,
+  level: 'debug',
+  messageKey: 'msg',
+})
+
 test.group('Server | Response handling', () => {
   test('invoke router handler', async (assert) => {
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     const httpServer = createServer(server.handle.bind(server))
 
     router.get('/', ({ response }) => response.send('handled'))
@@ -50,7 +58,7 @@ test.group('Server | Response handling', () => {
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     const httpServer = createServer(server.handle.bind(server))
 
     router.get('/', async () => 'handled')
@@ -65,7 +73,7 @@ test.group('Server | Response handling', () => {
     const middlewareStore = new MiddlewareStore()
     const router = new Router<HttpContext>((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     const httpServer = createServer(server.handle.bind(server))
 
     router.get('/', async ({ response }) => {
@@ -83,7 +91,7 @@ test.group('Server | Response handling', () => {
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     const httpServer = createServer(server.handle.bind(server))
 
     router.get('/', async ({ response }) => {
@@ -122,7 +130,7 @@ test.group('Server | middleware', () => {
 
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     const httpServer = createServer(server.handle.bind(server))
 
     router.get('/', async () => {
@@ -154,7 +162,7 @@ test.group('Server | middleware', () => {
 
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     const httpServer = createServer(server.handle.bind(server))
 
     router.get('/', async () => {
@@ -189,7 +197,7 @@ test.group('Server | middleware', () => {
 
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     const httpServer = createServer(server.handle.bind(server))
 
     router.get('/', async () => {
@@ -225,7 +233,7 @@ test.group('Server | middleware', () => {
 
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     const httpServer = createServer(server.handle.bind(server))
 
     router.get('/', async () => {
@@ -261,7 +269,7 @@ test.group('Server | middleware', () => {
 
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     const httpServer = createServer(server.handle.bind(server))
 
     router.get('/', async () => {
@@ -296,7 +304,7 @@ test.group('Server | middleware', () => {
 
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     const httpServer = createServer(server.handle.bind(server))
 
     router.get('/', async () => {
@@ -322,7 +330,7 @@ test.group('Server | hooks', () => {
 
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     server.before(async () => {
       stack.push('hook1')
     })
@@ -343,7 +351,7 @@ test.group('Server | hooks', () => {
 
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     server.before(async () => {
       stack.push('hook1')
       throw new Error('Blown away')
@@ -367,7 +375,7 @@ test.group('Server | hooks', () => {
 
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     server.before(async ({ response }) => {
       stack.push('hook1')
       response.send('done')
@@ -391,7 +399,7 @@ test.group('Server | hooks', () => {
 
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     server.before(async ({ response }) => {
       response.explicitEnd = false
       stack.push('hook1')
@@ -416,7 +424,7 @@ test.group('Server | hooks', () => {
 
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
 
     server.before(async () => {
       stack.push('hook1')
@@ -448,7 +456,7 @@ test.group('Server | hooks', () => {
 
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
 
     server.before(async () => {
       stack.push('hook1')
@@ -480,7 +488,7 @@ test.group('Server | hooks', () => {
 
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
 
     server.before(async () => {
       stack.push('hook1')
@@ -507,7 +515,7 @@ test.group('Server | hooks', () => {
 
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
 
     server.before(async () => {
       stack.push('hook1')
@@ -535,7 +543,7 @@ test.group('Server | hooks', () => {
 
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
 
     server.before(async ({ response }) => {
       stack.push('hook1')
@@ -564,7 +572,7 @@ test.group('Server | hooks', () => {
 
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
 
     server.before(async ({ response }) => {
       stack.push('hook1')
@@ -594,7 +602,7 @@ test.group('Server | hooks', () => {
 
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
 
     server.before(async () => {
       stack.push('hook1')
@@ -623,7 +631,7 @@ test.group('Server | error handler', () => {
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     server.onError(async (_error, { response }) => {
       response.status(200).send('handled by error handler')
     })
@@ -645,7 +653,7 @@ test.group('Server | error handler', () => {
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     server.onError(async (_error, { response }) => {
       response.status(200).send('handled by error handler')
     })
@@ -667,7 +675,7 @@ test.group('Server | error handler', () => {
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     server.onError(async (_error, { response }) => {
       response.status(200).send('handled by error handler')
     })
@@ -693,7 +701,7 @@ test.group('Server | error handler', () => {
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     server.onError(async (_error, { response }) => {
       response.send('handled by error handler')
     })
@@ -715,7 +723,7 @@ test.group('Server | error handler', () => {
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     server.onError(async (_error, { response }) => {
       response.send('handled by error handler')
     })
@@ -740,7 +748,7 @@ test.group('Server | all', (group) => {
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
     router.commit()
     server.optimize()
 
@@ -766,7 +774,7 @@ test.group('Server | all', (group) => {
 
     router.get('/', 'HomeController.index')
 
-    const server = new Server(HttpContext, router, middlewareStore, config)
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
 
     router.commit()
     server.optimize()

@@ -17,6 +17,7 @@ declare module '@poppinss/http-server/contracts' {
   import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
   import { RequestContract, RequestConfigContract } from '@poppinss/request'
   import { ResponseContract, ResponseConfigContract } from '@poppinss/response'
+  import { LoggerContract } from '@poppinss/logger'
 
   /**
    * The shape of the route handler
@@ -245,6 +246,7 @@ declare module '@poppinss/http-server/contracts' {
   interface HttpContextContract {
     request: RequestContract,
     response: ResponseContract,
+    logger: LoggerContract,
     route?: RouteNode<this>,
     params?: any,
     subdomains?: any,

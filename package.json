@@ -72,6 +72,9 @@
     "contents": ".",
     "anyBranch": false
   },
+  "peerDependencies": {
+    "@poppinss/logger": "^1.x.x"
+  },
   "dependencies": {
     "@poppinss/request": "^1.0.6",
     "@poppinss/response": "^1.0.5",

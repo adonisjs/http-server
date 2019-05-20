@@ -27,6 +27,7 @@ import {
 
 import { Middleware } from 'co-compose'
 import { Exception } from '@poppinss/utils'
+import { LoggerContract } from '@poppinss/logger'
 import { Request, RequestContract } from '@poppinss/request'
 import { Response, ResponseContract } from '@poppinss/response'
 
@@ -94,9 +95,12 @@ export class Server<Context extends HttpContextContract> implements ServerContra
   public instance?: HttpServer | HttpsServer
 
   constructor (
-    private _context: { new(request: RequestContract, response: ResponseContract): Context },
+    private _context: {
+      new(request: RequestContract, response: ResponseContract, logger: LoggerContract): Context,
+    },
     private _router: RouterContract<Context>,
     private _middlewareStore: MiddlewareStoreContract<Context>,
+    private _logger: LoggerContract,
     private _httpConfig: ServerConfig,
   ) {}
 
@@ -262,7 +266,14 @@ export class Server<Context extends HttpContextContract> implements ServerContra
     const response = new Response(req, res, this._httpConfig)
     response.explicitEnd = true
 
-    const ctx = new this._context(request, response)
+    /**
+     * All request logs will have the request id. For now, we add it to all
+     * requests and if required, later we can make it configurable.
+     */
+    const ctx = new this._context(request, response, this._logger.child({
+      request_id: request.id(),
+      serializers: {},
+    }))
 
     /**
      * Start with before hooks upfront. If they raise error

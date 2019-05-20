@@ -10,15 +10,18 @@
 /// <reference path="../src/contracts.ts" />
 /// <reference types="@poppinss/response/build/adonis-typings" />
 /// <reference types="@poppinss/request/build/adonis-typings" />
+/// <reference types="@poppinss/logger/build/adonis-typings" />
 
 declare module '@ioc:Adonis/Src/HttpContext' {
   import { HttpContextContract as BaseContextContract } from '@poppinss/http-server/contracts'
   import { ResponseContract } from '@ioc:Adonis/Src/Response'
   import { RequestContract } from '@ioc:Adonis/Src/Request'
+  import { LoggerContract } from '@ioc:Adonis/Src/Logger'
 
   interface HttpContextContract extends BaseContextContract {
     response: ResponseContract,
     request: RequestContract,
+    logger: LoggerContract,
   }
 }
 
