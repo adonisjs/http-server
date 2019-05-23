@@ -27,6 +27,10 @@ Http context is passed to all route handlers, middleware, error handler and serv
 * [route](_poppinss_http_server.httpcontext.md#route)
 * [subdomains](_poppinss_http_server.httpcontext.md#subdomains)
 
+### Methods
+
+* [create](_poppinss_http_server.httpcontext.md#create)
+
 ---
 
 ## Constructors
@@ -91,6 +95,30 @@ ___
 ### `<Optional>` subdomains
 
 **● subdomains**: *`any`*
+
+___
+
+## Methods
+
+<a id="create"></a>
+
+### `<Static>` create
+
+▸ **create**(routePattern: *`string`*, routeParams: *`any`*, req?: *`IncomingMessage`*, res?: *`ServerResponse`*, serverConfig?: *`ServerConfig`*): [HttpContext](_poppinss_http_server.httpcontext.md)
+
+Creates a new fake context instance for a given route.
+
+**Parameters:**
+
+| Name | Type |
+| ------ | ------ |
+| routePattern | `string` |
+| routeParams | `any` |
+| `Optional` req | `IncomingMessage` |
+| `Optional` res | `ServerResponse` |
+| `Optional` serverConfig | `ServerConfig` |
+
+**Returns:** [HttpContext](_poppinss_http_server.httpcontext.md)
 
 ___
 

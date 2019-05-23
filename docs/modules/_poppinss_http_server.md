@@ -21,6 +21,8 @@
 * [dropSlash](_poppinss_http_server.md#dropslash)
 * [finalMiddlewareHandler](_poppinss_http_server.md#finalmiddlewarehandler)
 * [finalRouteHandler](_poppinss_http_server.md#finalroutehandler)
+* [getServerConfig](_poppinss_http_server.md#getserverconfig)
+* [makeUrl](_poppinss_http_server.md#makeurl)
 * [routePreProcessor](_poppinss_http_server.md#routepreprocessor)
 * [toRoutesJSON](_poppinss_http_server.md#toroutesjson)
 * [useReturnValue](_poppinss_http_server.md#usereturnvalue)
@@ -89,6 +91,41 @@ Final handler executes the route handler based on it's resolved type and the res
 | ctx | `Context` |
 
 **Returns:** `Promise`<`void`>
+
+___
+<a id="getserverconfig"></a>
+
+###  getServerConfig
+
+▸ **getServerConfig**(serverConfig: *`Partial`<`ServerConfig`>*): `ServerConfig`
+
+Returns server config by merging the user options with the default options.
+
+**Parameters:**
+
+| Name | Type |
+| ------ | ------ |
+| serverConfig | `Partial`<`ServerConfig`> |
+
+**Returns:** `ServerConfig`
+
+___
+<a id="makeurl"></a>
+
+###  makeUrl
+
+▸ **makeUrl**(pattern: *`string`*, options: *`object`*): `string`
+
+Makes url for a route pattern and params and querystring.
+
+**Parameters:**
+
+| Name | Type |
+| ------ | ------ |
+| pattern | `string` |
+| options | `object` |
+
+**Returns:** `string`
 
 ___
 <a id="routepreprocessor"></a>
