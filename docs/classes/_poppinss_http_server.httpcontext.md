@@ -2,6 +2,8 @@
 
 # Class: HttpContext
 
+Http context is passed to all route handlers, middleware, error handler and server hooks.
+
 ## Hierarchy
 
 **HttpContext**
@@ -18,6 +20,7 @@
 
 ### Properties
 
+* [logger](_poppinss_http_server.httpcontext.md#logger)
 * [params](_poppinss_http_server.httpcontext.md#params)
 * [request](_poppinss_http_server.httpcontext.md#request)
 * [response](_poppinss_http_server.httpcontext.md#response)
@@ -32,7 +35,7 @@
 
 ###  constructor
 
-⊕ **new HttpContext**(request: *`RequestContract`*, response: *`ResponseContract`*): [HttpContext](_poppinss_http_server.httpcontext.md)
+⊕ **new HttpContext**(request: *`RequestContract`*, response: *`ResponseContract`*, logger: *`LoggerContract`*): [HttpContext](_poppinss_http_server.httpcontext.md)
 
 **Parameters:**
 
@@ -40,6 +43,7 @@
 | ------ | ------ |
 | request | `RequestContract` |
 | response | `ResponseContract` |
+| logger | `LoggerContract` |
 
 **Returns:** [HttpContext](_poppinss_http_server.httpcontext.md)
 
@@ -47,6 +51,13 @@ ___
 
 ## Properties
 
+<a id="logger"></a>
+
+###  logger
+
+**● logger**: *`LoggerContract`*
+
+___
 <a id="params"></a>
 
 ### `<Optional>` params
