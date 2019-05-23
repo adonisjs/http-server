@@ -13,12 +13,15 @@
 
 /// <reference path="./contracts.ts" />
 
-import { RouteDefination } from '@poppinss/http-server/contracts'
+import { stringify } from 'querystring'
+import * as proxyAddr from 'proxy-addr'
+import { Exception } from '@poppinss/utils'
 
 import { Route } from './Router/Route'
-import { RouteResource } from './Router/Resource'
-import { BriskRoute } from './Router/BriskRoute'
 import { RouteGroup } from './Router/Group'
+import { BriskRoute } from './Router/BriskRoute'
+import { RouteResource } from './Router/Resource'
+import { RouteDefination, ServerConfig } from '@poppinss/http-server/contracts'
 
 /**
  * Makes input string consistent by having only the starting
@@ -63,6 +66,68 @@ export function toRoutesJSON<Context extends any> (
 
     return list
   }, [])
+}
+
+/**
+ * Makes url for a route pattern and params and querystring.
+ */
+export function makeUrl (pattern: string, options: { params?: any, qs?: any }): string {
+  let url = pattern
+
+  if (url.indexOf(':') > -1) {
+    /**
+     * Split pattern when route has dynamic segments
+     */
+    const tokens = url.split('/')
+
+    /**
+     * Lookup over the route tokens and replace them the params values
+     */
+    url = tokens.map((token) => {
+      if (!token.startsWith(':')) {
+        return token
+      }
+
+      const isOptional = token.endsWith('?')
+      const paramName = token.replace(/^:/, '').replace(/\?$/, '')
+      const param = options.params[paramName]
+
+      /**
+       * A required param is always required to make the complete URL
+       */
+      if (!param && !isOptional) {
+        throw new Exception(
+          `\`${paramName}\` param is required to make URL for \`${pattern}\` route`,
+          500,
+          exceptionCodes.E_MISSING_ROUTE_PARAM_VALUE,
+        )
+      }
+
+      return param
+    }).join('/')
+  }
+
+  /**
+   * Stringify query string and append to the URL (if exists)
+   */
+  const qs = stringify(options.qs)
+  return qs ? `${url}?${qs}` : url
+}
+
+/**
+ * Returns server config by merging the user options with the default
+ * options.
+ */
+export function getServerConfig (serverConfig: Partial<ServerConfig>): ServerConfig {
+  return Object.assign({
+    secret: Math.random().toFixed(36).substring(2, 38),
+    subdomainOffset: 2,
+    allowMethodSpoofing: true,
+    etag: false,
+    cookie: {},
+    jsonpCallbackName: 'callback',
+    trustProxy: proxyAddr.compile('loopback'),
+  }, serverConfig)
 }
 
 /**

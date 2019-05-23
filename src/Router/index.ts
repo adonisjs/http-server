@@ -13,8 +13,6 @@
 
 /// <reference path="../contracts.ts" />
 
-import { stringify } from 'querystring'
-import { Exception } from '@poppinss/utils'
 import {
   RouteMatchers,
   RouteNode,
@@ -23,13 +21,14 @@ import {
   RouteLookupNode,
   RouteHandlerNode,
 } from '@poppinss/http-server/contracts'
+import { Exception } from '@poppinss/utils'
 
 import { Route } from './Route'
 import { RouteResource } from './Resource'
 import { RouteGroup } from './Group'
 import { BriskRoute } from './BriskRoute'
 import { Store } from './Store'
-import { toRoutesJSON, exceptionCodes } from '../helpers'
+import { toRoutesJSON, exceptionCodes, makeUrl } from '../helpers'
 
 /**
  * Router class exposes unified API to create new routes, group them or
@@ -359,47 +358,7 @@ export class Router<Context> implements RouterContract<Context> {
       return null
     }
 
-    let url = matchingRoute.pattern
-
-    if (url.indexOf(':') > -1) {
-      /**
-       * Split pattern when route has dynamic segments
-       */
-      const tokens = url.split('/')
-
-      /**
-       * Lookup over the route tokens and replace them the params values
-       */
-      url = tokens.map((token) => {
-        if (!token.startsWith(':')) {
-          return token
-        }
-
-        const isOptional = token.endsWith('?')
-        const paramName = token.replace(/^:/, '').replace(/\?$/, '')
-        const param = options.params[paramName]
-
-        /**
-         * A required param is always required to make the complete URL
-         */
-        if (!param && !isOptional) {
-          throw new Exception(
-            `\`${paramName}\` param is required to make URL for \`${matchingRoute.pattern}\` route`,
-            500,
-            exceptionCodes.E_MISSING_ROUTE_PARAM_VALUE,
-          )
-        }
-
-        return param
-      }).join('/')
-    }
-
-    /**
-     * Stringify query string and append to the URL (if exists)
-     */
-    const qs = stringify(options.qs)
-    url = qs ? `${url}?${qs}` : url
-
+    const url = makeUrl(matchingRoute.pattern, options)
     return matchingRoute.domain !== 'root' ? `//${matchingRoute.domain}${url}` : url
   }
 
