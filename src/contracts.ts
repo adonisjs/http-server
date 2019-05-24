@@ -222,6 +222,7 @@ declare module '@poppinss/http-server/contracts' {
     where (key: string, matcher: string | RegExp): this,
     namespace (namespace: string): this,
     toJSON (): RouteNode<Context>[]
+    commit (): void
     find (url: string, method: string, domain?: string): null | MatchedRoute<Context>,
     urlFor (pattern: string, options: { params?: any, qs?: any }, domain?: string): null | string,
     forTesting (pattern?: string, methods?: string[], handler?: any): Route,
