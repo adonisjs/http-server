@@ -78,7 +78,7 @@ declare module '@ioc:Adonis/Src/Server' {
   import { ServerContract as BaseServerContract } from '@poppinss/http-server/contracts'
   import { HttpContextContract } from '@ioc:Adonis/Src/HttpContext'
 
-  interface ServerContract extends BaseServerContract<HttpContextContract> {}
+  export interface ServerContract extends BaseServerContract<HttpContextContract> {}
   const Server: ServerContract
 
   export default Server
@@ -91,7 +91,7 @@ declare module '@ioc:Adonis/Src/MiddlewareStore' {
   import { MiddlewareStoreContract as BaseMiddlewareContract } from '@poppinss/http-server/contracts'
   import { HttpContextContract } from '@ioc:Adonis/Src/HttpContext'
 
-  interface MiddlewareStoreContract extends BaseMiddlewareContract<HttpContextContract> {}
+  export interface MiddlewareStoreContract extends BaseMiddlewareContract<HttpContextContract> {}
   const MiddlewareStore: MiddlewareStoreContract
 
   export default MiddlewareStore
