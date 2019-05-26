@@ -16,7 +16,7 @@ import { IncomingMessage, ServerResponse } from 'http'
 import { RequestContract, Request } from '@poppinss/request'
 import { LoggerContract, getLogger } from '@poppinss/logger'
 import { ResponseContract, Response } from '@poppinss/response'
-import { RouteNode, HttpContextContract, ServerConfig } from '../contracts'
+import { RouteNode, HttpContextContract, ServerConfigContract } from '../contracts'
 import { makeUrl, getServerConfig } from '../helpers'
 
 /**
@@ -42,7 +42,7 @@ export class HttpContext implements HttpContextContract {
     routeParams: any,
     req?: IncomingMessage,
     res?: ServerResponse,
-    serverConfig?: ServerConfig,
+    serverConfig?: ServerConfigContract,
   ) {
     req = req || new IncomingMessage(new Socket())
     res = res || new ServerResponse(req)

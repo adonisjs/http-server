@@ -17,7 +17,7 @@ import {
   RouterContract,
   ServerContract,
   MiddlewareStoreContract,
-  ServerConfig,
+  ServerConfigContract,
   HookNode,
   HttpContextContract,
   ErrorHandlerNode,
@@ -99,7 +99,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
     private _router: RouterContract<Context>,
     private _middlewareStore: MiddlewareStoreContract<Context>,
     private _logger: LoggerContract,
-    private _httpConfig: ServerConfig,
+    private _httpConfig: ServerConfigContract,
   ) {}
 
   /**

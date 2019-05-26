@@ -54,7 +54,7 @@ http.createServer(server.handle.bind(server)).listen(3000)
 
 ###  constructor
 
-⊕ **new Server**(_context: *`object`*, _router: *`RouterContract`<`Context`>*, _middlewareStore: *`MiddlewareStoreContract`<`Context`>*, _logger: *`LoggerContract`*, _httpConfig: *`ServerConfig`*): [Server](_poppinss_http_server.server.md)
+⊕ **new Server**(_context: *`object`*, _router: *`RouterContract`<`Context`>*, _middlewareStore: *`MiddlewareStoreContract`<`Context`>*, _logger: *`LoggerContract`*, _httpConfig: *`ServerConfigContract`*): [Server](_poppinss_http_server.server.md)
 
 **Parameters:**
 
@@ -64,7 +64,7 @@ http.createServer(server.handle.bind(server)).listen(3000)
 | _router | `RouterContract`<`Context`> |
 | _middlewareStore | `MiddlewareStoreContract`<`Context`> |
 | _logger | `LoggerContract` |
-| _httpConfig | `ServerConfig` |
+| _httpConfig | `ServerConfigContract` |
 
 **Returns:** [Server](_poppinss_http_server.server.md)
 

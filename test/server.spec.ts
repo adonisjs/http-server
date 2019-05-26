@@ -13,7 +13,7 @@ import { createServer } from 'http'
 import { Ioc } from '@adonisjs/fold'
 import { getLogger } from '@poppinss/logger'
 import * as proxyaddr from 'proxy-addr'
-import { ServerConfig, HttpContextContract } from '../src/contracts'
+import { ServerConfigContract, HttpContextContract } from '../src/contracts'
 
 import { Server } from '../src/Server'
 import { Router } from '../src/Router'
@@ -21,7 +21,7 @@ import { HttpContext } from '../src/HttpContext'
 import { MiddlewareStore } from '../src/Server/MiddlewareStore'
 import { routePreProcessor } from '../src/Server/routePreProcessor'
 
-const config: ServerConfig = {
+const config: ServerConfigContract = {
   etag: false,
   jsonpCallbackName: 'callback',
   cookie: {},

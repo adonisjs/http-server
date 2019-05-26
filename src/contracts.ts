@@ -296,4 +296,4 @@ export interface MiddlewareStoreContract<Context> {
 /**
  * Config requried by request and response
  */
-export type ServerConfig = RequestConfigContract & ResponseConfigContract
+export type ServerConfigContract = RequestConfigContract & ResponseConfigContract

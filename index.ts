@@ -27,4 +27,5 @@ export {
   ServerContract,
   HttpContextContract,
   MiddlewareStoreContract,
+  ServerConfigContract,
 } from './src/contracts'

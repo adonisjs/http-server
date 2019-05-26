@@ -104,7 +104,7 @@ ___
 
 ### `<Static>` create
 
-▸ **create**(routePattern: *`string`*, routeParams: *`any`*, req?: *`IncomingMessage`*, res?: *`ServerResponse`*, serverConfig?: *`ServerConfig`*): [HttpContext](_poppinss_http_server.httpcontext.md)
+▸ **create**(routePattern: *`string`*, routeParams: *`any`*, req?: *`IncomingMessage`*, res?: *`ServerResponse`*, serverConfig?: *`ServerConfigContract`*): [HttpContext](_poppinss_http_server.httpcontext.md)
 
 Creates a new fake context instance for a given route.
 
@@ -116,7 +116,7 @@ Creates a new fake context instance for a given route.
 | routeParams | `any` |
 | `Optional` req | `IncomingMessage` |
 | `Optional` res | `ServerResponse` |
-| `Optional` serverConfig | `ServerConfig` |
+| `Optional` serverConfig | `ServerConfigContract` |
 
 **Returns:** [HttpContext](_poppinss_http_server.httpcontext.md)
 

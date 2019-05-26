@@ -97,7 +97,7 @@ ___
 
 ###  getServerConfig
 
-▸ **getServerConfig**(serverConfig: *`Partial`<`ServerConfig`>*): `ServerConfig`
+▸ **getServerConfig**(serverConfig: *`Partial`<`ServerConfigContract`>*): `ServerConfigContract`
 
 Returns server config by merging the user options with the default options.
 
@@ -105,9 +105,9 @@ Returns server config by merging the user options with the default options.
 
 | Name | Type |
 | ------ | ------ |
-| serverConfig | `Partial`<`ServerConfig`> |
+| serverConfig | `Partial`<`ServerConfigContract`> |
 
-**Returns:** `ServerConfig`
+**Returns:** `ServerConfigContract`
 
 ___
 <a id="makeurl"></a>

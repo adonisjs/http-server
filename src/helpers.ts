@@ -19,7 +19,7 @@ import { Route } from './Router/Route'
 import { RouteGroup } from './Router/Group'
 import { BriskRoute } from './Router/BriskRoute'
 import { RouteResource } from './Router/Resource'
-import { RouteDefination, ServerConfig } from './contracts'
+import { RouteDefination, ServerConfigContract } from './contracts'
 
 /**
  * Makes input string consistent by having only the starting
@@ -116,7 +116,7 @@ export function makeUrl (pattern: string, options: { params?: any, qs?: any }): 
  * Returns server config by merging the user options with the default
  * options.
  */
-export function getServerConfig (serverConfig: Partial<ServerConfig>): ServerConfig {
+export function getServerConfig (serverConfig: Partial<ServerConfigContract>): ServerConfigContract {
   return Object.assign({
     secret: Math.random().toFixed(36).substring(2, 38),
     subdomainOffset: 2,
