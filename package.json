@@ -29,7 +29,7 @@
   "devDependencies": {
     "@adonisjs/fold": "^5.0.9",
     "@adonisjs/mrm-preset": "^2.0.3",
-    "@poppinss/logger": "^1.0.3",
+    "@poppinss/logger": "^1.0.5",
     "@types/node": "^12.0.2",
     "commitizen": "^3.1.1",
     "cz-conventional-changelog": "^2.1.0",
@@ -40,7 +40,7 @@
     "mrm": "^1.2.2",
     "np": "^5.0.2",
     "proxy-addr": "^2.0.5",
-    "ts-node": "^8.1.0",
+    "ts-node": "^8.2.0",
     "tslint": "^5.16.0",
     "tslint-eslint-rules": "^5.4.0",
     "typedoc": "^0.14.2",
@@ -75,14 +75,14 @@
     "@poppinss/logger": "^1.x.x"
   },
   "dependencies": {
-    "@poppinss/request": "^1.0.6",
-    "@poppinss/response": "^1.0.5",
+    "@poppinss/request": "^1.0.8",
+    "@poppinss/response": "^1.0.7",
     "@poppinss/utils": "^1.0.1",
     "co-compose": "^5.1.1",
     "haye": "^2.0.2",
     "lodash": "^4.17.11",
     "macroable": "^2.0.2",
     "matchit": "git+https://github.com/thetutlage/matchit.git",
-    "pluralize": "^7.0.0"
+    "pluralize": "^8.0.0"
   }
 }
