@@ -11,10 +11,8 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="../contracts.ts" />
-
 import { Macroable } from 'macroable'
-import { RouteDefination, RouteMatchers, RouteContract } from '@poppinss/http-server/contracts'
+import { RouteDefination, RouteMatchers, RouteContract } from '../contracts'
 
 import { dropSlash } from '../helpers'
 

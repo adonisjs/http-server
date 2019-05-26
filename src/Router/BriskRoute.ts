@@ -11,11 +11,9 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="../contracts.ts" />
-
 import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
-import { BriskRouteContract, RouteMatchers, RouteHandlerNode } from '@poppinss/http-server/contracts'
+import { BriskRouteContract, RouteMatchers, RouteHandlerNode } from '../contracts'
 
 import { Route } from './Route'
 import { exceptionCodes } from '../helpers'

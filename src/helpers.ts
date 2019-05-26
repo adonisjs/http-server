@@ -11,8 +11,6 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="./contracts.ts" />
-
 import { stringify } from 'querystring'
 import * as proxyAddr from 'proxy-addr'
 import { Exception } from '@poppinss/utils'
@@ -21,7 +19,7 @@ import { Route } from './Router/Route'
 import { RouteGroup } from './Router/Group'
 import { BriskRoute } from './Router/BriskRoute'
 import { RouteResource } from './Router/Resource'
-import { RouteDefination, ServerConfig } from '@poppinss/http-server/contracts'
+import { RouteDefination, ServerConfig } from './contracts'
 
 /**
  * Makes input string consistent by having only the starting

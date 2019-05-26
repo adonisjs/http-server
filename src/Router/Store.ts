@@ -11,8 +11,6 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="../contracts.ts" />
-
 import { pick, cloneDeep } from 'lodash'
 import * as matchit from 'matchit'
 import { Exception } from '@poppinss/utils'
@@ -23,7 +21,7 @@ import {
   DomainNode,
   MethodNode,
   RoutesTree,
-} from '@poppinss/http-server/contracts'
+} from '../contracts'
 import { exceptionCodes } from '../helpers'
 
 /**

@@ -11,15 +11,13 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="../contracts.ts" />
-
 import { Middleware } from 'co-compose'
 import { Exception } from '@poppinss/utils'
 import {
   RouteNode,
   HttpContextContract,
   MiddlewareStoreContract,
-} from '@poppinss/http-server/contracts'
+} from '../contracts'
 
 import { finalMiddlewareHandler } from './finalMiddlewareHandler'
 import { finalRouteHandler } from './finalRouteHandler'

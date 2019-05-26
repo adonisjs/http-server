@@ -11,14 +11,12 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="../contracts.ts" />
-
 import { Socket } from 'net'
 import { IncomingMessage, ServerResponse } from 'http'
 import { RequestContract, Request } from '@poppinss/request'
 import { LoggerContract, getLogger } from '@poppinss/logger'
 import { ResponseContract, Response } from '@poppinss/response'
-import { RouteNode, HttpContextContract, ServerConfig } from '@poppinss/http-server/contracts'
+import { RouteNode, HttpContextContract, ServerConfig } from '../contracts'
 import { makeUrl, getServerConfig } from '../helpers'
 
 /**

@@ -11,8 +11,6 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="../contracts.ts" />
-
 import * as haye from 'haye'
 import { Exception } from '@poppinss/utils'
 
@@ -21,7 +19,7 @@ import {
   MiddlewareStoreContract,
   MiddlewareNode,
   ResolvedMiddlewareNode,
-} from '@poppinss/http-server/contracts'
+} from '../contracts'
 
 import { exceptionCodes } from '../helpers'
 

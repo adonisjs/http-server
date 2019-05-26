@@ -13,7 +13,7 @@ import { createServer } from 'http'
 import { Ioc } from '@adonisjs/fold'
 import { getLogger } from '@poppinss/logger'
 import * as proxyaddr from 'proxy-addr'
-import { ServerConfig, HttpContextContract } from '@poppinss/http-server/contracts'
+import { ServerConfig, HttpContextContract } from '../src/contracts'
 
 import { Server } from '../src/Server'
 import { Router } from '../src/Router'

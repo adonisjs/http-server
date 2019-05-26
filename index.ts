@@ -11,8 +11,6 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="./src/contracts.ts" />
-
 export { Router } from './src/Router'
 export { Server } from './src/Server'
 export { MiddlewareStore } from './src/Server/MiddlewareStore'
@@ -29,4 +27,4 @@ export {
   ServerContract,
   HttpContextContract,
   MiddlewareStoreContract,
-} from '@poppinss/http-server/contracts'
+} from './src/contracts'

@@ -11,9 +11,7 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="../contracts.ts" />
-
-import { ResolvedMiddlewareNode } from '@poppinss/http-server/contracts'
+import { ResolvedMiddlewareNode } from '../contracts'
 
 /**
  * Final middleware handler executes a middleware

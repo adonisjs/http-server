@@ -11,11 +11,9 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="../contracts.ts" />
-
 import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
-import { RouteGroupContract } from '@poppinss/http-server/contracts'
+import { RouteGroupContract } from '../contracts'
 
 import { Route } from './Route'
 import { RouteResource } from './Resource'

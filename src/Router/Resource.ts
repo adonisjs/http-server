@@ -11,11 +11,9 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="../contracts.ts" />
-
 import { singular } from 'pluralize'
 import { Macroable } from 'macroable'
-import { RouteMatchers, RouteResourceContract } from '@poppinss/http-server/contracts'
+import { RouteMatchers, RouteResourceContract } from '../contracts'
 
 import { Route } from './Route'
 

@@ -11,8 +11,6 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="../contracts.ts" />
-
 import {
   RouteMatchers,
   RouteNode,
@@ -20,7 +18,7 @@ import {
   MatchedRoute,
   RouteLookupNode,
   RouteHandlerNode,
-} from '@poppinss/http-server/contracts'
+} from '../contracts'
 import { Exception } from '@poppinss/utils'
 
 import { Route } from './Route'

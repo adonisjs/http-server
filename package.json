@@ -4,7 +4,6 @@
   "description": "Extracted copy of AdonisJs HTTP server along with it's router",
   "main": "build/index.js",
   "files": [
-    "build/adonis-typings/index.d.ts",
     "build/src",
     "build/index.d.ts",
     "build/index.js"

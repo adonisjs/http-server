@@ -11,10 +11,8 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="../contracts.ts" />
-
 import { Exception } from '@poppinss/utils'
-import { ResolvedControllerNode, HttpContextContract } from '@poppinss/http-server/contracts'
+import { ResolvedControllerNode, HttpContextContract } from '../contracts'
 import { useReturnValue } from './useReturnValue'
 import { exceptionCodes } from '../helpers'
 

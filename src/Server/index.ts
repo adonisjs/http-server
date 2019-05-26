@@ -11,8 +11,6 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="../contracts.ts" />
-
 import { Server as HttpsServer } from 'https'
 import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
 import {
@@ -23,7 +21,7 @@ import {
   HookNode,
   HttpContextContract,
   ErrorHandlerNode,
- } from '@poppinss/http-server/contracts'
+ } from '../contracts'
 
 import { Middleware } from 'co-compose'
 import { Exception } from '@poppinss/utils'
