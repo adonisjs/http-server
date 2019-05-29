@@ -47,7 +47,7 @@ store.match('posts/1', 'GET')
 
 ###  add
 
-▸ **add**(route: *`RouteDefination`<`Context`>*): `this`
+▸ **add**(route: *[RouteDefination](../modules/_poppinss_http_server.md#routedefination)<`Context`>*): `this`
 
 Adds a route to the store for all the given HTTP methods. Also an array of tokens is generated for the route pattern. The tokens are then matched against the URL to find the appropriate route.
 
@@ -67,7 +67,7 @@ store.add({
 
 | Name | Type |
 | ------ | ------ |
-| route | `RouteDefination`<`Context`> |
+| route | [RouteDefination](../modules/_poppinss_http_server.md#routedefination)<`Context`> |
 
 **Returns:** `this`
 
@@ -76,7 +76,7 @@ ___
 
 ###  match
 
-▸ **match**(url: *`string`*, method: *`string`*, domain?: *`undefined` \| `string`*): `null` \| `MatchedRoute`<`Context`>
+▸ **match**(url: *`string`*, method: *`string`*, domain?: *`undefined` \| `string`*): `null` \| [MatchedRoute](../modules/_poppinss_http_server.md#matchedroute)<`Context`>
 
 Matches the url, method and optionally domain to pull the matching route. `null` is returned when unable to match the URL against registered routes.
 
@@ -88,7 +88,7 @@ Matches the url, method and optionally domain to pull the matching route. `null`
 | method | `string` |
 | `Optional` domain | `undefined` \| `string` |
 
-**Returns:** `null` \| `MatchedRoute`<`Context`>
+**Returns:** `null` \| [MatchedRoute](../modules/_poppinss_http_server.md#matchedroute)<`Context`>
 
 ___
 

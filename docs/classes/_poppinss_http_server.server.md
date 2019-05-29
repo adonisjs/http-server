@@ -19,14 +19,14 @@ http.createServer(server.handle.bind(server)).listen(3000)
 ```
 
 ## Type parameters
-#### Context :  `HttpContextContract`
+#### Context :  [HttpContextContract](../interfaces/_poppinss_http_server.httpcontextcontract.md)
 ## Hierarchy
 
 **Server**
 
 ## Implements
 
-* `ServerContract`<`Context`>
+* [ServerContract](../interfaces/_poppinss_http_server.servercontract.md)<`Context`>
 
 ## Index
 
@@ -54,17 +54,17 @@ http.createServer(server.handle.bind(server)).listen(3000)
 
 ###  constructor
 
-⊕ **new Server**(_context: *`object`*, _router: *`RouterContract`<`Context`>*, _middlewareStore: *`MiddlewareStoreContract`<`Context`>*, _logger: *`LoggerContract`*, _httpConfig: *`ServerConfigContract`*): [Server](_poppinss_http_server.server.md)
+⊕ **new Server**(_context: *`object`*, _router: *[RouterContract](../interfaces/_poppinss_http_server.routercontract.md)<`Context`>*, _middlewareStore: *[MiddlewareStoreContract](../interfaces/_poppinss_http_server.middlewarestorecontract.md)<`Context`>*, _logger: *`LoggerContract`*, _httpConfig: *[ServerConfigContract](../modules/_poppinss_http_server.md#serverconfigcontract)*): [Server](_poppinss_http_server.server.md)
 
 **Parameters:**
 
 | Name | Type |
 | ------ | ------ |
 | _context | `object` |
-| _router | `RouterContract`<`Context`> |
-| _middlewareStore | `MiddlewareStoreContract`<`Context`> |
+| _router | [RouterContract](../interfaces/_poppinss_http_server.routercontract.md)<`Context`> |
+| _middlewareStore | [MiddlewareStoreContract](../interfaces/_poppinss_http_server.middlewarestorecontract.md)<`Context`> |
 | _logger | `LoggerContract` |
-| _httpConfig | `ServerConfigContract` |
+| _httpConfig | [ServerConfigContract](../modules/_poppinss_http_server.md#serverconfigcontract) |
 
 **Returns:** [Server](_poppinss_http_server.server.md)
 
@@ -88,7 +88,7 @@ ___
 
 ###  after
 
-▸ **after**(cb: *`HookNode`<`Context`>*): `this`
+▸ **after**(cb: *[HookNode](../modules/_poppinss_http_server.md#hooknode)<`Context`>*): `this`
 
 Define hooks to be executed after the route handler. The after hooks can modify the lazy response. However, it shouldn't write the response to the socket.
 
@@ -96,7 +96,7 @@ Define hooks to be executed after the route handler. The after hooks can modify 
 
 | Name | Type |
 | ------ | ------ |
-| cb | `HookNode`<`Context`> |
+| cb | [HookNode](../modules/_poppinss_http_server.md#hooknode)<`Context`> |
 
 **Returns:** `this`
 
@@ -105,7 +105,7 @@ ___
 
 ###  before
 
-▸ **before**(cb: *`HookNode`<`Context`>*): `this`
+▸ **before**(cb: *[HookNode](../modules/_poppinss_http_server.md#hooknode)<`Context`>*): `this`
 
 Define hooks to be executed as soon as a new request has been received
 
@@ -113,7 +113,7 @@ Define hooks to be executed as soon as a new request has been received
 
 | Name | Type |
 | ------ | ------ |
-| cb | `HookNode`<`Context`> |
+| cb | [HookNode](../modules/_poppinss_http_server.md#hooknode)<`Context`> |
 
 **Returns:** `this`
 
@@ -140,7 +140,7 @@ ___
 
 ###  onError
 
-▸ **onError**(cb: *`ErrorHandlerNode`<`Context`>*): `this`
+▸ **onError**(cb: *[ErrorHandlerNode](../modules/_poppinss_http_server.md#errorhandlernode)<`Context`>*): `this`
 
 Define custom error handler to handler all errors occurred during HTTP request
 
@@ -148,7 +148,7 @@ Define custom error handler to handler all errors occurred during HTTP request
 
 | Name | Type |
 | ------ | ------ |
-| cb | `ErrorHandlerNode`<`Context`> |
+| cb | [ErrorHandlerNode](../modules/_poppinss_http_server.md#errorhandlernode)<`Context`> |
 
 **Returns:** `this`
 

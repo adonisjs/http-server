@@ -16,7 +16,7 @@ For example: AdonisJs uses [BriskRoute](_poppinss_http_server.briskroute.md) `Ro
 
 ## Implements
 
-* `BriskRouteContract`<`Context`>
+* [BriskRouteContract](../interfaces/_poppinss_http_server.briskroutecontract.md)<`Context`>
 
 ## Index
 
@@ -49,7 +49,7 @@ For example: AdonisJs uses [BriskRoute](_poppinss_http_server.briskroute.md) `Ro
 
 ###  constructor
 
-⊕ **new BriskRoute**(_pattern: *`string`*, _namespace: *`string`*, _globalMatchers: *`RouteMatchers`*): [BriskRoute](_poppinss_http_server.briskroute.md)
+⊕ **new BriskRoute**(_pattern: *`string`*, _namespace: *`string`*, _globalMatchers: *[RouteMatchers](../modules/_poppinss_http_server.md#routematchers)*): [BriskRoute](_poppinss_http_server.briskroute.md)
 
 **Parameters:**
 
@@ -57,7 +57,7 @@ For example: AdonisJs uses [BriskRoute](_poppinss_http_server.briskroute.md) `Ro
 | ------ | ------ |
 | _pattern | `string` |
 | _namespace | `string` |
-| _globalMatchers | `RouteMatchers` |
+| _globalMatchers | [RouteMatchers](../modules/_poppinss_http_server.md#routematchers) |
 
 **Returns:** [BriskRoute](_poppinss_http_server.briskroute.md)
 
@@ -99,7 +99,7 @@ ___
 
 ###  setHandler
 
-▸ **setHandler**(handler: *`RouteHandlerNode`<`Context`>*, invokedBy: *`string`*, methods?: *`string`[]*): [Route](_poppinss_http_server.route.md)<`Context`>
+▸ **setHandler**(handler: *[RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`>*, invokedBy: *`string`*, methods?: *`string`[]*): [Route](_poppinss_http_server.route.md)<`Context`>
 
 Set handler for the brisk route. The `invokedBy` string is the reference to the method that calls this method. It is required to create human readable error message when `setHandler` is called for multiple times.
 
@@ -107,7 +107,7 @@ Set handler for the brisk route. The `invokedBy` string is the reference to the 
 
 | Name | Type |
 | ------ | ------ |
-| handler | `RouteHandlerNode`<`Context`> |
+| handler | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`> |
 | invokedBy | `string` |
 | `Optional` methods | `string`[] |
 

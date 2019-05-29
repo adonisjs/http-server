@@ -2,7 +2,7 @@
 
 # Class: Route
 
-Route class is used to construct consistent \[\[RouteDefination\]\] using fluent API. An instance of route is usually obtained using the [Router](_poppinss_http_server.router.md) class helper methods.
+Route class is used to construct consistent [RouteDefination](../modules/_poppinss_http_server.md#routedefination) using fluent API. An instance of route is usually obtained using the [Router](_poppinss_http_server.router.md) class helper methods.
 
 *__example__*:
  ```js
@@ -25,7 +25,7 @@ route
 
 ## Implements
 
-* `RouteContract`<`Context`>
+* [RouteContract](../interfaces/_poppinss_http_server.routecontract.md)<`Context`>
 
 ## Index
 
@@ -65,7 +65,7 @@ route
 
 ###  constructor
 
-⊕ **new Route**(_pattern: *`string`*, _methods: *`string`[]*, _handler: *`any`*, _namespace: *`string`*, _globalMatchers: *`RouteMatchers`*): [Route](_poppinss_http_server.route.md)
+⊕ **new Route**(_pattern: *`string`*, _methods: *`string`[]*, _handler: *`any`*, _namespace: *`string`*, _globalMatchers: *[RouteMatchers](../modules/_poppinss_http_server.md#routematchers)*): [Route](_poppinss_http_server.route.md)
 
 **Parameters:**
 
@@ -75,7 +75,7 @@ route
 | _methods | `string`[] |
 | _handler | `any` |
 | _namespace | `string` |
-| _globalMatchers | `RouteMatchers` |
+| _globalMatchers | [RouteMatchers](../modules/_poppinss_http_server.md#routematchers) |
 
 **Returns:** [Route](_poppinss_http_server.route.md)
 
@@ -219,11 +219,11 @@ ___
 
 ###  toJSON
 
-▸ **toJSON**(): `RouteDefination`<`Context`>
+▸ **toJSON**(): [RouteDefination](../modules/_poppinss_http_server.md#routedefination)<`Context`>
 
-Returns \[\[RouteDefination\]\] that can be passed to the [Store](_poppinss_http_server.store.md) for registering the route
+Returns [RouteDefination](../modules/_poppinss_http_server.md#routedefination) that can be passed to the [Store](_poppinss_http_server.store.md) for registering the route
 
-**Returns:** `RouteDefination`<`Context`>
+**Returns:** [RouteDefination](../modules/_poppinss_http_server.md#routedefination)<`Context`>
 
 ___
 <a id="where"></a>

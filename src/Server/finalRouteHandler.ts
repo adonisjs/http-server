@@ -11,10 +11,8 @@
 * file that was distributed with this source code.
 */
 
-import { Exception } from '@poppinss/utils'
 import { ResolvedControllerNode, HttpContextContract } from '../contracts'
 import { useReturnValue } from './useReturnValue'
-import { exceptionCodes } from '../helpers'
 
 /**
  * Final handler executes the route handler based on it's resolved
@@ -41,17 +39,8 @@ export async function finalRouteHandler<Context extends HttpContextContract> (ct
    * and make the response
    */
   const controllerInstance = global['make'](handler.namespace)
+  const returnValue = await global['iocCall'](controllerInstance, handler.method, [ctx])
 
-  /* istanbul ignore-else */
-  if (!controllerInstance[handler.method]) {
-    throw new Exception(
-      `Cannot find ${handler.namespace}.${handler.method} method`,
-      500,
-      exceptionCodes.E_MISSING_CONTROLLER_METHOD,
-    )
-  }
-
-  const returnValue = await controllerInstance[handler.method](ctx)
   if (useReturnValue(returnValue, ctx)) {
     ctx.response.send(returnValue)
   }

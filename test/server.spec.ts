@@ -770,6 +770,7 @@ test.group('Server | all', (group) => {
     const ioc = new Ioc()
     ioc.bind('App/Controllers/Http/HomeController', () => new HomeController())
     global['make'] = ioc.make.bind(ioc)
+    global['iocCall'] = ioc.call.bind(ioc)
 
     router.get('/', 'HomeController.index')
 
@@ -780,7 +781,7 @@ test.group('Server | all', (group) => {
 
     const httpServer = createServer(server.handle.bind(server))
 
-    const { text } = await supertest(httpServer).get('/').expect(200)
+    const { text } = await supertest(httpServer).get('/')
     assert.equal(text, 'handled')
   })
 })

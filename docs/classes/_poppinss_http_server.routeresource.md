@@ -19,7 +19,7 @@ const resource = new RouteResource('articles', 'ArticlesController')
 
 ## Implements
 
-* `RouteResourceContract`<`Context`>
+* [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)<`Context`>
 
 ## Index
 
@@ -57,7 +57,7 @@ const resource = new RouteResource('articles', 'ArticlesController')
 
 ###  constructor
 
-⊕ **new RouteResource**(_resource: *`string`*, _controller: *`string`*, _namespace: *`string`*, _globalMatchers: *`RouteMatchers`*, _shallow?: *`boolean`*): [RouteResource](_poppinss_http_server.routeresource.md)
+⊕ **new RouteResource**(_resource: *`string`*, _controller: *`string`*, _namespace: *`string`*, _globalMatchers: *[RouteMatchers](../modules/_poppinss_http_server.md#routematchers)*, _shallow?: *`boolean`*): [RouteResource](_poppinss_http_server.routeresource.md)
 
 **Parameters:**
 
@@ -66,7 +66,7 @@ const resource = new RouteResource('articles', 'ArticlesController')
 | _resource | `string` | - |
 | _controller | `string` | - |
 | _namespace | `string` | - |
-| _globalMatchers | `RouteMatchers` | - |
+| _globalMatchers | [RouteMatchers](../modules/_poppinss_http_server.md#routematchers) | - |
 | `Default value` _shallow | `boolean` | false |
 
 **Returns:** [RouteResource](_poppinss_http_server.routeresource.md)

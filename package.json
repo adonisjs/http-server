@@ -27,7 +27,7 @@
   "author": "virk,poppinss",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/fold": "^6.0.2",
+    "@adonisjs/fold": "^6.0.3",
     "@adonisjs/mrm-preset": "^2.0.3",
     "@poppinss/logger": "^1.1.0",
     "@types/node": "^12.0.3",

@@ -34,7 +34,7 @@ and then use it as follows:
 ```ts
 import { createServer } from 'http'
 
-import { getLogger } from '@poppinss/logger'
+import { Logger } from '@poppinss/logger'
 
 import {
   Server,
@@ -51,7 +51,7 @@ const router = new Router((route) => {
 })
 router.get('/', async () => 'hello world')
 
-const server = new Server(HttpContext, router, middlewareStore, getLogger(), config)
+const server = new Server(HttpContext, router, middlewareStore, new Logger(), config)
 router.commit()
 server.optimize()
 

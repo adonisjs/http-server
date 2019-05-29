@@ -10,7 +10,7 @@ Http context is passed to all route handlers, middleware, error handler and serv
 
 ## Implements
 
-* `HttpContextContract`
+* [HttpContextContract](../interfaces/_poppinss_http_server.httpcontextcontract.md)
 
 ## Index
 
@@ -87,7 +87,7 @@ ___
 
 ### `<Optional>` route
 
-**● route**: *`RouteNode`<`this`>*
+**● route**: *[RouteNode](../modules/_poppinss_http_server.md#routenode)<`this`>*
 
 ___
 <a id="subdomains"></a>
@@ -104,7 +104,7 @@ ___
 
 ### `<Static>` create
 
-▸ **create**(routePattern: *`string`*, routeParams: *`any`*, req?: *`IncomingMessage`*, res?: *`ServerResponse`*, serverConfig?: *`ServerConfigContract`*): [HttpContext](_poppinss_http_server.httpcontext.md)
+▸ **create**(routePattern: *`string`*, routeParams: *`any`*, req?: *`IncomingMessage`*, res?: *`ServerResponse`*, serverConfig?: *[ServerConfigContract](../modules/_poppinss_http_server.md#serverconfigcontract)*): [HttpContext](_poppinss_http_server.httpcontext.md)
 
 Creates a new fake context instance for a given route.
 
@@ -116,7 +116,7 @@ Creates a new fake context instance for a given route.
 | routeParams | `any` |
 | `Optional` req | `IncomingMessage` |
 | `Optional` res | `ServerResponse` |
-| `Optional` serverConfig | `ServerConfigContract` |
+| `Optional` serverConfig | [ServerConfigContract](../modules/_poppinss_http_server.md#serverconfigcontract) |
 
 **Returns:** [HttpContext](_poppinss_http_server.httpcontext.md)
 

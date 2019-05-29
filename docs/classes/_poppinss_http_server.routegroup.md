@@ -14,7 +14,7 @@ Group class exposes the API to take action on a group of routes. The group route
 
 ## Implements
 
-* `RouteGroupContract`<`Context`>
+* [RouteGroupContract](../interfaces/_poppinss_http_server.routegroupcontract.md)<`Context`>
 
 ## Index
 

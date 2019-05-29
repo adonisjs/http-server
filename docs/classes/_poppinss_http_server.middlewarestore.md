@@ -29,7 +29,7 @@ store.get()
 
 ## Implements
 
-* `MiddlewareStoreContract`<`Context`>
+* [MiddlewareStoreContract](../interfaces/_poppinss_http_server.middlewarestorecontract.md)<`Context`>
 
 ## Index
 
@@ -49,18 +49,18 @@ store.get()
 
 ###  get
 
-▸ **get**(): `ResolvedMiddlewareNode`<`Context`>[]
+▸ **get**(): [ResolvedMiddlewareNode](../modules/_poppinss_http_server.md#resolvedmiddlewarenode)<`Context`>[]
 
 Return all middleware registered using [MiddlewareStore.register](_poppinss_http_server.middlewarestore.md#register) method
 
-**Returns:** `ResolvedMiddlewareNode`<`Context`>[]
+**Returns:** [ResolvedMiddlewareNode](../modules/_poppinss_http_server.md#resolvedmiddlewarenode)<`Context`>[]
 
 ___
 <a id="getnamed"></a>
 
 ###  getNamed
 
-▸ **getNamed**(name: *`string`*): `null` \| `ResolvedMiddlewareNode`<`Context`>
+▸ **getNamed**(name: *`string`*): `null` \| [ResolvedMiddlewareNode](../modules/_poppinss_http_server.md#resolvedmiddlewarenode)<`Context`>
 
 Returns a single middleware by it's name registered using [MiddlewareStore.registerNamed](_poppinss_http_server.middlewarestore.md#registernamed) method.
 
@@ -70,14 +70,14 @@ Returns a single middleware by it's name registered using [MiddlewareStore.regis
 | ------ | ------ |
 | name | `string` |
 
-**Returns:** `null` \| `ResolvedMiddlewareNode`<`Context`>
+**Returns:** `null` \| [ResolvedMiddlewareNode](../modules/_poppinss_http_server.md#resolvedmiddlewarenode)<`Context`>
 
 ___
 <a id="precompilemiddleware"></a>
 
 ###  preCompileMiddleware
 
-▸ **preCompileMiddleware**(route: *`RouteNode`<`Context`>*): `void`
+▸ **preCompileMiddleware**(route: *[RouteNode](../modules/_poppinss_http_server.md#routenode)<`Context`>*): `void`
 
 A helper method to pre-compile route middleware using the middleware store. Resolved middleware will be attached to `route.meta` property, which can be read later by the middleware processing layer.
 
@@ -85,7 +85,7 @@ A helper method to pre-compile route middleware using the middleware store. Reso
 
 | Name | Type |
 | ------ | ------ |
-| route | `RouteNode`<`Context`> |
+| route | [RouteNode](../modules/_poppinss_http_server.md#routenode)<`Context`> |
 
 **Returns:** `void`
 
@@ -94,7 +94,7 @@ ___
 
 ###  register
 
-▸ **register**(middleware: *`MiddlewareNode`<`Context`>[]*): `this`
+▸ **register**(middleware: *[MiddlewareNode](../modules/_poppinss_http_server.md#middlewarenode)<`Context`>[]*): `this`
 
 Register an array of global middleware. These middleware are read by HTTP server and executed on every request
 
@@ -102,7 +102,7 @@ Register an array of global middleware. These middleware are read by HTTP server
 
 | Name | Type |
 | ------ | ------ |
-| middleware | `MiddlewareNode`<`Context`>[] |
+| middleware | [MiddlewareNode](../modules/_poppinss_http_server.md#middlewarenode)<`Context`>[] |
 
 **Returns:** `this`
 
