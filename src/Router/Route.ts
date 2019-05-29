@@ -22,7 +22,7 @@ import { dropSlash } from '../helpers'
  * [[Router]] class helper methods.
  *
  * @example
- * ```js
+ * ```ts
  * const route = new Route('posts/:id', ['GET'], async function () {
  * })
  *

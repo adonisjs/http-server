@@ -33,7 +33,7 @@ import { exceptionCodes } from '../helpers'
  * all middleware as plain functions and not `ioc namespaces`.
  *
  * @example
- * ```
+ * ```ts
  * const store = new MiddlewareStore()
  *
  * store.register([

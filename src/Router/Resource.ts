@@ -23,7 +23,7 @@ import { Route } from './Route'
  * Learn more http://weblog.jamisbuck.org/2007/2/5/nesting-resources.
  *
  * @example
- * ```js
+ * ```ts
  * const resource = new RouteResource('articles', 'ArticlesController')
  * ```
  */

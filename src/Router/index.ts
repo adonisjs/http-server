@@ -33,8 +33,9 @@ import { toRoutesJSON, exceptionCodes, makeUrl } from '../helpers'
  * create route resources.
  *
  * @example
- * ```js
+ * ```ts
  * const router = new Router()
+ *
  * router.get('/', async function () {
  *   // handle request
  * })

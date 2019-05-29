@@ -85,7 +85,13 @@ export class RouteGroup<Context> extends Macroable implements RouteGroupContract
   }
 
   /**
-   * Define Regex matchers for a given param for all the routes
+   * Define Regex matchers for a given param for all the routes.
+   *
+   * @example
+   * ```ts
+   * Route.group(() => {
+   * }).where('id', /^[0-9]+/)
+   * ```
    */
   public where (param: string, matcher: RegExp | string): this {
     this.routes.forEach((route) => {
@@ -96,7 +102,13 @@ export class RouteGroup<Context> extends Macroable implements RouteGroupContract
   }
 
   /**
-   * Define prefix all the routes in the group
+   * Define prefix all the routes in the group.
+   *
+   * @example
+   * ```ts
+   * Route.group(() => {
+   * }).prefix('v1')
+   * ```
    */
   public prefix (prefix: string): this {
     this.routes.forEach((route) => {
@@ -107,7 +119,13 @@ export class RouteGroup<Context> extends Macroable implements RouteGroupContract
   }
 
   /**
-   * Define domain for all the routes
+   * Define domain for all the routes.
+   *
+   * @example
+   * ```ts
+   * Route.group(() => {
+   * }).domain(':name.adonisjs.com')
+   * ```
    */
   public domain (domain: string): this {
     this.routes.forEach((route) => {
@@ -118,7 +136,13 @@ export class RouteGroup<Context> extends Macroable implements RouteGroupContract
   }
 
   /**
-   * Prepend name to the routes name
+   * Prepend name to the routes name.
+   *
+   * @example
+   * ```ts
+   * Route.group(() => {
+   * }).as('version1')
+   * ```
    */
   public as (name: string): this {
     this.routes.forEach((route) => {
@@ -129,7 +153,13 @@ export class RouteGroup<Context> extends Macroable implements RouteGroupContract
   }
 
   /**
-   * Prepend an array of middleware to all routes middleware
+   * Prepend an array of middleware to all routes middleware.
+   *
+   * @example
+   * ```ts
+   * Route.group(() => {
+   * }).middleware(['auth'])
+   * ```
    */
   public middleware (middleware: any | any[]): this {
     this.routes.forEach((route) => {
@@ -140,7 +170,13 @@ export class RouteGroup<Context> extends Macroable implements RouteGroupContract
   }
 
   /**
-   * Define namespace for all the routes inside the group
+   * Define namespace for all the routes inside the group.
+   *
+   * @example
+   * ```ts
+   * Route.group(() => {
+   * }).namespace('App/Admin/Controllers')
+   * ```
    */
   public namespace (namespace: string): this {
     this.routes.forEach((route) => {

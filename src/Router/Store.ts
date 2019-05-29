@@ -30,7 +30,7 @@ import { exceptionCodes } from '../helpers'
  * for quick lookups.
  *
  * @example
- * ```js
+ * ```ts
  * const store = new Store()
  *
  * store.add({
@@ -85,7 +85,7 @@ export class Store<Context> {
    * matched against the URL to find the appropriate route.
    *
    * @example
-   * ```js
+   * ```ts
    * store.add({
    *   pattern: 'post/:id',
    *   methods: ['GET'],
