@@ -100,7 +100,13 @@ ___
 
 ▸ **as**(name: *`string`*): `this`
 
-Prepend name to the routes name
+Prepend name to the routes name.
+
+*__example__*:
+ ```ts
+Route.group(() => {
+}).as('version1')
+```
 
 **Parameters:**
 
@@ -117,7 +123,13 @@ ___
 
 ▸ **domain**(domain: *`string`*): `this`
 
-Define domain for all the routes
+Define domain for all the routes.
+
+*__example__*:
+ ```ts
+Route.group(() => {
+}).domain(':name.adonisjs.com')
+```
 
 **Parameters:**
 
@@ -134,7 +146,13 @@ ___
 
 ▸ **middleware**(middleware: *`any` \| `any`[]*): `this`
 
-Prepend an array of middleware to all routes middleware
+Prepend an array of middleware to all routes middleware.
+
+*__example__*:
+ ```ts
+Route.group(() => {
+}).middleware(['auth'])
+```
 
 **Parameters:**
 
@@ -151,7 +169,13 @@ ___
 
 ▸ **namespace**(namespace: *`string`*): `this`
 
-Define namespace for all the routes inside the group
+Define namespace for all the routes inside the group.
+
+*__example__*:
+ ```ts
+Route.group(() => {
+}).namespace('App/Admin/Controllers')
+```
 
 **Parameters:**
 
@@ -168,7 +192,13 @@ ___
 
 ▸ **prefix**(prefix: *`string`*): `this`
 
-Define prefix all the routes in the group
+Define prefix all the routes in the group.
+
+*__example__*:
+ ```ts
+Route.group(() => {
+}).prefix('v1')
+```
 
 **Parameters:**
 
@@ -185,7 +215,13 @@ ___
 
 ▸ **where**(param: *`string`*, matcher: *`RegExp` \| `string`*): `this`
 
-Define Regex matchers for a given param for all the routes
+Define Regex matchers for a given param for all the routes.
+
+*__example__*:
+ ```ts
+Route.group(() => {
+}).where('id', /^[0-9]+/)
+```
 
 **Parameters:**
 

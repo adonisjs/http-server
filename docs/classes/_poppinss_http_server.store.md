@@ -5,7 +5,7 @@
 Store class is used to store a list of routes, along side with their tokens to match the URL's. The used data structures to store information is tailored for quick lookups.
 
 *__example__*:
- ```js
+ ```ts
 const store = new Store()
 
 store.add({
@@ -52,7 +52,7 @@ store.match('posts/1', 'GET')
 Adds a route to the store for all the given HTTP methods. Also an array of tokens is generated for the route pattern. The tokens are then matched against the URL to find the appropriate route.
 
 *__example__*:
- ```js
+ ```ts
 store.add({
   pattern: 'post/:id',
   methods: ['GET'],

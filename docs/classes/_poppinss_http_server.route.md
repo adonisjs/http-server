@@ -5,7 +5,7 @@
 Route class is used to construct consistent [RouteDefination](../modules/_poppinss_http_server.md#routedefination) using fluent API. An instance of route is usually obtained using the [Router](_poppinss_http_server.router.md) class helper methods.
 
 *__example__*:
- ```js
+ ```ts
 const route = new Route('posts/:id', ['GET'], async function () {
 })
 

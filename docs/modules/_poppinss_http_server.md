@@ -436,13 +436,6 @@ ___
 **● E_INVALID_ROUTE_NAMESPACE**: *`string`* = "E_INVALID_ROUTE_NAMESPACE"
 
 ___
-<a id="exceptioncodes.e_missing_controller_method"></a>
-
-####  E_MISSING_CONTROLLER_METHOD
-
-**● E_MISSING_CONTROLLER_METHOD**: *`string`* = "E_MISSING_CONTROLLER_METHOD"
-
-___
 <a id="exceptioncodes.e_missing_named_middleware"></a>
 
 ####  E_MISSING_NAMED_MIDDLEWARE

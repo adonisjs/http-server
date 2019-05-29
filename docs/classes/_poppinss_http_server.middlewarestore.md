@@ -7,7 +7,7 @@ Middleware store register and keep all the application middleware at one place. 
 The middleware store transparently relies on `Ioc.use` and `Ioc.make` globals. If you are not using the IoC container, then simply register all middleware as plain functions and not `ioc namespaces`.
 
 *__example__*:
- ```
+ ```ts
 const store = new MiddlewareStore()
 
 store.register([

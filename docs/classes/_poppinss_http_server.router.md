@@ -5,8 +5,9 @@
 Router class exposes unified API to create new routes, group them or create route resources.
 
 *__example__*:
- ```js
+ ```ts
 const router = new Router()
+
 router.get('/', async function () {
   // handle request
 })

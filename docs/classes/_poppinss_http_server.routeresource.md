@@ -5,7 +5,7 @@
 Resource route helps in defining multiple conventional routes. The support for shallow routes makes it super easy to avoid deeply nested routes. Learn more [http://weblog.jamisbuck.org/2007/2/5/nesting-resources](http://weblog.jamisbuck.org/2007/2/5/nesting-resources).
 
 *__example__*:
- ```js
+ ```ts
 const resource = new RouteResource('articles', 'ArticlesController')
 ```
 
