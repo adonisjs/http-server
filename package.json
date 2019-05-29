@@ -27,9 +27,9 @@
   "author": "virk,poppinss",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/fold": "^5.0.9",
+    "@adonisjs/fold": "^6.0.2",
     "@adonisjs/mrm-preset": "^2.0.3",
-    "@poppinss/logger": "^1.0.5",
+    "@poppinss/logger": "^1.1.0",
     "@types/node": "^12.0.3",
     "commitizen": "^3.1.1",
     "cz-conventional-changelog": "^2.1.0",
@@ -46,7 +46,7 @@
     "typedoc": "^0.14.2",
     "typedoc-plugin-external-module-name": "^2.1.0",
     "typedoc-plugin-markdown": "^1.2.1",
-    "typescript": "^3.4.5"
+    "typescript": "^3.5.1"
   },
   "nyc": {
     "exclude": [
@@ -75,9 +75,9 @@
     "@poppinss/logger": "^1.x.x"
   },
   "dependencies": {
-    "@poppinss/request": "^1.0.8",
-    "@poppinss/response": "^1.0.7",
-    "@poppinss/utils": "^1.0.1",
+    "@poppinss/request": "^1.0.9",
+    "@poppinss/response": "^1.0.8",
+    "@poppinss/utils": "^1.0.2",
     "co-compose": "^5.1.1",
     "haye": "^2.0.2",
     "lodash": "^4.17.11",

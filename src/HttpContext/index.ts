@@ -14,7 +14,7 @@
 import { Socket } from 'net'
 import { IncomingMessage, ServerResponse } from 'http'
 import { RequestContract, Request } from '@poppinss/request'
-import { LoggerContract, getLogger } from '@poppinss/logger'
+import { LoggerContract, Logger } from '@poppinss/logger'
 import { ResponseContract, Response } from '@poppinss/response'
 import { RouteNode, HttpContextContract, ServerConfigContract } from '../contracts'
 import { makeUrl, getServerConfig } from '../helpers'
@@ -79,11 +79,10 @@ export class HttpContext implements HttpContextContract {
     /**
      * Creating new ctx instance
      */
-    const ctx = new HttpContext(request, response, getLogger({
+    const ctx = new HttpContext(request, response, new Logger({
       name: 'adonis',
       enabled: true,
       level: 'trace',
-      messageKey: 'msg',
     }))
 
     /**

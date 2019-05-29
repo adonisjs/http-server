@@ -11,7 +11,7 @@ import * as test from 'japa'
 import * as supertest from 'supertest'
 import { createServer } from 'http'
 import { Ioc } from '@adonisjs/fold'
-import { getLogger } from '@poppinss/logger'
+import { FakeLogger } from '@poppinss/logger'
 import * as proxyaddr from 'proxy-addr'
 import { ServerConfigContract, HttpContextContract } from '../src/contracts'
 
@@ -31,11 +31,10 @@ const config: ServerConfigContract = {
   allowMethodSpoofing: false,
 }
 
-const logger = getLogger({
+const logger = new FakeLogger({
   name: 'http-server',
   enabled: true,
   level: 'debug',
-  messageKey: 'msg',
 })
 
 test.group('Server | Response handling', () => {
