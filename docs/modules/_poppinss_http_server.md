@@ -59,6 +59,7 @@
 ### Object literals
 
 * [exceptionCodes](_poppinss_http_server.md#exceptioncodes)
+* [iocMethods](_poppinss_http_server.md#iocmethods)
 
 ---
 
@@ -422,20 +423,6 @@ ___
 **● E_DUPLICATE_ROUTE_NAME**: *`string`* = "E_DUPLICATE_ROUTE_NAME"
 
 ___
-<a id="exceptioncodes.e_invalid_middleware_type"></a>
-
-####  E_INVALID_MIDDLEWARE_TYPE
-
-**● E_INVALID_MIDDLEWARE_TYPE**: *`string`* = "E_INVALID_MIDDLEWARE_TYPE"
-
-___
-<a id="exceptioncodes.e_invalid_route_namespace"></a>
-
-####  E_INVALID_ROUTE_NAMESPACE
-
-**● E_INVALID_ROUTE_NAMESPACE**: *`string`* = "E_INVALID_ROUTE_NAMESPACE"
-
-___
 <a id="exceptioncodes.e_missing_named_middleware"></a>
 
 ####  E_MISSING_NAMED_MIDDLEWARE
@@ -476,6 +463,37 @@ ___
 ####  E_ROUTE_NOT_FOUND
 
 **● E_ROUTE_NOT_FOUND**: *`string`* = "E_ROUTE_NOT_FOUND"
+
+___
+
+___
+<a id="iocmethods"></a>
+
+### `<Const>` iocMethods
+
+**iocMethods**: *`object`*
+
+Symbols to use IoC container global methods.
+
+<a id="iocmethods.call"></a>
+
+####  call
+
+**● call**: *`symbol`* =  Symbol.for('ioc.call')
+
+___
+<a id="iocmethods.make"></a>
+
+####  make
+
+**● make**: *`symbol`* =  Symbol.for('ioc.make')
+
+___
+<a id="iocmethods.use"></a>
+
+####  use
+
+**● use**: *`symbol`* =  Symbol.for('ioc.use')
 
 ___
 
