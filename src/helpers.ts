@@ -139,7 +139,14 @@ export const exceptionCodes = {
   E_DUPLICATE_ROUTE_NAME: 'E_DUPLICATE_ROUTE_NAME',
   E_MISSING_ROUTE_PARAM_VALUE: 'E_MISSING_ROUTE_PARAM_VALUE',
   E_ROUTE_NOT_FOUND: 'E_ROUTE_NOT_FOUND',
-  E_INVALID_MIDDLEWARE_TYPE: 'E_INVALID_MIDDLEWARE_TYPE',
   E_MISSING_NAMED_MIDDLEWARE: 'E_MISSING_NAMED_MIDDLEWARE',
-  E_INVALID_ROUTE_NAMESPACE: 'E_INVALID_ROUTE_NAMESPACE',
+}
+
+/**
+ * Symbols to use IoC container global methods.
+ */
+export const iocMethods = {
+  use: Symbol.for('ioc.use'),
+  make: Symbol.for('ioc.make'),
+  call: Symbol.for('ioc.call'),
 }

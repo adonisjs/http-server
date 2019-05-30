@@ -12,7 +12,7 @@
 */
 
 import { Middleware } from 'co-compose'
-import { Exception } from '@poppinss/utils'
+import { parseIocReference } from '@poppinss/utils'
 import {
   RouteNode,
   HttpContextContract,
@@ -21,7 +21,6 @@ import {
 
 import { finalMiddlewareHandler } from './finalMiddlewareHandler'
 import { finalRouteHandler } from './finalRouteHandler'
-import { exceptionCodes } from '../helpers'
 
 /**
  * Executes the route middleware. This method is only invoked when route
@@ -54,30 +53,6 @@ export function routePreProcessor<Context> (
    * Resolve route handler before hand to keep HTTP layer performant
    */
   if (typeof (route.handler) === 'string') {
-    let handler = route.handler
-
-    /**
-     * 1. Do not prepend namespace, if `namespace` starts with `/`.
-     * 2. Else if `namespace` exists, then prepend the namespace
-     */
-    if (route.handler.startsWith('/')) {
-      handler = route.handler.substr(1)
-    } else if (route.meta.namespace) {
-      handler = `${route.meta.namespace.replace(/\/$/, '')}/${route.handler}`
-    }
-
-    /**
-     * Split the controller and method. Raise error if `method` is missing
-     */
-    const [ namespace, method ] = handler.split('.')
-    if (!method) {
-      throw new Exception(
-        `Missing controller method on \`${route.pattern}\` route`,
-        500,
-        exceptionCodes.E_INVALID_ROUTE_NAMESPACE,
-      )
-    }
-
     /**
      * Unlike middleware, we do not prefetch controller from the IoC container
      * since controllers in an app can grow to a huge number and lazy loading
@@ -86,11 +61,7 @@ export function routePreProcessor<Context> (
      * Sometime later, we can introduce `hot cache` in IoC container, which
      * avoids lookup cost within the IoC container.
      */
-    route.meta.resolvedHandler = {
-      type: 'iocReference',
-      namespace: namespace,
-      method,
-    }
+    route.meta.resolvedHandler = parseIocReference(route.handler, route.meta.namespace)
   } else {
     route.meta.resolvedHandler = {
       type: 'function',

@@ -21,7 +21,7 @@ import {
   ResolvedMiddlewareNode,
 } from '../contracts'
 
-import { exceptionCodes } from '../helpers'
+import { exceptionCodes, iocMethods } from '../helpers'
 
 /**
  * Middleware store register and keep all the application middleware at one
@@ -63,7 +63,7 @@ export class MiddlewareStore<Context extends any> implements MiddlewareStoreCont
   private _resolveMiddlewareItem (middleware: MiddlewareNode<Context>): ResolvedMiddlewareNode<Context> {
     return typeof(middleware) === 'string' ? {
       type: 'class',
-      value: global['use'](middleware),
+      value: global[iocMethods.use](middleware),
       args: [],
     } : {
       type: 'function',

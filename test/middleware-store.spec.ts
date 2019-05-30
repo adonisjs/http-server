@@ -76,8 +76,8 @@ test.group('Middleware', () => {
 
     const ioc = new Ioc()
     ioc.bind('App/Middleware', () => new Middleware())
-    global['use'] = ioc.use.bind(ioc)
-    global['make'] = ioc.make.bind(ioc)
+    global[Symbol.for('ioc.use')] = ioc.use.bind(ioc)
+    global[Symbol.for('ioc.make')] = ioc.make.bind(ioc)
 
     const middleware = new MiddlewareStore()
     middleware.register(['App/Middleware'])
@@ -85,8 +85,8 @@ test.group('Middleware', () => {
 
     assert.deepEqual(stack, ['middleware class'])
 
-    delete global['use']
-    delete global['make']
+    delete global[Symbol.for('ioc.use')]
+    delete global[Symbol.for('ioc.make')]
   })
 
   test('process route middleware using the store', async (assert) => {

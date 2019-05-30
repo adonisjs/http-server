@@ -77,7 +77,7 @@
   "dependencies": {
     "@poppinss/request": "^1.0.9",
     "@poppinss/response": "^1.0.8",
-    "@poppinss/utils": "^1.0.2",
+    "@poppinss/utils": "^1.0.3",
     "co-compose": "^5.1.1",
     "haye": "^2.0.2",
     "lodash": "^4.17.11",

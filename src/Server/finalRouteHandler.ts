@@ -13,6 +13,7 @@
 
 import { ResolvedControllerNode, HttpContextContract } from '../contracts'
 import { useReturnValue } from './useReturnValue'
+import { iocMethods } from '../helpers'
 
 /**
  * Final handler executes the route handler based on it's resolved
@@ -38,8 +39,8 @@ export async function finalRouteHandler<Context extends HttpContextContract> (ct
    * Otherwise lookup the controller inside the IoC container
    * and make the response
    */
-  const controllerInstance = global['make'](handler.namespace)
-  const returnValue = await global['iocCall'](controllerInstance, handler.method, [ctx])
+  const controllerInstance = global[iocMethods.make](handler.namespace)
+  const returnValue = await global[iocMethods.call](controllerInstance, handler.method, [ctx])
 
   if (useReturnValue(returnValue, ctx)) {
     ctx.response.send(returnValue)

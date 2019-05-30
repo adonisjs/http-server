@@ -739,8 +739,9 @@ test.group('Server | error handler', () => {
 
 test.group('Server | all', (group) => {
   group.afterEach(() => {
-    delete global['use']
-    delete global['make']
+    delete global[Symbol.for('ioc.use')]
+    delete global[Symbol.for('ioc.call')]
+    delete global[Symbol.for('ioc.make')]
   })
 
   test('raise 404 when route is missing', async (assert) => {
@@ -769,8 +770,8 @@ test.group('Server | all', (group) => {
 
     const ioc = new Ioc()
     ioc.bind('App/Controllers/Http/HomeController', () => new HomeController())
-    global['make'] = ioc.make.bind(ioc)
-    global['iocCall'] = ioc.call.bind(ioc)
+    global[Symbol.for('ioc.make')] = ioc.make.bind(ioc)
+    global[Symbol.for('ioc.call')] = ioc.call.bind(ioc)
 
     router.get('/', 'HomeController.index')
 

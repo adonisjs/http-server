@@ -12,6 +12,7 @@
 */
 
 import { ResolvedMiddlewareNode } from '../contracts'
+import { iocMethods } from '../helpers'
 
 /**
  * Final middleware handler executes a middleware
@@ -27,5 +28,5 @@ export function finalMiddlewareHandler<Context> (
     return middleware.value(params[0], params[1], middleware.args)
   }
 
-  return global['make'](middleware.value).handle(params[0], params[1], middleware.args)
+  return global[iocMethods.make](middleware.value).handle(params[0], params[1], middleware.args)
 }

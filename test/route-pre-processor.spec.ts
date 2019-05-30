@@ -16,8 +16,8 @@ import { routePreProcessor } from '../src/Server/routePreProcessor'
 
 test.group('Route pre processor', (group) => {
   group.afterEach(() => {
-    delete global['use']
-    delete global['make']
+    delete global[Symbol.for('ioc.use')]
+    delete global[Symbol.for('ioc.make')]
   })
 
   test('process route by resolving function based middleware', (assert) => {
@@ -63,7 +63,7 @@ test.group('Route pre processor', (group) => {
 
     const ioc = new Ioc()
     ioc.bind('App/Middleware/Auth', () => Auth)
-    global['use'] = ioc.use.bind(ioc)
+    global[Symbol.for('ioc.use')] = ioc.use.bind(ioc)
 
     middlewareStore.registerNamed({ auth: 'App/Middleware/Auth' })
 
@@ -102,7 +102,7 @@ test.group('Route pre processor', (group) => {
 
     const ioc = new Ioc()
     ioc.bind('App/Controllers/Http/UserController', () => UserController)
-    global['use'] = ioc.use.bind(ioc)
+    global[Symbol.for('ioc.use')] = ioc.use.bind(ioc)
 
     const route = router.get('/', 'UserController.store').toJSON()
     routePreProcessor(route, middlewareStore)
@@ -124,7 +124,7 @@ test.group('Route pre processor', (group) => {
 
     const ioc = new Ioc()
     ioc.bind('UserController', () => UserController)
-    global['use'] = ioc.use.bind(ioc)
+    global[Symbol.for('ioc.use')] = ioc.use.bind(ioc)
 
     const route = router.get('/', '/UserController.store').toJSON()
     routePreProcessor(route, middlewareStore)
@@ -146,12 +146,12 @@ test.group('Route pre processor', (group) => {
 
     const ioc = new Ioc()
     ioc.bind('UserController', () => UserController)
-    global['use'] = ioc.use.bind(ioc)
+    global[Symbol.for('ioc.use')] = ioc.use.bind(ioc)
 
     const route = router.get('/', '/UserController').toJSON()
     const fn = () => routePreProcessor(route, middlewareStore)
 
-    assert.throw(fn, 'Missing controller method on `/` route')
+    assert.throw(fn, 'E_INVALID_IOC_NAMESPACE: Missing method reference on {/UserController} namespace')
   })
 
   test('raise error when controller method is missing', (_assert) => {
@@ -163,7 +163,7 @@ test.group('Route pre processor', (group) => {
 
     const ioc = new Ioc()
     ioc.bind('App/Controllers/Http/UserController', () => UserController)
-    global['use'] = ioc.use.bind(ioc)
+    global[Symbol.for('ioc.use')] = ioc.use.bind(ioc)
 
     const route = router.get('/', '/UserController.store').toJSON()
     routePreProcessor(route, middlewareStore)
