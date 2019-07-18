@@ -1,4 +1,6 @@
-[@poppinss/http-server](../README.md) > [@poppinss/http-server](../modules/_poppinss_http_server.md)
+> **[@poppinss/http-server](../README.md)**
+
+[Globals](../README.md) / [@poppinss/http-server](_poppinss_http_server.md) /
 
 # External module: @poppinss/http-server
 
@@ -58,444 +60,390 @@
 
 ### Object literals
 
-* [exceptionCodes](_poppinss_http_server.md#exceptioncodes)
-* [iocMethods](_poppinss_http_server.md#iocmethods)
-
----
+* [exceptionCodes](_poppinss_http_server.md#const-exceptioncodes)
+* [iocMethods](_poppinss_http_server.md#const-iocmethods)
 
 ## Type aliases
 
-<a id="domainnode"></a>
-
 ###  DomainNode
 
-**Ƭ DomainNode**: *`object`*
+Ƭ **DomainNode**: *object*
 
-Each domain node will have an object of methods and then a nested object of routes
+Each domain node will have an object of methods and then
+a nested object of routes
 
-#### Type declaration
+#### Type declaration:
 
-[method: `string`]: [MethodNode](_poppinss_http_server.md#methodnode)<`Context`>
+● \[▪ **method**: *string*\]: [MethodNode](_poppinss_http_server.md#methodnode)‹*`Context`*›
 
 ___
-<a id="errorhandlernode"></a>
 
 ###  ErrorHandlerNode
 
-**Ƭ ErrorHandlerNode**: *`function`*
+Ƭ **ErrorHandlerNode**: *function*
 
 Error handler node
 
-#### Type declaration
-▸(error: *`any`*, ctx: *`Context`*): `Promise`<`any`>
+#### Type declaration:
+
+▸ (`error`: any, `ctx`: `Context`): *`Promise<any>`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| error | `any` |
-| ctx | `Context` |
-
-**Returns:** `Promise`<`any`>
+Name | Type |
+------ | ------ |
+`error` | any |
+`ctx` | `Context` |
 
 ___
-<a id="hooknode"></a>
 
 ###  HookNode
 
-**Ƭ HookNode**: *`function`*
+Ƭ **HookNode**: *function*
 
-Before hooks are executed before finding the route or finding middleware
+Before hooks are executed before finding the route or finding
+middleware
 
-#### Type declaration
-▸(ctx: *`Context`*): `Promise`<`void`>
+#### Type declaration:
+
+▸ (`ctx`: `Context`): *`Promise<void>`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| ctx | `Context` |
-
-**Returns:** `Promise`<`void`>
+Name | Type |
+------ | ------ |
+`ctx` | `Context` |
 
 ___
-<a id="matchedroute"></a>
 
 ###  MatchedRoute
 
-**Ƭ MatchedRoute**: *`object`*
+Ƭ **MatchedRoute**: *object*
 
-Shape of the matched route for a pattern, method and domain. We set them as spread options to the context.
+Shape of the matched route for a pattern, method and domain. We set
+them as spread options to the context.
 
-#### Type declaration
+#### Type declaration:
 
 ___
-<a id="methodnode"></a>
 
 ###  MethodNode
 
-**Ƭ MethodNode**: *`object`*
+Ƭ **MethodNode**: *object*
 
 An object of routes for a given HTTP method
 
-#### Type declaration
+#### Type declaration:
 
 ___
-<a id="middlewarenode"></a>
 
 ###  MiddlewareNode
 
-**Ƭ MiddlewareNode**: *`string` \| `function`*
+Ƭ **MiddlewareNode**: *string | function*
 
-Input middleware node must be function or a string pointing to the IoC container
+Input middleware node must be function or a string pointing
+to the IoC container
 
 ___
-<a id="resolvedcontrollernode"></a>
 
 ###  ResolvedControllerNode
 
-**Ƭ ResolvedControllerNode**: *`object` \| `object`*
+Ƭ **ResolvedControllerNode**: *object | object*
 
-Node after resolving controller.method binding from the route
+Node after resolving controller.method binding
+from the route
 
 ___
-<a id="resolvedmiddlewarenode"></a>
 
 ###  ResolvedMiddlewareNode
 
-**Ƭ ResolvedMiddlewareNode**: *`object` \| `object`*
+Ƭ **ResolvedMiddlewareNode**: *object | object*
 
-Shape of resolved middleware. This information is enough to execute the middleware
+Shape of resolved middleware. This information is
+enough to execute the middleware
 
 ___
-<a id="routedefination"></a>
 
 ###  RouteDefination
 
-**Ƭ RouteDefination**: *[RouteNode](_poppinss_http_server.md#routenode)<`Context`> & `object`*
+Ƭ **RouteDefination**: *[RouteNode](_poppinss_http_server.md#routenode)‹*`Context`*› & object*
 
 Route defination returned as a result of `route.toJSON` method
 
 ___
-<a id="routehandlernode"></a>
 
 ###  RouteHandlerNode
 
-**Ƭ RouteHandlerNode**: *`function` \| `string`*
+Ƭ **RouteHandlerNode**: *function | string*
 
 The shape of the route handler
 
 ___
-<a id="routelookupnode"></a>
 
 ###  RouteLookupNode
 
-**Ƭ RouteLookupNode**: *`object`*
+Ƭ **RouteLookupNode**: *object*
 
-Route look node is used to find the routes using handler, pattern or name.
+Route look node is used to find the routes using
+handler, pattern or name.
 
-#### Type declaration
+#### Type declaration:
 
 ___
-<a id="routematchers"></a>
 
 ###  RouteMatchers
 
-**Ƭ RouteMatchers**: *`object`*
+Ƭ **RouteMatchers**: *object*
 
 Shape of route param matchers
 
-#### Type declaration
+#### Type declaration:
 
-[param: `string`]: `RegExp`
+● \[▪ **param**: *string*\]: `RegExp`
 
 ___
-<a id="routenode"></a>
 
 ###  RouteNode
 
-**Ƭ RouteNode**: *`object`*
+Ƭ **RouteNode**: *object*
 
 Route node persisted within the store
 
-#### Type declaration
+#### Type declaration:
 
 ___
-<a id="routestree"></a>
 
 ###  RoutesTree
 
-**Ƭ RoutesTree**: *`object`*
+Ƭ **RoutesTree**: *object*
 
 Routes tree is a domain of DomainNodes
 
-#### Type declaration
+#### Type declaration:
 
 ___
-<a id="serverconfigcontract"></a>
 
 ###  ServerConfigContract
 
-**Ƭ ServerConfigContract**: *`RequestConfigContract` & `ResponseConfigContract`*
+Ƭ **ServerConfigContract**: *`RequestConfigContract` & `ResponseConfigContract`*
 
 Config requried by request and response
 
-___
-
 ## Functions
-
-<a id="dropslash"></a>
 
 ###  dropSlash
 
-▸ **dropSlash**(input: *`string`*): `string`
+▸ **dropSlash**(`input`: string): *string*
 
-Makes input string consistent by having only the starting slash
+Makes input string consistent by having only the starting
+slash
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| input | `string` |
+Name | Type |
+------ | ------ |
+`input` | string |
 
-**Returns:** `string`
+**Returns:** *string*
 
 ___
-<a id="finalmiddlewarehandler"></a>
 
 ###  finalMiddlewareHandler
 
-▸ **finalMiddlewareHandler**<`Context`>(middleware: *[ResolvedMiddlewareNode](_poppinss_http_server.md#resolvedmiddlewarenode)<`Context`>*, params: *[`Context`, `function`]*): `Promise`<`void`>
+▸ **finalMiddlewareHandler**<**Context**>(`middleware`: [ResolvedMiddlewareNode](_poppinss_http_server.md#resolvedmiddlewarenode)‹*`Context`*›, `params`: [`Context`, function]): *`Promise<void>`*
 
 Final middleware handler executes a middleware
 
 **Type parameters:**
 
-#### Context 
+▪ **Context**
+
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| middleware | [ResolvedMiddlewareNode](_poppinss_http_server.md#resolvedmiddlewarenode)<`Context`> |
-| params | [`Context`, `function`] |
+Name | Type |
+------ | ------ |
+`middleware` | [ResolvedMiddlewareNode](_poppinss_http_server.md#resolvedmiddlewarenode)‹*`Context`*› |
+`params` | [`Context`, function] |
 
-**Returns:** `Promise`<`void`>
+**Returns:** *`Promise<void>`*
 
 ___
-<a id="finalroutehandler"></a>
 
 ###  finalRouteHandler
 
-▸ **finalRouteHandler**<`Context`>(ctx: *`Context`*): `Promise`<`void`>
+▸ **finalRouteHandler**<**Context**>(`ctx`: `Context`): *`Promise<void>`*
 
-Final handler executes the route handler based on it's resolved type and the response body on various conditions (check method body) for same.
+Final handler executes the route handler based on it's resolved
+type and the response body on various conditions (check method body)
+for same.
 
 **Type parameters:**
 
-#### Context :  [HttpContextContract](../interfaces/_poppinss_http_server.httpcontextcontract.md)
+▪ **Context**: *[HttpContextContract](../interfaces/_poppinss_http_server.httpcontextcontract.md)*
+
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| ctx | `Context` |
+Name | Type |
+------ | ------ |
+`ctx` | `Context` |
 
-**Returns:** `Promise`<`void`>
+**Returns:** *`Promise<void>`*
 
 ___
-<a id="getserverconfig"></a>
 
 ###  getServerConfig
 
-▸ **getServerConfig**(serverConfig: *`Partial`<[ServerConfigContract](_poppinss_http_server.md#serverconfigcontract)>*): [ServerConfigContract](_poppinss_http_server.md#serverconfigcontract)
+▸ **getServerConfig**(`serverConfig`: `Partial<ServerConfigContract>`): *[ServerConfigContract](_poppinss_http_server.md#serverconfigcontract)*
 
-Returns server config by merging the user options with the default options.
+Returns server config by merging the user options with the default
+options.
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| serverConfig | `Partial`<[ServerConfigContract](_poppinss_http_server.md#serverconfigcontract)> |
+Name | Type |
+------ | ------ |
+`serverConfig` | `Partial<ServerConfigContract>` |
 
-**Returns:** [ServerConfigContract](_poppinss_http_server.md#serverconfigcontract)
+**Returns:** *[ServerConfigContract](_poppinss_http_server.md#serverconfigcontract)*
 
 ___
-<a id="makeurl"></a>
 
 ###  makeUrl
 
-▸ **makeUrl**(pattern: *`string`*, options: *`object`*): `string`
+▸ **makeUrl**(`pattern`: string, `options`: object): *string*
 
 Makes url for a route pattern and params and querystring.
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| pattern | `string` |
-| options | `object` |
+Name | Type |
+------ | ------ |
+`pattern` | string |
+`options` | object |
 
-**Returns:** `string`
+**Returns:** *string*
 
 ___
-<a id="routepreprocessor"></a>
 
 ###  routePreProcessor
 
-▸ **routePreProcessor**<`Context`>(route: *[RouteNode](_poppinss_http_server.md#routenode)<`Context`>*, middlewareStore: *[MiddlewareStoreContract](../interfaces/_poppinss_http_server.middlewarestorecontract.md)<`Context`>*): `void`
+▸ **routePreProcessor**<**Context**>(`route`: [RouteNode](_poppinss_http_server.md#routenode)‹*`Context`*›, `middlewareStore`: [MiddlewareStoreContract](../interfaces/_poppinss_http_server.middlewarestorecontract.md)‹*`Context`*›): *void*
 
-Hooks into route registration lifecycle and attaches finalHandler to execute the route middleware and final handler.
+Hooks into route registration lifecycle and attaches finalHandler to
+execute the route middleware and final handler.
 
-We pre-compile routes and final handler to a single function, which improves the performance by reducing the overhead of processing middleware on each request
+We pre-compile routes and final handler to a single function, which improves
+the performance by reducing the overhead of processing middleware on each
+request
 
 **Type parameters:**
 
-#### Context 
+▪ **Context**
+
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| route | [RouteNode](_poppinss_http_server.md#routenode)<`Context`> |
-| middlewareStore | [MiddlewareStoreContract](../interfaces/_poppinss_http_server.middlewarestorecontract.md)<`Context`> |
+Name | Type |
+------ | ------ |
+`route` | [RouteNode](_poppinss_http_server.md#routenode)‹*`Context`*› |
+`middlewareStore` | [MiddlewareStoreContract](../interfaces/_poppinss_http_server.middlewarestorecontract.md)‹*`Context`*› |
 
-**Returns:** `void`
+**Returns:** *void*
 
 ___
-<a id="toroutesjson"></a>
 
 ###  toRoutesJSON
 
-▸ **toRoutesJSON**<`Context`>(routes: *([RouteGroup](../classes/_poppinss_http_server.routegroup.md)<`Context`> \| [RouteResource](../classes/_poppinss_http_server.routeresource.md)<`Context`> \| [Route](../classes/_poppinss_http_server.route.md)<`Context`> \| [BriskRoute](../classes/_poppinss_http_server.briskroute.md)<`Context`>)[]*): [RouteDefination](_poppinss_http_server.md#routedefination)<`Context`>[]
+▸ **toRoutesJSON**<**Context**>(`routes`: [RouteGroup](../classes/_poppinss_http_server.routegroup.md)‹*`Context`*› | [RouteResource](../classes/_poppinss_http_server.routeresource.md)‹*`Context`*› | [Route](../classes/_poppinss_http_server.route.md)‹*`Context`*› | [BriskRoute](../classes/_poppinss_http_server.briskroute.md)‹*`Context`*›[]): *[RouteDefination](_poppinss_http_server.md#routedefination)‹*`Context`*›[]*
 
-Converts and array of routes or route groups or route resource to a flat list of route defination.
+Converts and array of routes or route groups or route resource to a flat
+list of route defination.
 
 **Type parameters:**
 
-#### Context :  `any`
+▪ **Context**: *any*
+
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| routes | ([RouteGroup](../classes/_poppinss_http_server.routegroup.md)<`Context`> \| [RouteResource](../classes/_poppinss_http_server.routeresource.md)<`Context`> \| [Route](../classes/_poppinss_http_server.route.md)<`Context`> \| [BriskRoute](../classes/_poppinss_http_server.briskroute.md)<`Context`>)[] |
+Name | Type |
+------ | ------ |
+`routes` | [RouteGroup](../classes/_poppinss_http_server.routegroup.md)‹*`Context`*› \| [RouteResource](../classes/_poppinss_http_server.routeresource.md)‹*`Context`*› \| [Route](../classes/_poppinss_http_server.route.md)‹*`Context`*› \| [BriskRoute](../classes/_poppinss_http_server.briskroute.md)‹*`Context`*›[] |
 
-**Returns:** [RouteDefination](_poppinss_http_server.md#routedefination)<`Context`>[]
+**Returns:** *[RouteDefination](_poppinss_http_server.md#routedefination)‹*`Context`*›[]*
 
 ___
-<a id="usereturnvalue"></a>
 
 ###  useReturnValue
 
-▸ **useReturnValue**(returnValue: *`any`*, ctx: *`any`*): `boolean`
+▸ **useReturnValue**(`returnValue`: any, `ctx`: any): *boolean*
 
-Returns a boolean telling if return value of route handler or error handler should be used or not
+Returns a boolean telling if return value of route handler
+or error handler should be used or not
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| returnValue | `any` |
-| ctx | `any` |
+Name | Type |
+------ | ------ |
+`returnValue` | any |
+`ctx` | any |
 
-**Returns:** `boolean`
-
-___
+**Returns:** *boolean*
 
 ## Object literals
 
-<a id="exceptioncodes"></a>
+### `Const` exceptionCodes
 
-### `<Const>` exceptionCodes
-
-**exceptionCodes**: *`object`*
+### ▪ **exceptionCodes**: *object*
 
 Module wide exception codes
 
-<a id="exceptioncodes.e_duplicate_route"></a>
+###  E_DUPLICATE_ROUTE
 
-####  E_DUPLICATE_ROUTE
+• **E_DUPLICATE_ROUTE**: *string* = "E_DUPLICATE_ROUTE"
 
-**● E_DUPLICATE_ROUTE**: *`string`* = "E_DUPLICATE_ROUTE"
+###  E_DUPLICATE_ROUTE_NAME
 
-___
-<a id="exceptioncodes.e_duplicate_route_name"></a>
+• **E_DUPLICATE_ROUTE_NAME**: *string* = "E_DUPLICATE_ROUTE_NAME"
 
-####  E_DUPLICATE_ROUTE_NAME
+###  E_MISSING_NAMED_MIDDLEWARE
 
-**● E_DUPLICATE_ROUTE_NAME**: *`string`* = "E_DUPLICATE_ROUTE_NAME"
+• **E_MISSING_NAMED_MIDDLEWARE**: *string* = "E_MISSING_NAMED_MIDDLEWARE"
 
-___
-<a id="exceptioncodes.e_missing_named_middleware"></a>
+###  E_MISSING_ROUTE_NAME
 
-####  E_MISSING_NAMED_MIDDLEWARE
+• **E_MISSING_ROUTE_NAME**: *string* = "E_MISSING_ROUTE_NAME"
 
-**● E_MISSING_NAMED_MIDDLEWARE**: *`string`* = "E_MISSING_NAMED_MIDDLEWARE"
+###  E_MISSING_ROUTE_PARAM_VALUE
 
-___
-<a id="exceptioncodes.e_missing_route_name"></a>
+• **E_MISSING_ROUTE_PARAM_VALUE**: *string* = "E_MISSING_ROUTE_PARAM_VALUE"
 
-####  E_MISSING_ROUTE_NAME
+###  E_MULTIPLE_BRISK_HANDLERS
 
-**● E_MISSING_ROUTE_NAME**: *`string`* = "E_MISSING_ROUTE_NAME"
+• **E_MULTIPLE_BRISK_HANDLERS**: *string* = "E_MULTIPLE_BRISK_HANDLERS"
 
-___
-<a id="exceptioncodes.e_missing_route_param_value"></a>
+###  E_NESTED_ROUTE_GROUPS
 
-####  E_MISSING_ROUTE_PARAM_VALUE
+• **E_NESTED_ROUTE_GROUPS**: *string* = "E_NESTED_ROUTE_GROUPS"
 
-**● E_MISSING_ROUTE_PARAM_VALUE**: *`string`* = "E_MISSING_ROUTE_PARAM_VALUE"
+###  E_ROUTE_NOT_FOUND
 
-___
-<a id="exceptioncodes.e_multiple_brisk_handlers"></a>
-
-####  E_MULTIPLE_BRISK_HANDLERS
-
-**● E_MULTIPLE_BRISK_HANDLERS**: *`string`* = "E_MULTIPLE_BRISK_HANDLERS"
-
-___
-<a id="exceptioncodes.e_nested_route_groups"></a>
-
-####  E_NESTED_ROUTE_GROUPS
-
-**● E_NESTED_ROUTE_GROUPS**: *`string`* = "E_NESTED_ROUTE_GROUPS"
-
-___
-<a id="exceptioncodes.e_route_not_found"></a>
-
-####  E_ROUTE_NOT_FOUND
-
-**● E_ROUTE_NOT_FOUND**: *`string`* = "E_ROUTE_NOT_FOUND"
+• **E_ROUTE_NOT_FOUND**: *string* = "E_ROUTE_NOT_FOUND"
 
 ___
 
-___
-<a id="iocmethods"></a>
+### `Const` iocMethods
 
-### `<Const>` iocMethods
-
-**iocMethods**: *`object`*
+### ▪ **iocMethods**: *object*
 
 Symbols to use IoC container global methods.
 
-<a id="iocmethods.call"></a>
+###  call
 
-####  call
+• **call**: *symbol* =  Symbol.for('ioc.call')
 
-**● call**: *`symbol`* =  Symbol.for('ioc.call')
+###  make
 
-___
-<a id="iocmethods.make"></a>
+• **make**: *symbol* =  Symbol.for('ioc.make')
 
-####  make
+###  use
 
-**● make**: *`symbol`* =  Symbol.for('ioc.make')
-
-___
-<a id="iocmethods.use"></a>
-
-####  use
-
-**● use**: *`symbol`* =  Symbol.for('ioc.use')
-
-___
-
-___
-
+• **use**: *symbol* =  Symbol.for('ioc.use')

@@ -1,11 +1,15 @@
-[@poppinss/http-server](../README.md) > [@poppinss/http-server](../modules/_poppinss_http_server.md) > [Store](../classes/_poppinss_http_server.store.md)
+> **[@poppinss/http-server](../README.md)**
 
-# Class: Store
+[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [Store](_poppinss_http_server.store.md) /
 
-Store class is used to store a list of routes, along side with their tokens to match the URL's. The used data structures to store information is tailored for quick lookups.
+# Class: Store <**Context**>
 
-*__example__*:
- ```ts
+Store class is used to store a list of routes, along side with their tokens
+to match the URL's. The used data structures to store information is tailored
+for quick lookups.
+
+**`example`** 
+```ts
 const store = new Store()
 
 store.add({
@@ -23,10 +27,12 @@ store.match('posts/1', 'GET')
 ```
 
 ## Type parameters
-#### Context 
+
+▪ **Context**
+
 ## Hierarchy
 
-**Store**
+* **Store**
 
 ## Index
 
@@ -39,20 +45,18 @@ store.match('posts/1', 'GET')
 
 * [tree](_poppinss_http_server.store.md#tree)
 
----
-
 ## Methods
-
-<a id="add"></a>
 
 ###  add
 
-▸ **add**(route: *[RouteDefination](../modules/_poppinss_http_server.md#routedefination)<`Context`>*): `this`
+▸ **add**(`route`: [RouteDefination](../modules/_poppinss_http_server.md#routedefination)‹*`Context`*›): *this*
 
-Adds a route to the store for all the given HTTP methods. Also an array of tokens is generated for the route pattern. The tokens are then matched against the URL to find the appropriate route.
+Adds a route to the store for all the given HTTP methods. Also an array
+of tokens is generated for the route pattern. The tokens are then
+matched against the URL to find the appropriate route.
 
-*__example__*:
- ```ts
+**`example`** 
+```ts
 store.add({
   pattern: 'post/:id',
   methods: ['GET'],
@@ -65,57 +69,44 @@ store.add({
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| route | [RouteDefination](../modules/_poppinss_http_server.md#routedefination)<`Context`> |
+Name | Type |
+------ | ------ |
+`route` | [RouteDefination](../modules/_poppinss_http_server.md#routedefination)‹*`Context`*› |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="match"></a>
 
 ###  match
 
-▸ **match**(url: *`string`*, method: *`string`*, domain?: *`undefined` \| `string`*): `null` \| [MatchedRoute](../modules/_poppinss_http_server.md#matchedroute)<`Context`>
+▸ **match**(`url`: string, `method`: string, `domain?`: undefined | string): *null | [MatchedRoute](../modules/_poppinss_http_server.md#matchedroute)‹*`Context`*›*
 
-Matches the url, method and optionally domain to pull the matching route. `null` is returned when unable to match the URL against registered routes.
+Matches the url, method and optionally domain to pull the matching
+route. `null` is returned when unable to match the URL against
+registered routes.
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| url | `string` |
-| method | `string` |
-| `Optional` domain | `undefined` \| `string` |
+Name | Type |
+------ | ------ |
+`url` | string |
+`method` | string |
+`domain?` | undefined \| string |
 
-**Returns:** `null` \| [MatchedRoute](../modules/_poppinss_http_server.md#matchedroute)<`Context`>
-
-___
+**Returns:** *null | [MatchedRoute](../modules/_poppinss_http_server.md#matchedroute)‹*`Context`*›*
 
 ## Object literals
 
-<a id="tree"></a>
-
 ###  tree
 
-**tree**: *`object`*
+### ▪ **tree**: *object*
 
-<a id="tree.domains"></a>
+###  domains
 
-####  domains
+• **domains**: *object*
 
-**● domains**: *`object`*
+#### Type declaration:
 
-#### Type declaration
+###  tokens
 
-___
-<a id="tree.tokens"></a>
-
-####  tokens
-
-**● tokens**: *`never`[]* =  []
-
-___
-
-___
-
+• **tokens**: *never[]* =  []

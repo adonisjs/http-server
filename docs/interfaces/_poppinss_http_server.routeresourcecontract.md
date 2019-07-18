@@ -1,14 +1,18 @@
-[@poppinss/http-server](../README.md) > [@poppinss/http-server](../modules/_poppinss_http_server.md) > [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)
+> **[@poppinss/http-server](../README.md)**
 
-# Interface: RouteResourceContract
+[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [RouteResourceContract](_poppinss_http_server.routeresourcecontract.md) /
+
+# Interface: RouteResourceContract <**Context**>
 
 Shape of route resource class
 
 ## Type parameters
-#### Context 
+
+▪ **Context**
+
 ## Hierarchy
 
-**RouteResourceContract**
+* **RouteResourceContract**
 
 ## Implemented by
 
@@ -29,103 +33,87 @@ Shape of route resource class
 * [only](_poppinss_http_server.routeresourcecontract.md#only)
 * [where](_poppinss_http_server.routeresourcecontract.md#where)
 
----
-
 ## Properties
-
-<a id="routes"></a>
 
 ###  routes
 
-**● routes**: *[RouteContract](_poppinss_http_server.routecontract.md)<`Context`>[]*
-
-___
+• **routes**: *[RouteContract](_poppinss_http_server.routecontract.md)‹*`Context`*›[]*
 
 ## Methods
 
-<a id="apionly"></a>
-
 ###  apiOnly
 
-▸ **apiOnly**(): `this`
+▸ **apiOnly**(): *this*
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="except"></a>
 
 ###  except
 
-▸ **except**(names: *`string`[]*): `this`
+▸ **except**(`names`: string[]): *this*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| names | `string`[] |
+Name | Type |
+------ | ------ |
+`names` | string[] |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="middleware"></a>
 
 ###  middleware
 
-▸ **middleware**(middleware: *`object`*): `this`
+▸ **middleware**(`middleware`: object): *this*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| middleware | `object` |
+Name | Type |
+------ | ------ |
+`middleware` | object |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="namespace"></a>
 
 ###  namespace
 
-▸ **namespace**(namespace: *`string`*): `this`
+▸ **namespace**(`namespace`: string): *this*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| namespace | `string` |
+Name | Type |
+------ | ------ |
+`namespace` | string |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="only"></a>
 
 ###  only
 
-▸ **only**(names: *`string`[]*): `this`
+▸ **only**(`names`: string[]): *this*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| names | `string`[] |
+Name | Type |
+------ | ------ |
+`names` | string[] |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="where"></a>
 
 ###  where
 
-▸ **where**(key: *`string`*, matcher: *`string` \| `RegExp`*): `this`
+▸ **where**(`key`: string, `matcher`: string | `RegExp`): *this*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| key | `string` |
-| matcher | `string` \| `RegExp` |
+Name | Type |
+------ | ------ |
+`key` | string |
+`matcher` | string \| `RegExp` |
 
-**Returns:** `this`
-
-___
-
+**Returns:** *this*

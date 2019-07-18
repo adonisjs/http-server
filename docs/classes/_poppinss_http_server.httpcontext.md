@@ -1,12 +1,15 @@
-[@poppinss/http-server](../README.md) > [@poppinss/http-server](../modules/_poppinss_http_server.md) > [HttpContext](../classes/_poppinss_http_server.httpcontext.md)
+> **[@poppinss/http-server](../README.md)**
+
+[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [HttpContext](_poppinss_http_server.httpcontext.md) /
 
 # Class: HttpContext
 
-Http context is passed to all route handlers, middleware, error handler and server hooks.
+Http context is passed to all route handlers, middleware,
+error handler and server hooks.
 
 ## Hierarchy
 
-**HttpContext**
+* **HttpContext**
 
 ## Implements
 
@@ -21,104 +24,96 @@ Http context is passed to all route handlers, middleware, error handler and serv
 ### Properties
 
 * [logger](_poppinss_http_server.httpcontext.md#logger)
-* [params](_poppinss_http_server.httpcontext.md#params)
+* [params](_poppinss_http_server.httpcontext.md#optional-params)
 * [request](_poppinss_http_server.httpcontext.md#request)
 * [response](_poppinss_http_server.httpcontext.md#response)
-* [route](_poppinss_http_server.httpcontext.md#route)
-* [subdomains](_poppinss_http_server.httpcontext.md#subdomains)
+* [route](_poppinss_http_server.httpcontext.md#optional-route)
+* [subdomains](_poppinss_http_server.httpcontext.md#optional-subdomains)
 
 ### Methods
 
-* [create](_poppinss_http_server.httpcontext.md#create)
-
----
+* [create](_poppinss_http_server.httpcontext.md#static-create)
 
 ## Constructors
 
-<a id="constructor"></a>
-
 ###  constructor
 
-⊕ **new HttpContext**(request: *`RequestContract`*, response: *`ResponseContract`*, logger: *`LoggerContract`*): [HttpContext](_poppinss_http_server.httpcontext.md)
+\+ **new HttpContext**(`request`: `RequestContract`, `response`: `ResponseContract`, `logger`: `LoggerContract`): *[HttpContext](_poppinss_http_server.httpcontext.md)*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| request | `RequestContract` |
-| response | `ResponseContract` |
-| logger | `LoggerContract` |
+Name | Type |
+------ | ------ |
+`request` | `RequestContract` |
+`response` | `ResponseContract` |
+`logger` | `LoggerContract` |
 
-**Returns:** [HttpContext](_poppinss_http_server.httpcontext.md)
-
-___
+**Returns:** *[HttpContext](_poppinss_http_server.httpcontext.md)*
 
 ## Properties
 
-<a id="logger"></a>
-
 ###  logger
 
-**● logger**: *`LoggerContract`*
+• **logger**: *`LoggerContract`*
+
+*Implementation of [HttpContextContract](../interfaces/_poppinss_http_server.httpcontextcontract.md).[logger](../interfaces/_poppinss_http_server.httpcontextcontract.md#logger)*
 
 ___
-<a id="params"></a>
 
-### `<Optional>` params
+### `Optional` params
 
-**● params**: *`any`*
+• **params**? : *any*
+
+*Implementation of [HttpContextContract](../interfaces/_poppinss_http_server.httpcontextcontract.md).[params](../interfaces/_poppinss_http_server.httpcontextcontract.md#optional-params)*
 
 ___
-<a id="request"></a>
 
 ###  request
 
-**● request**: *`RequestContract`*
+• **request**: *`RequestContract`*
+
+*Implementation of [HttpContextContract](../interfaces/_poppinss_http_server.httpcontextcontract.md).[request](../interfaces/_poppinss_http_server.httpcontextcontract.md#request)*
 
 ___
-<a id="response"></a>
 
 ###  response
 
-**● response**: *`ResponseContract`*
+• **response**: *`ResponseContract`*
+
+*Implementation of [HttpContextContract](../interfaces/_poppinss_http_server.httpcontextcontract.md).[response](../interfaces/_poppinss_http_server.httpcontextcontract.md#response)*
 
 ___
-<a id="route"></a>
 
-### `<Optional>` route
+### `Optional` route
 
-**● route**: *[RouteNode](../modules/_poppinss_http_server.md#routenode)<`this`>*
+• **route**? : *[RouteNode](../modules/_poppinss_http_server.md#routenode)‹*this*›*
 
-___
-<a id="subdomains"></a>
-
-### `<Optional>` subdomains
-
-**● subdomains**: *`any`*
+*Implementation of [HttpContextContract](../interfaces/_poppinss_http_server.httpcontextcontract.md).[route](../interfaces/_poppinss_http_server.httpcontextcontract.md#optional-route)*
 
 ___
+
+### `Optional` subdomains
+
+• **subdomains**? : *any*
+
+*Implementation of [HttpContextContract](../interfaces/_poppinss_http_server.httpcontextcontract.md).[subdomains](../interfaces/_poppinss_http_server.httpcontextcontract.md#optional-subdomains)*
 
 ## Methods
 
-<a id="create"></a>
+### `Static` create
 
-### `<Static>` create
-
-▸ **create**(routePattern: *`string`*, routeParams: *`any`*, req?: *`IncomingMessage`*, res?: *`ServerResponse`*, serverConfig?: *[ServerConfigContract](../modules/_poppinss_http_server.md#serverconfigcontract)*): [HttpContext](_poppinss_http_server.httpcontext.md)
+▸ **create**(`routePattern`: string, `routeParams`: any, `req?`: `IncomingMessage`, `res?`: `ServerResponse`, `serverConfig?`: [ServerConfigContract](../modules/_poppinss_http_server.md#serverconfigcontract)): *[HttpContext](_poppinss_http_server.httpcontext.md)*
 
 Creates a new fake context instance for a given route.
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| routePattern | `string` |
-| routeParams | `any` |
-| `Optional` req | `IncomingMessage` |
-| `Optional` res | `ServerResponse` |
-| `Optional` serverConfig | [ServerConfigContract](../modules/_poppinss_http_server.md#serverconfigcontract) |
+Name | Type |
+------ | ------ |
+`routePattern` | string |
+`routeParams` | any |
+`req?` | `IncomingMessage` |
+`res?` | `ServerResponse` |
+`serverConfig?` | [ServerConfigContract](../modules/_poppinss_http_server.md#serverconfigcontract) |
 
-**Returns:** [HttpContext](_poppinss_http_server.httpcontext.md)
-
-___
-
+**Returns:** *[HttpContext](_poppinss_http_server.httpcontext.md)*

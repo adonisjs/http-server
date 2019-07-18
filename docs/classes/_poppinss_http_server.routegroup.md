@@ -1,20 +1,26 @@
-[@poppinss/http-server](../README.md) > [@poppinss/http-server](../modules/_poppinss_http_server.md) > [RouteGroup](../classes/_poppinss_http_server.routegroup.md)
+> **[@poppinss/http-server](../README.md)**
 
-# Class: RouteGroup
+[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [RouteGroup](_poppinss_http_server.routegroup.md) /
 
-Group class exposes the API to take action on a group of routes. The group routes must be pre-defined using the constructor.
+# Class: RouteGroup <**Context**>
+
+Group class exposes the API to take action on a group
+of routes. The group routes must be pre-defined using
+the constructor.
 
 ## Type parameters
-#### Context 
+
+▪ **Context**
+
 ## Hierarchy
 
- `Macroable`
+* `Macroable`
 
-**↳ RouteGroup**
+  * **RouteGroup**
 
 ## Implements
 
-* [RouteGroupContract](../interfaces/_poppinss_http_server.routegroupcontract.md)<`Context`>
+* [RouteGroupContract](../interfaces/_poppinss_http_server.routegroupcontract.md)‹*`Context`*›
 
 ## Index
 
@@ -25,8 +31,8 @@ Group class exposes the API to take action on a group of routes. The group route
 ### Properties
 
 * [routes](_poppinss_http_server.routegroup.md#routes)
-* [_getters](_poppinss_http_server.routegroup.md#_getters)
-* [_macros](_poppinss_http_server.routegroup.md#_macros)
+* [_getters](_poppinss_http_server.routegroup.md#static-protected-_getters)
+* [_macros](_poppinss_http_server.routegroup.md#static-protected-_macros)
 
 ### Methods
 
@@ -36,303 +42,306 @@ Group class exposes the API to take action on a group of routes. The group route
 * [namespace](_poppinss_http_server.routegroup.md#namespace)
 * [prefix](_poppinss_http_server.routegroup.md#prefix)
 * [where](_poppinss_http_server.routegroup.md#where)
-* [getGetter](_poppinss_http_server.routegroup.md#getgetter)
-* [getMacro](_poppinss_http_server.routegroup.md#getmacro)
-* [getter](_poppinss_http_server.routegroup.md#getter)
-* [hasGetter](_poppinss_http_server.routegroup.md#hasgetter)
-* [hasMacro](_poppinss_http_server.routegroup.md#hasmacro)
-* [hydrate](_poppinss_http_server.routegroup.md#hydrate)
-* [macro](_poppinss_http_server.routegroup.md#macro)
-
----
+* [getGetter](_poppinss_http_server.routegroup.md#static-getgetter)
+* [getMacro](_poppinss_http_server.routegroup.md#static-getmacro)
+* [getter](_poppinss_http_server.routegroup.md#static-getter)
+* [hasGetter](_poppinss_http_server.routegroup.md#static-hasgetter)
+* [hasMacro](_poppinss_http_server.routegroup.md#static-hasmacro)
+* [hydrate](_poppinss_http_server.routegroup.md#static-hydrate)
+* [macro](_poppinss_http_server.routegroup.md#static-macro)
 
 ## Constructors
 
-<a id="constructor"></a>
-
 ###  constructor
 
-⊕ **new RouteGroup**(routes: *([Route](_poppinss_http_server.route.md)<`Context`> \| [RouteResource](_poppinss_http_server.routeresource.md)<`Context`> \| [BriskRoute](_poppinss_http_server.briskroute.md)<`Context`>)[]*): [RouteGroup](_poppinss_http_server.routegroup.md)
+\+ **new RouteGroup**(`routes`: [Route](_poppinss_http_server.route.md)‹*`Context`*› | [RouteResource](_poppinss_http_server.routeresource.md)‹*`Context`*› | [BriskRoute](_poppinss_http_server.briskroute.md)‹*`Context`*› | [RouteGroup](_poppinss_http_server.routegroup.md)‹*`Context`*›[]): *[RouteGroup](_poppinss_http_server.routegroup.md)*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| routes | ([Route](_poppinss_http_server.route.md)<`Context`> \| [RouteResource](_poppinss_http_server.routeresource.md)<`Context`> \| [BriskRoute](_poppinss_http_server.briskroute.md)<`Context`>)[] |
+Name | Type |
+------ | ------ |
+`routes` | [Route](_poppinss_http_server.route.md)‹*`Context`*› \| [RouteResource](_poppinss_http_server.routeresource.md)‹*`Context`*› \| [BriskRoute](_poppinss_http_server.briskroute.md)‹*`Context`*› \| [RouteGroup](_poppinss_http_server.routegroup.md)‹*`Context`*›[] |
 
-**Returns:** [RouteGroup](_poppinss_http_server.routegroup.md)
-
-___
+**Returns:** *[RouteGroup](_poppinss_http_server.routegroup.md)*
 
 ## Properties
 
-<a id="routes"></a>
-
 ###  routes
 
-**● routes**: *([Route](_poppinss_http_server.route.md)<`Context`> \| [RouteResource](_poppinss_http_server.routeresource.md)<`Context`> \| [BriskRoute](_poppinss_http_server.briskroute.md)<`Context`>)[]*
+• **routes**: *[Route](_poppinss_http_server.route.md)‹*`Context`*› | [RouteResource](_poppinss_http_server.routeresource.md)‹*`Context`*› | [BriskRoute](_poppinss_http_server.briskroute.md)‹*`Context`*› | [RouteGroup](_poppinss_http_server.routegroup.md)‹*`Context`*›[]*
+
+*Implementation of [RouteGroupContract](../interfaces/_poppinss_http_server.routegroupcontract.md).[routes](../interfaces/_poppinss_http_server.routegroupcontract.md#routes)*
 
 ___
-<a id="_getters"></a>
 
-### `<Static>``<Protected>` _getters
+### `Static` `Protected` _getters
 
-**● _getters**: *`object`*
+▪ **_getters**: *object*
 
-#### Type declaration
+*Overrides void*
 
-___
-<a id="_macros"></a>
-
-### `<Static>``<Protected>` _macros
-
-**● _macros**: *`object`*
-
-#### Type declaration
+#### Type declaration:
 
 ___
+
+### `Static` `Protected` _macros
+
+▪ **_macros**: *object*
+
+*Overrides void*
+
+#### Type declaration:
 
 ## Methods
 
-<a id="as"></a>
-
 ###  as
 
-▸ **as**(name: *`string`*): `this`
+▸ **as**(`name`: string): *this*
+
+*Implementation of [RouteGroupContract](../interfaces/_poppinss_http_server.routegroupcontract.md)*
 
 Prepend name to the routes name.
 
-*__example__*:
- ```ts
+**`example`** 
+```ts
 Route.group(() => {
 }).as('version1')
 ```
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
+Name | Type |
+------ | ------ |
+`name` | string |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="domain"></a>
 
 ###  domain
 
-▸ **domain**(domain: *`string`*): `this`
+▸ **domain**(`domain`: string): *this*
+
+*Implementation of [RouteGroupContract](../interfaces/_poppinss_http_server.routegroupcontract.md)*
 
 Define domain for all the routes.
 
-*__example__*:
- ```ts
+**`example`** 
+```ts
 Route.group(() => {
 }).domain(':name.adonisjs.com')
 ```
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| domain | `string` |
+Name | Type |
+------ | ------ |
+`domain` | string |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="middleware"></a>
 
 ###  middleware
 
-▸ **middleware**(middleware: *`any` \| `any`[]*): `this`
+▸ **middleware**(`middleware`: any | any[]): *this*
+
+*Implementation of [RouteGroupContract](../interfaces/_poppinss_http_server.routegroupcontract.md)*
 
 Prepend an array of middleware to all routes middleware.
 
-*__example__*:
- ```ts
+**`example`** 
+```ts
 Route.group(() => {
 }).middleware(['auth'])
 ```
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| middleware | `any` \| `any`[] |
+Name | Type |
+------ | ------ |
+`middleware` | any \| any[] |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="namespace"></a>
 
 ###  namespace
 
-▸ **namespace**(namespace: *`string`*): `this`
+▸ **namespace**(`namespace`: string): *this*
+
+*Implementation of [RouteGroupContract](../interfaces/_poppinss_http_server.routegroupcontract.md)*
 
 Define namespace for all the routes inside the group.
 
-*__example__*:
- ```ts
+**`example`** 
+```ts
 Route.group(() => {
 }).namespace('App/Admin/Controllers')
 ```
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| namespace | `string` |
+Name | Type |
+------ | ------ |
+`namespace` | string |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="prefix"></a>
 
 ###  prefix
 
-▸ **prefix**(prefix: *`string`*): `this`
+▸ **prefix**(`prefix`: string): *this*
+
+*Implementation of [RouteGroupContract](../interfaces/_poppinss_http_server.routegroupcontract.md)*
 
 Define prefix all the routes in the group.
 
-*__example__*:
- ```ts
+**`example`** 
+```ts
 Route.group(() => {
 }).prefix('v1')
 ```
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| prefix | `string` |
+Name | Type |
+------ | ------ |
+`prefix` | string |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="where"></a>
 
 ###  where
 
-▸ **where**(param: *`string`*, matcher: *`RegExp` \| `string`*): `this`
+▸ **where**(`param`: string, `matcher`: `RegExp` | string): *this*
+
+*Implementation of [RouteGroupContract](../interfaces/_poppinss_http_server.routegroupcontract.md)*
 
 Define Regex matchers for a given param for all the routes.
 
-*__example__*:
- ```ts
+**`example`** 
+```ts
 Route.group(() => {
 }).where('id', /^[0-9]+/)
 ```
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| param | `string` |
-| matcher | `RegExp` \| `string` |
+Name | Type |
+------ | ------ |
+`param` | string |
+`matcher` | `RegExp` \| string |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="getgetter"></a>
 
-### `<Static>` getGetter
+### `Static` getGetter
 
-▸ **getGetter**(name: *`string`*): `MacroableFn` \| `undefined`
+▸ **getGetter**(`name`: string): *`MacroableFn` | undefined*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
+Name | Type |
+------ | ------ |
+`name` | string |
 
-**Returns:** `MacroableFn` \| `undefined`
+**Returns:** *`MacroableFn` | undefined*
 
 ___
-<a id="getmacro"></a>
 
-### `<Static>` getMacro
+### `Static` getMacro
 
-▸ **getMacro**(name: *`string`*): `MacroableFn` \| `undefined`
+▸ **getMacro**(`name`: string): *`MacroableFn` | undefined*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
+Name | Type |
+------ | ------ |
+`name` | string |
 
-**Returns:** `MacroableFn` \| `undefined`
+**Returns:** *`MacroableFn` | undefined*
 
 ___
-<a id="getter"></a>
 
-### `<Static>` getter
+### `Static` getter
 
-▸ **getter**(name: *`string`*, callback: *`MacroableFn`*, singleton?: *`undefined` \| `false` \| `true`*): `void`
+▸ **getter**(`name`: string, `callback`: `MacroableFn`, `singleton?`: undefined | false | true): *void*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
-| callback | `MacroableFn` |
-| `Optional` singleton | `undefined` \| `false` \| `true` |
+Name | Type |
+------ | ------ |
+`name` | string |
+`callback` | `MacroableFn` |
+`singleton?` | undefined \| false \| true |
 
-**Returns:** `void`
+**Returns:** *void*
 
 ___
-<a id="hasgetter"></a>
 
-### `<Static>` hasGetter
+### `Static` hasGetter
 
-▸ **hasGetter**(name: *`string`*): `boolean`
+▸ **hasGetter**(`name`: string): *boolean*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
+Name | Type |
+------ | ------ |
+`name` | string |
 
-**Returns:** `boolean`
+**Returns:** *boolean*
 
 ___
-<a id="hasmacro"></a>
 
-### `<Static>` hasMacro
+### `Static` hasMacro
 
-▸ **hasMacro**(name: *`string`*): `boolean`
+▸ **hasMacro**(`name`: string): *boolean*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
+Name | Type |
+------ | ------ |
+`name` | string |
 
-**Returns:** `boolean`
-
-___
-<a id="hydrate"></a>
-
-### `<Static>` hydrate
-
-▸ **hydrate**(): `void`
-
-**Returns:** `void`
+**Returns:** *boolean*
 
 ___
-<a id="macro"></a>
 
-### `<Static>` macro
+### `Static` hydrate
 
-▸ **macro**(name: *`string`*, callback: *`MacroableFn`*): `void`
+▸ **hydrate**(): *void*
+
+*Inherited from void*
+
+**Returns:** *void*
+
+___
+
+### `Static` macro
+
+▸ **macro**(`name`: string, `callback`: `MacroableFn`): *void*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
-| callback | `MacroableFn` |
+Name | Type |
+------ | ------ |
+`name` | string |
+`callback` | `MacroableFn` |
 
-**Returns:** `void`
-
-___
-
+**Returns:** *void*

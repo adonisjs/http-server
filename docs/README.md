@@ -1,11 +1,9 @@
+> **[@poppinss/http-server](README.md)**
 
-#  @poppinss/http-server
+[Globals](README.md) /
 
 ## Index
 
 ### External modules
 
 * [@poppinss/http-server](modules/_poppinss_http_server.md)
-
----
-

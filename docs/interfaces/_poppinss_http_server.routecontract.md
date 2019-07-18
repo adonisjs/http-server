@@ -1,14 +1,18 @@
-[@poppinss/http-server](../README.md) > [@poppinss/http-server](../modules/_poppinss_http_server.md) > [RouteContract](../interfaces/_poppinss_http_server.routecontract.md)
+> **[@poppinss/http-server](../README.md)**
 
-# Interface: RouteContract
+[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [RouteContract](_poppinss_http_server.routecontract.md) /
+
+# Interface: RouteContract <**Context**>
 
 Shape of route class
 
 ## Type parameters
-#### Context 
+
+▪ **Context**
+
 ## Hierarchy
 
-**RouteContract**
+* **RouteContract**
 
 ## Implemented by
 
@@ -31,127 +35,109 @@ Shape of route class
 * [toJSON](_poppinss_http_server.routecontract.md#tojson)
 * [where](_poppinss_http_server.routecontract.md#where)
 
----
-
 ## Properties
-
-<a id="deleted"></a>
 
 ###  deleted
 
-**● deleted**: *`boolean`*
+• **deleted**: *boolean*
 
 ___
-<a id="name"></a>
 
 ###  name
 
-**● name**: *`string`*
-
-___
+• **name**: *string*
 
 ## Methods
 
-<a id="as"></a>
-
 ###  as
 
-▸ **as**(name: *`string`*, append?: *`undefined` \| `false` \| `true`*): `this`
+▸ **as**(`name`: string, `append?`: undefined | false | true): *this*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
-| `Optional` append | `undefined` \| `false` \| `true` |
+Name | Type |
+------ | ------ |
+`name` | string |
+`append?` | undefined \| false \| true |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="domain"></a>
 
 ###  domain
 
-▸ **domain**(domain: *`string`*): `this`
+▸ **domain**(`domain`: string): *this*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| domain | `string` |
+Name | Type |
+------ | ------ |
+`domain` | string |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="middleware"></a>
 
 ###  middleware
 
-▸ **middleware**(middleware: *`any` \| `any`[]*, prepend?: *`undefined` \| `false` \| `true`*): `this`
+▸ **middleware**(`middleware`: any | any[], `prepend?`: undefined | false | true): *this*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| middleware | `any` \| `any`[] |
-| `Optional` prepend | `undefined` \| `false` \| `true` |
+Name | Type |
+------ | ------ |
+`middleware` | any \| any[] |
+`prepend?` | undefined \| false \| true |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="namespace"></a>
 
 ###  namespace
 
-▸ **namespace**(namespace: *`string`*): `this`
+▸ **namespace**(`namespace`: string): *this*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| namespace | `string` |
+Name | Type |
+------ | ------ |
+`namespace` | string |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="prefix"></a>
 
 ###  prefix
 
-▸ **prefix**(prefix: *`string`*): `this`
+▸ **prefix**(`prefix`: string): *this*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| prefix | `string` |
+Name | Type |
+------ | ------ |
+`prefix` | string |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="tojson"></a>
 
 ###  toJSON
 
-▸ **toJSON**(): [RouteDefination](../modules/_poppinss_http_server.md#routedefination)<`Context`>
+▸ **toJSON**(): *[RouteDefination](../modules/_poppinss_http_server.md#routedefination)‹*`Context`*›*
 
-**Returns:** [RouteDefination](../modules/_poppinss_http_server.md#routedefination)<`Context`>
+**Returns:** *[RouteDefination](../modules/_poppinss_http_server.md#routedefination)‹*`Context`*›*
 
 ___
-<a id="where"></a>
 
 ###  where
 
-▸ **where**(param: *`string`*, matcher: *`string` \| `RegExp`*): `this`
+▸ **where**(`param`: string, `matcher`: string | `RegExp`): *this*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| param | `string` |
-| matcher | `string` \| `RegExp` |
+Name | Type |
+------ | ------ |
+`param` | string |
+`matcher` | string \| `RegExp` |
 
-**Returns:** `this`
-
-___
-
+**Returns:** *this*

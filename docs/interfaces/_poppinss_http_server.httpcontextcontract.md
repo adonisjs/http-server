@@ -1,12 +1,15 @@
-[@poppinss/http-server](../README.md) > [@poppinss/http-server](../modules/_poppinss_http_server.md) > [HttpContextContract](../interfaces/_poppinss_http_server.httpcontextcontract.md)
+> **[@poppinss/http-server](../README.md)**
+
+[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [HttpContextContract](_poppinss_http_server.httpcontextcontract.md) /
 
 # Interface: HttpContextContract
 
-Http request context passed to all middleware and route handler
+Http request context passed to all middleware
+and route handler
 
 ## Hierarchy
 
-**HttpContextContract**
+* **HttpContextContract**
 
 ## Implemented by
 
@@ -17,56 +20,44 @@ Http request context passed to all middleware and route handler
 ### Properties
 
 * [logger](_poppinss_http_server.httpcontextcontract.md#logger)
-* [params](_poppinss_http_server.httpcontextcontract.md#params)
+* [params](_poppinss_http_server.httpcontextcontract.md#optional-params)
 * [request](_poppinss_http_server.httpcontextcontract.md#request)
 * [response](_poppinss_http_server.httpcontextcontract.md#response)
-* [route](_poppinss_http_server.httpcontextcontract.md#route)
-* [subdomains](_poppinss_http_server.httpcontextcontract.md#subdomains)
-
----
+* [route](_poppinss_http_server.httpcontextcontract.md#optional-route)
+* [subdomains](_poppinss_http_server.httpcontextcontract.md#optional-subdomains)
 
 ## Properties
 
-<a id="logger"></a>
-
 ###  logger
 
-**● logger**: *`LoggerContract`*
+• **logger**: *`LoggerContract`*
 
 ___
-<a id="params"></a>
 
-### `<Optional>` params
+### `Optional` params
 
-**● params**: *`any`*
+• **params**? : *any*
 
 ___
-<a id="request"></a>
 
 ###  request
 
-**● request**: *`RequestContract`*
+• **request**: *`RequestContract`*
 
 ___
-<a id="response"></a>
 
 ###  response
 
-**● response**: *`ResponseContract`*
-
-___
-<a id="route"></a>
-
-### `<Optional>` route
-
-**● route**: *[RouteNode](../modules/_poppinss_http_server.md#routenode)<`this`>*
-
-___
-<a id="subdomains"></a>
-
-### `<Optional>` subdomains
-
-**● subdomains**: *`any`*
+• **response**: *`ResponseContract`*
 
 ___
 
+### `Optional` route
+
+• **route**? : *[RouteNode](../modules/_poppinss_http_server.md#routenode)‹*this*›*
+
+___
+
+### `Optional` subdomains
+
+• **subdomains**? : *any*

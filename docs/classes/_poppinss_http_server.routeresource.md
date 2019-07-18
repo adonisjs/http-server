@@ -1,25 +1,31 @@
-[@poppinss/http-server](../README.md) > [@poppinss/http-server](../modules/_poppinss_http_server.md) > [RouteResource](../classes/_poppinss_http_server.routeresource.md)
+> **[@poppinss/http-server](../README.md)**
 
-# Class: RouteResource
+[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [RouteResource](_poppinss_http_server.routeresource.md) /
 
-Resource route helps in defining multiple conventional routes. The support for shallow routes makes it super easy to avoid deeply nested routes. Learn more [http://weblog.jamisbuck.org/2007/2/5/nesting-resources](http://weblog.jamisbuck.org/2007/2/5/nesting-resources).
+# Class: RouteResource <**Context**>
 
-*__example__*:
- ```ts
+Resource route helps in defining multiple conventional routes. The support
+for shallow routes makes it super easy to avoid deeply nested routes.
+Learn more http://weblog.jamisbuck.org/2007/2/5/nesting-resources.
+
+**`example`** 
+```ts
 const resource = new RouteResource('articles', 'ArticlesController')
 ```
 
 ## Type parameters
-#### Context 
+
+▪ **Context**
+
 ## Hierarchy
 
- `Macroable`
+* `Macroable`
 
-**↳ RouteResource**
+  * **RouteResource**
 
 ## Implements
 
-* [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)<`Context`>
+* [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)‹*`Context`*›
 
 ## Index
 
@@ -30,8 +36,8 @@ const resource = new RouteResource('articles', 'ArticlesController')
 ### Properties
 
 * [routes](_poppinss_http_server.routeresource.md#routes)
-* [_getters](_poppinss_http_server.routeresource.md#_getters)
-* [_macros](_poppinss_http_server.routeresource.md#_macros)
+* [_getters](_poppinss_http_server.routeresource.md#static-protected-_getters)
+* [_macros](_poppinss_http_server.routeresource.md#static-protected-_macros)
 
 ### Methods
 
@@ -41,265 +47,267 @@ const resource = new RouteResource('articles', 'ArticlesController')
 * [namespace](_poppinss_http_server.routeresource.md#namespace)
 * [only](_poppinss_http_server.routeresource.md#only)
 * [where](_poppinss_http_server.routeresource.md#where)
-* [getGetter](_poppinss_http_server.routeresource.md#getgetter)
-* [getMacro](_poppinss_http_server.routeresource.md#getmacro)
-* [getter](_poppinss_http_server.routeresource.md#getter)
-* [hasGetter](_poppinss_http_server.routeresource.md#hasgetter)
-* [hasMacro](_poppinss_http_server.routeresource.md#hasmacro)
-* [hydrate](_poppinss_http_server.routeresource.md#hydrate)
-* [macro](_poppinss_http_server.routeresource.md#macro)
-
----
+* [getGetter](_poppinss_http_server.routeresource.md#static-getgetter)
+* [getMacro](_poppinss_http_server.routeresource.md#static-getmacro)
+* [getter](_poppinss_http_server.routeresource.md#static-getter)
+* [hasGetter](_poppinss_http_server.routeresource.md#static-hasgetter)
+* [hasMacro](_poppinss_http_server.routeresource.md#static-hasmacro)
+* [hydrate](_poppinss_http_server.routeresource.md#static-hydrate)
+* [macro](_poppinss_http_server.routeresource.md#static-macro)
 
 ## Constructors
 
-<a id="constructor"></a>
-
 ###  constructor
 
-⊕ **new RouteResource**(_resource: *`string`*, _controller: *`string`*, _namespace: *`string`*, _globalMatchers: *[RouteMatchers](../modules/_poppinss_http_server.md#routematchers)*, _shallow?: *`boolean`*): [RouteResource](_poppinss_http_server.routeresource.md)
+\+ **new RouteResource**(`_resource`: string, `_controller`: string, `_namespace`: string, `_globalMatchers`: [RouteMatchers](../modules/_poppinss_http_server.md#routematchers), `_shallow`: boolean): *[RouteResource](_poppinss_http_server.routeresource.md)*
 
 **Parameters:**
 
-| Name | Type | Default value |
-| ------ | ------ | ------ |
-| _resource | `string` | - |
-| _controller | `string` | - |
-| _namespace | `string` | - |
-| _globalMatchers | [RouteMatchers](../modules/_poppinss_http_server.md#routematchers) | - |
-| `Default value` _shallow | `boolean` | false |
+Name | Type | Default |
+------ | ------ | ------ |
+`_resource` | string | - |
+`_controller` | string | - |
+`_namespace` | string | - |
+`_globalMatchers` | [RouteMatchers](../modules/_poppinss_http_server.md#routematchers) | - |
+`_shallow` | boolean | false |
 
-**Returns:** [RouteResource](_poppinss_http_server.routeresource.md)
-
-___
+**Returns:** *[RouteResource](_poppinss_http_server.routeresource.md)*
 
 ## Properties
 
-<a id="routes"></a>
-
 ###  routes
 
-**● routes**: *[Route](_poppinss_http_server.route.md)<`Context`>[]* =  []
+• **routes**: *[Route](_poppinss_http_server.route.md)‹*`Context`*›[]* =  []
+
+*Implementation of [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md).[routes](../interfaces/_poppinss_http_server.routeresourcecontract.md#routes)*
 
 ___
-<a id="_getters"></a>
 
-### `<Static>``<Protected>` _getters
+### `Static` `Protected` _getters
 
-**● _getters**: *`object`*
+▪ **_getters**: *object*
 
-#### Type declaration
+*Overrides void*
 
-___
-<a id="_macros"></a>
-
-### `<Static>``<Protected>` _macros
-
-**● _macros**: *`object`*
-
-#### Type declaration
+#### Type declaration:
 
 ___
+
+### `Static` `Protected` _macros
+
+▪ **_macros**: *object*
+
+*Overrides void*
+
+#### Type declaration:
 
 ## Methods
 
-<a id="apionly"></a>
-
 ###  apiOnly
 
-▸ **apiOnly**(): `this`
+▸ **apiOnly**(): *this*
 
-Register api only routes. The `create` and `edit` routes, which are meant to show forms will not be registered
+*Implementation of [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)*
 
-**Returns:** `this`
+Register api only routes. The `create` and `edit` routes, which
+are meant to show forms will not be registered
+
+**Returns:** *this*
 
 ___
-<a id="except"></a>
 
 ###  except
 
-▸ **except**(names: *`string`[]*): `this`
+▸ **except**(`names`: string[]): *this*
+
+*Implementation of [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)*
 
 Register all routes, except the one's defined
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| names | `string`[] |
+Name | Type |
+------ | ------ |
+`names` | string[] |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="middleware"></a>
 
 ###  middleware
 
-▸ **middleware**(middleware: *`object`*): `this`
+▸ **middleware**(`middleware`: object): *this*
 
 Add middleware to routes inside the resource
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| middleware | `object` |
+Name | Type |
+------ | ------ |
+`middleware` | object |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="namespace"></a>
 
 ###  namespace
 
-▸ **namespace**(namespace: *`string`*): `this`
+▸ **namespace**(`namespace`: string): *this*
+
+*Implementation of [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)*
 
 Define namespace for all the routes inside a given resource
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| namespace | `string` |
+Name | Type |
+------ | ------ |
+`namespace` | string |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="only"></a>
 
 ###  only
 
-▸ **only**(names: *`string`[]*): `this`
+▸ **only**(`names`: string[]): *this*
+
+*Implementation of [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)*
 
 Register only given routes and remove others
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| names | `string`[] |
+Name | Type |
+------ | ------ |
+`names` | string[] |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="where"></a>
 
 ###  where
 
-▸ **where**(key: *`string`*, matcher: *`string` \| `RegExp`*): `this`
+▸ **where**(`key`: string, `matcher`: string | `RegExp`): *this*
+
+*Implementation of [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)*
 
 Define matcher for params inside the resource
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| key | `string` |
-| matcher | `string` \| `RegExp` |
+Name | Type |
+------ | ------ |
+`key` | string |
+`matcher` | string \| `RegExp` |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="getgetter"></a>
 
-### `<Static>` getGetter
+### `Static` getGetter
 
-▸ **getGetter**(name: *`string`*): `MacroableFn` \| `undefined`
+▸ **getGetter**(`name`: string): *`MacroableFn` | undefined*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
+Name | Type |
+------ | ------ |
+`name` | string |
 
-**Returns:** `MacroableFn` \| `undefined`
+**Returns:** *`MacroableFn` | undefined*
 
 ___
-<a id="getmacro"></a>
 
-### `<Static>` getMacro
+### `Static` getMacro
 
-▸ **getMacro**(name: *`string`*): `MacroableFn` \| `undefined`
+▸ **getMacro**(`name`: string): *`MacroableFn` | undefined*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
+Name | Type |
+------ | ------ |
+`name` | string |
 
-**Returns:** `MacroableFn` \| `undefined`
+**Returns:** *`MacroableFn` | undefined*
 
 ___
-<a id="getter"></a>
 
-### `<Static>` getter
+### `Static` getter
 
-▸ **getter**(name: *`string`*, callback: *`MacroableFn`*, singleton?: *`undefined` \| `false` \| `true`*): `void`
+▸ **getter**(`name`: string, `callback`: `MacroableFn`, `singleton?`: undefined | false | true): *void*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
-| callback | `MacroableFn` |
-| `Optional` singleton | `undefined` \| `false` \| `true` |
+Name | Type |
+------ | ------ |
+`name` | string |
+`callback` | `MacroableFn` |
+`singleton?` | undefined \| false \| true |
 
-**Returns:** `void`
+**Returns:** *void*
 
 ___
-<a id="hasgetter"></a>
 
-### `<Static>` hasGetter
+### `Static` hasGetter
 
-▸ **hasGetter**(name: *`string`*): `boolean`
+▸ **hasGetter**(`name`: string): *boolean*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
+Name | Type |
+------ | ------ |
+`name` | string |
 
-**Returns:** `boolean`
+**Returns:** *boolean*
 
 ___
-<a id="hasmacro"></a>
 
-### `<Static>` hasMacro
+### `Static` hasMacro
 
-▸ **hasMacro**(name: *`string`*): `boolean`
+▸ **hasMacro**(`name`: string): *boolean*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
+Name | Type |
+------ | ------ |
+`name` | string |
 
-**Returns:** `boolean`
-
-___
-<a id="hydrate"></a>
-
-### `<Static>` hydrate
-
-▸ **hydrate**(): `void`
-
-**Returns:** `void`
+**Returns:** *boolean*
 
 ___
-<a id="macro"></a>
 
-### `<Static>` macro
+### `Static` hydrate
 
-▸ **macro**(name: *`string`*, callback: *`MacroableFn`*): `void`
+▸ **hydrate**(): *void*
+
+*Inherited from void*
+
+**Returns:** *void*
+
+___
+
+### `Static` macro
+
+▸ **macro**(`name`: string, `callback`: `MacroableFn`): *void*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
-| callback | `MacroableFn` |
+Name | Type |
+------ | ------ |
+`name` | string |
+`callback` | `MacroableFn` |
 
-**Returns:** `void`
-
-___
-
+**Returns:** *void*

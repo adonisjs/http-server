@@ -1,18 +1,26 @@
-[@poppinss/http-server](../README.md) > [@poppinss/http-server](../modules/_poppinss_http_server.md) > [RouterContract](../interfaces/_poppinss_http_server.routercontract.md)
+> **[@poppinss/http-server](../README.md)**
 
-# Interface: RouterContract
+[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [RouterContract](_poppinss_http_server.routercontract.md) /
+
+# Interface: RouterContract <**Context, Route, Group, Resource, Brisk**>
 
 Shape of router exposed for creating routes
 
 ## Type parameters
-#### Context 
-#### Route 
-#### Group 
-#### Resource 
-#### Brisk 
+
+▪ **Context**
+
+▪ **Route**
+
+▪ **Group**
+
+▪ **Resource**
+
+▪ **Brisk**
+
 ## Hierarchy
 
-**RouterContract**
+* **RouterContract**
 
 ## Implemented by
 
@@ -43,327 +51,295 @@ Shape of router exposed for creating routes
 * [post](_poppinss_http_server.routercontract.md#post)
 * [put](_poppinss_http_server.routercontract.md#put)
 * [resource](_poppinss_http_server.routercontract.md#resource)
-* [route](_poppinss_http_server.routercontract.md#route-1)
+* [route](_poppinss_http_server.routercontract.md#route)
 * [shallowResource](_poppinss_http_server.routercontract.md#shallowresource)
 * [toJSON](_poppinss_http_server.routercontract.md#tojson)
 * [urlFor](_poppinss_http_server.routercontract.md#urlfor)
 * [where](_poppinss_http_server.routercontract.md#where)
 
----
-
 ## Properties
-
-<a id="briskroute"></a>
 
 ###  BriskRoute
 
-**● BriskRoute**: *`MacroableConstructorContract`*
+• **BriskRoute**: *`MacroableConstructorContract`*
 
 ___
-<a id="route"></a>
 
 ###  Route
 
-**● Route**: *`MacroableConstructorContract`*
+• **Route**: *`MacroableConstructorContract`*
 
 ___
-<a id="routegroup"></a>
 
 ###  RouteGroup
 
-**● RouteGroup**: *`MacroableConstructorContract`*
+• **RouteGroup**: *`MacroableConstructorContract`*
 
 ___
-<a id="routeresource"></a>
 
 ###  RouteResource
 
-**● RouteResource**: *`MacroableConstructorContract`*
+• **RouteResource**: *`MacroableConstructorContract`*
 
 ___
-<a id="routes"></a>
 
 ###  routes
 
-**● routes**: *([RouteContract](_poppinss_http_server.routecontract.md)<`Context`> \| [RouteResourceContract](_poppinss_http_server.routeresourcecontract.md)<`Context`> \| [RouteGroupContract](_poppinss_http_server.routegroupcontract.md)<`Context`> \| [BriskRouteContract](_poppinss_http_server.briskroutecontract.md)<`Context`>)[]*
-
-___
+• **routes**: *[RouteContract](_poppinss_http_server.routecontract.md)‹*`Context`*› | [RouteResourceContract](_poppinss_http_server.routeresourcecontract.md)‹*`Context`*› | [RouteGroupContract](_poppinss_http_server.routegroupcontract.md)‹*`Context`*› | [BriskRouteContract](_poppinss_http_server.briskroutecontract.md)‹*`Context`*›[]*
 
 ## Methods
 
-<a id="any"></a>
-
 ###  any
 
-▸ **any**(pattern: *`string`*, handler: *[RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`>*): `Route`
+▸ **any**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*›): *`Route`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| pattern | `string` |
-| handler | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`> |
+Name | Type |
+------ | ------ |
+`pattern` | string |
+`handler` | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*› |
 
-**Returns:** `Route`
+**Returns:** *`Route`*
 
 ___
-<a id="commit"></a>
 
 ###  commit
 
-▸ **commit**(): `void`
+▸ **commit**(): *void*
 
-**Returns:** `void`
+**Returns:** *void*
 
 ___
-<a id="destroy"></a>
 
 ###  destroy
 
-▸ **destroy**(pattern: *`string`*, handler: *[RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`>*): `Route`
+▸ **destroy**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*›): *`Route`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| pattern | `string` |
-| handler | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`> |
+Name | Type |
+------ | ------ |
+`pattern` | string |
+`handler` | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*› |
 
-**Returns:** `Route`
+**Returns:** *`Route`*
 
 ___
-<a id="find"></a>
 
 ###  find
 
-▸ **find**(url: *`string`*, method: *`string`*, domain?: *`undefined` \| `string`*): `null` \| [MatchedRoute](../modules/_poppinss_http_server.md#matchedroute)<`Context`>
+▸ **find**(`url`: string, `method`: string, `domain?`: undefined | string): *null | [MatchedRoute](../modules/_poppinss_http_server.md#matchedroute)‹*`Context`*›*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| url | `string` |
-| method | `string` |
-| `Optional` domain | `undefined` \| `string` |
+Name | Type |
+------ | ------ |
+`url` | string |
+`method` | string |
+`domain?` | undefined \| string |
 
-**Returns:** `null` \| [MatchedRoute](../modules/_poppinss_http_server.md#matchedroute)<`Context`>
+**Returns:** *null | [MatchedRoute](../modules/_poppinss_http_server.md#matchedroute)‹*`Context`*›*
 
 ___
-<a id="fortesting"></a>
 
 ###  forTesting
 
-▸ **forTesting**(pattern?: *`undefined` \| `string`*, methods?: *`string`[]*, handler?: *`any`*): `Route`
+▸ **forTesting**(`pattern?`: undefined | string, `methods?`: string[], `handler?`: any): *`Route`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| `Optional` pattern | `undefined` \| `string` |
-| `Optional` methods | `string`[] |
-| `Optional` handler | `any` |
+Name | Type |
+------ | ------ |
+`pattern?` | undefined \| string |
+`methods?` | string[] |
+`handler?` | any |
 
-**Returns:** `Route`
+**Returns:** *`Route`*
 
 ___
-<a id="get"></a>
 
 ###  get
 
-▸ **get**(pattern: *`string`*, handler: *[RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`>*): `Route`
+▸ **get**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*›): *`Route`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| pattern | `string` |
-| handler | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`> |
+Name | Type |
+------ | ------ |
+`pattern` | string |
+`handler` | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*› |
 
-**Returns:** `Route`
+**Returns:** *`Route`*
 
 ___
-<a id="group"></a>
 
 ###  group
 
-▸ **group**(callback: *`function`*): `Group`
+▸ **group**(`callback`: function): *`Group`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| callback | `function` |
+▪ **callback**: *function*
 
-**Returns:** `Group`
+▸ (): *void*
+
+**Returns:** *`Group`*
 
 ___
-<a id="namespace"></a>
 
 ###  namespace
 
-▸ **namespace**(namespace: *`string`*): `this`
+▸ **namespace**(`namespace`: string): *this*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| namespace | `string` |
+Name | Type |
+------ | ------ |
+`namespace` | string |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="on"></a>
 
 ###  on
 
-▸ **on**(pattern: *`string`*): `Brisk`
+▸ **on**(`pattern`: string): *`Brisk`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| pattern | `string` |
+Name | Type |
+------ | ------ |
+`pattern` | string |
 
-**Returns:** `Brisk`
+**Returns:** *`Brisk`*
 
 ___
-<a id="patch"></a>
 
 ###  patch
 
-▸ **patch**(pattern: *`string`*, handler: *[RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`>*): `Route`
+▸ **patch**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*›): *`Route`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| pattern | `string` |
-| handler | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`> |
+Name | Type |
+------ | ------ |
+`pattern` | string |
+`handler` | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*› |
 
-**Returns:** `Route`
+**Returns:** *`Route`*
 
 ___
-<a id="post"></a>
 
 ###  post
 
-▸ **post**(pattern: *`string`*, handler: *[RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`>*): `Route`
+▸ **post**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*›): *`Route`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| pattern | `string` |
-| handler | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`> |
+Name | Type |
+------ | ------ |
+`pattern` | string |
+`handler` | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*› |
 
-**Returns:** `Route`
+**Returns:** *`Route`*
 
 ___
-<a id="put"></a>
 
 ###  put
 
-▸ **put**(pattern: *`string`*, handler: *[RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`>*): `Route`
+▸ **put**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*›): *`Route`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| pattern | `string` |
-| handler | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`> |
+Name | Type |
+------ | ------ |
+`pattern` | string |
+`handler` | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*› |
 
-**Returns:** `Route`
+**Returns:** *`Route`*
 
 ___
-<a id="resource"></a>
 
 ###  resource
 
-▸ **resource**(resource: *`string`*, controller: *`string`*): `Resource`
+▸ **resource**(`resource`: string, `controller`: string): *`Resource`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| resource | `string` |
-| controller | `string` |
+Name | Type |
+------ | ------ |
+`resource` | string |
+`controller` | string |
 
-**Returns:** `Resource`
+**Returns:** *`Resource`*
 
 ___
-<a id="route-1"></a>
 
 ###  route
 
-▸ **route**(pattern: *`string`*, methods: *`string`[]*, handler: *[RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`>*): `Route`
+▸ **route**(`pattern`: string, `methods`: string[], `handler`: [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*›): *`Route`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| pattern | `string` |
-| methods | `string`[] |
-| handler | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`> |
+Name | Type |
+------ | ------ |
+`pattern` | string |
+`methods` | string[] |
+`handler` | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*› |
 
-**Returns:** `Route`
+**Returns:** *`Route`*
 
 ___
-<a id="shallowresource"></a>
 
 ###  shallowResource
 
-▸ **shallowResource**(resource: *`string`*, controller: *`string`*): `Resource`
+▸ **shallowResource**(`resource`: string, `controller`: string): *`Resource`*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| resource | `string` |
-| controller | `string` |
+Name | Type |
+------ | ------ |
+`resource` | string |
+`controller` | string |
 
-**Returns:** `Resource`
+**Returns:** *`Resource`*
 
 ___
-<a id="tojson"></a>
 
 ###  toJSON
 
-▸ **toJSON**(): [RouteNode](../modules/_poppinss_http_server.md#routenode)<`Context`>[]
+▸ **toJSON**(): *[RouteNode](../modules/_poppinss_http_server.md#routenode)‹*`Context`*›[]*
 
-**Returns:** [RouteNode](../modules/_poppinss_http_server.md#routenode)<`Context`>[]
+**Returns:** *[RouteNode](../modules/_poppinss_http_server.md#routenode)‹*`Context`*›[]*
 
 ___
-<a id="urlfor"></a>
 
 ###  urlFor
 
-▸ **urlFor**(pattern: *`string`*, options: *`object`*, domain?: *`undefined` \| `string`*): `null` \| `string`
+▸ **urlFor**(`pattern`: string, `options`: object, `domain?`: undefined | string): *null | string*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| pattern | `string` |
-| options | `object` |
-| `Optional` domain | `undefined` \| `string` |
+Name | Type |
+------ | ------ |
+`pattern` | string |
+`options` | object |
+`domain?` | undefined \| string |
 
-**Returns:** `null` \| `string`
+**Returns:** *null | string*
 
 ___
-<a id="where"></a>
 
 ###  where
 
-▸ **where**(key: *`string`*, matcher: *`string` \| `RegExp`*): `this`
+▸ **where**(`key`: string, `matcher`: string | `RegExp`): *this*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| key | `string` |
-| matcher | `string` \| `RegExp` |
+Name | Type |
+------ | ------ |
+`key` | string |
+`matcher` | string \| `RegExp` |
 
-**Returns:** `this`
-
-___
-
+**Returns:** *this*

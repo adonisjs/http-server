@@ -1,6 +1,8 @@
-[@poppinss/http-server](../README.md) > [@poppinss/http-server](../modules/_poppinss_http_server.md) > [Server](../classes/_poppinss_http_server.server.md)
+> **[@poppinss/http-server](../README.md)**
 
-# Class: Server
+[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [Server](_poppinss_http_server.server.md) /
+
+# Class: Server <**Context**>
 
 Server class handles the HTTP requests by using all Adonis micro modules.
 
@@ -19,14 +21,16 @@ http.createServer(server.handle.bind(server)).listen(3000)
 ```
 
 ## Type parameters
-#### Context :  [HttpContextContract](../interfaces/_poppinss_http_server.httpcontextcontract.md)
+
+▪ **Context**: *[HttpContextContract](../interfaces/_poppinss_http_server.httpcontextcontract.md)*
+
 ## Hierarchy
 
-**Server**
+* **Server**
 
 ## Implements
 
-* [ServerContract](../interfaces/_poppinss_http_server.servercontract.md)<`Context`>
+* [ServerContract](../interfaces/_poppinss_http_server.servercontract.md)‹*`Context`*›
 
 ## Index
 
@@ -36,7 +40,7 @@ http.createServer(server.handle.bind(server)).listen(3000)
 
 ### Properties
 
-* [instance](_poppinss_http_server.server.md#instance)
+* [instance](_poppinss_http_server.server.md#optional-instance)
 
 ### Methods
 
@@ -46,122 +50,124 @@ http.createServer(server.handle.bind(server)).listen(3000)
 * [onError](_poppinss_http_server.server.md#onerror)
 * [optimize](_poppinss_http_server.server.md#optimize)
 
----
-
 ## Constructors
-
-<a id="constructor"></a>
 
 ###  constructor
 
-⊕ **new Server**(_context: *`object`*, _router: *[RouterContract](../interfaces/_poppinss_http_server.routercontract.md)<`Context`>*, _middlewareStore: *[MiddlewareStoreContract](../interfaces/_poppinss_http_server.middlewarestorecontract.md)<`Context`>*, _logger: *`LoggerContract`*, _httpConfig: *[ServerConfigContract](../modules/_poppinss_http_server.md#serverconfigcontract)*): [Server](_poppinss_http_server.server.md)
+\+ **new Server**(`_context`: object, `_router`: [RouterContract](../interfaces/_poppinss_http_server.routercontract.md)‹*`Context`*›, `_middlewareStore`: [MiddlewareStoreContract](../interfaces/_poppinss_http_server.middlewarestorecontract.md)‹*`Context`*›, `_logger`: `LoggerContract`, `_httpConfig`: [ServerConfigContract](../modules/_poppinss_http_server.md#serverconfigcontract)): *[Server](_poppinss_http_server.server.md)*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| _context | `object` |
-| _router | [RouterContract](../interfaces/_poppinss_http_server.routercontract.md)<`Context`> |
-| _middlewareStore | [MiddlewareStoreContract](../interfaces/_poppinss_http_server.middlewarestorecontract.md)<`Context`> |
-| _logger | `LoggerContract` |
-| _httpConfig | [ServerConfigContract](../modules/_poppinss_http_server.md#serverconfigcontract) |
+Name | Type |
+------ | ------ |
+`_context` | object |
+`_router` | [RouterContract](../interfaces/_poppinss_http_server.routercontract.md)‹*`Context`*› |
+`_middlewareStore` | [MiddlewareStoreContract](../interfaces/_poppinss_http_server.middlewarestorecontract.md)‹*`Context`*› |
+`_logger` | `LoggerContract` |
+`_httpConfig` | [ServerConfigContract](../modules/_poppinss_http_server.md#serverconfigcontract) |
 
-**Returns:** [Server](_poppinss_http_server.server.md)
-
-___
+**Returns:** *[Server](_poppinss_http_server.server.md)*
 
 ## Properties
 
-<a id="instance"></a>
+### `Optional` instance
 
-### `<Optional>` instance
+• **instance**? : *`HttpServer` | `HttpsServer`*
 
-**● instance**: *`HttpServer` \| `HttpsServer`*
+*Implementation of [ServerContract](../interfaces/_poppinss_http_server.servercontract.md).[instance](../interfaces/_poppinss_http_server.servercontract.md#optional-instance)*
 
-The server itself doesn't create the http server instance. However, the consumer of this class can create one and set the instance for further reference. This is what ignitor does.
-
-___
+The server itself doesn't create the http server instance. However, the consumer
+of this class can create one and set the instance for further reference. This
+is what ignitor does.
 
 ## Methods
 
-<a id="after"></a>
-
 ###  after
 
-▸ **after**(cb: *[HookNode](../modules/_poppinss_http_server.md#hooknode)<`Context`>*): `this`
+▸ **after**(`cb`: [HookNode](../modules/_poppinss_http_server.md#hooknode)‹*`Context`*›): *this*
 
-Define hooks to be executed after the route handler. The after hooks can modify the lazy response. However, it shouldn't write the response to the socket.
+*Implementation of [ServerContract](../interfaces/_poppinss_http_server.servercontract.md)*
+
+Define hooks to be executed after the route handler. The after hooks
+can modify the lazy response. However, it shouldn't write the
+response to the socket.
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| cb | [HookNode](../modules/_poppinss_http_server.md#hooknode)<`Context`> |
+Name | Type |
+------ | ------ |
+`cb` | [HookNode](../modules/_poppinss_http_server.md#hooknode)‹*`Context`*› |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="before"></a>
 
 ###  before
 
-▸ **before**(cb: *[HookNode](../modules/_poppinss_http_server.md#hooknode)<`Context`>*): `this`
+▸ **before**(`cb`: [HookNode](../modules/_poppinss_http_server.md#hooknode)‹*`Context`*›): *this*
 
-Define hooks to be executed as soon as a new request has been received
+*Implementation of [ServerContract](../interfaces/_poppinss_http_server.servercontract.md)*
+
+Define hooks to be executed as soon as a new request
+has been received
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| cb | [HookNode](../modules/_poppinss_http_server.md#hooknode)<`Context`> |
+Name | Type |
+------ | ------ |
+`cb` | [HookNode](../modules/_poppinss_http_server.md#hooknode)‹*`Context`*› |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="handle"></a>
 
 ###  handle
 
-▸ **handle**(req: *`IncomingMessage`*, res: *`ServerResponse`*): `Promise`<`void`>
+▸ **handle**(`req`: `IncomingMessage`, `res`: `ServerResponse`): *`Promise<void>`*
 
-Handles a given HTTP request. This method can be attached to any HTTP server
+*Implementation of [ServerContract](../interfaces/_poppinss_http_server.servercontract.md)*
+
+Handles a given HTTP request. This method can be attached to any HTTP
+server
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| req | `IncomingMessage` |
-| res | `ServerResponse` |
+Name | Type |
+------ | ------ |
+`req` | `IncomingMessage` |
+`res` | `ServerResponse` |
 
-**Returns:** `Promise`<`void`>
+**Returns:** *`Promise<void>`*
 
 ___
-<a id="onerror"></a>
 
 ###  onError
 
-▸ **onError**(cb: *[ErrorHandlerNode](../modules/_poppinss_http_server.md#errorhandlernode)<`Context`>*): `this`
+▸ **onError**(`cb`: [ErrorHandlerNode](../modules/_poppinss_http_server.md#errorhandlernode)‹*`Context`*›): *this*
 
-Define custom error handler to handler all errors occurred during HTTP request
+*Implementation of [ServerContract](../interfaces/_poppinss_http_server.servercontract.md)*
+
+Define custom error handler to handler all errors
+occurred during HTTP request
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| cb | [ErrorHandlerNode](../modules/_poppinss_http_server.md#errorhandlernode)<`Context`> |
+Name | Type |
+------ | ------ |
+`cb` | [ErrorHandlerNode](../modules/_poppinss_http_server.md#errorhandlernode)‹*`Context`*› |
 
-**Returns:** `this`
+**Returns:** *this*
 
 ___
-<a id="optimize"></a>
 
 ###  optimize
 
-▸ **optimize**(): `void`
+▸ **optimize**(): *void*
 
-Optimizes internal handlers, based upon the existence of before handlers and global middleware. This helps in increasing throughput by 10%
+*Implementation of [ServerContract](../interfaces/_poppinss_http_server.servercontract.md)*
 
-**Returns:** `void`
+Optimizes internal handlers, based upon the existence of
+before handlers and global middleware. This helps in
+increasing throughput by 10%
 
-___
-
+**Returns:** *void*

@@ -1,22 +1,29 @@
-[@poppinss/http-server](../README.md) > [@poppinss/http-server](../modules/_poppinss_http_server.md) > [BriskRoute](../classes/_poppinss_http_server.briskroute.md)
+> **[@poppinss/http-server](../README.md)**
 
-# Class: BriskRoute
+[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [BriskRoute](_poppinss_http_server.briskroute.md) /
 
-Brisk route enables you to expose expressive API for defining route handler.
+# Class: BriskRoute <**Context**>
 
-For example: AdonisJs uses [BriskRoute](_poppinss_http_server.briskroute.md) `Route.on().render()` to render a view without defining a controller method or closure.
+Brisk route enables you to expose expressive API for
+defining route handler.
+
+For example: AdonisJs uses [BriskRoute](_poppinss_http_server.briskroute.md) `Route.on().render()`
+to render a view without defining a controller method or
+closure.
 
 ## Type parameters
-#### Context 
+
+▪ **Context**
+
 ## Hierarchy
 
- `Macroable`
+* `Macroable`
 
-**↳ BriskRoute**
+  * **BriskRoute**
 
 ## Implements
 
-* [BriskRouteContract](../interfaces/_poppinss_http_server.briskroutecontract.md)<`Context`>
+* [BriskRouteContract](../interfaces/_poppinss_http_server.briskroutecontract.md)‹*`Context`*›
 
 ## Index
 
@@ -27,193 +34,192 @@ For example: AdonisJs uses [BriskRoute](_poppinss_http_server.briskroute.md) `Ro
 ### Properties
 
 * [route](_poppinss_http_server.briskroute.md#route)
-* [_getters](_poppinss_http_server.briskroute.md#_getters)
-* [_macros](_poppinss_http_server.briskroute.md#_macros)
+* [_getters](_poppinss_http_server.briskroute.md#static-protected-_getters)
+* [_macros](_poppinss_http_server.briskroute.md#static-protected-_macros)
 
 ### Methods
 
 * [setHandler](_poppinss_http_server.briskroute.md#sethandler)
-* [getGetter](_poppinss_http_server.briskroute.md#getgetter)
-* [getMacro](_poppinss_http_server.briskroute.md#getmacro)
-* [getter](_poppinss_http_server.briskroute.md#getter)
-* [hasGetter](_poppinss_http_server.briskroute.md#hasgetter)
-* [hasMacro](_poppinss_http_server.briskroute.md#hasmacro)
-* [hydrate](_poppinss_http_server.briskroute.md#hydrate)
-* [macro](_poppinss_http_server.briskroute.md#macro)
-
----
+* [getGetter](_poppinss_http_server.briskroute.md#static-getgetter)
+* [getMacro](_poppinss_http_server.briskroute.md#static-getmacro)
+* [getter](_poppinss_http_server.briskroute.md#static-getter)
+* [hasGetter](_poppinss_http_server.briskroute.md#static-hasgetter)
+* [hasMacro](_poppinss_http_server.briskroute.md#static-hasmacro)
+* [hydrate](_poppinss_http_server.briskroute.md#static-hydrate)
+* [macro](_poppinss_http_server.briskroute.md#static-macro)
 
 ## Constructors
 
-<a id="constructor"></a>
-
 ###  constructor
 
-⊕ **new BriskRoute**(_pattern: *`string`*, _namespace: *`string`*, _globalMatchers: *[RouteMatchers](../modules/_poppinss_http_server.md#routematchers)*): [BriskRoute](_poppinss_http_server.briskroute.md)
+\+ **new BriskRoute**(`_pattern`: string, `_namespace`: string, `_globalMatchers`: [RouteMatchers](../modules/_poppinss_http_server.md#routematchers)): *[BriskRoute](_poppinss_http_server.briskroute.md)*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| _pattern | `string` |
-| _namespace | `string` |
-| _globalMatchers | [RouteMatchers](../modules/_poppinss_http_server.md#routematchers) |
+Name | Type |
+------ | ------ |
+`_pattern` | string |
+`_namespace` | string |
+`_globalMatchers` | [RouteMatchers](../modules/_poppinss_http_server.md#routematchers) |
 
-**Returns:** [BriskRoute](_poppinss_http_server.briskroute.md)
-
-___
+**Returns:** *[BriskRoute](_poppinss_http_server.briskroute.md)*
 
 ## Properties
 
-<a id="route"></a>
-
 ###  route
 
-**● route**: *`null` \| [Route](_poppinss_http_server.route.md)<`Context`>* =  null
+• **route**: *null | [Route](_poppinss_http_server.route.md)‹*`Context`*›* =  null
+
+*Implementation of [BriskRouteContract](../interfaces/_poppinss_http_server.briskroutecontract.md).[route](../interfaces/_poppinss_http_server.briskroutecontract.md#route)*
 
 Reference to route instance. Set after `setHandler` is called
 
 ___
-<a id="_getters"></a>
 
-### `<Static>``<Protected>` _getters
+### `Static` `Protected` _getters
 
-**● _getters**: *`object`*
+▪ **_getters**: *object*
 
-#### Type declaration
+*Overrides void*
 
-___
-<a id="_macros"></a>
-
-### `<Static>``<Protected>` _macros
-
-**● _macros**: *`object`*
-
-#### Type declaration
+#### Type declaration:
 
 ___
+
+### `Static` `Protected` _macros
+
+▪ **_macros**: *object*
+
+*Overrides void*
+
+#### Type declaration:
 
 ## Methods
 
-<a id="sethandler"></a>
-
 ###  setHandler
 
-▸ **setHandler**(handler: *[RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`>*, invokedBy: *`string`*, methods?: *`string`[]*): [Route](_poppinss_http_server.route.md)<`Context`>
+▸ **setHandler**(`handler`: [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*›, `invokedBy`: string, `methods?`: string[]): *[Route](_poppinss_http_server.route.md)‹*`Context`*›*
 
-Set handler for the brisk route. The `invokedBy` string is the reference to the method that calls this method. It is required to create human readable error message when `setHandler` is called for multiple times.
-
-**Parameters:**
-
-| Name | Type |
-| ------ | ------ |
-| handler | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)<`Context`> |
-| invokedBy | `string` |
-| `Optional` methods | `string`[] |
-
-**Returns:** [Route](_poppinss_http_server.route.md)<`Context`>
-
-___
-<a id="getgetter"></a>
-
-### `<Static>` getGetter
-
-▸ **getGetter**(name: *`string`*): `MacroableFn` \| `undefined`
+Set handler for the brisk route. The `invokedBy` string is the reference
+to the method that calls this method. It is required to create human
+readable error message when `setHandler` is called for multiple
+times.
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
+Name | Type |
+------ | ------ |
+`handler` | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*› |
+`invokedBy` | string |
+`methods?` | string[] |
 
-**Returns:** `MacroableFn` \| `undefined`
+**Returns:** *[Route](_poppinss_http_server.route.md)‹*`Context`*›*
 
 ___
-<a id="getmacro"></a>
 
-### `<Static>` getMacro
+### `Static` getGetter
 
-▸ **getMacro**(name: *`string`*): `MacroableFn` \| `undefined`
+▸ **getGetter**(`name`: string): *`MacroableFn` | undefined*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
+Name | Type |
+------ | ------ |
+`name` | string |
 
-**Returns:** `MacroableFn` \| `undefined`
+**Returns:** *`MacroableFn` | undefined*
 
 ___
-<a id="getter"></a>
 
-### `<Static>` getter
+### `Static` getMacro
 
-▸ **getter**(name: *`string`*, callback: *`MacroableFn`*, singleton?: *`undefined` \| `false` \| `true`*): `void`
+▸ **getMacro**(`name`: string): *`MacroableFn` | undefined*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
-| callback | `MacroableFn` |
-| `Optional` singleton | `undefined` \| `false` \| `true` |
+Name | Type |
+------ | ------ |
+`name` | string |
 
-**Returns:** `void`
+**Returns:** *`MacroableFn` | undefined*
 
 ___
-<a id="hasgetter"></a>
 
-### `<Static>` hasGetter
+### `Static` getter
 
-▸ **hasGetter**(name: *`string`*): `boolean`
+▸ **getter**(`name`: string, `callback`: `MacroableFn`, `singleton?`: undefined | false | true): *void*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
+Name | Type |
+------ | ------ |
+`name` | string |
+`callback` | `MacroableFn` |
+`singleton?` | undefined \| false \| true |
 
-**Returns:** `boolean`
+**Returns:** *void*
 
 ___
-<a id="hasmacro"></a>
 
-### `<Static>` hasMacro
+### `Static` hasGetter
 
-▸ **hasMacro**(name: *`string`*): `boolean`
+▸ **hasGetter**(`name`: string): *boolean*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
+Name | Type |
+------ | ------ |
+`name` | string |
 
-**Returns:** `boolean`
-
-___
-<a id="hydrate"></a>
-
-### `<Static>` hydrate
-
-▸ **hydrate**(): `void`
-
-**Returns:** `void`
+**Returns:** *boolean*
 
 ___
-<a id="macro"></a>
 
-### `<Static>` macro
+### `Static` hasMacro
 
-▸ **macro**(name: *`string`*, callback: *`MacroableFn`*): `void`
+▸ **hasMacro**(`name`: string): *boolean*
+
+*Inherited from void*
 
 **Parameters:**
 
-| Name | Type |
-| ------ | ------ |
-| name | `string` |
-| callback | `MacroableFn` |
+Name | Type |
+------ | ------ |
+`name` | string |
 
-**Returns:** `void`
+**Returns:** *boolean*
 
 ___
 
+### `Static` hydrate
+
+▸ **hydrate**(): *void*
+
+*Inherited from void*
+
+**Returns:** *void*
+
+___
+
+### `Static` macro
+
+▸ **macro**(`name`: string, `callback`: `MacroableFn`): *void*
+
+*Inherited from void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`name` | string |
+`callback` | `MacroableFn` |
+
+**Returns:** *void*
