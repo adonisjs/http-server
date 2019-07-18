@@ -53,12 +53,17 @@ export class Route<Context extends any> extends Macroable implements RouteContra
    * A custom prefix. Usually added to a group of
    * routes
    */
-  private _prefix: string = ''
+  private _prefixes: string[] = []
 
   /**
    * An array of middleware. Added using `middleware` function
    */
   private _middleware: any[] = []
+
+  /**
+   * Storing the namespace explicitly set using `route.namespace` method
+   */
+  private _explicitNamespace: string
 
   /**
    * A boolean to prevent route from getting registered within
@@ -97,14 +102,18 @@ export class Route<Context extends any> extends Macroable implements RouteContra
    */
   private _getPattern (): string {
     const pattern = dropSlash(this._pattern)
-    const prefix = this._prefix ? dropSlash(this._prefix) : ''
-    return this._prefix ? `${prefix}${pattern === '/' ? '' : pattern}` : pattern
+    const prefix = this._prefixes.slice().reverse().map((prefix) => dropSlash(prefix)).join('')
+    return prefix ? `${prefix}${pattern === '/' ? '' : pattern}` : pattern
   }
 
   /**
    * Define Regex matcher for a given param
    */
   public where (param: string, matcher: string | RegExp): this {
+    if (this._matchers[param]) {
+      return this
+    }
+
     this._matchers[param] = typeof (matcher) === 'string' ? new RegExp(matcher) : matcher
     return this
   }
@@ -116,15 +125,17 @@ export class Route<Context extends any> extends Macroable implements RouteContra
    * This method is mainly exposed for the [[RouteGroup]]
    */
   public prefix (prefix: string): this {
-    this._prefix = prefix
+    this._prefixes.push(prefix)
     return this
   }
 
   /**
    * Define a custom domain for the route
    */
-  public domain (domain: string): this {
-    this._domain = domain
+  public domain (domain: string, overwrite: boolean = false): this {
+    if (this._domain === 'root' || overwrite) {
+      this._domain = domain
+    }
     return this
   }
 
@@ -140,7 +151,7 @@ export class Route<Context extends any> extends Macroable implements RouteContra
   }
 
   /**
-   * Given memorizable name to the route. This is helpful, when you
+   * Give memorizable name to the route. This is helpful, when you
    * want to lookup route defination by it's name.
    *
    * If `append` is true, then it will keep on appending to the existing
@@ -154,8 +165,10 @@ export class Route<Context extends any> extends Macroable implements RouteContra
   /**
    * Define controller namespace for a given route
    */
-  public namespace (namespace: string): this {
-    this._namespace = namespace
+  public namespace (namespace: string, overwrite: boolean = false): this {
+    if (!this._explicitNamespace || overwrite) {
+      this._explicitNamespace = namespace
+    }
     return this
   }
 
@@ -169,7 +182,7 @@ export class Route<Context extends any> extends Macroable implements RouteContra
       pattern: this._getPattern(),
       matchers: this._getMatchers(),
       meta: {
-        namespace: this._namespace,
+        namespace: this._explicitNamespace || this._namespace,
       },
       handler: this._handler,
       name: this.name,

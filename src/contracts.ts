@@ -169,7 +169,12 @@ export interface RouteResourceContract<Context> {
  * Shape of route group class
  */
 export interface RouteGroupContract<Context> {
-  routes: (RouteContract<Context> | RouteResourceContract<Context> | BriskRouteContract<Context>)[],
+  routes: (
+    RouteContract<Context>
+    | RouteResourceContract<Context>
+    | BriskRouteContract<Context>
+    | RouteGroupContract<Context>
+  )[],
   where (param: string, matcher: RegExp | string): this,
   prefix (prefix: string): this,
   domain (domain: string): this,

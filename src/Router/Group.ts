@@ -37,7 +37,12 @@ export class RouteGroup<Context> extends Macroable implements RouteGroupContract
   protected static _macros = {}
   protected static _getters = {}
 
-  constructor (public routes: (Route<Context> | RouteResource<Context> | BriskRoute<Context>)[]) {
+  constructor (public routes: (
+    Route<Context>
+    | RouteResource<Context>
+    | BriskRoute<Context>
+    | RouteGroup<Context>
+  )[]) {
     super()
   }
 
@@ -46,7 +51,7 @@ export class RouteGroup<Context> extends Macroable implements RouteGroupContract
    * resource instance
    */
   private _invoke (
-    route: Route<Context> | RouteResource<Context> | BriskRoute<Context>,
+    route: Route<Context> | RouteResource<Context> | BriskRoute<Context> | RouteGroup<Context>,
     method: string,
     params: any[],
   ) {
@@ -54,6 +59,11 @@ export class RouteGroup<Context> extends Macroable implements RouteGroupContract
       route.routes.forEach((child) => {
         this._invoke(child, method, params)
       })
+      return
+    }
+
+    if (route instanceof RouteGroup) {
+      route[method](...params)
       return
     }
 

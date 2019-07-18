@@ -125,23 +125,6 @@ test.group('Router | add', () => {
     assert.throw(fn, 'Duplicate route name `home`')
   })
 
-  test('raise error when creating nested groups', (assert) => {
-    assert.plan(1)
-
-    const router = new Router()
-    async function handler () {}
-
-    try {
-      router.group(() => {
-        router.group(() => {
-          router.get('/', handler)
-        })
-      }).prefix('api/v1').as('v1')
-    } catch (error) {
-      assert.equal(error.message, 'E_NESTED_ROUTE_GROUPS: Cannot create nested route groups')
-    }
-  })
-
   test('raise error when prefixing route name of route with undefined name', (assert) => {
     assert.plan(1)
 
@@ -195,6 +178,314 @@ test.group('Router | add', () => {
       handler: 'HomeController.index',
       middleware: [],
       name: undefined,
+    })
+  })
+
+  test('allow nested groups', (assert) => {
+    assert.plan(1)
+
+    const router = new Router()
+    async function handler () {}
+
+    router.group(() => {
+      router.group(() => {
+        router.get('/', handler)
+      }).prefix('v1')
+    }).prefix('api')
+
+    router.commit()
+
+    assert.deepEqual(router['_store'].tree, {
+      tokens: [[{
+        old: 'root',
+        type: 0,
+        val: 'root',
+        end: '',
+      }]],
+      domains: {
+        'root': {
+          'GET': {
+            tokens: [[
+              {
+                old: '/api/v1',
+                type: 0,
+                val: 'api',
+                end: '',
+              },
+              {
+                old: '/api/v1',
+                type: 0,
+                val: 'v1',
+                end: '',
+              },
+            ]],
+            routes: {
+              '/api/v1': {
+                pattern: '/api/v1',
+                handler,
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: [],
+                name: undefined,
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+
+  test('apply middleware in nested groups', (assert) => {
+    assert.plan(1)
+
+    const router = new Router()
+    async function handler () {}
+
+    router.group(() => {
+      router.group(() => {
+        router.get('/', handler)
+      }).middleware('admin:acl')
+    }).middleware('auth')
+
+    router.commit()
+
+    assert.deepEqual(router['_store'].tree, {
+      tokens: [[{
+        old: 'root',
+        type: 0,
+        val: 'root',
+        end: '',
+      }]],
+      domains: {
+        'root': {
+          'GET': {
+            tokens: [[
+              {
+                old: '/',
+                type: 0,
+                val: '/',
+                end: '',
+              },
+            ]],
+            routes: {
+              '/': {
+                pattern: '/',
+                handler,
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: ['auth', 'admin:acl'],
+                name: undefined,
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+
+  test('apply domain in nested groups', (assert) => {
+    assert.plan(1)
+
+    const router = new Router()
+    async function handler () {}
+
+    router.group(() => {
+      router.group(() => {
+        router.get('/', handler)
+      }).domain('foo.com')
+    }).domain('bar.com')
+
+    router.commit()
+
+    assert.deepEqual(router['_store'].tree, {
+      tokens: [[{
+        old: 'foo.com',
+        type: 0,
+        val: 'foo.com',
+        end: '',
+      }]],
+      domains: {
+        'foo.com': {
+          'GET': {
+            tokens: [[
+              {
+                old: '/',
+                type: 0,
+                val: '/',
+                end: '',
+              },
+            ]],
+            routes: {
+              '/': {
+                pattern: '/',
+                handler,
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: [],
+                name: undefined,
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+
+  test('apply namespace in nested groups', (assert) => {
+    assert.plan(1)
+
+    const router = new Router()
+    async function handler () {}
+
+    router.group(() => {
+      router.group(() => {
+        router.get('/', handler)
+      }).namespace('User')
+    }).namespace('Admin')
+
+    router.commit()
+
+    assert.deepEqual(router['_store'].tree, {
+      tokens: [[{
+        old: 'root',
+        type: 0,
+        val: 'root',
+        end: '',
+      }]],
+      domains: {
+        'root': {
+          'GET': {
+            tokens: [[
+              {
+                old: '/',
+                type: 0,
+                val: '/',
+                end: '',
+              },
+            ]],
+            routes: {
+              '/': {
+                pattern: '/',
+                handler,
+                meta: {
+                  namespace: 'User',
+                },
+                middleware: [],
+                name: undefined,
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+
+  test('apply route matchers in nested groups', (assert) => {
+    assert.plan(1)
+
+    const router = new Router()
+    async function handler () {}
+
+    router.group(() => {
+      router.group(() => {
+        router.get('/:user_id/:id', handler)
+      }).where('id', '[a-z]').where('user_id', '[0-9]')
+    }).where('id', '[0-9]')
+
+    router.commit()
+
+    assert.deepEqual(router['_store'].tree, {
+      tokens: [[{
+        old: 'root',
+        type: 0,
+        val: 'root',
+        end: '',
+      }]],
+      domains: {
+        'root': {
+          'GET': {
+            tokens: [[
+              {
+                old: '/:user_id/:id',
+                type: 1,
+                val: 'user_id',
+                end: '',
+                matcher: /[0-9]/,
+              },
+              {
+                old: '/:user_id/:id',
+                type: 1,
+                val: 'id',
+                end: '',
+                matcher: /[a-z]/,
+              },
+            ]],
+            routes: {
+              '/:user_id/:id': {
+                pattern: '/:user_id/:id',
+                handler,
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: [],
+                name: undefined,
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+
+  test('apply route names in group', (assert) => {
+    assert.plan(1)
+
+    const router = new Router()
+    async function handler () {}
+
+    router.group(() => {
+      router.group(() => {
+        router.get('/', handler).as('home')
+      }).as('admin')
+    }).as('api')
+
+    router.commit()
+
+    assert.deepEqual(router['_store'].tree, {
+      tokens: [[{
+        old: 'root',
+        type: 0,
+        val: 'root',
+        end: '',
+      }]],
+      domains: {
+        'root': {
+          'GET': {
+            tokens: [[
+              {
+                old: '/',
+                type: 0,
+                val: '/',
+                end: '',
+              },
+            ]],
+            routes: {
+              '/': {
+                pattern: '/',
+                handler,
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: [],
+                name: 'api.admin.home',
+              },
+            },
+          },
+        },
+      },
     })
   })
 })
@@ -553,6 +844,340 @@ test.group('Router | commit', () => {
             routes: {
               '/api/posts/:id': {
                 pattern: '/api/posts/:id',
+                handler: 'PostController.destroy',
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: [],
+                name: 'posts.destroy',
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+
+  test('define resource inside nested groups', (assert) => {
+    const router = new Router()
+
+    router.group(() => {
+      router.group(() => {
+        router.resource('posts', 'PostController')
+      }).prefix('v1')
+    }).prefix('api')
+
+    router.commit()
+
+    assert.deepEqual(router['_store'].tree, {
+      tokens: [[{
+        old: 'root',
+        type: 0,
+        val: 'root',
+        end: '',
+      }]],
+      domains: {
+        'root': {
+          'GET': {
+            tokens: [
+              [
+                {
+                  old: '/api/v1/posts',
+                  type: 0,
+                  val: 'api',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts',
+                  type: 0,
+                  val: 'v1',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+              ],
+              [
+                {
+                  old: '/api/v1/posts/create',
+                  type: 0,
+                  val: 'api',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/create',
+                  type: 0,
+                  val: 'v1',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/create',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/create',
+                  type: 0,
+                  val: 'create',
+                  end: '',
+                },
+              ],
+              [
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 0,
+                  val: 'api',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 0,
+                  val: 'v1',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 1,
+                  val: 'id',
+                  end: '',
+                  matcher: undefined,
+                },
+              ],
+              [
+                {
+                  old: '/api/v1/posts/:id/edit',
+                  type: 0,
+                  val: 'api',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id/edit',
+                  type: 0,
+                  val: 'v1',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id/edit',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id/edit',
+                  type: 1,
+                  val: 'id',
+                  end: '',
+                  matcher: undefined,
+                },
+                {
+                  old: '/api/v1/posts/:id/edit',
+                  type: 0,
+                  val: 'edit',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/api/v1/posts': {
+                pattern: '/api/v1/posts',
+                handler: 'PostController.index',
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: [],
+                name: 'posts.index',
+              },
+              '/api/v1/posts/create': {
+                pattern: '/api/v1/posts/create',
+                handler: 'PostController.create',
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: [],
+                name: 'posts.create',
+              },
+              '/api/v1/posts/:id': {
+                pattern: '/api/v1/posts/:id',
+                handler: 'PostController.show',
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: [],
+                name: 'posts.show',
+              },
+              '/api/v1/posts/:id/edit': {
+                pattern: '/api/v1/posts/:id/edit',
+                handler: 'PostController.edit',
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: [],
+                name: 'posts.edit',
+              },
+            },
+          },
+          'POST': {
+            tokens: [
+              [
+                {
+                  old: '/api/v1/posts',
+                  type: 0,
+                  val: 'api',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts',
+                  type: 0,
+                  val: 'v1',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/api/v1/posts': {
+                pattern: '/api/v1/posts',
+                handler: 'PostController.store',
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: [],
+                name: 'posts.store',
+              },
+            },
+          },
+          'PUT': {
+            tokens: [
+              [
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 0,
+                  val: 'api',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 0,
+                  val: 'v1',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 1,
+                  val: 'id',
+                  end: '',
+                  matcher: undefined,
+                },
+              ],
+            ],
+            routes: {
+              '/api/v1/posts/:id': {
+                pattern: '/api/v1/posts/:id',
+                handler: 'PostController.update',
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: [],
+                name: 'posts.update',
+              },
+            },
+          },
+          'PATCH': {
+            tokens: [
+              [
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 0,
+                  val: 'api',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 0,
+                  val: 'v1',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 1,
+                  val: 'id',
+                  end: '',
+                  matcher: undefined,
+                },
+              ],
+            ],
+            routes: {
+              '/api/v1/posts/:id': {
+                pattern: '/api/v1/posts/:id',
+                handler: 'PostController.update',
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: [],
+                name: 'posts.update',
+              },
+            },
+          },
+          'DELETE': {
+            tokens: [
+              [
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 0,
+                  val: 'api',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 0,
+                  val: 'v1',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/api/v1/posts/:id',
+                  type: 1,
+                  val: 'id',
+                  end: '',
+                  matcher: undefined,
+                },
+              ],
+            ],
+            routes: {
+              '/api/v1/posts/:id': {
+                pattern: '/api/v1/posts/:id',
                 handler: 'PostController.destroy',
                 meta: {
                   namespace: 'App/Controllers/Http',

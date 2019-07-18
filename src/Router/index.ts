@@ -77,7 +77,7 @@ export class Router<Context> implements RouterContract<Context> {
    * A boolean to tell the router that a group is in
    * open state right now
    */
-  private _inGroup: boolean = false
+  private _openedGroups: RouteGroup<Context>[] = []
 
   /**
    * Controllers namespace to shorten the path
@@ -85,16 +85,13 @@ export class Router<Context> implements RouterContract<Context> {
   private _namespace: string = 'App/Controllers/Http'
 
   /**
-   * Temporary array to hold routes and resources created inside
-   * a group. Once we pass them to the group, this array
-   * will be free.
-   */
-  private _groupRoutes: (Route<Context> | RouteResource<Context> | BriskRoute<Context>)[] = []
-
-  /**
    * A counter to create unique routes during tests
    */
   private _testRoutePatternCounter = 0
+
+  private _getRecentGroup () {
+    return this._openedGroups[this._openedGroups.length - 1]
+  }
 
   /**
    * A handler to handle routes created for testing
@@ -111,9 +108,10 @@ export class Router<Context> implements RouterContract<Context> {
    */
   public route (pattern: string, methods: string[], handler: RouteHandlerNode<Context>): Route<Context> {
     const route = new Route(pattern, methods, handler, this._namespace, this._matchers)
+    const openedGroup = this._getRecentGroup()
 
-    if (this._inGroup) {
-      this._groupRoutes.push(route)
+    if (openedGroup) {
+      openedGroup.routes.push(route)
     } else {
       this.routes.push(route)
     }
@@ -168,14 +166,28 @@ export class Router<Context> implements RouterContract<Context> {
    * to routes in bulk
    */
   public group (callback: () => void): RouteGroup<Context> {
-    if (this._inGroup) {
-      throw new Exception('Cannot create nested route groups', 500, exceptionCodes.E_NESTED_ROUTE_GROUPS)
+    /**
+     * Create a new group with empty set of routes
+     */
+    const group = new RouteGroup([])
+
+    /**
+     * See if there is any opened existing route groups. If yes, then we
+     * push this new group to the old group, otherwise we push it to
+     * the list of routes.
+     */
+    const openedGroup = this._getRecentGroup()
+    if (openedGroup) {
+      openedGroup.routes.push(group)
+    } else {
+      this.routes.push(group)
     }
 
     /**
-     * Set the flag that we are in a group
+     * Track the group, so that the upcoming calls inside the callback
+     * can use this group
      */
-    this._inGroup = true
+    this._openedGroups.push(group)
 
     /**
      * Execute the callback. Now all registered routes will be
@@ -184,20 +196,9 @@ export class Router<Context> implements RouterContract<Context> {
     callback()
 
     /**
-     * Create a new group and pass all the routes
+     * Now the callback is over, get rid of the opened group
      */
-    const group = new RouteGroup(this._groupRoutes)
-
-    /**
-     * Keep a reference of the group
-     */
-    this.routes.push(group)
-
-    /**
-     * Cleanup temporary data and set flag to false
-     */
-    this._inGroup = false
-    this._groupRoutes = []
+    this._openedGroups.pop()
 
     return group
   }
@@ -207,9 +208,10 @@ export class Router<Context> implements RouterContract<Context> {
    */
   public resource (resource: string, controller: string): RouteResource<Context> {
     const resourceInstance = new RouteResource(resource, controller, this._namespace, this._matchers)
+    const openedGroup = this._getRecentGroup()
 
-    if (this._inGroup) {
-      this._groupRoutes.push(resourceInstance)
+    if (openedGroup) {
+      openedGroup.routes.push(resourceInstance)
     } else {
       this.routes.push(resourceInstance)
     }
@@ -222,9 +224,10 @@ export class Router<Context> implements RouterContract<Context> {
    */
   public shallowResource (resource: string, controller: string): RouteResource<Context> {
     const resourceInstance = new RouteResource(resource, controller, this._namespace, this._matchers, true)
+    const openedGroup = this._getRecentGroup()
 
-    if (this._inGroup) {
-      this._groupRoutes.push(resourceInstance)
+    if (openedGroup) {
+      openedGroup.routes.push(resourceInstance)
     } else {
       this.routes.push(resourceInstance)
     }
@@ -237,9 +240,10 @@ export class Router<Context> implements RouterContract<Context> {
    */
   public on (pattern: string): BriskRoute<Context> {
     const briskRoute = new BriskRoute(pattern, this._namespace, this._matchers)
+    const openedGroup = this._getRecentGroup()
 
-    if (this._inGroup) {
-      this._groupRoutes.push(briskRoute)
+    if (openedGroup) {
+      openedGroup.routes.push(briskRoute)
     } else {
       this.routes.push(briskRoute)
     }
@@ -322,7 +326,6 @@ export class Router<Context> implements RouterContract<Context> {
 
     this.routes = []
     this._matchers = {}
-    this._groupRoutes = []
   }
 
   /**
