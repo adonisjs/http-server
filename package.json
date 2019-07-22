@@ -31,7 +31,7 @@
     "@adonisjs/mrm-preset": "^2.0.3",
     "@poppinss/logger": "^1.1.0",
     "@types/node": "^12.6.8",
-    "commitizen": "^3.1.2",
+    "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^2.1.0",
     "del-cli": "^2.0.0",
     "doctoc": "^1.4.0",
