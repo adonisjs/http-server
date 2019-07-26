@@ -28,5 +28,10 @@ export function finalMiddlewareHandler<Context> (
     return middleware.value(params[0], params[1], middleware.args)
   }
 
-  return global[iocMethods.make](middleware.value).handle(params[0], params[1], middleware.args)
+  const middlewareInstance = global[iocMethods.make](middleware.value)
+  return global[iocMethods.call](middlewareInstance, 'handle', [
+    params[0],
+    params[1],
+    middleware.args,
+  ])
 }

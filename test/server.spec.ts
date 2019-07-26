@@ -791,4 +791,45 @@ test.group('Server | all', (group) => {
     const { text } = await supertest(httpServer).get('/')
     assert.equal(text, 'virk')
   })
+
+  test('execute IoC container middleware binding by injecting dependencies', async (assert) => {
+    const middlewareStore = new MiddlewareStore()
+    const router = new Router((route) => routePreProcessor(route, middlewareStore))
+
+    class User {
+      public username = 'virk'
+    }
+
+    class AuthMiddleware {
+      @inject()
+      public async handle (ctx: HttpContextContract, next, _args, user: User) {
+        ctx['user'] = user
+        await next()
+      }
+    }
+
+    const ioc = new Ioc()
+    ioc.bind('App/Middleware/Auth', () => new AuthMiddleware())
+    global[Symbol.for('ioc.use')] = ioc.use.bind(ioc)
+    global[Symbol.for('ioc.make')] = ioc.make.bind(ioc)
+    global[Symbol.for('ioc.call')] = ioc.call.bind(ioc)
+
+    middlewareStore.registerNamed({
+      auth: 'App/Middleware/Auth',
+    })
+
+    router.get('/', (ctx: HttpContextContract) => {
+      return ctx['user'].username
+    }).middleware('auth')
+
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
+
+    router.commit()
+    server.optimize()
+
+    const httpServer = createServer(server.handle.bind(server))
+
+    const { text } = await supertest(httpServer).get('/')
+    assert.equal(text, 'virk')
+  })
 })

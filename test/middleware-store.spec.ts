@@ -78,6 +78,7 @@ test.group('Middleware', () => {
     ioc.bind('App/Middleware', () => new Middleware())
     global[Symbol.for('ioc.use')] = ioc.use.bind(ioc)
     global[Symbol.for('ioc.make')] = ioc.make.bind(ioc)
+    global[Symbol.for('ioc.call')] = ioc.call.bind(ioc)
 
     const middleware = new MiddlewareStore()
     middleware.register(['App/Middleware'])
