@@ -7,10 +7,11 @@
  * file that was distributed with this source code.
  */
 
+import 'reflect-metadata'
 import * as test from 'japa'
 import * as supertest from 'supertest'
 import { createServer } from 'http'
-import { Ioc } from '@adonisjs/fold'
+import { Ioc, inject } from '@adonisjs/fold'
 import { FakeLogger } from '@poppinss/logger'
 import * as proxyaddr from 'proxy-addr'
 import { ServerConfigContract, HttpContextContract } from '../src/contracts'
@@ -758,13 +759,18 @@ test.group('Server | all', (group) => {
     assert.equal(text, 'E_ROUTE_NOT_FOUND: Cannot GET:/')
   })
 
-  test('execute IoC container controller binding', async (assert) => {
+  test('execute IoC container controller binding by injecting dependencies', async (assert) => {
     const middlewareStore = new MiddlewareStore()
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
+    class User {
+      public username = 'virk'
+    }
+
     class HomeController {
-      public async index () {
-        return 'handled'
+      @inject()
+      public async index (_ctx: HttpContextContract, user: User) {
+        return user.username
       }
     }
 
@@ -783,6 +789,6 @@ test.group('Server | all', (group) => {
     const httpServer = createServer(server.handle.bind(server))
 
     const { text } = await supertest(httpServer).get('/')
-    assert.equal(text, 'handled')
+    assert.equal(text, 'virk')
   })
 })

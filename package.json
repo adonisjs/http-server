@@ -40,6 +40,7 @@
     "mrm": "^1.2.2",
     "np": "^5.0.3",
     "proxy-addr": "^2.0.5",
+    "reflect-metadata": "^0.1.13",
     "ts-node": "^8.3.0",
     "tslint": "^5.18.0",
     "tslint-eslint-rules": "^5.4.0",
