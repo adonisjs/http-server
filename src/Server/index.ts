@@ -30,6 +30,7 @@ import { Request, RequestContract } from '@poppinss/request'
 import { Response, ResponseContract } from '@poppinss/response'
 
 import { finalMiddlewareHandler } from './finalMiddlewareHandler'
+import { finalErrorHandler } from './finalErrorHandler'
 import { exceptionCodes } from '../helpers'
 
 class RouteNotFound extends Exception {}
@@ -179,8 +180,21 @@ export class Server<Context extends HttpContextContract> implements ServerContra
   /**
    * Handles error raised during the HTTP request
    */
-  private _handleError (error: any, ctx: Context) {
-    ctx.response.status(error.status || 500).send(error.message)
+  private async _handleError (error: any, ctx: Context) {
+    if (!this._errorHandler) {
+      ctx.response.status(error.status || 500).send(error.message)
+      return
+    }
+
+    try {
+      await finalErrorHandler(this._errorHandler, error, ctx)
+    } catch (finalError) {
+      ctx.response.status(error.status || 500).send(error.message)
+      this._logger.fatal(
+        finalError,
+        'Received error from the http exception handler. This may make your application unstable',
+      )
+    }
   }
 
   /**
@@ -215,8 +229,8 @@ export class Server<Context extends HttpContextContract> implements ServerContra
    * Define custom error handler to handler all errors
    * occurred during HTTP request
    */
-  public onError (cb: ErrorHandlerNode<Context>): this {
-    this._errorHandler = cb
+  public errorHandler (handler: ErrorHandlerNode<Context>): this {
+    this._errorHandler = handler
     return this
   }
 
@@ -246,13 +260,6 @@ export class Server<Context extends HttpContextContract> implements ServerContra
     } else {
       this._hooksHandler = this._handleRequest.bind(this)
     }
-
-    /**
-     * Set final error handler if no error handler is defined
-     */
-    if (typeof (this._errorHandler) !== 'function') {
-      this._errorHandler = this._handleError.bind(this)
-    }
   }
 
   /**
@@ -280,7 +287,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
     try {
       await this._hooksHandler(ctx)
     } catch (error) {
-      await this._errorHandler(error, ctx)
+      await this._handleError(error, ctx)
     }
 
     /**
@@ -291,7 +298,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
       try {
         await this._executeAfterHooks(ctx)
       } catch (error) {
-        await this._errorHandler(error, ctx)
+        await this._handleError(error, ctx)
       }
     }
 

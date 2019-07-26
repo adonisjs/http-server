@@ -632,7 +632,7 @@ test.group('Server | error handler', () => {
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
     const server = new Server(HttpContext, router, middlewareStore, logger, config)
-    server.onError(async (_error, { response }) => {
+    server.errorHandler(async (_error, { response }) => {
       response.status(200).send('handled by error handler')
     })
 
@@ -654,7 +654,7 @@ test.group('Server | error handler', () => {
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
     const server = new Server(HttpContext, router, middlewareStore, logger, config)
-    server.onError(async (_error, { response }) => {
+    server.errorHandler(async (_error, { response }) => {
       response.status(200).send('handled by error handler')
     })
 
@@ -676,7 +676,7 @@ test.group('Server | error handler', () => {
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
     const server = new Server(HttpContext, router, middlewareStore, logger, config)
-    server.onError(async (_error, { response }) => {
+    server.errorHandler(async (_error, { response }) => {
       response.status(200).send('handled by error handler')
     })
 
@@ -702,7 +702,7 @@ test.group('Server | error handler', () => {
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
     const server = new Server(HttpContext, router, middlewareStore, logger, config)
-    server.onError(async (_error, { response }) => {
+    server.errorHandler(async (_error, { response }) => {
       response.send('handled by error handler')
     })
 
@@ -724,8 +724,47 @@ test.group('Server | error handler', () => {
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
     const server = new Server(HttpContext, router, middlewareStore, logger, config)
-    server.onError(async (_error, { response }) => {
+    server.errorHandler(async (_error, { response }) => {
       response.send('handled by error handler')
+    })
+
+    router.commit()
+    server.optimize()
+
+    const httpServer = createServer(server.handle.bind(server))
+
+    const { text } = await supertest(httpServer).get('/').expect(200)
+    assert.equal(text, 'handled by error handler')
+  })
+
+  test('bind ioc container reference as error handler', async (assert) => {
+    const middlewareStore = new MiddlewareStore()
+    const router = new Router((route) => routePreProcessor(route, middlewareStore))
+
+    class Reporter {
+      public getMessage () {
+        return 'handled by error handler'
+      }
+    }
+
+    class ErrorHandler {
+      @inject()
+      public async handle (_error, { response }, reporter: Reporter) {
+        response.status(200).send(reporter.getMessage())
+      }
+    }
+
+    const ioc = new Ioc()
+    ioc.bind('App/Exceptions/Handler', () => new ErrorHandler())
+    global[Symbol.for('ioc.use')] = ioc.use.bind(ioc)
+    global[Symbol.for('ioc.make')] = ioc.make.bind(ioc)
+    global[Symbol.for('ioc.call')] = ioc.call.bind(ioc)
+
+    const server = new Server(HttpContext, router, middlewareStore, logger, config)
+    server.errorHandler('App/Exceptions/Handler')
+
+    router.get('/', async () => {
+      throw new Error('bump')
     })
 
     router.commit()
