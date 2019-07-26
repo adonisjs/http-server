@@ -85,5 +85,17 @@
     "macroable": "^2.0.2",
     "matchit": "git+https://github.com/thetutlage/matchit.git",
     "pluralize": "^8.0.0"
-  }
+  },
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/poppinss/http-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/poppinss/http-server/issues"
+  },
+  "homepage": "https://github.com/poppinss/http-server#readme"
 }
