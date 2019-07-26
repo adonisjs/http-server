@@ -12,14 +12,13 @@
 */
 
 import { stringify } from 'querystring'
-import * as proxyAddr from 'proxy-addr'
 import { Exception } from '@poppinss/utils'
 
 import { Route } from './Router/Route'
 import { RouteGroup } from './Router/Group'
 import { BriskRoute } from './Router/BriskRoute'
 import { RouteResource } from './Router/Resource'
-import { RouteDefination, ServerConfigContract } from './contracts'
+import { RouteDefinition } from './contracts'
 
 /**
  * Makes input string consistent by having only the starting
@@ -39,8 +38,8 @@ export function dropSlash (input: string): string {
  */
 export function toRoutesJSON<Context extends any> (
   routes: (RouteGroup<Context> | RouteResource<Context> | Route<Context> | BriskRoute<Context>)[],
-): RouteDefination<Context>[] {
-  return routes.reduce((list: RouteDefination<Context>[], route) => {
+): RouteDefinition<Context>[] {
+  return routes.reduce((list: RouteDefinition<Context>[], route) => {
     if (route instanceof RouteGroup) {
       list = list.concat(toRoutesJSON(route.routes))
       return list
@@ -110,22 +109,6 @@ export function makeUrl (pattern: string, options: { params?: any, qs?: any }): 
    */
   const qs = stringify(options.qs)
   return qs ? `${url}?${qs}` : url
-}
-
-/**
- * Returns server config by merging the user options with the default
- * options.
- */
-export function getServerConfig (serverConfig: Partial<ServerConfigContract>): ServerConfigContract {
-  return Object.assign({
-    secret: Math.random().toFixed(36).substring(2, 38),
-    subdomainOffset: 2,
-    allowMethodSpoofing: true,
-    etag: false,
-    cookie: {},
-    jsonpCallbackName: 'callback',
-    trustProxy: proxyAddr.compile('loopback'),
-  }, serverConfig)
 }
 
 /**

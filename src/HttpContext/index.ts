@@ -12,12 +12,13 @@
 */
 
 import { Socket } from 'net'
+import * as proxyAddr from 'proxy-addr'
 import { IncomingMessage, ServerResponse } from 'http'
 import { RequestContract, Request } from '@poppinss/request'
 import { LoggerContract, Logger } from '@poppinss/logger'
 import { ResponseContract, Response } from '@poppinss/response'
 import { RouteNode, HttpContextContract, ServerConfigContract } from '../contracts'
-import { makeUrl, getServerConfig } from '../helpers'
+import { makeUrl } from '../helpers'
 
 /**
  * Http context is passed to all route handlers, middleware,
@@ -50,7 +51,15 @@ export class HttpContext implements HttpContextContract {
     /**
      * Composing server config
      */
-    serverConfig = getServerConfig(serverConfig || {})
+    serverConfig = Object.assign({
+      secret: Math.random().toFixed(36).substring(2, 38),
+      subdomainOffset: 2,
+      allowMethodSpoofing: true,
+      etag: false,
+      cookie: {},
+      jsonpCallbackName: 'callback',
+      trustProxy: proxyAddr.compile('loopback'),
+    }, serverConfig || {})
 
     /**
      * Creating the url from the router pattern and params. Only

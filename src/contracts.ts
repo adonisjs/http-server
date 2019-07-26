@@ -119,9 +119,9 @@ export type RoutesTree<Context> = {
 }
 
 /**
- * Route defination returned as a result of `route.toJSON` method
+ * Route definition returned as a result of `route.toJSON` method
  */
-export type RouteDefination<Context> = RouteNode<Context> & {
+export type RouteDefinition<Context> = RouteNode<Context> & {
   methods: string[],
   domain?: string,
   matchers: RouteMatchers,
@@ -141,28 +141,28 @@ export type MatchedRoute<Context> = {
  * Shape of route class
  */
 export interface RouteContract<Context> {
-  deleted: boolean,
-  name: string,
-  where (param: string, matcher: string | RegExp): this,
-  prefix (prefix: string): this,
-  domain (domain: string): this,
-  middleware (middleware: any | any[], prepend?: boolean): this,
-  as (name: string, append?: boolean): this,
-  namespace (namespace: string): this,
-  toJSON (): RouteDefination<Context>,
+  deleted: boolean
+  name: string
+  where (param: string, matcher: string | RegExp): this
+  prefix (prefix: string): this
+  domain (domain: string): this
+  middleware (middleware: any | any[], prepend?: boolean): this
+  as (name: string, append?: boolean): this
+  namespace (namespace: string): this
+  toJSON (): RouteDefinition<Context>
 }
 
 /**
  * Shape of route resource class
  */
 export interface RouteResourceContract<Context> {
-  routes: RouteContract<Context>[],
-  only (names: string[]): this,
-  except (names: string[]): this,
-  apiOnly (): this,
-  middleware (middleware: { [name: string]: any | any[] }): this,
-  where (key: string, matcher: string | RegExp): this,
-  namespace (namespace: string): this,
+  routes: RouteContract<Context>[]
+  only (names: string[]): this
+  except (names: string[]): this
+  apiOnly (): this
+  middleware (middleware: { [name: string]: any | any[] }): this
+  where (key: string, matcher: string | RegExp): this
+  namespace (namespace: string): this
 }
 
 /**
@@ -174,21 +174,21 @@ export interface RouteGroupContract<Context> {
     | RouteResourceContract<Context>
     | BriskRouteContract<Context>
     | RouteGroupContract<Context>
-  )[],
-  where (param: string, matcher: RegExp | string): this,
-  prefix (prefix: string): this,
-  domain (domain: string): this,
-  as (name: string): this,
-  middleware (middleware: any | any[]): this,
-  namespace (namespace: string): this,
+  )[]
+  where (param: string, matcher: RegExp | string): this
+  prefix (prefix: string): this
+  domain (domain: string): this
+  as (name: string): this
+  middleware (middleware: any | any[]): this
+  namespace (namespace: string): this
 }
 
 /**
  * Shape for brisk/quick routes
  */
 export interface BriskRouteContract<Context> {
-  route: RouteContract<Context> | null,
-  setHandler (handler: any, invokedBy: string): RouteContract<Context>,
+  route: RouteContract<Context> | null
+  setHandler (handler: any, invokedBy: string): RouteContract<Context>
 }
 
 /**
@@ -210,33 +210,33 @@ export interface RouterContract<
     RouteResourceContract<Context> |
     RouteGroupContract<Context> |
     BriskRouteContract<Context>
-  )[],
+  )[]
 
-  route (pattern: string, methods: string[], handler: RouteHandlerNode<Context>): Route,
-  any (pattern: string, handler: RouteHandlerNode<Context>): Route,
-  get (pattern: string, handler: RouteHandlerNode<Context>): Route,
-  post (pattern: string, handler: RouteHandlerNode<Context>): Route,
-  put (pattern: string, handler: RouteHandlerNode<Context>): Route,
-  patch (pattern: string, handler: RouteHandlerNode<Context>): Route,
-  destroy (pattern: string, handler: RouteHandlerNode<Context>): Route,
-  group (callback: () => void): Group,
-  resource (resource: string, controller: string): Resource,
-  shallowResource (resource: string, controller: string): Resource,
-  on (pattern: string): Brisk,
-  where (key: string, matcher: string | RegExp): this,
-  namespace (namespace: string): this,
+  route (pattern: string, methods: string[], handler: RouteHandlerNode<Context>): Route
+  any (pattern: string, handler: RouteHandlerNode<Context>): Route
+  get (pattern: string, handler: RouteHandlerNode<Context>): Route
+  post (pattern: string, handler: RouteHandlerNode<Context>): Route
+  put (pattern: string, handler: RouteHandlerNode<Context>): Route
+  patch (pattern: string, handler: RouteHandlerNode<Context>): Route
+  destroy (pattern: string, handler: RouteHandlerNode<Context>): Route
+  group (callback: () => void): Group
+  resource (resource: string, controller: string): Resource
+  shallowResource (resource: string, controller: string): Resource
+  on (pattern: string): Brisk
+  where (key: string, matcher: string | RegExp): this
+  namespace (namespace: string): this
   toJSON (): RouteNode<Context>[]
   commit (): void
-  find (url: string, method: string, domain?: string): null | MatchedRoute<Context>,
-  urlFor (pattern: string, options: { params?: any, qs?: any }, domain?: string): null | string,
-  forTesting (pattern?: string, methods?: string[], handler?: any): Route,
+  find (url: string, method: string, domain?: string): null | MatchedRoute<Context>
+  urlFor (pattern: string, options: { params?: any, qs?: any }, domain?: string): null | string
+  forTesting (pattern?: string, methods?: string[], handler?: any): Route
 }
 
 /**
  * HTTP server
  */
 export interface ServerContract<Context extends HttpContextContract> {
-  instance?: HttpServer | HttpsServer,
+  instance?: HttpServer | HttpsServer
   onError (cb: ErrorHandlerNode<Context>): this
   handle (req: IncomingMessage, res: ServerResponse): Promise<void>
   optimize (): void
@@ -249,12 +249,12 @@ export interface ServerContract<Context extends HttpContextContract> {
  * and route handler
  */
 export interface HttpContextContract {
-  request: RequestContract,
-  response: ResponseContract,
-  logger: LoggerContract,
-  route?: RouteNode<this>,
-  params?: any,
-  subdomains?: any,
+  request: RequestContract
+  response: ResponseContract
+  logger: LoggerContract
+  route?: RouteNode<this>
+  params?: any
+  subdomains?: any
 }
 
 /**
@@ -291,11 +291,11 @@ export type ResolvedControllerNode<Context> = {
  * at runtime
  */
 export interface MiddlewareStoreContract<Context> {
-  register (middleware: MiddlewareNode<Context>[]): this,
-  registerNamed (middleware: { [alias: string]: MiddlewareNode<Context> }): this,
-  get (): ResolvedMiddlewareNode<Context>[],
-  getNamed (name: string): null | ResolvedMiddlewareNode<Context>,
-  preCompileMiddleware (route: RouteNode<Context>): void,
+  register (middleware: MiddlewareNode<Context>[]): this
+  registerNamed (middleware: { [alias: string]: MiddlewareNode<Context> }): this
+  get (): ResolvedMiddlewareNode<Context>[]
+  getNamed (name: string): null | ResolvedMiddlewareNode<Context>
+  preCompileMiddleware (route: RouteNode<Context>): void
 }
 
 /**

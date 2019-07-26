@@ -12,12 +12,12 @@
 */
 
 import { Macroable } from 'macroable'
-import { RouteDefination, RouteMatchers, RouteContract } from '../contracts'
+import { RouteDefinition, RouteMatchers, RouteContract } from '../contracts'
 
 import { dropSlash } from '../helpers'
 
 /**
- * Route class is used to construct consistent [[RouteDefination]] using
+ * Route class is used to construct consistent [[RouteDefinition]] using
  * fluent API. An instance of route is usually obtained using the
  * [[Router]] class helper methods.
  *
@@ -173,10 +173,10 @@ export class Route<Context extends any> extends Macroable implements RouteContra
   }
 
   /**
-   * Returns [[RouteDefination]] that can be passed to the [[Store]] for
+   * Returns [[RouteDefinition]] that can be passed to the [[Store]] for
    * registering the route
    */
-  public toJSON (): RouteDefination<Context> {
+  public toJSON (): RouteDefinition<Context> {
     return {
       domain: this._domain,
       pattern: this._getPattern(),

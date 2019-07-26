@@ -48,7 +48,14 @@ export class RouteResource<Context> extends Macroable implements RouteResourceCo
    * Add a new route for the given pattern, methods and controller action
    */
   private _makeRoute (pattern: string, methods: string[], action: string, baseName: string) {
-    const route = new Route(pattern, methods, `${this._controller}.${action}`, this._namespace, this._globalMatchers)
+    const route = new Route(
+      pattern,
+      methods,
+      `${this._controller}.${action}`,
+      this._namespace,
+      this._globalMatchers,
+    )
+
     route.as(`${baseName}.${action}`)
     this.routes.push(route)
   }

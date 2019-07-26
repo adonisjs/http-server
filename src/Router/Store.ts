@@ -15,7 +15,7 @@ import { pick, cloneDeep } from 'lodash'
 import * as matchit from 'matchit'
 import { Exception } from '@poppinss/utils'
 import {
-  RouteDefination,
+  RouteDefinition,
   RouteNode,
   MatchedRoute,
   DomainNode,
@@ -96,7 +96,7 @@ export class Store<Context> {
    * })
    * ```
    */
-  public add (route: RouteDefination<Context>): this {
+  public add (route: RouteDefinition<Context>): this {
     /**
      * Create a copy of route properties by cherry picking
      * fields. We create the copy outside the forEach
