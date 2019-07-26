@@ -44,7 +44,7 @@
     "ts-node": "^8.3.0",
     "tslint": "^5.18.0",
     "tslint-eslint-rules": "^5.4.0",
-    "typedoc": "^0.14.2",
+    "typedoc": "^0.15.0",
     "typedoc-plugin-external-module-name": "^2.1.0",
     "typedoc-plugin-markdown": "^2.0.11",
     "typescript": "^3.5.3"
@@ -78,7 +78,7 @@
   "dependencies": {
     "@poppinss/request": "^1.0.9",
     "@poppinss/response": "^1.0.9",
-    "@poppinss/utils": "^1.0.3",
+    "@poppinss/utils": "^1.0.4",
     "co-compose": "^5.1.1",
     "haye": "^2.0.2",
     "lodash": "^4.17.15",

@@ -16,9 +16,9 @@ import { Exception } from '@poppinss/utils'
 
 import { Route } from './Router/Route'
 import { RouteGroup } from './Router/Group'
+import { RouteDefinition } from './contracts'
 import { BriskRoute } from './Router/BriskRoute'
 import { RouteResource } from './Router/Resource'
-import { RouteDefinition } from './contracts'
 
 /**
  * Makes input string consistent by having only the starting
@@ -123,13 +123,4 @@ export const exceptionCodes = {
   E_MISSING_ROUTE_PARAM_VALUE: 'E_MISSING_ROUTE_PARAM_VALUE',
   E_ROUTE_NOT_FOUND: 'E_ROUTE_NOT_FOUND',
   E_MISSING_NAMED_MIDDLEWARE: 'E_MISSING_NAMED_MIDDLEWARE',
-}
-
-/**
- * Symbols to use IoC container global methods.
- */
-export const iocMethods = {
-  use: Symbol.for('ioc.use'),
-  make: Symbol.for('ioc.make'),
-  call: Symbol.for('ioc.call'),
 }

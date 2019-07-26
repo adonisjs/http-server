@@ -11,9 +11,9 @@
 * file that was distributed with this source code.
 */
 
-import { ResolvedControllerNode, HttpContextContract } from '../contracts'
+import { callIocReference } from '@poppinss/utils'
 import { useReturnValue } from './useReturnValue'
-import { iocMethods } from '../helpers'
+import { ResolvedControllerNode, HttpContextContract } from '../contracts'
 
 /**
  * Final handler executes the route handler based on it's resolved
@@ -39,9 +39,7 @@ export async function finalRouteHandler<Context extends HttpContextContract> (ct
    * Otherwise lookup the controller inside the IoC container
    * and make the response
    */
-  const controllerInstance = global[iocMethods.make](handler.namespace)
-  const returnValue = await global[iocMethods.call](controllerInstance, handler.method, [ctx])
-
+  const returnValue = await callIocReference(handler, [ctx])
   if (useReturnValue(returnValue, ctx)) {
     ctx.response.send(returnValue)
   }

@@ -13,8 +13,8 @@
 
 export { Router } from './src/Router'
 export { Server } from './src/Server'
-export { MiddlewareStore } from './src/Server/MiddlewareStore'
 export { HttpContext } from './src/HttpContext'
+export { MiddlewareStore } from './src/Server/MiddlewareStore'
 export { routePreProcessor } from './src/Server/routePreProcessor'
 
 export {

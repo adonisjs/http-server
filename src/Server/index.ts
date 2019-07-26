@@ -29,9 +29,9 @@ import { LoggerContract } from '@poppinss/logger'
 import { Request, RequestContract } from '@poppinss/request'
 import { Response, ResponseContract } from '@poppinss/response'
 
-import { finalMiddlewareHandler } from './finalMiddlewareHandler'
-import { finalErrorHandler } from './finalErrorHandler'
 import { exceptionCodes } from '../helpers'
+import { finalErrorHandler } from './finalErrorHandler'
+import { finalMiddlewareHandler } from './finalMiddlewareHandler'
 
 class RouteNotFound extends Exception {}
 

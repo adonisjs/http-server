@@ -11,8 +11,8 @@
 * file that was distributed with this source code.
 */
 
+import { callIocReference } from '@poppinss/utils'
 import { ResolvedMiddlewareNode } from '../contracts'
-import { iocMethods } from '../helpers'
 
 /**
  * Final middleware handler executes a middleware
@@ -28,10 +28,6 @@ export function finalMiddlewareHandler<Context> (
     return middleware.value(params[0], params[1], middleware.args)
   }
 
-  const middlewareInstance = global[iocMethods.make](middleware.value)
-  return global[iocMethods.call](middlewareInstance, 'handle', [
-    params[0],
-    params[1],
-    middleware.args,
-  ])
+  const args = ([params[0], params[1]] as any).concat([middleware.args])
+  return callIocReference(middleware, args)
 }

@@ -71,8 +71,9 @@ test.group('Route pre processor', (group) => {
     routePreProcessor(route, middlewareStore)
 
     assert.deepEqual(route.meta.resolvedMiddleware, [{
-      type: 'class',
+      type: 'iocObject',
       value: Auth,
+      method: 'handle',
       args: ['jwt'],
     }])
   })
@@ -167,7 +168,5 @@ test.group('Route pre processor', (group) => {
 
     const route = router.get('/', '/UserController.store').toJSON()
     routePreProcessor(route, middlewareStore)
-
-    console.log(route.meta.finalHandler)
   })
 })

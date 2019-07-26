@@ -12,7 +12,7 @@
 */
 
 import * as haye from 'haye'
-import { Exception } from '@poppinss/utils'
+import { Exception, parseIocReference } from '@poppinss/utils'
 
 import {
   RouteNode,
@@ -21,7 +21,7 @@ import {
   ResolvedMiddlewareNode,
 } from '../contracts'
 
-import { exceptionCodes, iocMethods } from '../helpers'
+import { exceptionCodes } from '../helpers'
 
 /**
  * Middleware store register and keep all the application middleware at one
@@ -61,15 +61,13 @@ export class MiddlewareStore<Context extends any> implements MiddlewareStoreCont
    * it, otherwise an exception will be raised.
    */
   private _resolveMiddlewareItem (middleware: MiddlewareNode<Context>): ResolvedMiddlewareNode<Context> {
-    return typeof(middleware) === 'string' ? {
-      type: 'class',
-      value: global[iocMethods.use](middleware),
-      args: [],
-    } : {
+    return typeof(middleware) === 'function' ? {
       type: 'function',
       value: middleware,
       args: [],
-    }
+    } : Object.assign(parseIocReference(`${middleware}.handle`, undefined, undefined, true), {
+      args: [],
+    })
   }
 
   /**

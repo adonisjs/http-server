@@ -7,7 +7,6 @@
 * file that was distributed with this source code.
 */
 
-import { iocMethods } from '../helpers'
 import { useReturnValue } from './useReturnValue'
 import { ErrorHandlerNode, HttpContextContract } from '../contracts'
 
@@ -37,8 +36,8 @@ export async function finalErrorHandler<Context extends HttpContextContract> (
    * Otherwise resolve the IoC container binding and call `handle` method
    * on it. The `handle` must always exist.
    */
-  const errorHandlerInstance = global[iocMethods.make](errorHandler)
-  const returnValue = await global[iocMethods.call](errorHandlerInstance, 'handle', [error, ctx])
+  const errorHandlerInstance = global[Symbol.for('ioc.make')](errorHandler)
+  const returnValue = await global[Symbol.for('ioc.call')](errorHandlerInstance, 'handle', [error, ctx])
   if (useReturnValue(returnValue, ctx)) {
     ctx.response.send(returnValue)
   }
@@ -48,6 +47,6 @@ export async function finalErrorHandler<Context extends HttpContextContract> (
    * attempt to make an HTTP response
    */
   if (typeof (errorHandlerInstance.report) === 'function') {
-    await global[iocMethods.call](errorHandlerInstance, 'report', [error, ctx])
+    await global[Symbol.for('ioc.call')](errorHandlerInstance, 'report', [error, ctx])
   }
 }

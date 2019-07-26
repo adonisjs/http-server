@@ -266,10 +266,11 @@ export type ResolvedMiddlewareNode<Context> = {
   value: Exclude<MiddlewareNode<Context>, string>,
   args: string[],
 } | {
-  type: 'class',
+  type: 'iocObject',
   value: {
     handle: Exclude<MiddlewareNode<Context>, string>,
   },
+  method: string,
   args: string[],
 }
 
