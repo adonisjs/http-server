@@ -1,13 +1,13 @@
 > **[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [BriskRoute](_poppinss_http_server.briskroute.md) /
+[Globals](../README.md) / ["Router/BriskRoute"](../modules/_router_briskroute_.md) / [BriskRoute](_router_briskroute_.briskroute.md) /
 
 # Class: BriskRoute <**Context**>
 
 Brisk route enables you to expose expressive API for
 defining route handler.
 
-For example: AdonisJs uses [BriskRoute](_poppinss_http_server.briskroute.md) `Route.on().render()`
+For example: AdonisJs uses [BriskRoute](_router_briskroute_.briskroute.md) `Route.on().render()`
 to render a view without defining a controller method or
 closure.
 
@@ -23,36 +23,36 @@ closure.
 
 ## Implements
 
-* [BriskRouteContract](../interfaces/_poppinss_http_server.briskroutecontract.md)‹*`Context`*›
+* [BriskRouteContract](../interfaces/_contracts_.briskroutecontract.md)‹*`Context`*›
 
 ## Index
 
 ### Constructors
 
-* [constructor](_poppinss_http_server.briskroute.md#constructor)
+* [constructor](_router_briskroute_.briskroute.md#constructor)
 
 ### Properties
 
-* [route](_poppinss_http_server.briskroute.md#route)
-* [_getters](_poppinss_http_server.briskroute.md#static-protected-_getters)
-* [_macros](_poppinss_http_server.briskroute.md#static-protected-_macros)
+* [route](_router_briskroute_.briskroute.md#route)
+* [_getters](_router_briskroute_.briskroute.md#static-protected-_getters)
+* [_macros](_router_briskroute_.briskroute.md#static-protected-_macros)
 
 ### Methods
 
-* [setHandler](_poppinss_http_server.briskroute.md#sethandler)
-* [getGetter](_poppinss_http_server.briskroute.md#static-getgetter)
-* [getMacro](_poppinss_http_server.briskroute.md#static-getmacro)
-* [getter](_poppinss_http_server.briskroute.md#static-getter)
-* [hasGetter](_poppinss_http_server.briskroute.md#static-hasgetter)
-* [hasMacro](_poppinss_http_server.briskroute.md#static-hasmacro)
-* [hydrate](_poppinss_http_server.briskroute.md#static-hydrate)
-* [macro](_poppinss_http_server.briskroute.md#static-macro)
+* [setHandler](_router_briskroute_.briskroute.md#sethandler)
+* [getGetter](_router_briskroute_.briskroute.md#static-getgetter)
+* [getMacro](_router_briskroute_.briskroute.md#static-getmacro)
+* [getter](_router_briskroute_.briskroute.md#static-getter)
+* [hasGetter](_router_briskroute_.briskroute.md#static-hasgetter)
+* [hasMacro](_router_briskroute_.briskroute.md#static-hasmacro)
+* [hydrate](_router_briskroute_.briskroute.md#static-hydrate)
+* [macro](_router_briskroute_.briskroute.md#static-macro)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new BriskRoute**(`_pattern`: string, `_namespace`: string, `_globalMatchers`: [RouteMatchers](../modules/_poppinss_http_server.md#routematchers)): *[BriskRoute](_poppinss_http_server.briskroute.md)*
+\+ **new BriskRoute**(`_pattern`: string, `_namespace`: string, `_globalMatchers`: [RouteMatchers](../modules/_contracts_.md#routematchers)): *[BriskRoute](_router_briskroute_.briskroute.md)*
 
 **Parameters:**
 
@@ -60,17 +60,17 @@ Name | Type |
 ------ | ------ |
 `_pattern` | string |
 `_namespace` | string |
-`_globalMatchers` | [RouteMatchers](../modules/_poppinss_http_server.md#routematchers) |
+`_globalMatchers` | [RouteMatchers](../modules/_contracts_.md#routematchers) |
 
-**Returns:** *[BriskRoute](_poppinss_http_server.briskroute.md)*
+**Returns:** *[BriskRoute](_router_briskroute_.briskroute.md)*
 
 ## Properties
 
 ###  route
 
-• **route**: *null | [Route](_poppinss_http_server.route.md)‹*`Context`*›* =  null
+• **route**: *null | [Route](_router_route_.route.md)‹*`Context`*›* =  null
 
-*Implementation of [BriskRouteContract](../interfaces/_poppinss_http_server.briskroutecontract.md).[route](../interfaces/_poppinss_http_server.briskroutecontract.md#route)*
+*Implementation of [BriskRouteContract](../interfaces/_contracts_.briskroutecontract.md).[route](../interfaces/_contracts_.briskroutecontract.md#route)*
 
 Reference to route instance. Set after `setHandler` is called
 
@@ -98,7 +98,7 @@ ___
 
 ###  setHandler
 
-▸ **setHandler**(`handler`: [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*›, `invokedBy`: string, `methods?`: string[]): *[Route](_poppinss_http_server.route.md)‹*`Context`*›*
+▸ **setHandler**(`handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*›, `invokedBy`: string, `methods?`: string[]): *[Route](_router_route_.route.md)‹*`Context`*›*
 
 Set handler for the brisk route. The `invokedBy` string is the reference
 to the method that calls this method. It is required to create human
@@ -109,11 +109,11 @@ times.
 
 Name | Type |
 ------ | ------ |
-`handler` | [RouteHandlerNode](../modules/_poppinss_http_server.md#routehandlernode)‹*`Context`*› |
+`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*› |
 `invokedBy` | string |
 `methods?` | string[] |
 
-**Returns:** *[Route](_poppinss_http_server.route.md)‹*`Context`*›*
+**Returns:** *[Route](_router_route_.route.md)‹*`Context`*›*
 
 ___
 

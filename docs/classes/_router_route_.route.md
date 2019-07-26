@@ -1,12 +1,12 @@
 > **[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [Route](_poppinss_http_server.route.md) /
+[Globals](../README.md) / ["Router/Route"](../modules/_router_route_.md) / [Route](_router_route_.route.md) /
 
 # Class: Route <**Context**>
 
-Route class is used to construct consistent [RouteDefination](../modules/_poppinss_http_server.md#routedefination) using
+Route class is used to construct consistent [RouteDefinition](../modules/_contracts_.md#routedefinition) using
 fluent API. An instance of route is usually obtained using the
-[Router](_poppinss_http_server.router.md) class helper methods.
+[Router](_router_index_.router.md) class helper methods.
 
 **`example`** 
 ```ts
@@ -31,43 +31,43 @@ route
 
 ## Implements
 
-* [RouteContract](../interfaces/_poppinss_http_server.routecontract.md)‹*`Context`*›
+* [RouteContract](../interfaces/_contracts_.routecontract.md)‹*`Context`*›
 
 ## Index
 
 ### Constructors
 
-* [constructor](_poppinss_http_server.route.md#constructor)
+* [constructor](_router_route_.route.md#constructor)
 
 ### Properties
 
-* [deleted](_poppinss_http_server.route.md#deleted)
-* [name](_poppinss_http_server.route.md#name)
-* [_getters](_poppinss_http_server.route.md#static-protected-_getters)
-* [_macros](_poppinss_http_server.route.md#static-protected-_macros)
+* [deleted](_router_route_.route.md#deleted)
+* [name](_router_route_.route.md#name)
+* [_getters](_router_route_.route.md#static-protected-_getters)
+* [_macros](_router_route_.route.md#static-protected-_macros)
 
 ### Methods
 
-* [as](_poppinss_http_server.route.md#as)
-* [domain](_poppinss_http_server.route.md#domain)
-* [middleware](_poppinss_http_server.route.md#middleware)
-* [namespace](_poppinss_http_server.route.md#namespace)
-* [prefix](_poppinss_http_server.route.md#prefix)
-* [toJSON](_poppinss_http_server.route.md#tojson)
-* [where](_poppinss_http_server.route.md#where)
-* [getGetter](_poppinss_http_server.route.md#static-getgetter)
-* [getMacro](_poppinss_http_server.route.md#static-getmacro)
-* [getter](_poppinss_http_server.route.md#static-getter)
-* [hasGetter](_poppinss_http_server.route.md#static-hasgetter)
-* [hasMacro](_poppinss_http_server.route.md#static-hasmacro)
-* [hydrate](_poppinss_http_server.route.md#static-hydrate)
-* [macro](_poppinss_http_server.route.md#static-macro)
+* [as](_router_route_.route.md#as)
+* [domain](_router_route_.route.md#domain)
+* [middleware](_router_route_.route.md#middleware)
+* [namespace](_router_route_.route.md#namespace)
+* [prefix](_router_route_.route.md#prefix)
+* [toJSON](_router_route_.route.md#tojson)
+* [where](_router_route_.route.md#where)
+* [getGetter](_router_route_.route.md#static-getgetter)
+* [getMacro](_router_route_.route.md#static-getmacro)
+* [getter](_router_route_.route.md#static-getter)
+* [hasGetter](_router_route_.route.md#static-hasgetter)
+* [hasMacro](_router_route_.route.md#static-hasmacro)
+* [hydrate](_router_route_.route.md#static-hydrate)
+* [macro](_router_route_.route.md#static-macro)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new Route**(`_pattern`: string, `_methods`: string[], `_handler`: any, `_namespace`: string, `_globalMatchers`: [RouteMatchers](../modules/_poppinss_http_server.md#routematchers)): *[Route](_poppinss_http_server.route.md)*
+\+ **new Route**(`_pattern`: string, `_methods`: string[], `_handler`: any, `_namespace`: string, `_globalMatchers`: [RouteMatchers](../modules/_contracts_.md#routematchers)): *[Route](_router_route_.route.md)*
 
 **Parameters:**
 
@@ -77,9 +77,9 @@ Name | Type |
 `_methods` | string[] |
 `_handler` | any |
 `_namespace` | string |
-`_globalMatchers` | [RouteMatchers](../modules/_poppinss_http_server.md#routematchers) |
+`_globalMatchers` | [RouteMatchers](../modules/_contracts_.md#routematchers) |
 
-**Returns:** *[Route](_poppinss_http_server.route.md)*
+**Returns:** *[Route](_router_route_.route.md)*
 
 ## Properties
 
@@ -87,12 +87,12 @@ Name | Type |
 
 • **deleted**: *boolean* = false
 
-*Implementation of [RouteContract](../interfaces/_poppinss_http_server.routecontract.md).[deleted](../interfaces/_poppinss_http_server.routecontract.md#deleted)*
+*Implementation of [RouteContract](../interfaces/_contracts_.routecontract.md).[deleted](../interfaces/_contracts_.routecontract.md#deleted)*
 
 A boolean to prevent route from getting registered within
-the [Store](_poppinss_http_server.store.md).
+the [Store](_router_store_.store.md).
 
-This flag must be set before [Router.commit](_poppinss_http_server.router.md#commit) method
+This flag must be set before [Router.commit](_router_index_.router.md#commit) method
 
 ___
 
@@ -100,7 +100,7 @@ ___
 
 • **name**: *string*
 
-*Implementation of [RouteContract](../interfaces/_poppinss_http_server.routecontract.md).[name](../interfaces/_poppinss_http_server.routecontract.md#name)*
+*Implementation of [RouteContract](../interfaces/_contracts_.routecontract.md).[name](../interfaces/_contracts_.routecontract.md#name)*
 
 A unique name to lookup the route
 
@@ -134,7 +134,7 @@ Give memorizable name to the route. This is helpful, when you
 want to lookup route defination by it's name.
 
 If `append` is true, then it will keep on appending to the existing
-name. This option is exposed for [RouteGroup](_poppinss_http_server.routegroup.md)
+name. This option is exposed for [RouteGroup](../interfaces/_contracts_.routercontract.md#routegroup)
 
 **Parameters:**
 
@@ -170,7 +170,7 @@ ___
 
 Define an array of middleware to be executed on the route. If `prepend`
 is true, then middleware will be added to start of the existing
-middleware. The option is exposed for [RouteGroup](_poppinss_http_server.routegroup.md)
+middleware. The option is exposed for [RouteGroup](../interfaces/_contracts_.routercontract.md#routegroup)
 
 **Parameters:**
 
@@ -204,12 +204,12 @@ ___
 
 ▸ **prefix**(`prefix`: string): *this*
 
-*Implementation of [RouteContract](../interfaces/_poppinss_http_server.routecontract.md)*
+*Implementation of [RouteContract](../interfaces/_contracts_.routecontract.md)*
 
 Define prefix for the route. Calling this method for multiple times will
 override the existing prefix.
 
-This method is mainly exposed for the [RouteGroup](_poppinss_http_server.routegroup.md)
+This method is mainly exposed for the [RouteGroup](../interfaces/_contracts_.routercontract.md#routegroup)
 
 **Parameters:**
 
@@ -223,14 +223,14 @@ ___
 
 ###  toJSON
 
-▸ **toJSON**(): *[RouteDefination](../modules/_poppinss_http_server.md#routedefination)‹*`Context`*›*
+▸ **toJSON**(): *[RouteDefinition](../modules/_contracts_.md#routedefinition)‹*`Context`*›*
 
-*Implementation of [RouteContract](../interfaces/_poppinss_http_server.routecontract.md)*
+*Implementation of [RouteContract](../interfaces/_contracts_.routecontract.md)*
 
-Returns [RouteDefination](../modules/_poppinss_http_server.md#routedefination) that can be passed to the [Store](_poppinss_http_server.store.md) for
+Returns [RouteDefinition](../modules/_contracts_.md#routedefinition) that can be passed to the [Store](_router_store_.store.md) for
 registering the route
 
-**Returns:** *[RouteDefination](../modules/_poppinss_http_server.md#routedefination)‹*`Context`*›*
+**Returns:** *[RouteDefinition](../modules/_contracts_.md#routedefinition)‹*`Context`*›*
 
 ___
 
@@ -238,7 +238,7 @@ ___
 
 ▸ **where**(`param`: string, `matcher`: string | `RegExp`): *this*
 
-*Implementation of [RouteContract](../interfaces/_poppinss_http_server.routecontract.md)*
+*Implementation of [RouteContract](../interfaces/_contracts_.routecontract.md)*
 
 Define Regex matcher for a given param
 

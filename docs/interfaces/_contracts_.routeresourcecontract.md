@@ -1,6 +1,6 @@
 > **[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [RouteResourceContract](_poppinss_http_server.routeresourcecontract.md) /
+[Globals](../README.md) / ["contracts"](../modules/_contracts_.md) / [RouteResourceContract](_contracts_.routeresourcecontract.md) /
 
 # Interface: RouteResourceContract <**Context**>
 
@@ -16,28 +16,28 @@ Shape of route resource class
 
 ## Implemented by
 
-* [RouteResource](../classes/_poppinss_http_server.routeresource.md)
+* [RouteResource](../classes/_router_resource_.routeresource.md)
 
 ## Index
 
 ### Properties
 
-* [routes](_poppinss_http_server.routeresourcecontract.md#routes)
+* [routes](_contracts_.routeresourcecontract.md#routes)
 
 ### Methods
 
-* [apiOnly](_poppinss_http_server.routeresourcecontract.md#apionly)
-* [except](_poppinss_http_server.routeresourcecontract.md#except)
-* [middleware](_poppinss_http_server.routeresourcecontract.md#middleware)
-* [namespace](_poppinss_http_server.routeresourcecontract.md#namespace)
-* [only](_poppinss_http_server.routeresourcecontract.md#only)
-* [where](_poppinss_http_server.routeresourcecontract.md#where)
+* [apiOnly](_contracts_.routeresourcecontract.md#apionly)
+* [except](_contracts_.routeresourcecontract.md#except)
+* [middleware](_contracts_.routeresourcecontract.md#middleware)
+* [namespace](_contracts_.routeresourcecontract.md#namespace)
+* [only](_contracts_.routeresourcecontract.md#only)
+* [where](_contracts_.routeresourcecontract.md#where)
 
 ## Properties
 
 ###  routes
 
-• **routes**: *[RouteContract](_poppinss_http_server.routecontract.md)‹*`Context`*›[]*
+• **routes**: *[RouteContract](_contracts_.routecontract.md)‹*`Context`*›[]*
 
 ## Methods
 

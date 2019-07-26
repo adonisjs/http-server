@@ -1,6 +1,6 @@
 > **[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [RouteResource](_poppinss_http_server.routeresource.md) /
+[Globals](../README.md) / ["Router/Resource"](../modules/_router_resource_.md) / [RouteResource](_router_resource_.routeresource.md) /
 
 # Class: RouteResource <**Context**>
 
@@ -25,41 +25,41 @@ const resource = new RouteResource('articles', 'ArticlesController')
 
 ## Implements
 
-* [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)‹*`Context`*›
+* [RouteResourceContract](../interfaces/_contracts_.routeresourcecontract.md)‹*`Context`*›
 
 ## Index
 
 ### Constructors
 
-* [constructor](_poppinss_http_server.routeresource.md#constructor)
+* [constructor](_router_resource_.routeresource.md#constructor)
 
 ### Properties
 
-* [routes](_poppinss_http_server.routeresource.md#routes)
-* [_getters](_poppinss_http_server.routeresource.md#static-protected-_getters)
-* [_macros](_poppinss_http_server.routeresource.md#static-protected-_macros)
+* [routes](_router_resource_.routeresource.md#routes)
+* [_getters](_router_resource_.routeresource.md#static-protected-_getters)
+* [_macros](_router_resource_.routeresource.md#static-protected-_macros)
 
 ### Methods
 
-* [apiOnly](_poppinss_http_server.routeresource.md#apionly)
-* [except](_poppinss_http_server.routeresource.md#except)
-* [middleware](_poppinss_http_server.routeresource.md#middleware)
-* [namespace](_poppinss_http_server.routeresource.md#namespace)
-* [only](_poppinss_http_server.routeresource.md#only)
-* [where](_poppinss_http_server.routeresource.md#where)
-* [getGetter](_poppinss_http_server.routeresource.md#static-getgetter)
-* [getMacro](_poppinss_http_server.routeresource.md#static-getmacro)
-* [getter](_poppinss_http_server.routeresource.md#static-getter)
-* [hasGetter](_poppinss_http_server.routeresource.md#static-hasgetter)
-* [hasMacro](_poppinss_http_server.routeresource.md#static-hasmacro)
-* [hydrate](_poppinss_http_server.routeresource.md#static-hydrate)
-* [macro](_poppinss_http_server.routeresource.md#static-macro)
+* [apiOnly](_router_resource_.routeresource.md#apionly)
+* [except](_router_resource_.routeresource.md#except)
+* [middleware](_router_resource_.routeresource.md#middleware)
+* [namespace](_router_resource_.routeresource.md#namespace)
+* [only](_router_resource_.routeresource.md#only)
+* [where](_router_resource_.routeresource.md#where)
+* [getGetter](_router_resource_.routeresource.md#static-getgetter)
+* [getMacro](_router_resource_.routeresource.md#static-getmacro)
+* [getter](_router_resource_.routeresource.md#static-getter)
+* [hasGetter](_router_resource_.routeresource.md#static-hasgetter)
+* [hasMacro](_router_resource_.routeresource.md#static-hasmacro)
+* [hydrate](_router_resource_.routeresource.md#static-hydrate)
+* [macro](_router_resource_.routeresource.md#static-macro)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new RouteResource**(`_resource`: string, `_controller`: string, `_namespace`: string, `_globalMatchers`: [RouteMatchers](../modules/_poppinss_http_server.md#routematchers), `_shallow`: boolean): *[RouteResource](_poppinss_http_server.routeresource.md)*
+\+ **new RouteResource**(`_resource`: string, `_controller`: string, `_namespace`: string, `_globalMatchers`: [RouteMatchers](../modules/_contracts_.md#routematchers), `_shallow`: boolean): *[RouteResource](_router_resource_.routeresource.md)*
 
 **Parameters:**
 
@@ -68,18 +68,18 @@ Name | Type | Default |
 `_resource` | string | - |
 `_controller` | string | - |
 `_namespace` | string | - |
-`_globalMatchers` | [RouteMatchers](../modules/_poppinss_http_server.md#routematchers) | - |
+`_globalMatchers` | [RouteMatchers](../modules/_contracts_.md#routematchers) | - |
 `_shallow` | boolean | false |
 
-**Returns:** *[RouteResource](_poppinss_http_server.routeresource.md)*
+**Returns:** *[RouteResource](_router_resource_.routeresource.md)*
 
 ## Properties
 
 ###  routes
 
-• **routes**: *[Route](_poppinss_http_server.route.md)‹*`Context`*›[]* =  []
+• **routes**: *[Route](_router_route_.route.md)‹*`Context`*›[]* =  []
 
-*Implementation of [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md).[routes](../interfaces/_poppinss_http_server.routeresourcecontract.md#routes)*
+*Implementation of [RouteResourceContract](../interfaces/_contracts_.routeresourcecontract.md).[routes](../interfaces/_contracts_.routeresourcecontract.md#routes)*
 
 ___
 
@@ -107,7 +107,7 @@ ___
 
 ▸ **apiOnly**(): *this*
 
-*Implementation of [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)*
+*Implementation of [RouteResourceContract](../interfaces/_contracts_.routeresourcecontract.md)*
 
 Register api only routes. The `create` and `edit` routes, which
 are meant to show forms will not be registered
@@ -120,7 +120,7 @@ ___
 
 ▸ **except**(`names`: string[]): *this*
 
-*Implementation of [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)*
+*Implementation of [RouteResourceContract](../interfaces/_contracts_.routeresourcecontract.md)*
 
 Register all routes, except the one's defined
 
@@ -154,7 +154,7 @@ ___
 
 ▸ **namespace**(`namespace`: string): *this*
 
-*Implementation of [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)*
+*Implementation of [RouteResourceContract](../interfaces/_contracts_.routeresourcecontract.md)*
 
 Define namespace for all the routes inside a given resource
 
@@ -172,7 +172,7 @@ ___
 
 ▸ **only**(`names`: string[]): *this*
 
-*Implementation of [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)*
+*Implementation of [RouteResourceContract](../interfaces/_contracts_.routeresourcecontract.md)*
 
 Register only given routes and remove others
 
@@ -190,7 +190,7 @@ ___
 
 ▸ **where**(`key`: string, `matcher`: string | `RegExp`): *this*
 
-*Implementation of [RouteResourceContract](../interfaces/_poppinss_http_server.routeresourcecontract.md)*
+*Implementation of [RouteResourceContract](../interfaces/_contracts_.routeresourcecontract.md)*
 
 Define matcher for params inside the resource
 

@@ -1,6 +1,6 @@
 > **[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [RouteGroupContract](_poppinss_http_server.routegroupcontract.md) /
+[Globals](../README.md) / ["contracts"](../modules/_contracts_.md) / [RouteGroupContract](_contracts_.routegroupcontract.md) /
 
 # Interface: RouteGroupContract <**Context**>
 
@@ -16,28 +16,28 @@ Shape of route group class
 
 ## Implemented by
 
-* [RouteGroup](../classes/_poppinss_http_server.routegroup.md)
+* [RouteGroup](../classes/_router_group_.routegroup.md)
 
 ## Index
 
 ### Properties
 
-* [routes](_poppinss_http_server.routegroupcontract.md#routes)
+* [routes](_contracts_.routegroupcontract.md#routes)
 
 ### Methods
 
-* [as](_poppinss_http_server.routegroupcontract.md#as)
-* [domain](_poppinss_http_server.routegroupcontract.md#domain)
-* [middleware](_poppinss_http_server.routegroupcontract.md#middleware)
-* [namespace](_poppinss_http_server.routegroupcontract.md#namespace)
-* [prefix](_poppinss_http_server.routegroupcontract.md#prefix)
-* [where](_poppinss_http_server.routegroupcontract.md#where)
+* [as](_contracts_.routegroupcontract.md#as)
+* [domain](_contracts_.routegroupcontract.md#domain)
+* [middleware](_contracts_.routegroupcontract.md#middleware)
+* [namespace](_contracts_.routegroupcontract.md#namespace)
+* [prefix](_contracts_.routegroupcontract.md#prefix)
+* [where](_contracts_.routegroupcontract.md#where)
 
 ## Properties
 
 ###  routes
 
-• **routes**: *[RouteContract](_poppinss_http_server.routecontract.md)‹*`Context`*› | [RouteResourceContract](_poppinss_http_server.routeresourcecontract.md)‹*`Context`*› | [BriskRouteContract](_poppinss_http_server.briskroutecontract.md)‹*`Context`*› | [RouteGroupContract](_poppinss_http_server.routegroupcontract.md)‹*`Context`*›[]*
+• **routes**: *[RouteContract](_contracts_.routecontract.md)‹*`Context`*› | [RouteResourceContract](_contracts_.routeresourcecontract.md)‹*`Context`*› | [BriskRouteContract](_contracts_.briskroutecontract.md)‹*`Context`*› | [RouteGroupContract](_contracts_.routegroupcontract.md)‹*`Context`*›[]*
 
 ## Methods
 

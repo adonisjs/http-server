@@ -1,6 +1,6 @@
 > **[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [RouteContract](_poppinss_http_server.routecontract.md) /
+[Globals](../README.md) / ["contracts"](../modules/_contracts_.md) / [RouteContract](_contracts_.routecontract.md) /
 
 # Interface: RouteContract <**Context**>
 
@@ -16,24 +16,24 @@ Shape of route class
 
 ## Implemented by
 
-* [Route](../classes/_poppinss_http_server.route.md)
+* [Route](../classes/_router_route_.route.md)
 
 ## Index
 
 ### Properties
 
-* [deleted](_poppinss_http_server.routecontract.md#deleted)
-* [name](_poppinss_http_server.routecontract.md#name)
+* [deleted](_contracts_.routecontract.md#deleted)
+* [name](_contracts_.routecontract.md#name)
 
 ### Methods
 
-* [as](_poppinss_http_server.routecontract.md#as)
-* [domain](_poppinss_http_server.routecontract.md#domain)
-* [middleware](_poppinss_http_server.routecontract.md#middleware)
-* [namespace](_poppinss_http_server.routecontract.md#namespace)
-* [prefix](_poppinss_http_server.routecontract.md#prefix)
-* [toJSON](_poppinss_http_server.routecontract.md#tojson)
-* [where](_poppinss_http_server.routecontract.md#where)
+* [as](_contracts_.routecontract.md#as)
+* [domain](_contracts_.routecontract.md#domain)
+* [middleware](_contracts_.routecontract.md#middleware)
+* [namespace](_contracts_.routecontract.md#namespace)
+* [prefix](_contracts_.routecontract.md#prefix)
+* [toJSON](_contracts_.routecontract.md#tojson)
+* [where](_contracts_.routecontract.md#where)
 
 ## Properties
 
@@ -123,9 +123,9 @@ ___
 
 ###  toJSON
 
-▸ **toJSON**(): *[RouteDefination](../modules/_poppinss_http_server.md#routedefination)‹*`Context`*›*
+▸ **toJSON**(): *[RouteDefinition](../modules/_contracts_.md#routedefinition)‹*`Context`*›*
 
-**Returns:** *[RouteDefination](../modules/_poppinss_http_server.md#routedefination)‹*`Context`*›*
+**Returns:** *[RouteDefinition](../modules/_contracts_.md#routedefinition)‹*`Context`*›*
 
 ___
 

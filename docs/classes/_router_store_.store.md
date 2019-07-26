@@ -1,6 +1,6 @@
 > **[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / [@poppinss/http-server](../modules/_poppinss_http_server.md) / [Store](_poppinss_http_server.store.md) /
+[Globals](../README.md) / ["Router/Store"](../modules/_router_store_.md) / [Store](_router_store_.store.md) /
 
 # Class: Store <**Context**>
 
@@ -38,18 +38,18 @@ store.match('posts/1', 'GET')
 
 ### Methods
 
-* [add](_poppinss_http_server.store.md#add)
-* [match](_poppinss_http_server.store.md#match)
+* [add](_router_store_.store.md#add)
+* [match](_router_store_.store.md#match)
 
 ### Object literals
 
-* [tree](_poppinss_http_server.store.md#tree)
+* [tree](_router_store_.store.md#tree)
 
 ## Methods
 
 ###  add
 
-▸ **add**(`route`: [RouteDefination](../modules/_poppinss_http_server.md#routedefination)‹*`Context`*›): *this*
+▸ **add**(`route`: [RouteDefinition](../modules/_contracts_.md#routedefinition)‹*`Context`*›): *this*
 
 Adds a route to the store for all the given HTTP methods. Also an array
 of tokens is generated for the route pattern. The tokens are then
@@ -71,7 +71,7 @@ store.add({
 
 Name | Type |
 ------ | ------ |
-`route` | [RouteDefination](../modules/_poppinss_http_server.md#routedefination)‹*`Context`*› |
+`route` | [RouteDefinition](../modules/_contracts_.md#routedefinition)‹*`Context`*› |
 
 **Returns:** *this*
 
@@ -79,7 +79,7 @@ ___
 
 ###  match
 
-▸ **match**(`url`: string, `method`: string, `domain?`: undefined | string): *null | [MatchedRoute](../modules/_poppinss_http_server.md#matchedroute)‹*`Context`*›*
+▸ **match**(`url`: string, `method`: string, `domain?`: undefined | string): *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹*`Context`*›*
 
 Matches the url, method and optionally domain to pull the matching
 route. `null` is returned when unable to match the URL against
@@ -93,7 +93,7 @@ Name | Type |
 `method` | string |
 `domain?` | undefined \| string |
 
-**Returns:** *null | [MatchedRoute](../modules/_poppinss_http_server.md#matchedroute)‹*`Context`*›*
+**Returns:** *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹*`Context`*›*
 
 ## Object literals
 
