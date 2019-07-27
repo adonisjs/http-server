@@ -29,7 +29,7 @@
   "devDependencies": {
     "@adonisjs/fold": "^6.1.0",
     "@adonisjs/mrm-preset": "^2.0.3",
-    "@poppinss/logger": "^1.1.0",
+    "@poppinss/logger": "^1.1.1",
     "@types/node": "^12.6.8",
     "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^3.0.2",
@@ -46,7 +46,7 @@
     "tslint-eslint-rules": "^5.4.0",
     "typedoc": "^0.15.0",
     "typedoc-plugin-external-module-name": "^2.1.0",
-    "typedoc-plugin-markdown": "^2.0.11",
+    "typedoc-plugin-markdown": "^2.1.0",
     "typescript": "^3.5.3"
   },
   "nyc": {
@@ -76,8 +76,8 @@
     "@poppinss/logger": "^1.x.x"
   },
   "dependencies": {
-    "@poppinss/request": "^1.0.9",
-    "@poppinss/response": "^1.0.9",
+    "@poppinss/request": "^1.0.10",
+    "@poppinss/response": "^1.0.10",
     "@poppinss/utils": "^1.0.4",
     "co-compose": "^5.1.1",
     "haye": "^2.0.2",
