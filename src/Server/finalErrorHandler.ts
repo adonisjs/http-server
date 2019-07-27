@@ -39,6 +39,7 @@ export async function finalErrorHandler<Context extends HttpContextContract> (
   const errorHandlerInstance = global[Symbol.for('ioc.make')](errorHandler)
   const returnValue = await global[Symbol.for('ioc.call')](errorHandlerInstance, 'handle', [error, ctx])
   if (useReturnValue(returnValue, ctx)) {
+    ctx.response.safeStatus(error.status || 500)
     ctx.response.send(returnValue)
   }
 
