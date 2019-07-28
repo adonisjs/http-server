@@ -24,7 +24,7 @@ import {
  } from '../contracts'
 
 import { Middleware } from 'co-compose'
-import { Exception } from '@poppinss/utils'
+import { Exception, parseIocReference } from '@poppinss/utils'
 import { LoggerContract } from '@poppinss/logger'
 import { Request, RequestContract } from '@poppinss/request'
 import { Response, ResponseContract } from '@poppinss/response'
@@ -84,7 +84,11 @@ export class Server<Context extends HttpContextContract> implements ServerContra
   /**
    * Value of error handler is again decided inside [[Server.optimize]] method.
    */
-  private _errorHandler: ErrorHandlerNode<Context>
+  private _errorHandler: ErrorHandlerNode<Context> | {
+    type: 'iocObject',
+    value: any,
+    method: string,
+  }
 
   /**
    * The server itself doesn't create the http server instance. However, the consumer
@@ -229,8 +233,11 @@ export class Server<Context extends HttpContextContract> implements ServerContra
    * Define custom error handler to handler all errors
    * occurred during HTTP request
    */
-  public errorHandler (handler: ErrorHandlerNode<Context>): this {
-    this._errorHandler = handler
+  public errorHandler (handler: ErrorHandlerNode<Context> | string): this {
+    this._errorHandler = typeof (handler) === 'string'
+      ? parseIocReference(`${handler}.handle`, undefined, undefined, true)
+      : handler
+
     return this
   }
 

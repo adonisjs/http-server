@@ -16,7 +16,11 @@ import { ErrorHandlerNode, HttpContextContract } from '../contracts'
  * for same.
  */
 export async function finalErrorHandler<Context extends HttpContextContract> (
-  errorHandler: ErrorHandlerNode<Context>,
+  errorHandler: ErrorHandlerNode<Context> | {
+    type: 'iocObject',
+    value: any,
+    method: string,
+  },
   error: any,
   ctx: Context,
 ) {
@@ -36,7 +40,7 @@ export async function finalErrorHandler<Context extends HttpContextContract> (
    * Otherwise resolve the IoC container binding and call `handle` method
    * on it. The `handle` must always exist.
    */
-  const errorHandlerInstance = global[Symbol.for('ioc.make')](errorHandler)
+  const errorHandlerInstance = global[Symbol.for('ioc.make')](errorHandler.value)
   const returnValue = await global[Symbol.for('ioc.call')](errorHandlerInstance, 'handle', [error, ctx])
   if (useReturnValue(returnValue, ctx)) {
     ctx.response.safeStatus(error.status || 500)

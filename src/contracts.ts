@@ -40,7 +40,7 @@ export type HookNode<Context> = (ctx: Context) => Promise<void>
 /**
  * Error handler node
  */
-export type ErrorHandlerNode<Context> = ((error: any, ctx: Context) => Promise<any>) | string
+export type ErrorHandlerNode<Context> = ((error: any, ctx: Context) => Promise<any>)
 
 /**
  * Route look node is used to find the routes using
@@ -237,7 +237,7 @@ export interface RouterContract<
  */
 export interface ServerContract<Context extends HttpContextContract> {
   instance?: HttpServer | HttpsServer
-  errorHandler (handler: ErrorHandlerNode<Context>): this
+  errorHandler (handler: ErrorHandlerNode<Context> | string): this
   handle (req: IncomingMessage, res: ServerResponse): Promise<void>
   optimize (): void
   before (cb: HookNode<Context>): this

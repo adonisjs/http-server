@@ -56,6 +56,7 @@ export class HttpContext implements HttpContextContract {
       subdomainOffset: 2,
       allowMethodSpoofing: true,
       etag: false,
+      generateRequestId: false,
       cookie: {},
       jsonpCallbackName: 'callback',
       trustProxy: proxyAddr.compile('loopback'),
@@ -74,6 +75,7 @@ export class HttpContext implements HttpContextContract {
       allowMethodSpoofing: serverConfig.allowMethodSpoofing,
       subdomainOffset: serverConfig.subdomainOffset,
       trustProxy: serverConfig.trustProxy,
+      generateRequestId: serverConfig.generateRequestId,
     })
 
     /**

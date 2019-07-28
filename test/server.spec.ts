@@ -27,6 +27,7 @@ const config: ServerConfigContract = {
   jsonpCallbackName: 'callback',
   cookie: {},
   subdomainOffset: 2,
+  generateRequestId: false,
   secret: Math.random().toFixed(36).substring(2, 38),
   trustProxy: proxyaddr.compile('loopback'),
   allowMethodSpoofing: false,
