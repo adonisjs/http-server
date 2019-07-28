@@ -47,10 +47,11 @@ router.get('/', async function () {
 * [any](_router_index_.router.md#any)
 * [commit](_router_index_.router.md#commit)
 * [destroy](_router_index_.router.md#destroy)
-* [find](_router_index_.router.md#find)
 * [forTesting](_router_index_.router.md#fortesting)
 * [get](_router_index_.router.md#get)
 * [group](_router_index_.router.md#group)
+* [lookup](_router_index_.router.md#lookup)
+* [match](_router_index_.router.md#match)
 * [namespace](_router_index_.router.md#namespace)
 * [on](_router_index_.router.md#on)
 * [patch](_router_index_.router.md#patch)
@@ -60,7 +61,6 @@ router.get('/', async function () {
 * [route](_router_index_.router.md#route)
 * [shallowResource](_router_index_.router.md#shallowresource)
 * [toJSON](_router_index_.router.md#tojson)
-* [urlFor](_router_index_.router.md#urlfor)
 * [where](_router_index_.router.md#where)
 
 ## Constructors
@@ -176,26 +176,6 @@ Name | Type |
 
 ___
 
-###  find
-
-▸ **find**(`url`: string, `method`: string, `domain?`: undefined | string): *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹*`Context`*›*
-
-*Implementation of [RouterContract](../interfaces/_contracts_.routercontract.md)*
-
-Find route for a given URL, method and optionally domain
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`url` | string |
-`method` | string |
-`domain?` | undefined \| string |
-
-**Returns:** *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹*`Context`*›*
-
-___
-
 ###  forTesting
 
 ▸ **forTesting**(`pattern?`: undefined | string, `methods?`: string[], `handler?`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*›): *[Route](_router_route_.route.md)‹*`Context`*›*
@@ -253,6 +233,46 @@ to routes in bulk
 ▸ (): *void*
 
 **Returns:** *[RouteGroup](_router_group_.routegroup.md)‹*`Context`*›*
+
+___
+
+###  lookup
+
+▸ **lookup**(`routeIdentifier`: string, `forDomain?`: undefined | string): *null | [RouteLookupNode](../modules/_contracts_.md#routelookupnode)‹*`Context`*›*
+
+*Implementation of [RouterContract](../interfaces/_contracts_.routercontract.md)*
+
+Look route for a given `pattern`, `route handler` or `route name`. Later this
+info can be used to make url for a given route.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`routeIdentifier` | string |
+`forDomain?` | undefined \| string |
+
+**Returns:** *null | [RouteLookupNode](../modules/_contracts_.md#routelookupnode)‹*`Context`*›*
+
+___
+
+###  match
+
+▸ **match**(`url`: string, `method`: string, `domain?`: undefined | string): *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹*`Context`*›*
+
+*Implementation of [RouterContract](../interfaces/_contracts_.routercontract.md)*
+
+Find route for a given URL, method and optionally domain
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`url` | string |
+`method` | string |
+`domain?` | undefined \| string |
+
+**Returns:** *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹*`Context`*›*
 
 ___
 
@@ -417,29 +437,6 @@ ___
 Returns a flat list of routes JSON
 
 **Returns:** *object & object[]*
-
-___
-
-###  urlFor
-
-▸ **urlFor**(`pattern`: string, `options`: object, `domain?`: undefined | string): *null | string*
-
-Makes the URL for a pre-registered route. The `params` is required to
-substitute values for dynamic segments and `qs` is optional for
-adding query string.
-
-If the domain for the route is defined, then a protocol relative URL for that
-domain will be returned.
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`pattern` | string |
-`options` | object |
-`domain?` | undefined \| string |
-
-**Returns:** *null | string*
 
 ___
 

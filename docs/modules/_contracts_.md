@@ -52,9 +52,20 @@ ___
 
 ###  ErrorHandlerNode
 
-Ƭ **ErrorHandlerNode**: *function | string*
+Ƭ **ErrorHandlerNode**: *function*
 
 Error handler node
+
+#### Type declaration:
+
+▸ (`error`: any, `ctx`: `Context`): *`Promise<any>`*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`error` | any |
+`ctx` | `Context` |
 
 ___
 

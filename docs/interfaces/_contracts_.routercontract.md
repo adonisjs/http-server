@@ -41,10 +41,11 @@ Shape of router exposed for creating routes
 * [any](_contracts_.routercontract.md#any)
 * [commit](_contracts_.routercontract.md#commit)
 * [destroy](_contracts_.routercontract.md#destroy)
-* [find](_contracts_.routercontract.md#find)
 * [forTesting](_contracts_.routercontract.md#fortesting)
 * [get](_contracts_.routercontract.md#get)
 * [group](_contracts_.routercontract.md#group)
+* [lookup](_contracts_.routercontract.md#lookup)
+* [match](_contracts_.routercontract.md#match)
 * [namespace](_contracts_.routercontract.md#namespace)
 * [on](_contracts_.routercontract.md#on)
 * [patch](_contracts_.routercontract.md#patch)
@@ -54,7 +55,6 @@ Shape of router exposed for creating routes
 * [route](_contracts_.routercontract.md#route)
 * [shallowResource](_contracts_.routercontract.md#shallowresource)
 * [toJSON](_contracts_.routercontract.md#tojson)
-* [urlFor](_contracts_.routercontract.md#urlfor)
 * [where](_contracts_.routercontract.md#where)
 
 ## Properties
@@ -127,22 +127,6 @@ Name | Type |
 
 ___
 
-###  find
-
-▸ **find**(`url`: string, `method`: string, `domain?`: undefined | string): *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹*`Context`*›*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`url` | string |
-`method` | string |
-`domain?` | undefined \| string |
-
-**Returns:** *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹*`Context`*›*
-
-___
-
 ###  forTesting
 
 ▸ **forTesting**(`pattern?`: undefined | string, `methods?`: string[], `handler?`: any): *`Route`*
@@ -185,6 +169,37 @@ ___
 ▸ (): *void*
 
 **Returns:** *`Group`*
+
+___
+
+###  lookup
+
+▸ **lookup**(`routeIdentifier`: string, `domain?`: undefined | string): *null | [RouteLookupNode](../modules/_contracts_.md#routelookupnode)‹*`Context`*›*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`routeIdentifier` | string |
+`domain?` | undefined \| string |
+
+**Returns:** *null | [RouteLookupNode](../modules/_contracts_.md#routelookupnode)‹*`Context`*›*
+
+___
+
+###  match
+
+▸ **match**(`url`: string, `method`: string, `domain?`: undefined | string): *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹*`Context`*›*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`url` | string |
+`method` | string |
+`domain?` | undefined \| string |
+
+**Returns:** *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹*`Context`*›*
 
 ___
 
@@ -312,22 +327,6 @@ ___
 ▸ **toJSON**(): *[RouteNode](../modules/_contracts_.md#routenode)‹*`Context`*›[]*
 
 **Returns:** *[RouteNode](../modules/_contracts_.md#routenode)‹*`Context`*›[]*
-
-___
-
-###  urlFor
-
-▸ **urlFor**(`pattern`: string, `options`: object, `domain?`: undefined | string): *null | string*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`pattern` | string |
-`options` | object |
-`domain?` | undefined \| string |
-
-**Returns:** *null | string*
 
 ___
 

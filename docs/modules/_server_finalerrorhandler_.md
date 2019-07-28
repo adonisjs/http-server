@@ -14,7 +14,7 @@
 
 ###  finalErrorHandler
 
-▸ **finalErrorHandler**<**Context**>(`errorHandler`: [ErrorHandlerNode](_contracts_.md#errorhandlernode)‹*`Context`*›, `error`: any, `ctx`: `Context`): *`Promise<void>`*
+▸ **finalErrorHandler**<**Context**>(`errorHandler`: [ErrorHandlerNode](_contracts_.md#errorhandlernode)‹*`Context`*› | object, `error`: any, `ctx`: `Context`): *`Promise<void>`*
 
 Final handler executes the route handler based on it's resolved
 type and the response body on various conditions (check method body)
@@ -28,7 +28,7 @@ for same.
 
 Name | Type |
 ------ | ------ |
-`errorHandler` | [ErrorHandlerNode](_contracts_.md#errorhandlernode)‹*`Context`*› |
+`errorHandler` | [ErrorHandlerNode](_contracts_.md#errorhandlernode)‹*`Context`*› \| object |
 `error` | any |
 `ctx` | `Context` |
 

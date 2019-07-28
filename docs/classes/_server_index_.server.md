@@ -123,7 +123,7 @@ ___
 
 ###  errorHandler
 
-▸ **errorHandler**(`handler`: [ErrorHandlerNode](../modules/_contracts_.md#errorhandlernode)‹*`Context`*›): *this*
+▸ **errorHandler**(`handler`: [ErrorHandlerNode](../modules/_contracts_.md#errorhandlernode)‹*`Context`*› | string): *this*
 
 *Implementation of [ServerContract](../interfaces/_contracts_.servercontract.md)*
 
@@ -134,7 +134,7 @@ occurred during HTTP request
 
 Name | Type |
 ------ | ------ |
-`handler` | [ErrorHandlerNode](../modules/_contracts_.md#errorhandlernode)‹*`Context`*› |
+`handler` | [ErrorHandlerNode](../modules/_contracts_.md#errorhandlernode)‹*`Context`*› \| string |
 
 **Returns:** *this*
 
