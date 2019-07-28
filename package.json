@@ -77,7 +77,7 @@
     "@poppinss/logger": "^1.x.x"
   },
   "dependencies": {
-    "@poppinss/request": "^1.0.12",
+    "@poppinss/request": "^1.0.13",
     "@poppinss/response": "^1.0.10",
     "@poppinss/utils": "^1.0.4",
     "co-compose": "^5.1.1",
