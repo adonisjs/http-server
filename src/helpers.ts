@@ -68,7 +68,7 @@ export function toRoutesJSON<Context extends any> (
 /**
  * Makes url for a route pattern and params and querystring.
  */
-export function makeUrl (pattern: string, options: { params?: any, qs?: any }): string {
+export function makeUrl (pattern: string, options: { params: any, qs: any }): string {
   let url = pattern
 
   if (url.indexOf(':') > -1) {

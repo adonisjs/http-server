@@ -66,7 +66,7 @@ export class HttpContext implements HttpContextContract {
      * Creating the url from the router pattern and params. Only
      * when actual URL isn't defined.
      */
-    req.url = req.url || makeUrl(routePattern, { params: routeParams })
+    req.url = req.url || makeUrl(routePattern, { params: routeParams, qs: {} })
 
     /**
      * Creating new request instance

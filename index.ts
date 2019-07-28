@@ -16,6 +16,7 @@ export { Server } from './src/Server'
 export { HttpContext } from './src/HttpContext'
 export { MiddlewareStore } from './src/Server/MiddlewareStore'
 export { routePreProcessor } from './src/Server/routePreProcessor'
+export { makeUrl } from './src/helpers'
 
 export {
   RouteContract,

@@ -149,7 +149,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
     /**
      * Raise error when route is missing
      */
-    const route = this._router.find(url, method)
+    const route = this._router.match(url, method)
     if (!route) {
       throw new RouteNotFound(`Cannot ${method}:${url}`, 404, exceptionCodes.E_ROUTE_NOT_FOUND)
     }

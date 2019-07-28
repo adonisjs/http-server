@@ -227,8 +227,8 @@ export interface RouterContract<
   namespace (namespace: string): this
   toJSON (): RouteNode<Context>[]
   commit (): void
-  find (url: string, method: string, domain?: string): null | MatchedRoute<Context>
-  urlFor (pattern: string, options: { params?: any, qs?: any }, domain?: string): null | string
+  match (url: string, method: string, domain?: string): null | MatchedRoute<Context>
+  lookup (routeIdentifier: string, domain?: string): null | RouteLookupNode<Context>
   forTesting (pattern?: string, methods?: string[], handler?: any): Route
 }
 

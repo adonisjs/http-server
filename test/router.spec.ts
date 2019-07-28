@@ -13,6 +13,7 @@ import { BriskRoute } from '../src/Router/BriskRoute'
 import { RouteResource } from '../src/Router/Resource'
 import { RouteGroup } from '../src/Router/Group'
 import { Route } from '../src/Router/Route'
+import { makeUrl } from '../src/helpers'
 
 test.group('Router', () => {
   test('add route class from the router instance', (assert) => {
@@ -1720,14 +1721,14 @@ test.group('Router | commit', () => {
   })
 })
 
-test.group('Router | find', () => {
-  test('find route using URL', (assert) => {
+test.group('Router | match', () => {
+  test('match route using URL', (assert) => {
     const router = new Router()
 
     router.resource('photos', 'PhotosController')
     router.commit()
 
-    assert.deepEqual(router.find('photos', 'GET')!, {
+    assert.deepEqual(router.match('photos', 'GET')!, {
       params: {},
       route: {
         meta: {
@@ -1741,7 +1742,7 @@ test.group('Router | find', () => {
       subdomains: {},
     })
 
-    assert.deepEqual(router.find('photos/create', 'GET')!, {
+    assert.deepEqual(router.match('photos/create', 'GET')!, {
       params: {},
       route: {
         meta: {
@@ -1755,7 +1756,7 @@ test.group('Router | find', () => {
       subdomains: {},
     })
 
-    assert.deepEqual(router.find('photos', 'POST')!, {
+    assert.deepEqual(router.match('photos', 'POST')!, {
       params: {},
       route: {
         meta: {
@@ -1769,7 +1770,7 @@ test.group('Router | find', () => {
       subdomains: {},
     })
 
-    assert.deepEqual(router.find('photos/1', 'GET')!, {
+    assert.deepEqual(router.match('photos/1', 'GET')!, {
       params: {
         id: '1',
       },
@@ -1785,7 +1786,7 @@ test.group('Router | find', () => {
       subdomains: {},
     })
 
-    assert.deepEqual(router.find('photos/1/edit', 'GET')!, {
+    assert.deepEqual(router.match('photos/1/edit', 'GET')!, {
       params: {
         id: '1',
       },
@@ -1801,7 +1802,7 @@ test.group('Router | find', () => {
       subdomains: {},
     })
 
-    assert.deepEqual(router.find('photos/1', 'PUT')!, {
+    assert.deepEqual(router.match('photos/1', 'PUT')!, {
       params: {
         id: '1',
       },
@@ -1817,7 +1818,7 @@ test.group('Router | find', () => {
       subdomains: {},
     })
 
-    assert.deepEqual(router.find('photos/1', 'DELETE')!, {
+    assert.deepEqual(router.match('photos/1', 'DELETE')!, {
       params: {
         id: '1',
       },
@@ -1842,8 +1843,15 @@ test.group('Router | urlFor', () => {
     router.resource('photos', 'PhotosController')
     router.commit()
 
-    assert.equal(router.urlFor('PhotosController.index', {}), '/photos')
-    assert.equal(router.urlFor('PhotosController.show', { params: { id: '3' } }), '/photos/3')
+    assert.equal(
+      makeUrl(router.lookup('PhotosController.index')!.pattern, { params: {}, qs: {} }),
+      '/photos',
+    )
+
+    assert.equal(
+      makeUrl(router.lookup('PhotosController.show')!.pattern, { params: { id: '3' }, qs: {} }),
+      '/photos/3',
+    )
   })
 
   test('make url using route name', (assert) => {
@@ -1852,7 +1860,10 @@ test.group('Router | urlFor', () => {
     router.get('/posts/:id', 'PostController.show').as('showPost')
     router.commit()
 
-    assert.equal(router.urlFor('showPost', { params: { id: '3' } }), '/posts/3')
+    assert.equal(
+      makeUrl(router.lookup('showPost')!.pattern, { params: { id: '3' }, qs: {} }),
+      '/posts/3',
+    )
   })
 
   test('raise error when required param is missing', (assert) => {
@@ -1861,17 +1872,7 @@ test.group('Router | urlFor', () => {
     router.get('/posts/:id', 'PostController.show').as('showPost')
     router.commit()
 
-    const fn = () => router.urlFor('showPost', { params: {} })
-    assert.throw(fn, '`id` param is required to make URL for `/posts/:id` route')
-  })
-
-  test('raise error when params object is missing', (assert) => {
-    const router = new Router()
-
-    router.get('/posts/:id', 'PostController.show').as('showPost')
-    router.commit()
-
-    const fn = () => router.urlFor('showPost', {})
+    const fn = () => makeUrl(router.lookup('showPost')!.pattern, { params: {}, qs: {} })
     assert.throw(fn, '`id` param is required to make URL for `/posts/:id` route')
   })
 
@@ -1881,18 +1882,8 @@ test.group('Router | urlFor', () => {
     router.get('/posts/:id', 'PostController.show').as('showPost')
     router.commit()
 
-    const url = router.urlFor('showPost', { params: { id: 1 }, qs: { username: 'virk' } })
+    const url = makeUrl(router.lookup('showPost')!.pattern, { params: { id: 1 }, qs: { username: 'virk' } })
     assert.equal(url, '/posts/1?username=virk')
-  })
-
-  test('prepend domain when explicit domain is defined', (assert) => {
-    const router = new Router()
-
-    router.get('/posts/:id', 'PostController.show').as('showPost').domain('adonisjs.com')
-    router.commit()
-
-    const url = router.urlFor('showPost', { params: { id: 1 } })
-    assert.equal(url, '//adonisjs.com/posts/1')
   })
 
   test('fetch only for given domain when defined', (assert) => {
@@ -1902,17 +1893,59 @@ test.group('Router | urlFor', () => {
     router.get('/posts/:id', 'AdonisController.show').domain('adonisjs.com')
     router.commit()
 
-    const url = router.urlFor('/posts/:id', { params: { id: 1 } }, 'adonisjs.com')
-    assert.equal(url, '//adonisjs.com/posts/1')
+    const route = router.lookup('/posts/:id', 'adonisjs.com')!
+    assert.equal(route.domain, 'adonisjs.com')
+    assert.equal(route.pattern, '/posts/:id')
   })
 
-  test('return null when unable to make URL', (assert) => {
+  test('return null when unable to lookup route', (assert) => {
     const router = new Router()
 
-    const url = router.urlFor('/posts', {})
-    assert.isNull(url)
+    const route = router.lookup('/posts')
+    assert.isNull(route)
   })
+})
 
+test.group('Router | forTesting', () => {
+  test('auto commit testing routes to the store', (assert) => {
+    const router = new Router()
+    router.forTesting()
+
+    assert.deepEqual(router['_store'].tree, {
+      tokens: [[{
+        old: 'root',
+        type: 0,
+        val: 'root',
+        end: '',
+      }]],
+      domains: {
+        'root': {
+          'GET': {
+            tokens: [[{
+              old: '/_test_0',
+              type: 0,
+              val: '_test_0',
+              end: '',
+            }]],
+            routes: {
+              '/_test_0': {
+                pattern: '/_test_0',
+                handler: router['_testsHandler'],
+                meta: {
+                  namespace: 'App/Controllers/Http',
+                },
+                middleware: [],
+                name: undefined,
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+})
+
+test.group('Brisk route', () => {
   test('define brisk route', (assert) => {
     const router = new Router()
     async function handler () {}
@@ -2001,45 +2034,6 @@ test.group('Router | urlFor', () => {
                 handler,
                 middleware: [],
                 name: 'v1.root',
-              },
-            },
-          },
-        },
-      },
-    })
-  })
-})
-
-test.group('Router | forTesting', () => {
-  test('auto commit testing routes to the store', (assert) => {
-    const router = new Router()
-    router.forTesting()
-
-    assert.deepEqual(router['_store'].tree, {
-      tokens: [[{
-        old: 'root',
-        type: 0,
-        val: 'root',
-        end: '',
-      }]],
-      domains: {
-        'root': {
-          'GET': {
-            tokens: [[{
-              old: '/_test_0',
-              type: 0,
-              val: '_test_0',
-              end: '',
-            }]],
-            routes: {
-              '/_test_0': {
-                pattern: '/_test_0',
-                handler: router['_testsHandler'],
-                meta: {
-                  namespace: 'App/Controllers/Http',
-                },
-                middleware: [],
-                name: undefined,
               },
             },
           },

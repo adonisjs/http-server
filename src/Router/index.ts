@@ -26,7 +26,7 @@ import { RouteResource } from './Resource'
 import { RouteGroup } from './Group'
 import { BriskRoute } from './BriskRoute'
 import { Store } from './Store'
-import { toRoutesJSON, exceptionCodes, makeUrl } from '../helpers'
+import { toRoutesJSON, exceptionCodes } from '../helpers'
 
 /**
  * Router class exposes unified API to create new routes, group them or
@@ -331,37 +331,18 @@ export class Router<Context> implements RouterContract<Context> {
   /**
    * Find route for a given URL, method and optionally domain
    */
-  public find (url: string, method: string, domain?: string): null | MatchedRoute<Context> {
+  public match (url: string, method: string, domain?: string): null | MatchedRoute<Context> {
     return this._store.match(url, method, domain)
   }
 
   /**
-   * Makes the URL for a pre-registered route. The `params` is required to
-   * substitute values for dynamic segments and `qs` is optional for
-   * adding query string.
-   *
-   * If the domain for the route is defined, then a protocol relative URL for that
-   * domain will be returned.
+   * Look route for a given `pattern`, `route handler` or `route name`. Later this
+   * info can be used to make url for a given route.
    */
-  public urlFor (pattern: string, options: { params?: any, qs?: any }, domain?: string): null | string {
-    options = Object.assign({ params: {}, qs: {} }, options)
-
-    /**
-     * Find where route pattern or name or handler matches
-     */
-    const matchingRoute = this._lookupStore.find((route) => {
-      return [route.name, route.pattern, route.handler].indexOf(pattern) > -1 && (!domain || domain === route.domain)
-    })
-
-    /**
-     * Return null if unable to lookup route
-     */
-    if (!matchingRoute) {
-      return null
-    }
-
-    const url = makeUrl(matchingRoute.pattern, options)
-    return matchingRoute.domain !== 'root' ? `//${matchingRoute.domain}${url}` : url
+  public lookup (routeIdentifier: string, forDomain?: string): null | RouteLookupNode<Context> {
+    return this._lookupStore.find(({ name, pattern, handler, domain }) => {
+      return [name, pattern, handler].indexOf(routeIdentifier) > -1 && (!forDomain || forDomain === domain)
+    }) || null
   }
 
   /**
