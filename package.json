@@ -27,9 +27,9 @@
   "author": "virk,poppinss",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/fold": "^6.1.0",
+    "@adonisjs/fold": "^6.1.1",
     "@adonisjs/mrm-preset": "^2.0.3",
-    "@poppinss/logger": "^1.1.1",
+    "@poppinss/logger": "^1.1.2",
     "@types/node": "^12.6.8",
     "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^3.0.2",
@@ -76,7 +76,7 @@
     "@poppinss/logger": "^1.x.x"
   },
   "dependencies": {
-    "@poppinss/request": "^1.0.10",
+    "@poppinss/request": "^1.0.12",
     "@poppinss/response": "^1.0.10",
     "@poppinss/utils": "^1.0.4",
     "co-compose": "^5.1.1",
