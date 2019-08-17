@@ -21,6 +21,7 @@ and route handler
 
 * [logger](_contracts_.httpcontextcontract.md#logger)
 * [params](_contracts_.httpcontextcontract.md#optional-params)
+* [profiler](_contracts_.httpcontextcontract.md#profiler)
 * [request](_contracts_.httpcontextcontract.md#request)
 * [response](_contracts_.httpcontextcontract.md#response)
 * [route](_contracts_.httpcontextcontract.md#optional-route)
@@ -37,6 +38,12 @@ ___
 ### `Optional` params
 
 • **params**? : *any*
+
+___
+
+###  profiler
+
+• **profiler**: *`ProfilerRowContract`*
 
 ___
 

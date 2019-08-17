@@ -25,6 +25,7 @@ error handler and server hooks.
 
 * [logger](_httpcontext_index_.httpcontext.md#logger)
 * [params](_httpcontext_index_.httpcontext.md#optional-params)
+* [profiler](_httpcontext_index_.httpcontext.md#profiler)
 * [request](_httpcontext_index_.httpcontext.md#request)
 * [response](_httpcontext_index_.httpcontext.md#response)
 * [route](_httpcontext_index_.httpcontext.md#optional-route)
@@ -38,7 +39,7 @@ error handler and server hooks.
 
 ###  constructor
 
-\+ **new HttpContext**(`request`: `RequestContract`, `response`: `ResponseContract`, `logger`: `LoggerContract`): *[HttpContext](_httpcontext_index_.httpcontext.md)*
+\+ **new HttpContext**(`request`: `RequestContract`, `response`: `ResponseContract`, `logger`: `LoggerContract`, `profiler`: `ProfilerRowContract`): *[HttpContext](_httpcontext_index_.httpcontext.md)*
 
 **Parameters:**
 
@@ -47,6 +48,7 @@ Name | Type |
 `request` | `RequestContract` |
 `response` | `ResponseContract` |
 `logger` | `LoggerContract` |
+`profiler` | `ProfilerRowContract` |
 
 **Returns:** *[HttpContext](_httpcontext_index_.httpcontext.md)*
 
@@ -65,6 +67,14 @@ ___
 • **params**? : *any*
 
 *Implementation of [HttpContextContract](../interfaces/_contracts_.httpcontextcontract.md).[params](../interfaces/_contracts_.httpcontextcontract.md#optional-params)*
+
+___
+
+###  profiler
+
+• **profiler**: *`ProfilerRowContract`*
+
+*Implementation of [HttpContextContract](../interfaces/_contracts_.httpcontextcontract.md).[profiler](../interfaces/_contracts_.httpcontextcontract.md#profiler)*
 
 ___
 

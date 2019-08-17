@@ -46,7 +46,7 @@ a nested object of routes
 
 #### Type declaration:
 
-● \[▪ **method**: *string*\]: [MethodNode](_contracts_.md#methodnode)‹*`Context`*›
+* \[ **method**: *string*\]: [MethodNode](_contracts_.md#methodnode)‹*`Context`*›
 
 ___
 
@@ -171,7 +171,7 @@ Shape of route param matchers
 
 #### Type declaration:
 
-● \[▪ **param**: *string*\]: `RegExp`
+* \[ **param**: *string*\]: `RegExp`
 
 ___
 

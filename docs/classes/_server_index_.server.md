@@ -54,7 +54,7 @@ http.createServer(server.handle.bind(server)).listen(3000)
 
 ###  constructor
 
-\+ **new Server**(`_context`: object, `_router`: [RouterContract](../interfaces/_contracts_.routercontract.md)‹*`Context`*›, `_middlewareStore`: [MiddlewareStoreContract](../interfaces/_contracts_.middlewarestorecontract.md)‹*`Context`*›, `_logger`: `LoggerContract`, `_httpConfig`: [ServerConfigContract](../modules/_contracts_.md#serverconfigcontract)): *[Server](_server_index_.server.md)*
+\+ **new Server**(`_context`: object, `_router`: [RouterContract](../interfaces/_contracts_.routercontract.md)‹*`Context`*›, `_middlewareStore`: [MiddlewareStoreContract](../interfaces/_contracts_.middlewarestorecontract.md)‹*`Context`*›, `_logger`: `LoggerContract`, `_profiler`: `ProfilerContract`, `_httpConfig`: [ServerConfigContract](../modules/_contracts_.md#serverconfigcontract)): *[Server](_server_index_.server.md)*
 
 **Parameters:**
 
@@ -64,6 +64,7 @@ Name | Type |
 `_router` | [RouterContract](../interfaces/_contracts_.routercontract.md)‹*`Context`*› |
 `_middlewareStore` | [MiddlewareStoreContract](../interfaces/_contracts_.middlewarestorecontract.md)‹*`Context`*› |
 `_logger` | `LoggerContract` |
+`_profiler` | `ProfilerContract` |
 `_httpConfig` | [ServerConfigContract](../modules/_contracts_.md#serverconfigcontract) |
 
 **Returns:** *[Server](_server_index_.server.md)*
