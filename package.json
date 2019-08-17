@@ -30,6 +30,7 @@
     "@adonisjs/fold": "^6.1.3",
     "@adonisjs/mrm-preset": "^2.0.3",
     "@poppinss/logger": "^1.1.2",
+    "@poppinss/profiler": "^1.0.0",
     "@types/node": "^12.7.2",
     "commitizen": "^4.0.3",
     "cz-conventional-changelog": "^3.0.2",
@@ -74,10 +75,10 @@
     "anyBranch": false
   },
   "peerDependencies": {
-    "@poppinss/logger": "^1.x.x"
+    "@poppinss/logger": "^1.x.x",
+    "@poppinss/profiler": "^1.x.x"
   },
   "dependencies": {
-    "@poppinss/profiler": "^1.0.0",
     "@poppinss/request": "^1.0.13",
     "@poppinss/response": "^1.0.10",
     "@poppinss/utils": "^1.0.4",
