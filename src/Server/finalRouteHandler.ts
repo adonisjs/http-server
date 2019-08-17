@@ -22,25 +22,39 @@ import { ResolvedControllerNode, HttpContextContract } from '../contracts'
  */
 export async function finalRouteHandler<Context extends HttpContextContract> (ctx: Context) {
   const handler = ctx.route!.meta.resolvedHandler as ResolvedControllerNode<Context>
+  let profilerAction
 
-  /**
-   * When route handler is a plain function, then execute it
-   * as it is.
-   */
-  if (handler.type === 'function') {
-    const returnValue = await handler.handler(ctx)
+  try {
+    /**
+     * When route handler is a plain function, then execute it
+     * as it is.
+     */
+    if (handler.type === 'function') {
+      profilerAction = ctx.profiler.profile('http:route:closure')
+
+      const returnValue = await handler.handler(ctx)
+      if (useReturnValue(returnValue, ctx)) {
+        ctx.response.send(returnValue)
+      }
+
+      profilerAction.end()
+      return
+    }
+
+    /**
+     * Otherwise lookup the controller inside the IoC container
+     * and make the response
+     */
+    profilerAction = ctx.profiler.profile('http:route:controller')
+
+    const returnValue = await callIocReference(handler, [ctx])
     if (useReturnValue(returnValue, ctx)) {
       ctx.response.send(returnValue)
     }
-    return
-  }
 
-  /**
-   * Otherwise lookup the controller inside the IoC container
-   * and make the response
-   */
-  const returnValue = await callIocReference(handler, [ctx])
-  if (useReturnValue(returnValue, ctx)) {
-    ctx.response.send(returnValue)
+    profilerAction.end()
+  } catch (error) {
+    profilerAction.end()
+    throw error
   }
 }

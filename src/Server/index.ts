@@ -11,8 +11,15 @@
 * file that was distributed with this source code.
 */
 
+import { Middleware } from 'co-compose'
 import { Server as HttpsServer } from 'https'
+import { LoggerContract } from '@poppinss/logger'
+import { Request, RequestContract } from '@poppinss/request'
+import { Exception, parseIocReference } from '@poppinss/utils'
+import { Response, ResponseContract } from '@poppinss/response'
+import { ProfilerRowContract, ProfilerContract } from '@poppinss/profiler'
 import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
+
 import {
   RouterContract,
   ServerContract,
@@ -22,12 +29,6 @@ import {
   HttpContextContract,
   ErrorHandlerNode,
  } from '../contracts'
-
-import { Middleware } from 'co-compose'
-import { Exception, parseIocReference } from '@poppinss/utils'
-import { LoggerContract } from '@poppinss/logger'
-import { Request, RequestContract } from '@poppinss/request'
-import { Response, ResponseContract } from '@poppinss/response'
 
 import { exceptionCodes } from '../helpers'
 import { finalErrorHandler } from './finalErrorHandler'
@@ -99,11 +100,17 @@ export class Server<Context extends HttpContextContract> implements ServerContra
 
   constructor (
     private _context: {
-      new(request: RequestContract, response: ResponseContract, logger: LoggerContract): Context,
+      new(
+        request: RequestContract,
+        response: ResponseContract,
+        logger: LoggerContract,
+        profiler: ProfilerRowContract,
+      ): Context,
     },
     private _router: RouterContract<Context>,
     private _middlewareStore: MiddlewareStoreContract<Context>,
     private _logger: LoggerContract,
+    private _profiler: ProfilerContract,
     private _httpConfig: ServerConfigContract,
   ) {}
 
@@ -133,7 +140,10 @@ export class Server<Context extends HttpContextContract> implements ServerContra
    * Executes before hooks and then the route handler
    */
   private async _executeHooksAndHandler (ctx: Context) {
-    const shortcircuit = await this._executeBeforeHooks(ctx)
+    const shortcircuit = await ctx.profiler.profileAsync('http:before:hooks', {
+      length: this._hooks.before.length,
+    }, async () => this._executeBeforeHooks(ctx))
+
     if (!shortcircuit) {
       await this._handleRequest(ctx)
     }
@@ -147,9 +157,15 @@ export class Server<Context extends HttpContextContract> implements ServerContra
     const method = ctx.request.method()
 
     /**
+     * Profiling `route.match` method
+     */
+    const matchRoute = ctx.profiler.profile('http:route:match')
+    const route = this._router.match(url, method)
+    matchRoute.end()
+
+    /**
      * Raise error when route is missing
      */
-    const route = this._router.match(url, method)
     if (!route) {
       throw new RouteNotFound(`Cannot ${method}:${url}`, 404, exceptionCodes.E_ROUTE_NOT_FOUND)
     }
@@ -162,7 +178,25 @@ export class Server<Context extends HttpContextContract> implements ServerContra
     ctx.subdomains = route.subdomains
     ctx.route = route.route
 
-    await this._routeHandler(ctx)
+    /**
+     * Executing the global middleware, route middleware and route as a single
+     * row. For now, we do not profile them seperately, however, if required
+     * we may
+     */
+    const stackRow = ctx.profiler.child('http:route:stack', route)
+
+    /**
+     * The controller and middleware will receive a child row
+     */
+    ctx.profiler = stackRow
+
+    try {
+      await this._routeHandler(ctx)
+      stackRow.end()
+    } catch (error) {
+      stackRow.end()
+      throw error
+    }
   }
 
   /**
@@ -278,6 +312,12 @@ export class Server<Context extends HttpContextContract> implements ServerContra
     const response = new Response(req, res, this._httpConfig)
     response.explicitEnd = true
 
+    const requestRow = this._profiler.create('http:request', {
+      request_id: request.id(),
+      url: request.url(),
+      method: request.method(),
+    })
+
     /**
      * All request logs will have the request id. For now, we add it to all
      * requests and if required, later we can make it configurable.
@@ -285,7 +325,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
     const ctx = new this._context(request, response, this._logger.child({
       request_id: request.id(),
       serializers: {},
-    }))
+    }), requestRow)
 
     /**
      * Start with before hooks upfront. If they raise error
@@ -302,13 +342,16 @@ export class Server<Context extends HttpContextContract> implements ServerContra
      * more than zero after hooks.
      */
     if (ctx.response.explicitEnd && this._hooks.after.length) {
+      const afterHooks = requestRow.child('http:after:hooks', { length: this._hooks.after.length })
       try {
         await this._executeAfterHooks(ctx)
       } catch (error) {
         await this._handleError(error, ctx)
       }
+      afterHooks.end()
     }
 
+    requestRow.end({ status_code: res.statusCode })
     ctx.response.finish()
   }
 }

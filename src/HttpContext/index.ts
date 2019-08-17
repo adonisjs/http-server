@@ -14,9 +14,11 @@
 import { Socket } from 'net'
 import * as proxyAddr from 'proxy-addr'
 import { IncomingMessage, ServerResponse } from 'http'
-import { RequestContract, Request } from '@poppinss/request'
 import { LoggerContract, Logger } from '@poppinss/logger'
+import { RequestContract, Request } from '@poppinss/request'
 import { ResponseContract, Response } from '@poppinss/response'
+import { ProfilerRowContract, Profiler } from '@poppinss/profiler'
+
 import { RouteNode, HttpContextContract, ServerConfigContract } from '../contracts'
 import { makeUrl } from '../helpers'
 
@@ -33,6 +35,7 @@ export class HttpContext implements HttpContextContract {
     public request: RequestContract,
     public response: ResponseContract,
     public logger: LoggerContract,
+    public profiler: ProfilerRowContract,
   ) {}
 
   /**
@@ -94,7 +97,7 @@ export class HttpContext implements HttpContextContract {
       name: 'adonis',
       enabled: true,
       level: 'trace',
-    }))
+    }), new Profiler({}).create('fake context'))
 
     /**
      * Attaching route to the ctx

@@ -12,11 +12,12 @@
 */
 
 import { Server as HttpsServer } from 'https'
+import { LoggerContract } from '@poppinss/logger'
+import { ProfilerRowContract } from '@poppinss/profiler'
 import { MacroableConstructorContract } from 'macroable'
-import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
 import { RequestContract, RequestConfigContract } from '@poppinss/request'
 import { ResponseContract, ResponseConfigContract } from '@poppinss/response'
-import { LoggerContract } from '@poppinss/logger'
+import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
 
 /**
  * The shape of the route handler
@@ -252,6 +253,7 @@ export interface HttpContextContract {
   request: RequestContract
   response: ResponseContract
   logger: LoggerContract
+  profiler: ProfilerRowContract,
   route?: RouteNode<this>
   params?: any
   subdomains?: any

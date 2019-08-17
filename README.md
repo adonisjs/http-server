@@ -14,6 +14,7 @@ Node.js HTTP server with a slick router used by AdonisJs. Think of it as an Expr
 - [Usage](#usage)
 - [MiddlewareStore](#middlewarestore)
 - [Router](#router)
+- [Profiler action labels](#profiler-action-labels)
 - [API](#api)
 - [Maintainers](#maintainers)
 
@@ -94,6 +95,17 @@ router.group(() => {
   })
 }).prefix('v1')
 ```
+
+## Profiler action labels
+Following is the list of actions profiled during an HTTP request
+
+- http:request
+- http:before:hooks
+- http:route:match
+- http:route:stack
+- http:after:hooks
+- http:route:closure
+- http:route:controller
 
 We recommend you to check the API docs to get a complete reference of all the classes.
 
