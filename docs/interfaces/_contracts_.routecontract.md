@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["contracts"](../modules/_contracts_.md) / [RouteContract](_contracts_.routecontract.md) /
+[Globals](../README.md) › ["contracts"](../modules/_contracts_.md) › [RouteContract](_contracts_.routecontract.md)
 
 # Interface: RouteContract <**Context**>
 
@@ -123,21 +123,21 @@ ___
 
 ###  toJSON
 
-▸ **toJSON**(): *[RouteDefinition](../modules/_contracts_.md#routedefinition)‹*`Context`*›*
+▸ **toJSON**(): *[RouteDefinition](../modules/_contracts_.md#routedefinition)‹Context›*
 
-**Returns:** *[RouteDefinition](../modules/_contracts_.md#routedefinition)‹*`Context`*›*
+**Returns:** *[RouteDefinition](../modules/_contracts_.md#routedefinition)‹Context›*
 
 ___
 
 ###  where
 
-▸ **where**(`param`: string, `matcher`: string | `RegExp`): *this*
+▸ **where**(`param`: string, `matcher`: string | RegExp): *this*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `param` | string |
-`matcher` | string \| `RegExp` |
+`matcher` | string \| RegExp |
 
 **Returns:** *this*

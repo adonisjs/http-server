@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["contracts"](../modules/_contracts_.md) / [RouteGroupContract](_contracts_.routegroupcontract.md) /
+[Globals](../README.md) › ["contracts"](../modules/_contracts_.md) › [RouteGroupContract](_contracts_.routegroupcontract.md)
 
 # Interface: RouteGroupContract <**Context**>
 
@@ -37,7 +37,7 @@ Shape of route group class
 
 ###  routes
 
-• **routes**: *[RouteContract](_contracts_.routecontract.md)‹*`Context`*› | [RouteResourceContract](_contracts_.routeresourcecontract.md)‹*`Context`*› | [BriskRouteContract](_contracts_.briskroutecontract.md)‹*`Context`*› | [RouteGroupContract](_contracts_.routegroupcontract.md)‹*`Context`*›[]*
+• **routes**: *[RouteContract](_contracts_.routecontract.md)‹Context› | [RouteResourceContract](_contracts_.routeresourcecontract.md)‹Context› | [BriskRouteContract](_contracts_.briskroutecontract.md)‹Context› | [RouteGroupContract](_contracts_.routegroupcontract.md)‹Context›[]*
 
 ## Methods
 
@@ -113,13 +113,13 @@ ___
 
 ###  where
 
-▸ **where**(`param`: string, `matcher`: `RegExp` | string): *this*
+▸ **where**(`param`: string, `matcher`: RegExp | string): *this*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `param` | string |
-`matcher` | `RegExp` \| string |
+`matcher` | RegExp \| string |
 
 **Returns:** *this*

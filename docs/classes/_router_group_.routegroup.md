@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["Router/Group"](../modules/_router_group_.md) / [RouteGroup](_router_group_.routegroup.md) /
+[Globals](../README.md) › ["Router/Group"](../modules/_router_group_.md) › [RouteGroup](_router_group_.routegroup.md)
 
 # Class: RouteGroup <**Context**>
 
@@ -14,13 +14,13 @@ the constructor.
 
 ## Hierarchy
 
-* `Macroable`
+* Macroable
 
   * **RouteGroup**
 
 ## Implements
 
-* [RouteGroupContract](../interfaces/_contracts_.routegroupcontract.md)‹*`Context`*›
+* [RouteGroupContract](../interfaces/_contracts_.routegroupcontract.md)‹Context›
 
 ## Index
 
@@ -54,13 +54,13 @@ the constructor.
 
 ###  constructor
 
-\+ **new RouteGroup**(`routes`: [Route](_router_route_.route.md)‹*`Context`*› | [RouteResource](_router_resource_.routeresource.md)‹*`Context`*› | [BriskRoute](_router_briskroute_.briskroute.md)‹*`Context`*› | [RouteGroup](_router_group_.routegroup.md)‹*`Context`*›[]): *[RouteGroup](_router_group_.routegroup.md)*
+\+ **new RouteGroup**(`routes`: [Route](_router_route_.route.md)‹Context› | [RouteResource](_router_resource_.routeresource.md)‹Context› | [BriskRoute](_router_briskroute_.briskroute.md)‹Context› | [RouteGroup](_router_group_.routegroup.md)‹Context›[]): *[RouteGroup](_router_group_.routegroup.md)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`routes` | [Route](_router_route_.route.md)‹*`Context`*› \| [RouteResource](_router_resource_.routeresource.md)‹*`Context`*› \| [BriskRoute](_router_briskroute_.briskroute.md)‹*`Context`*› \| [RouteGroup](_router_group_.routegroup.md)‹*`Context`*›[] |
+`routes` | [Route](_router_route_.route.md)‹Context› \| [RouteResource](_router_resource_.routeresource.md)‹Context› \| [BriskRoute](_router_briskroute_.briskroute.md)‹Context› \| [RouteGroup](_router_group_.routegroup.md)‹Context›[] |
 
 **Returns:** *[RouteGroup](_router_group_.routegroup.md)*
 
@@ -68,7 +68,7 @@ Name | Type |
 
 ###  routes
 
-• **routes**: *[Route](_router_route_.route.md)‹*`Context`*› | [RouteResource](_router_resource_.routeresource.md)‹*`Context`*› | [BriskRoute](_router_briskroute_.briskroute.md)‹*`Context`*› | [RouteGroup](_router_group_.routegroup.md)‹*`Context`*›[]*
+• **routes**: *[Route](_router_route_.route.md)‹Context› | [RouteResource](_router_resource_.routeresource.md)‹Context› | [BriskRoute](_router_briskroute_.briskroute.md)‹Context› | [RouteGroup](_router_group_.routegroup.md)‹Context›[]*
 
 *Implementation of [RouteGroupContract](../interfaces/_contracts_.routegroupcontract.md).[routes](../interfaces/_contracts_.routegroupcontract.md#routes)*
 
@@ -216,7 +216,7 @@ ___
 
 ###  where
 
-▸ **where**(`param`: string, `matcher`: `RegExp` | string): *this*
+▸ **where**(`param`: string, `matcher`: RegExp | string): *this*
 
 *Implementation of [RouteGroupContract](../interfaces/_contracts_.routegroupcontract.md)*
 
@@ -233,7 +233,7 @@ Route.group(() => {
 Name | Type |
 ------ | ------ |
 `param` | string |
-`matcher` | `RegExp` \| string |
+`matcher` | RegExp \| string |
 
 **Returns:** *this*
 
@@ -241,7 +241,7 @@ ___
 
 ### `Static` getGetter
 
-▸ **getGetter**(`name`: string): *`MacroableFn` | undefined*
+▸ **getGetter**(`name`: string): *MacroableFn | undefined*
 
 *Inherited from void*
 
@@ -251,13 +251,13 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *`MacroableFn` | undefined*
+**Returns:** *MacroableFn | undefined*
 
 ___
 
 ### `Static` getMacro
 
-▸ **getMacro**(`name`: string): *`MacroableFn` | undefined*
+▸ **getMacro**(`name`: string): *MacroableFn | undefined*
 
 *Inherited from void*
 
@@ -267,13 +267,13 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *`MacroableFn` | undefined*
+**Returns:** *MacroableFn | undefined*
 
 ___
 
 ### `Static` getter
 
-▸ **getter**(`name`: string, `callback`: `MacroableFn`, `singleton?`: undefined | false | true): *void*
+▸ **getter**(`name`: string, `callback`: MacroableFn, `singleton?`: undefined | false | true): *void*
 
 *Inherited from void*
 
@@ -282,7 +282,7 @@ ___
 Name | Type |
 ------ | ------ |
 `name` | string |
-`callback` | `MacroableFn` |
+`callback` | MacroableFn |
 `singleton?` | undefined \| false \| true |
 
 **Returns:** *void*
@@ -333,7 +333,7 @@ ___
 
 ### `Static` macro
 
-▸ **macro**(`name`: string, `callback`: `MacroableFn`): *void*
+▸ **macro**(`name`: string, `callback`: MacroableFn): *void*
 
 *Inherited from void*
 
@@ -342,6 +342,6 @@ ___
 Name | Type |
 ------ | ------ |
 `name` | string |
-`callback` | `MacroableFn` |
+`callback` | MacroableFn |
 
 **Returns:** *void*

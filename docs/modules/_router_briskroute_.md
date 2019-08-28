@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["Router/BriskRoute"](_router_briskroute_.md) /
+[Globals](../README.md) › ["Router/BriskRoute"](_router_briskroute_.md)
 
 # External module: "Router/BriskRoute"
 

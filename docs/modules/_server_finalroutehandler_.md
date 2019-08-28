@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["Server/finalRouteHandler"](_server_finalroutehandler_.md) /
+[Globals](../README.md) › ["Server/finalRouteHandler"](_server_finalroutehandler_.md)
 
 # External module: "Server/finalRouteHandler"
 
@@ -14,7 +14,7 @@
 
 ###  finalRouteHandler
 
-▸ **finalRouteHandler**<**Context**>(`ctx`: `Context`): *`Promise<void>`*
+▸ **finalRouteHandler**<**Context**>(`ctx`: Context): *Promise‹void›*
 
 Final handler executes the route handler based on it's resolved
 type and the response body on various conditions (check method body)
@@ -28,6 +28,6 @@ for same.
 
 Name | Type |
 ------ | ------ |
-`ctx` | `Context` |
+`ctx` | Context |
 
-**Returns:** *`Promise<void>`*
+**Returns:** *Promise‹void›*

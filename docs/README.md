@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](README.md)**
+**[@poppinss/http-server](README.md)**
 
-[Globals](README.md) /
+[Globals](README.md)
 
 ## Index
 

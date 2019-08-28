@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["contracts"](../modules/_contracts_.md) / [BriskRouteContract](_contracts_.briskroutecontract.md) /
+[Globals](../README.md) › ["contracts"](../modules/_contracts_.md) › [BriskRouteContract](_contracts_.briskroutecontract.md)
 
 # Interface: BriskRouteContract <**Context**>
 
@@ -32,13 +32,13 @@ Shape for brisk/quick routes
 
 ###  route
 
-• **route**: *[RouteContract](_contracts_.routecontract.md)‹*`Context`*› | null*
+• **route**: *[RouteContract](_contracts_.routecontract.md)‹Context› | null*
 
 ## Methods
 
 ###  setHandler
 
-▸ **setHandler**(`handler`: any, `invokedBy`: string): *[RouteContract](_contracts_.routecontract.md)‹*`Context`*›*
+▸ **setHandler**(`handler`: any, `invokedBy`: string): *[RouteContract](_contracts_.routecontract.md)‹Context›*
 
 **Parameters:**
 
@@ -47,4 +47,4 @@ Name | Type |
 `handler` | any |
 `invokedBy` | string |
 
-**Returns:** *[RouteContract](_contracts_.routecontract.md)‹*`Context`*›*
+**Returns:** *[RouteContract](_contracts_.routecontract.md)‹Context›*

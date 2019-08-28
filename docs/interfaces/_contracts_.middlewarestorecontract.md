@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["contracts"](../modules/_contracts_.md) / [MiddlewareStoreContract](_contracts_.middlewarestorecontract.md) /
+[Globals](../README.md) › ["contracts"](../modules/_contracts_.md) › [MiddlewareStoreContract](_contracts_.middlewarestorecontract.md)
 
 # Interface: MiddlewareStoreContract <**Context**>
 
@@ -33,15 +33,15 @@ at runtime
 
 ###  get
 
-▸ **get**(): *[ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹*`Context`*›[]*
+▸ **get**(): *[ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹Context›[]*
 
-**Returns:** *[ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹*`Context`*›[]*
+**Returns:** *[ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹Context›[]*
 
 ___
 
 ###  getNamed
 
-▸ **getNamed**(`name`: string): *null | [ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹*`Context`*›*
+▸ **getNamed**(`name`: string): *null | [ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹Context›*
 
 **Parameters:**
 
@@ -49,19 +49,19 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *null | [ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹*`Context`*›*
+**Returns:** *null | [ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹Context›*
 
 ___
 
 ###  preCompileMiddleware
 
-▸ **preCompileMiddleware**(`route`: [RouteNode](../modules/_contracts_.md#routenode)‹*`Context`*›): *void*
+▸ **preCompileMiddleware**(`route`: [RouteNode](../modules/_contracts_.md#routenode)‹Context›): *void*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`route` | [RouteNode](../modules/_contracts_.md#routenode)‹*`Context`*› |
+`route` | [RouteNode](../modules/_contracts_.md#routenode)‹Context› |
 
 **Returns:** *void*
 
@@ -69,13 +69,13 @@ ___
 
 ###  register
 
-▸ **register**(`middleware`: [MiddlewareNode](../modules/_contracts_.md#middlewarenode)‹*`Context`*›[]): *this*
+▸ **register**(`middleware`: [MiddlewareNode](../modules/_contracts_.md#middlewarenode)‹Context›[]): *this*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`middleware` | [MiddlewareNode](../modules/_contracts_.md#middlewarenode)‹*`Context`*›[] |
+`middleware` | [MiddlewareNode](../modules/_contracts_.md#middlewarenode)‹Context›[] |
 
 **Returns:** *this*
 

@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / [@poppinss/http-server](_poppinss_http_server.md) /
+[Globals](../README.md) › [@poppinss/http-server](_poppinss_http_server.md)
 
 # External module: @poppinss/http-server
 

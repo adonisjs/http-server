@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["Router/Route"](_router_route_.md) /
+[Globals](../README.md) › ["Router/Route"](_router_route_.md)
 
 # External module: "Router/Route"
 

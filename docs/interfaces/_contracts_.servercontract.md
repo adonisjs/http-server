@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["contracts"](../modules/_contracts_.md) / [ServerContract](_contracts_.servercontract.md) /
+[Globals](../README.md) › ["contracts"](../modules/_contracts_.md) › [ServerContract](_contracts_.servercontract.md)
 
 # Interface: ServerContract <**Context**>
 
@@ -36,19 +36,19 @@ HTTP server
 
 ### `Optional` instance
 
-• **instance**? : *`HttpServer` | `HttpsServer`*
+• **instance**? : *HttpServer | HttpsServer*
 
 ## Methods
 
 ###  after
 
-▸ **after**(`cb`: [HookNode](../modules/_contracts_.md#hooknode)‹*`Context`*›): *this*
+▸ **after**(`cb`: [HookNode](../modules/_contracts_.md#hooknode)‹Context›): *this*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`cb` | [HookNode](../modules/_contracts_.md#hooknode)‹*`Context`*› |
+`cb` | [HookNode](../modules/_contracts_.md#hooknode)‹Context› |
 
 **Returns:** *this*
 
@@ -56,13 +56,13 @@ ___
 
 ###  before
 
-▸ **before**(`cb`: [HookNode](../modules/_contracts_.md#hooknode)‹*`Context`*›): *this*
+▸ **before**(`cb`: [HookNode](../modules/_contracts_.md#hooknode)‹Context›): *this*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`cb` | [HookNode](../modules/_contracts_.md#hooknode)‹*`Context`*› |
+`cb` | [HookNode](../modules/_contracts_.md#hooknode)‹Context› |
 
 **Returns:** *this*
 
@@ -70,13 +70,13 @@ ___
 
 ###  errorHandler
 
-▸ **errorHandler**(`handler`: [ErrorHandlerNode](../modules/_contracts_.md#errorhandlernode)‹*`Context`*› | string): *this*
+▸ **errorHandler**(`handler`: [ErrorHandlerNode](../modules/_contracts_.md#errorhandlernode)‹Context› | string): *this*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`handler` | [ErrorHandlerNode](../modules/_contracts_.md#errorhandlernode)‹*`Context`*› \| string |
+`handler` | [ErrorHandlerNode](../modules/_contracts_.md#errorhandlernode)‹Context› \| string |
 
 **Returns:** *this*
 
@@ -84,16 +84,16 @@ ___
 
 ###  handle
 
-▸ **handle**(`req`: `IncomingMessage`, `res`: `ServerResponse`): *`Promise<void>`*
+▸ **handle**(`req`: IncomingMessage, `res`: ServerResponse): *Promise‹void›*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`req` | `IncomingMessage` |
-`res` | `ServerResponse` |
+`req` | IncomingMessage |
+`res` | ServerResponse |
 
-**Returns:** *`Promise<void>`*
+**Returns:** *Promise‹void›*
 
 ___
 

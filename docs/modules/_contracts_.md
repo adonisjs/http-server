@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["contracts"](_contracts_.md) /
+[Globals](../README.md) › ["contracts"](_contracts_.md)
 
 # External module: "contracts"
 
@@ -46,7 +46,7 @@ a nested object of routes
 
 #### Type declaration:
 
-* \[ **method**: *string*\]: [MethodNode](_contracts_.md#methodnode)‹*`Context`*›
+* \[ **method**: *string*\]: [MethodNode](_contracts_.md#methodnode)‹Context›
 
 ___
 
@@ -58,14 +58,14 @@ Error handler node
 
 #### Type declaration:
 
-▸ (`error`: any, `ctx`: `Context`): *`Promise<any>`*
+▸ (`error`: any, `ctx`: Context): *Promise‹any›*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `error` | any |
-`ctx` | `Context` |
+`ctx` | Context |
 
 ___
 
@@ -78,13 +78,13 @@ middleware
 
 #### Type declaration:
 
-▸ (`ctx`: `Context`): *`Promise<void>`*
+▸ (`ctx`: Context): *Promise‹void›*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`ctx` | `Context` |
+`ctx` | Context |
 
 ___
 
@@ -138,7 +138,7 @@ ___
 
 ###  RouteDefinition
 
-Ƭ **RouteDefinition**: *[RouteNode](_contracts_.md#routenode)‹*`Context`*› & object*
+Ƭ **RouteDefinition**: *[RouteNode](_contracts_.md#routenode)‹Context› & object*
 
 Route definition returned as a result of `route.toJSON` method
 
@@ -171,7 +171,7 @@ Shape of route param matchers
 
 #### Type declaration:
 
-* \[ **param**: *string*\]: `RegExp`
+* \[ **param**: *string*\]: RegExp
 
 ___
 
@@ -197,6 +197,6 @@ ___
 
 ###  ServerConfigContract
 
-Ƭ **ServerConfigContract**: *`RequestConfigContract` & `ResponseConfigContract`*
+Ƭ **ServerConfigContract**: *RequestConfigContract & ResponseConfigContract*
 
 Config requried by request and response

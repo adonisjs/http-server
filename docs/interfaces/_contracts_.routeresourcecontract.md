@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["contracts"](../modules/_contracts_.md) / [RouteResourceContract](_contracts_.routeresourcecontract.md) /
+[Globals](../README.md) › ["contracts"](../modules/_contracts_.md) › [RouteResourceContract](_contracts_.routeresourcecontract.md)
 
 # Interface: RouteResourceContract <**Context**>
 
@@ -37,7 +37,7 @@ Shape of route resource class
 
 ###  routes
 
-• **routes**: *[RouteContract](_contracts_.routecontract.md)‹*`Context`*›[]*
+• **routes**: *[RouteContract](_contracts_.routecontract.md)‹Context›[]*
 
 ## Methods
 
@@ -107,13 +107,13 @@ ___
 
 ###  where
 
-▸ **where**(`key`: string, `matcher`: string | `RegExp`): *this*
+▸ **where**(`key`: string, `matcher`: string | RegExp): *this*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `key` | string |
-`matcher` | string \| `RegExp` |
+`matcher` | string \| RegExp |
 
 **Returns:** *this*

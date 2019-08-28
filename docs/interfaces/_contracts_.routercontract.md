@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["contracts"](../modules/_contracts_.md) / [RouterContract](_contracts_.routercontract.md) /
+[Globals](../README.md) › ["contracts"](../modules/_contracts_.md) › [RouterContract](_contracts_.routercontract.md)
 
 # Interface: RouterContract <**Context, Route, Group, Resource, Brisk**>
 
@@ -61,46 +61,46 @@ Shape of router exposed for creating routes
 
 ###  BriskRoute
 
-• **BriskRoute**: *`MacroableConstructorContract`*
+• **BriskRoute**: *MacroableConstructorContract*
 
 ___
 
 ###  Route
 
-• **Route**: *`MacroableConstructorContract`*
+• **Route**: *MacroableConstructorContract*
 
 ___
 
 ###  RouteGroup
 
-• **RouteGroup**: *`MacroableConstructorContract`*
+• **RouteGroup**: *MacroableConstructorContract*
 
 ___
 
 ###  RouteResource
 
-• **RouteResource**: *`MacroableConstructorContract`*
+• **RouteResource**: *MacroableConstructorContract*
 
 ___
 
 ###  routes
 
-• **routes**: *[RouteContract](_contracts_.routecontract.md)‹*`Context`*› | [RouteResourceContract](_contracts_.routeresourcecontract.md)‹*`Context`*› | [RouteGroupContract](_contracts_.routegroupcontract.md)‹*`Context`*› | [BriskRouteContract](_contracts_.briskroutecontract.md)‹*`Context`*›[]*
+• **routes**: *[RouteContract](_contracts_.routecontract.md)‹Context› | [RouteResourceContract](_contracts_.routeresourcecontract.md)‹Context› | [RouteGroupContract](_contracts_.routegroupcontract.md)‹Context› | [BriskRouteContract](_contracts_.briskroutecontract.md)‹Context›[]*
 
 ## Methods
 
 ###  any
 
-▸ **any**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*›): *`Route`*
+▸ **any**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context›): *Route*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `pattern` | string |
-`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*› |
+`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context› |
 
-**Returns:** *`Route`*
+**Returns:** *Route*
 
 ___
 
@@ -114,22 +114,22 @@ ___
 
 ###  destroy
 
-▸ **destroy**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*›): *`Route`*
+▸ **destroy**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context›): *Route*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `pattern` | string |
-`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*› |
+`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context› |
 
-**Returns:** *`Route`*
+**Returns:** *Route*
 
 ___
 
 ###  forTesting
 
-▸ **forTesting**(`pattern?`: undefined | string, `methods?`: string[], `handler?`: any): *`Route`*
+▸ **forTesting**(`pattern?`: undefined | string, `methods?`: string[], `handler?`: any): *Route*
 
 **Parameters:**
 
@@ -139,28 +139,28 @@ Name | Type |
 `methods?` | string[] |
 `handler?` | any |
 
-**Returns:** *`Route`*
+**Returns:** *Route*
 
 ___
 
 ###  get
 
-▸ **get**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*›): *`Route`*
+▸ **get**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context›): *Route*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `pattern` | string |
-`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*› |
+`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context› |
 
-**Returns:** *`Route`*
+**Returns:** *Route*
 
 ___
 
 ###  group
 
-▸ **group**(`callback`: function): *`Group`*
+▸ **group**(`callback`: function): *Group*
 
 **Parameters:**
 
@@ -168,13 +168,13 @@ ___
 
 ▸ (): *void*
 
-**Returns:** *`Group`*
+**Returns:** *Group*
 
 ___
 
 ###  lookup
 
-▸ **lookup**(`routeIdentifier`: string, `domain?`: undefined | string): *null | [RouteLookupNode](../modules/_contracts_.md#routelookupnode)‹*`Context`*›*
+▸ **lookup**(`routeIdentifier`: string, `domain?`: undefined | string): *null | [RouteLookupNode](../modules/_contracts_.md#routelookupnode)‹Context›*
 
 **Parameters:**
 
@@ -183,13 +183,13 @@ Name | Type |
 `routeIdentifier` | string |
 `domain?` | undefined \| string |
 
-**Returns:** *null | [RouteLookupNode](../modules/_contracts_.md#routelookupnode)‹*`Context`*›*
+**Returns:** *null | [RouteLookupNode](../modules/_contracts_.md#routelookupnode)‹Context›*
 
 ___
 
 ###  match
 
-▸ **match**(`url`: string, `method`: string, `domain?`: undefined | string): *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹*`Context`*›*
+▸ **match**(`url`: string, `method`: string, `domain?`: undefined | string): *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹Context›*
 
 **Parameters:**
 
@@ -199,7 +199,7 @@ Name | Type |
 `method` | string |
 `domain?` | undefined \| string |
 
-**Returns:** *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹*`Context`*›*
+**Returns:** *null | [MatchedRoute](../modules/_contracts_.md#matchedroute)‹Context›*
 
 ___
 
@@ -219,7 +219,7 @@ ___
 
 ###  on
 
-▸ **on**(`pattern`: string): *`Brisk`*
+▸ **on**(`pattern`: string): *Brisk*
 
 **Parameters:**
 
@@ -227,58 +227,58 @@ Name | Type |
 ------ | ------ |
 `pattern` | string |
 
-**Returns:** *`Brisk`*
+**Returns:** *Brisk*
 
 ___
 
 ###  patch
 
-▸ **patch**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*›): *`Route`*
+▸ **patch**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context›): *Route*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `pattern` | string |
-`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*› |
+`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context› |
 
-**Returns:** *`Route`*
+**Returns:** *Route*
 
 ___
 
 ###  post
 
-▸ **post**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*›): *`Route`*
+▸ **post**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context›): *Route*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `pattern` | string |
-`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*› |
+`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context› |
 
-**Returns:** *`Route`*
+**Returns:** *Route*
 
 ___
 
 ###  put
 
-▸ **put**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*›): *`Route`*
+▸ **put**(`pattern`: string, `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context›): *Route*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `pattern` | string |
-`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*› |
+`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context› |
 
-**Returns:** *`Route`*
+**Returns:** *Route*
 
 ___
 
 ###  resource
 
-▸ **resource**(`resource`: string, `controller`: string): *`Resource`*
+▸ **resource**(`resource`: string, `controller`: string): *Resource*
 
 **Parameters:**
 
@@ -287,13 +287,13 @@ Name | Type |
 `resource` | string |
 `controller` | string |
 
-**Returns:** *`Resource`*
+**Returns:** *Resource*
 
 ___
 
 ###  route
 
-▸ **route**(`pattern`: string, `methods`: string[], `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*›): *`Route`*
+▸ **route**(`pattern`: string, `methods`: string[], `handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context›): *Route*
 
 **Parameters:**
 
@@ -301,15 +301,15 @@ Name | Type |
 ------ | ------ |
 `pattern` | string |
 `methods` | string[] |
-`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*› |
+`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context› |
 
-**Returns:** *`Route`*
+**Returns:** *Route*
 
 ___
 
 ###  shallowResource
 
-▸ **shallowResource**(`resource`: string, `controller`: string): *`Resource`*
+▸ **shallowResource**(`resource`: string, `controller`: string): *Resource*
 
 **Parameters:**
 
@@ -318,27 +318,27 @@ Name | Type |
 `resource` | string |
 `controller` | string |
 
-**Returns:** *`Resource`*
+**Returns:** *Resource*
 
 ___
 
 ###  toJSON
 
-▸ **toJSON**(): *[RouteNode](../modules/_contracts_.md#routenode)‹*`Context`*›[]*
+▸ **toJSON**(): *[RouteNode](../modules/_contracts_.md#routenode)‹Context›[]*
 
-**Returns:** *[RouteNode](../modules/_contracts_.md#routenode)‹*`Context`*›[]*
+**Returns:** *[RouteNode](../modules/_contracts_.md#routenode)‹Context›[]*
 
 ___
 
 ###  where
 
-▸ **where**(`key`: string, `matcher`: string | `RegExp`): *this*
+▸ **where**(`key`: string, `matcher`: string | RegExp): *this*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `key` | string |
-`matcher` | string \| `RegExp` |
+`matcher` | string \| RegExp |
 
 **Returns:** *this*

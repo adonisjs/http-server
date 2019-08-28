@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["helpers"](_helpers_.md) /
+[Globals](../README.md) › ["helpers"](_helpers_.md)
 
 # External module: "helpers"
 
@@ -54,7 +54,7 @@ ___
 
 ###  toRoutesJSON
 
-▸ **toRoutesJSON**<**Context**>(`routes`: [RouteGroup](../classes/_router_group_.routegroup.md)‹*`Context`*› | [RouteResource](../classes/_router_resource_.routeresource.md)‹*`Context`*› | [Route](../classes/_router_route_.route.md)‹*`Context`*› | [BriskRoute](../classes/_router_briskroute_.briskroute.md)‹*`Context`*›[]): *[RouteDefinition](_contracts_.md#routedefinition)‹*`Context`*›[]*
+▸ **toRoutesJSON**<**Context**>(`routes`: [RouteGroup](../classes/_router_group_.routegroup.md)‹Context› | [RouteResource](../classes/_router_resource_.routeresource.md)‹Context› | [Route](../classes/_router_route_.route.md)‹Context› | [BriskRoute](../classes/_router_briskroute_.briskroute.md)‹Context›[]): *[RouteDefinition](_contracts_.md#routedefinition)‹Context›[]*
 
 Converts and array of routes or route groups or route resource to a flat
 list of route defination.
@@ -67,9 +67,9 @@ list of route defination.
 
 Name | Type |
 ------ | ------ |
-`routes` | [RouteGroup](../classes/_router_group_.routegroup.md)‹*`Context`*› \| [RouteResource](../classes/_router_resource_.routeresource.md)‹*`Context`*› \| [Route](../classes/_router_route_.route.md)‹*`Context`*› \| [BriskRoute](../classes/_router_briskroute_.briskroute.md)‹*`Context`*›[] |
+`routes` | [RouteGroup](../classes/_router_group_.routegroup.md)‹Context› \| [RouteResource](../classes/_router_resource_.routeresource.md)‹Context› \| [Route](../classes/_router_route_.route.md)‹Context› \| [BriskRoute](../classes/_router_briskroute_.briskroute.md)‹Context›[] |
 
-**Returns:** *[RouteDefinition](_contracts_.md#routedefinition)‹*`Context`*›[]*
+**Returns:** *[RouteDefinition](_contracts_.md#routedefinition)‹Context›[]*
 
 ## Object literals
 

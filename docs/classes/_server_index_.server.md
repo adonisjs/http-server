@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["Server/index"](../modules/_server_index_.md) / [Server](_server_index_.server.md) /
+[Globals](../README.md) › ["Server/index"](../modules/_server_index_.md) › [Server](_server_index_.server.md)
 
 # Class: Server <**Context**>
 
@@ -30,7 +30,7 @@ http.createServer(server.handle.bind(server)).listen(3000)
 
 ## Implements
 
-* [ServerContract](../interfaces/_contracts_.servercontract.md)‹*`Context`*›
+* [ServerContract](../interfaces/_contracts_.servercontract.md)‹Context›
 
 ## Index
 
@@ -54,17 +54,17 @@ http.createServer(server.handle.bind(server)).listen(3000)
 
 ###  constructor
 
-\+ **new Server**(`_context`: object, `_router`: [RouterContract](../interfaces/_contracts_.routercontract.md)‹*`Context`*›, `_middlewareStore`: [MiddlewareStoreContract](../interfaces/_contracts_.middlewarestorecontract.md)‹*`Context`*›, `_logger`: `LoggerContract`, `_profiler`: `ProfilerContract`, `_httpConfig`: [ServerConfigContract](../modules/_contracts_.md#serverconfigcontract)): *[Server](_server_index_.server.md)*
+\+ **new Server**(`_context`: object, `_router`: [RouterContract](../interfaces/_contracts_.routercontract.md)‹Context›, `_middlewareStore`: [MiddlewareStoreContract](../interfaces/_contracts_.middlewarestorecontract.md)‹Context›, `_logger`: LoggerContract, `_profiler`: ProfilerContract, `_httpConfig`: [ServerConfigContract](../modules/_contracts_.md#serverconfigcontract)): *[Server](_server_index_.server.md)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `_context` | object |
-`_router` | [RouterContract](../interfaces/_contracts_.routercontract.md)‹*`Context`*› |
-`_middlewareStore` | [MiddlewareStoreContract](../interfaces/_contracts_.middlewarestorecontract.md)‹*`Context`*› |
-`_logger` | `LoggerContract` |
-`_profiler` | `ProfilerContract` |
+`_router` | [RouterContract](../interfaces/_contracts_.routercontract.md)‹Context› |
+`_middlewareStore` | [MiddlewareStoreContract](../interfaces/_contracts_.middlewarestorecontract.md)‹Context› |
+`_logger` | LoggerContract |
+`_profiler` | ProfilerContract |
 `_httpConfig` | [ServerConfigContract](../modules/_contracts_.md#serverconfigcontract) |
 
 **Returns:** *[Server](_server_index_.server.md)*
@@ -73,7 +73,7 @@ Name | Type |
 
 ### `Optional` instance
 
-• **instance**? : *`HttpServer` | `HttpsServer`*
+• **instance**? : *HttpServer | HttpsServer*
 
 *Implementation of [ServerContract](../interfaces/_contracts_.servercontract.md).[instance](../interfaces/_contracts_.servercontract.md#optional-instance)*
 
@@ -85,7 +85,7 @@ is what ignitor does.
 
 ###  after
 
-▸ **after**(`cb`: [HookNode](../modules/_contracts_.md#hooknode)‹*`Context`*›): *this*
+▸ **after**(`cb`: [HookNode](../modules/_contracts_.md#hooknode)‹Context›): *this*
 
 *Implementation of [ServerContract](../interfaces/_contracts_.servercontract.md)*
 
@@ -97,7 +97,7 @@ response to the socket.
 
 Name | Type |
 ------ | ------ |
-`cb` | [HookNode](../modules/_contracts_.md#hooknode)‹*`Context`*› |
+`cb` | [HookNode](../modules/_contracts_.md#hooknode)‹Context› |
 
 **Returns:** *this*
 
@@ -105,7 +105,7 @@ ___
 
 ###  before
 
-▸ **before**(`cb`: [HookNode](../modules/_contracts_.md#hooknode)‹*`Context`*›): *this*
+▸ **before**(`cb`: [HookNode](../modules/_contracts_.md#hooknode)‹Context›): *this*
 
 *Implementation of [ServerContract](../interfaces/_contracts_.servercontract.md)*
 
@@ -116,7 +116,7 @@ has been received
 
 Name | Type |
 ------ | ------ |
-`cb` | [HookNode](../modules/_contracts_.md#hooknode)‹*`Context`*› |
+`cb` | [HookNode](../modules/_contracts_.md#hooknode)‹Context› |
 
 **Returns:** *this*
 
@@ -124,7 +124,7 @@ ___
 
 ###  errorHandler
 
-▸ **errorHandler**(`handler`: [ErrorHandlerNode](../modules/_contracts_.md#errorhandlernode)‹*`Context`*› | string): *this*
+▸ **errorHandler**(`handler`: [ErrorHandlerNode](../modules/_contracts_.md#errorhandlernode)‹Context› | string): *this*
 
 *Implementation of [ServerContract](../interfaces/_contracts_.servercontract.md)*
 
@@ -135,7 +135,7 @@ occurred during HTTP request
 
 Name | Type |
 ------ | ------ |
-`handler` | [ErrorHandlerNode](../modules/_contracts_.md#errorhandlernode)‹*`Context`*› \| string |
+`handler` | [ErrorHandlerNode](../modules/_contracts_.md#errorhandlernode)‹Context› \| string |
 
 **Returns:** *this*
 
@@ -143,7 +143,7 @@ ___
 
 ###  handle
 
-▸ **handle**(`req`: `IncomingMessage`, `res`: `ServerResponse`): *`Promise<void>`*
+▸ **handle**(`req`: IncomingMessage, `res`: ServerResponse): *Promise‹void›*
 
 *Implementation of [ServerContract](../interfaces/_contracts_.servercontract.md)*
 
@@ -154,10 +154,10 @@ server
 
 Name | Type |
 ------ | ------ |
-`req` | `IncomingMessage` |
-`res` | `ServerResponse` |
+`req` | IncomingMessage |
+`res` | ServerResponse |
 
-**Returns:** *`Promise<void>`*
+**Returns:** *Promise‹void›*
 
 ___
 

@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["Server/MiddlewareStore"](../modules/_server_middlewarestore_.md) / [MiddlewareStore](_server_middlewarestore_.middlewarestore.md) /
+[Globals](../README.md) › ["Server/MiddlewareStore"](../modules/_server_middlewarestore_.md) › [MiddlewareStore](_server_middlewarestore_.middlewarestore.md)
 
 # Class: MiddlewareStore <**Context**>
 
@@ -37,7 +37,7 @@ store.get()
 
 ## Implements
 
-* [MiddlewareStoreContract](../interfaces/_contracts_.middlewarestorecontract.md)‹*`Context`*›
+* [MiddlewareStoreContract](../interfaces/_contracts_.middlewarestorecontract.md)‹Context›
 
 ## Index
 
@@ -53,20 +53,20 @@ store.get()
 
 ###  get
 
-▸ **get**(): *[ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹*`Context`*›[]*
+▸ **get**(): *[ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹Context›[]*
 
 *Implementation of [MiddlewareStoreContract](../interfaces/_contracts_.middlewarestorecontract.md)*
 
 Return all middleware registered using [MiddlewareStore.register](_server_middlewarestore_.middlewarestore.md#register)
 method
 
-**Returns:** *[ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹*`Context`*›[]*
+**Returns:** *[ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹Context›[]*
 
 ___
 
 ###  getNamed
 
-▸ **getNamed**(`name`: string): *null | [ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹*`Context`*›*
+▸ **getNamed**(`name`: string): *null | [ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹Context›*
 
 *Implementation of [MiddlewareStoreContract](../interfaces/_contracts_.middlewarestorecontract.md)*
 
@@ -79,13 +79,13 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *null | [ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹*`Context`*›*
+**Returns:** *null | [ResolvedMiddlewareNode](../modules/_contracts_.md#resolvedmiddlewarenode)‹Context›*
 
 ___
 
 ###  preCompileMiddleware
 
-▸ **preCompileMiddleware**(`route`: [RouteNode](../modules/_contracts_.md#routenode)‹*`Context`*›): *void*
+▸ **preCompileMiddleware**(`route`: [RouteNode](../modules/_contracts_.md#routenode)‹Context›): *void*
 
 *Implementation of [MiddlewareStoreContract](../interfaces/_contracts_.middlewarestorecontract.md)*
 
@@ -98,7 +98,7 @@ processing layer.
 
 Name | Type |
 ------ | ------ |
-`route` | [RouteNode](../modules/_contracts_.md#routenode)‹*`Context`*› |
+`route` | [RouteNode](../modules/_contracts_.md#routenode)‹Context› |
 
 **Returns:** *void*
 
@@ -106,7 +106,7 @@ ___
 
 ###  register
 
-▸ **register**(`middleware`: [MiddlewareNode](../modules/_contracts_.md#middlewarenode)‹*`Context`*›[]): *this*
+▸ **register**(`middleware`: [MiddlewareNode](../modules/_contracts_.md#middlewarenode)‹Context›[]): *this*
 
 *Implementation of [MiddlewareStoreContract](../interfaces/_contracts_.middlewarestorecontract.md)*
 
@@ -117,7 +117,7 @@ by HTTP server and executed on every request
 
 Name | Type |
 ------ | ------ |
-`middleware` | [MiddlewareNode](../modules/_contracts_.md#middlewarenode)‹*`Context`*›[] |
+`middleware` | [MiddlewareNode](../modules/_contracts_.md#middlewarenode)‹Context›[] |
 
 **Returns:** *this*
 

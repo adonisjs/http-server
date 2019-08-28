@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["Server/finalErrorHandler"](_server_finalerrorhandler_.md) /
+[Globals](../README.md) › ["Server/finalErrorHandler"](_server_finalerrorhandler_.md)
 
 # External module: "Server/finalErrorHandler"
 
@@ -14,7 +14,7 @@
 
 ###  finalErrorHandler
 
-▸ **finalErrorHandler**<**Context**>(`errorHandler`: [ErrorHandlerNode](_contracts_.md#errorhandlernode)‹*`Context`*› | object, `error`: any, `ctx`: `Context`): *`Promise<void>`*
+▸ **finalErrorHandler**<**Context**>(`errorHandler`: [ErrorHandlerNode](_contracts_.md#errorhandlernode)‹Context› | object, `error`: any, `ctx`: Context): *Promise‹void›*
 
 Final handler executes the route handler based on it's resolved
 type and the response body on various conditions (check method body)
@@ -28,8 +28,8 @@ for same.
 
 Name | Type |
 ------ | ------ |
-`errorHandler` | [ErrorHandlerNode](_contracts_.md#errorhandlernode)‹*`Context`*› \| object |
+`errorHandler` | [ErrorHandlerNode](_contracts_.md#errorhandlernode)‹Context› \| object |
 `error` | any |
-`ctx` | `Context` |
+`ctx` | Context |
 
-**Returns:** *`Promise<void>`*
+**Returns:** *Promise‹void›*

@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["contracts"](../modules/_contracts_.md) / [HttpContextContract](_contracts_.httpcontextcontract.md) /
+[Globals](../README.md) › ["contracts"](../modules/_contracts_.md) › [HttpContextContract](_contracts_.httpcontextcontract.md)
 
 # Interface: HttpContextContract
 
@@ -31,7 +31,7 @@ and route handler
 
 ###  logger
 
-• **logger**: *`LoggerContract`*
+• **logger**: *LoggerContract*
 
 ___
 
@@ -43,25 +43,25 @@ ___
 
 ###  profiler
 
-• **profiler**: *`ProfilerRowContract`*
+• **profiler**: *ProfilerRowContract*
 
 ___
 
 ###  request
 
-• **request**: *`RequestContract`*
+• **request**: *RequestContract*
 
 ___
 
 ###  response
 
-• **response**: *`ResponseContract`*
+• **response**: *ResponseContract*
 
 ___
 
 ### `Optional` route
 
-• **route**? : *[RouteNode](../modules/_contracts_.md#routenode)‹*this*›*
+• **route**? : *[RouteNode](../modules/_contracts_.md#routenode)‹this›*
 
 ___
 

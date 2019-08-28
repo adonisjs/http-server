@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["Router/Route"](../modules/_router_route_.md) / [Route](_router_route_.route.md) /
+[Globals](../README.md) › ["Router/Route"](../modules/_router_route_.md) › [Route](_router_route_.route.md)
 
 # Class: Route <**Context**>
 
@@ -25,13 +25,13 @@ route
 
 ## Hierarchy
 
-* `Macroable`
+* Macroable
 
   * **Route**
 
 ## Implements
 
-* [RouteContract](../interfaces/_contracts_.routecontract.md)‹*`Context`*›
+* [RouteContract](../interfaces/_contracts_.routecontract.md)‹Context›
 
 ## Index
 
@@ -223,20 +223,20 @@ ___
 
 ###  toJSON
 
-▸ **toJSON**(): *[RouteDefinition](../modules/_contracts_.md#routedefinition)‹*`Context`*›*
+▸ **toJSON**(): *[RouteDefinition](../modules/_contracts_.md#routedefinition)‹Context›*
 
 *Implementation of [RouteContract](../interfaces/_contracts_.routecontract.md)*
 
 Returns [RouteDefinition](../modules/_contracts_.md#routedefinition) that can be passed to the [Store](_router_store_.store.md) for
 registering the route
 
-**Returns:** *[RouteDefinition](../modules/_contracts_.md#routedefinition)‹*`Context`*›*
+**Returns:** *[RouteDefinition](../modules/_contracts_.md#routedefinition)‹Context›*
 
 ___
 
 ###  where
 
-▸ **where**(`param`: string, `matcher`: string | `RegExp`): *this*
+▸ **where**(`param`: string, `matcher`: string | RegExp): *this*
 
 *Implementation of [RouteContract](../interfaces/_contracts_.routecontract.md)*
 
@@ -247,7 +247,7 @@ Define Regex matcher for a given param
 Name | Type |
 ------ | ------ |
 `param` | string |
-`matcher` | string \| `RegExp` |
+`matcher` | string \| RegExp |
 
 **Returns:** *this*
 
@@ -255,7 +255,7 @@ ___
 
 ### `Static` getGetter
 
-▸ **getGetter**(`name`: string): *`MacroableFn` | undefined*
+▸ **getGetter**(`name`: string): *MacroableFn | undefined*
 
 *Inherited from void*
 
@@ -265,13 +265,13 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *`MacroableFn` | undefined*
+**Returns:** *MacroableFn | undefined*
 
 ___
 
 ### `Static` getMacro
 
-▸ **getMacro**(`name`: string): *`MacroableFn` | undefined*
+▸ **getMacro**(`name`: string): *MacroableFn | undefined*
 
 *Inherited from void*
 
@@ -281,13 +281,13 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *`MacroableFn` | undefined*
+**Returns:** *MacroableFn | undefined*
 
 ___
 
 ### `Static` getter
 
-▸ **getter**(`name`: string, `callback`: `MacroableFn`, `singleton?`: undefined | false | true): *void*
+▸ **getter**(`name`: string, `callback`: MacroableFn, `singleton?`: undefined | false | true): *void*
 
 *Inherited from void*
 
@@ -296,7 +296,7 @@ ___
 Name | Type |
 ------ | ------ |
 `name` | string |
-`callback` | `MacroableFn` |
+`callback` | MacroableFn |
 `singleton?` | undefined \| false \| true |
 
 **Returns:** *void*
@@ -347,7 +347,7 @@ ___
 
 ### `Static` macro
 
-▸ **macro**(`name`: string, `callback`: `MacroableFn`): *void*
+▸ **macro**(`name`: string, `callback`: MacroableFn): *void*
 
 *Inherited from void*
 
@@ -356,6 +356,6 @@ ___
 Name | Type |
 ------ | ------ |
 `name` | string |
-`callback` | `MacroableFn` |
+`callback` | MacroableFn |
 
 **Returns:** *void*

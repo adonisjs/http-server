@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["Router/BriskRoute"](../modules/_router_briskroute_.md) / [BriskRoute](_router_briskroute_.briskroute.md) /
+[Globals](../README.md) › ["Router/BriskRoute"](../modules/_router_briskroute_.md) › [BriskRoute](_router_briskroute_.briskroute.md)
 
 # Class: BriskRoute <**Context**>
 
@@ -17,13 +17,13 @@ closure.
 
 ## Hierarchy
 
-* `Macroable`
+* Macroable
 
   * **BriskRoute**
 
 ## Implements
 
-* [BriskRouteContract](../interfaces/_contracts_.briskroutecontract.md)‹*`Context`*›
+* [BriskRouteContract](../interfaces/_contracts_.briskroutecontract.md)‹Context›
 
 ## Index
 
@@ -68,7 +68,7 @@ Name | Type |
 
 ###  route
 
-• **route**: *null | [Route](_router_route_.route.md)‹*`Context`*›* =  null
+• **route**: *null | [Route](_router_route_.route.md)‹Context›* =  null
 
 *Implementation of [BriskRouteContract](../interfaces/_contracts_.briskroutecontract.md).[route](../interfaces/_contracts_.briskroutecontract.md#route)*
 
@@ -98,7 +98,7 @@ ___
 
 ###  setHandler
 
-▸ **setHandler**(`handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*›, `invokedBy`: string, `methods?`: string[]): *[Route](_router_route_.route.md)‹*`Context`*›*
+▸ **setHandler**(`handler`: [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context›, `invokedBy`: string, `methods?`: string[]): *[Route](_router_route_.route.md)‹Context›*
 
 Set handler for the brisk route. The `invokedBy` string is the reference
 to the method that calls this method. It is required to create human
@@ -109,17 +109,17 @@ times.
 
 Name | Type |
 ------ | ------ |
-`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹*`Context`*› |
+`handler` | [RouteHandlerNode](../modules/_contracts_.md#routehandlernode)‹Context› |
 `invokedBy` | string |
 `methods?` | string[] |
 
-**Returns:** *[Route](_router_route_.route.md)‹*`Context`*›*
+**Returns:** *[Route](_router_route_.route.md)‹Context›*
 
 ___
 
 ### `Static` getGetter
 
-▸ **getGetter**(`name`: string): *`MacroableFn` | undefined*
+▸ **getGetter**(`name`: string): *MacroableFn | undefined*
 
 *Inherited from void*
 
@@ -129,13 +129,13 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *`MacroableFn` | undefined*
+**Returns:** *MacroableFn | undefined*
 
 ___
 
 ### `Static` getMacro
 
-▸ **getMacro**(`name`: string): *`MacroableFn` | undefined*
+▸ **getMacro**(`name`: string): *MacroableFn | undefined*
 
 *Inherited from void*
 
@@ -145,13 +145,13 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *`MacroableFn` | undefined*
+**Returns:** *MacroableFn | undefined*
 
 ___
 
 ### `Static` getter
 
-▸ **getter**(`name`: string, `callback`: `MacroableFn`, `singleton?`: undefined | false | true): *void*
+▸ **getter**(`name`: string, `callback`: MacroableFn, `singleton?`: undefined | false | true): *void*
 
 *Inherited from void*
 
@@ -160,7 +160,7 @@ ___
 Name | Type |
 ------ | ------ |
 `name` | string |
-`callback` | `MacroableFn` |
+`callback` | MacroableFn |
 `singleton?` | undefined \| false \| true |
 
 **Returns:** *void*
@@ -211,7 +211,7 @@ ___
 
 ### `Static` macro
 
-▸ **macro**(`name`: string, `callback`: `MacroableFn`): *void*
+▸ **macro**(`name`: string, `callback`: MacroableFn): *void*
 
 *Inherited from void*
 
@@ -220,6 +220,6 @@ ___
 Name | Type |
 ------ | ------ |
 `name` | string |
-`callback` | `MacroableFn` |
+`callback` | MacroableFn |
 
 **Returns:** *void*

@@ -1,6 +1,6 @@
-> **[@poppinss/http-server](../README.md)**
+**[@poppinss/http-server](../README.md)**
 
-[Globals](../README.md) / ["Router/Resource"](../modules/_router_resource_.md) / [RouteResource](_router_resource_.routeresource.md) /
+[Globals](../README.md) › ["Router/Resource"](../modules/_router_resource_.md) › [RouteResource](_router_resource_.routeresource.md)
 
 # Class: RouteResource <**Context**>
 
@@ -19,13 +19,13 @@ const resource = new RouteResource('articles', 'ArticlesController')
 
 ## Hierarchy
 
-* `Macroable`
+* Macroable
 
   * **RouteResource**
 
 ## Implements
 
-* [RouteResourceContract](../interfaces/_contracts_.routeresourcecontract.md)‹*`Context`*›
+* [RouteResourceContract](../interfaces/_contracts_.routeresourcecontract.md)‹Context›
 
 ## Index
 
@@ -77,7 +77,7 @@ Name | Type | Default |
 
 ###  routes
 
-• **routes**: *[Route](_router_route_.route.md)‹*`Context`*›[]* =  []
+• **routes**: *[Route](_router_route_.route.md)‹Context›[]* =  []
 
 *Implementation of [RouteResourceContract](../interfaces/_contracts_.routeresourcecontract.md).[routes](../interfaces/_contracts_.routeresourcecontract.md#routes)*
 
@@ -188,7 +188,7 @@ ___
 
 ###  where
 
-▸ **where**(`key`: string, `matcher`: string | `RegExp`): *this*
+▸ **where**(`key`: string, `matcher`: string | RegExp): *this*
 
 *Implementation of [RouteResourceContract](../interfaces/_contracts_.routeresourcecontract.md)*
 
@@ -199,7 +199,7 @@ Define matcher for params inside the resource
 Name | Type |
 ------ | ------ |
 `key` | string |
-`matcher` | string \| `RegExp` |
+`matcher` | string \| RegExp |
 
 **Returns:** *this*
 
@@ -207,7 +207,7 @@ ___
 
 ### `Static` getGetter
 
-▸ **getGetter**(`name`: string): *`MacroableFn` | undefined*
+▸ **getGetter**(`name`: string): *MacroableFn | undefined*
 
 *Inherited from void*
 
@@ -217,13 +217,13 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *`MacroableFn` | undefined*
+**Returns:** *MacroableFn | undefined*
 
 ___
 
 ### `Static` getMacro
 
-▸ **getMacro**(`name`: string): *`MacroableFn` | undefined*
+▸ **getMacro**(`name`: string): *MacroableFn | undefined*
 
 *Inherited from void*
 
@@ -233,13 +233,13 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *`MacroableFn` | undefined*
+**Returns:** *MacroableFn | undefined*
 
 ___
 
 ### `Static` getter
 
-▸ **getter**(`name`: string, `callback`: `MacroableFn`, `singleton?`: undefined | false | true): *void*
+▸ **getter**(`name`: string, `callback`: MacroableFn, `singleton?`: undefined | false | true): *void*
 
 *Inherited from void*
 
@@ -248,7 +248,7 @@ ___
 Name | Type |
 ------ | ------ |
 `name` | string |
-`callback` | `MacroableFn` |
+`callback` | MacroableFn |
 `singleton?` | undefined \| false \| true |
 
 **Returns:** *void*
@@ -299,7 +299,7 @@ ___
 
 ### `Static` macro
 
-▸ **macro**(`name`: string, `callback`: `MacroableFn`): *void*
+▸ **macro**(`name`: string, `callback`: MacroableFn): *void*
 
 *Inherited from void*
 
@@ -308,6 +308,6 @@ ___
 Name | Type |
 ------ | ------ |
 `name` | string |
-`callback` | `MacroableFn` |
+`callback` | MacroableFn |
 
 **Returns:** *void*
