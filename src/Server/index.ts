@@ -310,7 +310,6 @@ export class Server<Context extends HttpContextContract> implements ServerContra
   public async handle (req: IncomingMessage, res: ServerResponse): Promise<void> {
     const request = new Request(req, res, this._httpConfig)
     const response = new Response(req, res, this._httpConfig)
-    response.explicitEnd = true
 
     const requestRow = this._profiler.create('http:request', {
       request_id: request.id(),
@@ -338,10 +337,9 @@ export class Server<Context extends HttpContextContract> implements ServerContra
     }
 
     /**
-     * Execute after hooks when explictEnd is true and their are
-     * more than zero after hooks.
+     * Excute hooks when there are one or more hooks
      */
-    if (ctx.response.explicitEnd && this._hooks.after.length) {
+    if (this._hooks.after.length) {
       const afterHooks = requestRow.child('http:after:hooks', { length: this._hooks.after.length })
       try {
         await this._executeAfterHooks(ctx)

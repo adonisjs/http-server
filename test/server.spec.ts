@@ -90,30 +90,6 @@ test.group('Server | Response handling', () => {
     const { text } = await supertest(httpServer).get('/').expect(200)
     assert.equal(text, 'handled')
   })
-
-  test('do not use return value when explicit mode is set to false', async (assert) => {
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-    const httpServer = createServer(server.handle.bind(server))
-
-    router.get('/', async ({ response }) => {
-      response.explicitEnd = false
-
-      setTimeout(() => {
-        response.send('handled')
-      }, 0)
-
-      return 'done'
-    })
-
-    router.commit()
-    server.optimize()
-
-    const { text } = await supertest(httpServer).get('/').expect(200)
-    assert.equal(text, 'handled')
-  })
 })
 
 test.group('Server | middleware', () => {
@@ -569,36 +545,6 @@ test.group('Server | hooks', () => {
     const { text } = await supertest(httpServer).get('/').expect(200)
     assert.equal(text, 'updated inside after hook')
     assert.deepEqual(stack, ['hook1', 'after hook1'])
-  })
-
-  test('do not execute after hooks when explicit end is set to false', async (assert) => {
-    const stack: string[] = []
-
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-
-    server.before(async ({ response }) => {
-      stack.push('hook1')
-      response.explicitEnd = false
-      response.send('handled inside before hook')
-    })
-    server.before(async () => {
-      stack.push('hook2')
-    })
-    server.after(async ({ response }) => {
-      stack.push('after hook1')
-      response.send('updated inside after hook')
-    })
-
-    router.commit()
-    server.optimize()
-
-    const httpServer = createServer(server.handle.bind(server))
-
-    const { text } = await supertest(httpServer).get('/').expect(200)
-    assert.equal(text, 'handled inside before hook')
-    assert.deepEqual(stack, ['hook1'])
   })
 
   test('catch after hook errors', async (assert) => {

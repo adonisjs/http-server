@@ -19,7 +19,6 @@ export function useReturnValue (returnValue: any, ctx: any) {
   return (
     returnValue !== undefined &&            // Return value is explicitly defined
     returnValue !== ctx.response &&         // Return value is not the instance of response object
-    ctx.response.explicitEnd &&             // Explicit end is set to true
     !ctx.response.hasLazyBody               // Lazy body is not set
   )
 }
