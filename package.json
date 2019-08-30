@@ -1,6 +1,6 @@
 {
   "name": "@poppinss/http-server",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Extracted copy of AdonisJs HTTP server along with it's router",
   "main": "build/index.js",
   "files": [
