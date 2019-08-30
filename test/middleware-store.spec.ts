@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import * as test from 'japa'
+import test from 'japa'
 import { Ioc } from '@adonisjs/fold'
 import { Router } from '../src/Router'
 
@@ -131,8 +131,8 @@ test.group('Middleware', () => {
   })
 
   test('pass runtime route middleware args to route handler', async (assert) => {
-    let args = []
-    async function handler (_ctx, _next, _args) {
+    let args: string[] = []
+    async function handler (_ctx: any, _next: any, _args: string[]) {
       args = _args
     }
 

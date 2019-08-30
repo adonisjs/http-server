@@ -11,6 +11,7 @@
 * file that was distributed with this source code.
 */
 
+import { ProfilerActionContract } from '@poppinss/profiler/build/src/Contracts'
 import { callIocReference } from '@poppinss/utils'
 import { useReturnValue } from './useReturnValue'
 import { ResolvedControllerNode, HttpContextContract } from '../contracts'
@@ -22,7 +23,7 @@ import { ResolvedControllerNode, HttpContextContract } from '../contracts'
  */
 export async function finalRouteHandler<Context extends HttpContextContract> (ctx: Context) {
   const handler = ctx.route!.meta.resolvedHandler as ResolvedControllerNode<Context>
-  let profilerAction
+  let profilerAction: ProfilerActionContract
 
   try {
     /**
@@ -54,7 +55,7 @@ export async function finalRouteHandler<Context extends HttpContextContract> (ct
 
     profilerAction.end()
   } catch (error) {
-    profilerAction.end()
+    profilerAction!.end()
     throw error
   }
 }

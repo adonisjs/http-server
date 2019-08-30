@@ -11,8 +11,8 @@
 * file that was distributed with this source code.
 */
 
+import matchit from 'matchit'
 import { pick, cloneDeep } from 'lodash'
-import * as matchit from 'matchit'
 import { Exception } from '@poppinss/utils'
 import {
   RouteDefinition,

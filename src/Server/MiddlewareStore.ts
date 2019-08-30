@@ -11,7 +11,7 @@
 * file that was distributed with this source code.
 */
 
-import * as haye from 'haye'
+import haye from 'haye'
 import { Exception, parseIocReference } from '@poppinss/utils'
 
 import {

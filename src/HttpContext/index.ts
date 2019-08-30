@@ -12,15 +12,15 @@
 */
 
 import { Socket } from 'net'
-import * as proxyAddr from 'proxy-addr'
+import proxyAddr from 'proxy-addr'
 import { IncomingMessage, ServerResponse } from 'http'
 import { LoggerContract, Logger } from '@poppinss/logger'
 import { RequestContract, Request } from '@poppinss/request'
 import { ResponseContract, Response } from '@poppinss/response'
 import { ProfilerRowContract, Profiler } from '@poppinss/profiler'
 
-import { RouteNode, HttpContextContract, ServerConfigContract } from '../contracts'
 import { makeUrl } from '../helpers'
+import { RouteNode, HttpContextContract, ServerConfigContract } from '../contracts'
 
 /**
  * Http context is passed to all route handlers, middleware,

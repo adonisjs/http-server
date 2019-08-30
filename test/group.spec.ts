@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import * as test from 'japa'
+import test from 'japa'
 import { RouteGroup } from '../src/Router/Group'
 import { Route } from '../src/Router/Route'
 import { RouteResource } from '../src/Router/Resource'

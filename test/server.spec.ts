@@ -8,13 +8,13 @@
  */
 
 import 'reflect-metadata'
-import * as test from 'japa'
-import * as supertest from 'supertest'
+import test from 'japa'
+import supertest from 'supertest'
+import proxyaddr from 'proxy-addr'
 import { createServer } from 'http'
 import { Ioc, inject } from '@adonisjs/fold'
 import { FakeLogger } from '@poppinss/logger'
 import { Profiler } from '@poppinss/profiler'
-import * as proxyaddr from 'proxy-addr'
 import { ServerConfigContract, HttpContextContract } from '../src/contracts'
 
 import { Server } from '../src/Server'
@@ -98,11 +98,11 @@ test.group('Server | middleware', () => {
 
     const middlewareStore = new MiddlewareStore()
     middlewareStore.register([
-      async function middlewareFn1 (_ctx, next) {
+      async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn1')
         await next()
       },
-      async function middlewareFn1 (_ctx, next) {
+      async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn2')
         await next()
       },
@@ -130,11 +130,11 @@ test.group('Server | middleware', () => {
 
     const middlewareStore = new MiddlewareStore()
     middlewareStore.register([
-      async function middlewareFn1 (_ctx, next) {
+      async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn1')
         await next()
       },
-      async function middlewareFn1 (_ctx, next) {
+      async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn2')
         await next()
       },
@@ -148,7 +148,7 @@ test.group('Server | middleware', () => {
     router.get('/', async () => {
       stack.push('handler')
       return 'done'
-    }).middleware(async function routeMiddleware (_ctx, next) {
+    }).middleware(async function routeMiddleware (_ctx: HttpContextContract, next: any) {
       stack.push('route fn1')
       await next()
     })
@@ -169,7 +169,7 @@ test.group('Server | middleware', () => {
         stack.push('fn1')
         ctx.response.send('completed')
       },
-      async function middlewareFn1 (_ctx, next) {
+      async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn2')
         await next()
       },
@@ -183,7 +183,7 @@ test.group('Server | middleware', () => {
     router.get('/', async () => {
       stack.push('handler')
       return 'done'
-    }).middleware(async function routeMiddleware (_ctx, next) {
+    }).middleware(async function routeMiddleware (_ctx: HttpContextContract, next: any) {
       stack.push('route fn1')
       await next()
     })
@@ -205,7 +205,7 @@ test.group('Server | middleware', () => {
         stack.push('fn1')
         throw new Error('Cannot process')
       },
-      async function middlewareFn1 (_ctx, next) {
+      async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn2')
         await next()
       },
@@ -219,7 +219,7 @@ test.group('Server | middleware', () => {
     router.get('/', async () => {
       stack.push('handler')
       return 'done'
-    }).middleware(async function routeMiddleware (_ctx, next) {
+    }).middleware(async function routeMiddleware (_ctx: HttpContextContract, next: any) {
       stack.push('route fn1')
       await next()
     })
@@ -237,11 +237,11 @@ test.group('Server | middleware', () => {
 
     const middlewareStore = new MiddlewareStore()
     middlewareStore.register([
-      async function middlewareFn1 (_ctx, next) {
+      async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn1')
         await next()
       },
-      async function middlewareFn1 (_ctx, next) {
+      async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn2')
         await next()
       },
@@ -272,11 +272,11 @@ test.group('Server | middleware', () => {
 
     const middlewareStore = new MiddlewareStore()
     middlewareStore.register([
-      async function middlewareFn1 (_ctx, next) {
+      async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn1')
         await next()
       },
-      async function middlewareFn1 (_ctx, next) {
+      async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn2')
         await next()
       },
@@ -290,7 +290,7 @@ test.group('Server | middleware', () => {
     router.get('/', async () => {
       stack.push('handler')
       return 'done'
-    }).middleware(async function routeMiddleware (_ctx) {
+    }).middleware(async function routeMiddleware (_ctx: HttpContextContract) {
       stack.push('route fn1')
       _ctx.response.send('Short circuit')
     })
@@ -699,7 +699,7 @@ test.group('Server | error handler', () => {
 
     class ErrorHandler {
       @inject()
-      public async handle (_error, { response }, reporter: Reporter) {
+      public async handle (_error: any, { response }, reporter: Reporter) {
         response.status(200).send(reporter.getMessage())
       }
     }
@@ -791,7 +791,7 @@ test.group('Server | all', (group) => {
 
     class AuthMiddleware {
       @inject()
-      public async handle (ctx: HttpContextContract, next, _args, user: User) {
+      public async handle (ctx: HttpContextContract, next: any, _args: any, user: User) {
         ctx['user'] = user
         await next()
       }
