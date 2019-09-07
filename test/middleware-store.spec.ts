@@ -60,7 +60,7 @@ test.group('Middleware', () => {
 
     const middleware = new MiddlewareStore()
     middleware.register([middlewareFn])
-    await finalMiddlewareHandler(middleware.get()[0], [{}, async () => {}])
+    await finalMiddlewareHandler(middleware.get()[0], [{} as any, async () => {}])
 
     assert.deepEqual(stack, ['middlewareFn'])
   })
@@ -82,7 +82,7 @@ test.group('Middleware', () => {
 
     const middleware = new MiddlewareStore()
     middleware.register(['App/Middleware'])
-    await finalMiddlewareHandler(middleware.get()[0], [{}, async () => {}])
+    await finalMiddlewareHandler(middleware.get()[0], [{} as any, async () => {}])
 
     assert.deepEqual(stack, ['middleware class'])
 
@@ -145,7 +145,7 @@ test.group('Middleware', () => {
 
     await finalMiddlewareHandler(
       router['_store'].tree.domains.root['GET'].routes['/'].meta.resolvedMiddleware[0],
-      [{}, async () => {}],
+      [{} as any, async () => {}],
     )
 
     assert.deepEqual(args, ['basic', 'jwt'])

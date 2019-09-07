@@ -11,13 +11,16 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../../adonis-typings/index.ts" />
+
 import { Middleware } from 'co-compose'
 import { parseIocReference } from '@poppinss/utils'
 import {
   RouteNode,
-  HttpContextContract,
-  MiddlewareStoreContract,
-} from '../contracts'
+} from '@ioc:Adonis/Core/Route'
+
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MiddlewareStoreContract } from '@ioc:Adonis/Core/Middleware'
 
 import { finalMiddlewareHandler } from './finalMiddlewareHandler'
 import { finalRouteHandler } from './finalRouteHandler'
@@ -26,7 +29,7 @@ import { finalRouteHandler } from './finalRouteHandler'
  * Executes the route middleware. This method is only invoked when route
  * has one or more middleware.
  */
-async function middlewareHandler<Context extends HttpContextContract> (ctx: Context) {
+async function middlewareHandler (ctx: HttpContextContract) {
   await new Middleware()
     .register(ctx.route!.meta.resolvedMiddleware)
     .runner()
@@ -43,9 +46,9 @@ async function middlewareHandler<Context extends HttpContextContract> (ctx: Cont
  * the performance by reducing the overhead of processing middleware on each
  * request
  */
-export function routePreProcessor<Context> (
-  route: RouteNode<Context>,
-  middlewareStore: MiddlewareStoreContract<Context>,
+export function routePreProcessor (
+  route: RouteNode,
+  middlewareStore: MiddlewareStoreContract,
 ) {
   middlewareStore.preCompileMiddleware(route)
 

@@ -11,8 +11,10 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../../adonis-typings/index.ts" />
+
 import { Macroable } from 'macroable'
-import { RouteDefinition, RouteMatchers, RouteContract } from '../contracts'
+import { RouteDefinition, RouteMatchers, RouteContract } from '@ioc:Adonis/Core/Route'
 
 import { dropSlash } from '../helpers'
 
@@ -32,7 +34,7 @@ import { dropSlash } from '../helpers'
  *   })
  * ```
  */
-export class Route<Context extends any> extends Macroable implements RouteContract<Context> {
+export class Route extends Macroable implements RouteContract {
   protected static _macros = {}
   protected static _getters = {}
 
@@ -176,7 +178,7 @@ export class Route<Context extends any> extends Macroable implements RouteContra
    * Returns [[RouteDefinition]] that can be passed to the [[Store]] for
    * registering the route
    */
-  public toJSON (): RouteDefinition<Context> {
+  public toJSON (): RouteDefinition {
     return {
       domain: this._domain,
       pattern: this._getPattern(),

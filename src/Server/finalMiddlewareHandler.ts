@@ -11,15 +11,18 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../../adonis-typings/index.ts" />
+
 import { callIocReference } from '@poppinss/utils'
-import { ResolvedMiddlewareNode } from '../contracts'
+import { ResolvedMiddlewareNode } from '@ioc:Adonis/Core/Middleware'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 /**
  * Final middleware handler executes a middleware
  */
-export function finalMiddlewareHandler<Context> (
-  middleware: ResolvedMiddlewareNode<Context>,
-  params: [Context, () => Promise<void>],
+export function finalMiddlewareHandler (
+  middleware: ResolvedMiddlewareNode,
+  params: [HttpContextContract, () => Promise<void>],
 ): Promise<void> {
   /**
    * Call function right away

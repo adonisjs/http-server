@@ -11,15 +11,18 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../../adonis-typings/index.ts" />
+
 import haye from 'haye'
 import { Exception, parseIocReference } from '@poppinss/utils'
 
 import {
-  RouteNode,
   MiddlewareStoreContract,
   MiddlewareNode,
   ResolvedMiddlewareNode,
-} from '../contracts'
+} from '@ioc:Adonis/Core/Middleware'
+
+import { RouteNode } from '@ioc:Adonis/Core/Route'
 
 import { exceptionCodes } from '../helpers'
 
@@ -47,9 +50,9 @@ import { exceptionCodes } from '../helpers'
  * store.get()
  * ```
  */
-export class MiddlewareStore<Context extends any> implements MiddlewareStoreContract<Context> {
-  private _list: ResolvedMiddlewareNode<Context>[] = []
-  private _named: { [alias: string]: ResolvedMiddlewareNode<Context> } = {}
+export class MiddlewareStore implements MiddlewareStoreContract {
+  private _list: ResolvedMiddlewareNode[] = []
+  private _named: { [alias: string]: ResolvedMiddlewareNode } = {}
 
   /**
    * Resolves the middleware node based upon it's type. If value is a string, then
@@ -60,7 +63,7 @@ export class MiddlewareStore<Context extends any> implements MiddlewareStoreCont
    * The annoying part is that one has to create the middleware before registering
    * it, otherwise an exception will be raised.
    */
-  private _resolveMiddlewareItem (middleware: MiddlewareNode<Context>): ResolvedMiddlewareNode<Context> {
+  private _resolveMiddlewareItem (middleware: MiddlewareNode): ResolvedMiddlewareNode {
     return typeof(middleware) === 'function' ? {
       type: 'function',
       value: middleware,
@@ -74,7 +77,7 @@ export class MiddlewareStore<Context extends any> implements MiddlewareStoreCont
    * Register an array of global middleware. These middleware are read
    * by HTTP server and executed on every request
    */
-  public register (middleware: MiddlewareNode<Context>[]): this {
+  public register (middleware: MiddlewareNode[]): this {
     this._list = middleware.map(this._resolveMiddlewareItem.bind(this))
     return this
   }
@@ -82,7 +85,7 @@ export class MiddlewareStore<Context extends any> implements MiddlewareStoreCont
   /**
    * Register named middleware that can be referenced later on routes
    */
-  public registerNamed (middleware: { [alias: string]: MiddlewareNode<Context> }): this {
+  public registerNamed (middleware: { [alias: string]: MiddlewareNode }): this {
     this._named = Object.keys(middleware).reduce((result, alias) => {
       result[alias] = this._resolveMiddlewareItem(middleware[alias])
       return result
@@ -95,7 +98,7 @@ export class MiddlewareStore<Context extends any> implements MiddlewareStoreCont
    * Return all middleware registered using [[MiddlewareStore.register]]
    * method
    */
-  public get (): ResolvedMiddlewareNode<Context>[] {
+  public get (): ResolvedMiddlewareNode[] {
     return this._list
   }
 
@@ -103,7 +106,7 @@ export class MiddlewareStore<Context extends any> implements MiddlewareStoreCont
    * Returns a single middleware by it's name registered
    * using [[MiddlewareStore.registerNamed]] method.
    */
-  public getNamed (name: string): null | ResolvedMiddlewareNode<Context> {
+  public getNamed (name: string): null | ResolvedMiddlewareNode {
     return this._named[name] || null
   }
 
@@ -113,7 +116,7 @@ export class MiddlewareStore<Context extends any> implements MiddlewareStoreCont
    * property, which can be read later by the middleware
    * processing layer.
    */
-  public preCompileMiddleware (route: RouteNode<Context>) {
+  public preCompileMiddleware (route: RouteNode) {
     route.meta.resolvedMiddleware = route.middleware.map((item) => {
       /**
        * Plain old function

@@ -11,6 +11,8 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../../adonis-typings/index.ts" />
+
 import {
   RouteMatchers,
   RouteNode,
@@ -18,7 +20,7 @@ import {
   MatchedRoute,
   RouteLookupNode,
   RouteHandlerNode,
-} from '../contracts'
+} from '@ioc:Adonis/Core/Route'
 import { Exception } from '@poppinss/utils'
 
 import { Route } from './Route'
@@ -41,12 +43,12 @@ import { toRoutesJSON, exceptionCodes } from '../helpers'
  * })
  * ```
  */
-export class Router<Context> implements RouterContract<Context> {
+export class Router implements RouterContract {
   /**
    * Collection of routes, including route resource and route
    * group. To get a flat list of routes, call `router.toJSON()`
    */
-  public routes: (Route<Context> | RouteResource<Context> | RouteGroup<Context> | BriskRoute<Context>)[] = []
+  public routes: (Route | RouteResource | RouteGroup | BriskRoute)[] = []
 
   /**
    * Exposing BriskRoute, RouteGroup and RouteResource constructors
@@ -65,19 +67,19 @@ export class Router<Context> implements RouterContract<Context> {
   /**
    * Store with tokenized routes
    */
-  private _store: Store<Context> = new Store()
+  private _store: Store = new Store()
 
   /**
    * Lookup store to find route by it's name, handler or pattern
    * and then form a complete URL from it
    */
-  private _lookupStore: RouteLookupNode<Context>[] = []
+  private _lookupStore: RouteLookupNode[] = []
 
   /**
    * A boolean to tell the router that a group is in
    * open state right now
    */
-  private _openedGroups: RouteGroup<Context>[] = []
+  private _openedGroups: RouteGroup[] = []
 
   /**
    * Controllers namespace to shorten the path
@@ -96,17 +98,17 @@ export class Router<Context> implements RouterContract<Context> {
   /**
    * A handler to handle routes created for testing
    */
-  private _testsHandler: RouteHandlerNode<Context> = async () => {
+  private _testsHandler: RouteHandlerNode = async () => {
     return 'handled by tests handler'
   }
 
-  constructor (private _routeProcessor?: (route: RouteNode<Context>) => void) {
+  constructor (private _routeProcessor?: (route: RouteNode) => void) {
   }
 
   /**
    * Add route for a given pattern and methods
    */
-  public route (pattern: string, methods: string[], handler: RouteHandlerNode<Context>): Route<Context> {
+  public route (pattern: string, methods: string[], handler: RouteHandlerNode): Route {
     const route = new Route(pattern, methods, handler, this._namespace, this._matchers)
     const openedGroup = this._getRecentGroup()
 
@@ -122,42 +124,42 @@ export class Router<Context> implements RouterContract<Context> {
   /**
    * Define a route that handles all common HTTP methods
    */
-  public any (pattern: string, handler: RouteHandlerNode<Context>): Route<Context> {
+  public any (pattern: string, handler: RouteHandlerNode): Route {
     return this.route(pattern, ['HEAD', 'OPTIONS','GET', 'POST', 'PUT', 'PATCH', 'DELETE'], handler)
   }
 
   /**
    * Define `GET` route
    */
-  public get (pattern: string, handler: RouteHandlerNode<Context>): Route<Context> {
+  public get (pattern: string, handler: RouteHandlerNode): Route {
     return this.route(pattern, ['GET'], handler)
   }
 
   /**
    * Define `POST` route
    */
-  public post (pattern: string, handler: RouteHandlerNode<Context>): Route<Context> {
+  public post (pattern: string, handler: RouteHandlerNode): Route {
     return this.route(pattern, ['POST'], handler)
   }
 
   /**
    * Define `PUT` route
    */
-  public put (pattern: string, handler: RouteHandlerNode<Context>): Route<Context> {
+  public put (pattern: string, handler: RouteHandlerNode): Route {
     return this.route(pattern, ['PUT'], handler)
   }
 
   /**
    * Define `PATCH` route
    */
-  public patch (pattern: string, handler: RouteHandlerNode<Context>): Route<Context> {
+  public patch (pattern: string, handler: RouteHandlerNode): Route {
     return this.route(pattern, ['PATCH'], handler)
   }
 
   /**
    * Define `DELETE` route
    */
-  public destroy (pattern: string, handler: RouteHandlerNode<Context>): Route<Context> {
+  public destroy (pattern: string, handler: RouteHandlerNode): Route {
     return this.route(pattern, ['DELETE'], handler)
   }
 
@@ -165,7 +167,7 @@ export class Router<Context> implements RouterContract<Context> {
    * Creates a group of routes. A route group can apply transforms
    * to routes in bulk
    */
-  public group (callback: () => void): RouteGroup<Context> {
+  public group (callback: () => void): RouteGroup {
     /**
      * Create a new group with empty set of routes
      */
@@ -206,7 +208,7 @@ export class Router<Context> implements RouterContract<Context> {
   /**
    * Registers a route resource with conventional set of routes
    */
-  public resource (resource: string, controller: string): RouteResource<Context> {
+  public resource (resource: string, controller: string): RouteResource {
     const resourceInstance = new RouteResource(resource, controller, this._namespace, this._matchers)
     const openedGroup = this._getRecentGroup()
 
@@ -222,7 +224,7 @@ export class Router<Context> implements RouterContract<Context> {
   /**
    * Register a route resource with shallow nested routes.
    */
-  public shallowResource (resource: string, controller: string): RouteResource<Context> {
+  public shallowResource (resource: string, controller: string): RouteResource {
     const resourceInstance = new RouteResource(resource, controller, this._namespace, this._matchers, true)
     const openedGroup = this._getRecentGroup()
 
@@ -238,7 +240,7 @@ export class Router<Context> implements RouterContract<Context> {
   /**
    * Returns a brisk route instance for a given URL pattern
    */
-  public on (pattern: string): BriskRoute<Context> {
+  public on (pattern: string): BriskRoute {
     const briskRoute = new BriskRoute(pattern, this._namespace, this._matchers)
     const openedGroup = this._getRecentGroup()
 
@@ -331,7 +333,7 @@ export class Router<Context> implements RouterContract<Context> {
   /**
    * Find route for a given URL, method and optionally domain
    */
-  public match (url: string, method: string, domain?: string): null | MatchedRoute<Context> {
+  public match (url: string, method: string, domain?: string): null | MatchedRoute {
     return this._store.match(url, method, domain)
   }
 
@@ -339,7 +341,7 @@ export class Router<Context> implements RouterContract<Context> {
    * Look route for a given `pattern`, `route handler` or `route name`. Later this
    * info can be used to make url for a given route.
    */
-  public lookup (routeIdentifier: string, forDomain?: string): null | RouteLookupNode<Context> {
+  public lookup (routeIdentifier: string, forDomain?: string): null | RouteLookupNode {
     return this._lookupStore.find(({ name, pattern, handler, domain }) => {
       return [name, pattern, handler].indexOf(routeIdentifier) > -1 && (!forDomain || forDomain === domain)
     }) || null
@@ -357,8 +359,8 @@ export class Router<Context> implements RouterContract<Context> {
   public forTesting (
     pattern?: string,
     methods?: string[],
-    handler?: RouteHandlerNode<Context>,
-  ): Route<Context> {
+    handler?: RouteHandlerNode,
+  ): Route {
     pattern = pattern || `_test_${this._testRoutePatternCounter++}`
     methods = methods || ['GET']
     handler = handler || this._testsHandler

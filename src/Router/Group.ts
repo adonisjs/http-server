@@ -11,9 +11,11 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../../adonis-typings/index.ts" />
+
 import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
-import { RouteGroupContract } from '../contracts'
+import { RouteGroupContract } from '@ioc:Adonis/Core/Route'
 
 import { Route } from './Route'
 import { RouteResource } from './Resource'
@@ -33,15 +35,15 @@ function missingRouteName () {
  * of routes. The group routes must be pre-defined using
  * the constructor.
  */
-export class RouteGroup<Context> extends Macroable implements RouteGroupContract<Context> {
+export class RouteGroup extends Macroable implements RouteGroupContract {
   protected static _macros = {}
   protected static _getters = {}
 
   constructor (public routes: (
-    Route<Context>
-    | RouteResource<Context>
-    | BriskRoute<Context>
-    | RouteGroup<Context>
+    Route |
+    RouteResource |
+    BriskRoute |
+    RouteGroup
   )[]) {
     super()
   }
@@ -51,7 +53,7 @@ export class RouteGroup<Context> extends Macroable implements RouteGroupContract
    * resource instance
    */
   private _invoke (
-    route: Route<Context> | RouteResource<Context> | BriskRoute<Context> | RouteGroup<Context>,
+    route: Route | RouteResource | BriskRoute | RouteGroup,
     method: string,
     params: any[],
   ) {

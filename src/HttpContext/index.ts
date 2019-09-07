@@ -11,6 +11,8 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../../adonis-typings/index.ts" />
+
 import { Socket } from 'net'
 import proxyAddr from 'proxy-addr'
 import { IncomingMessage, ServerResponse } from 'http'
@@ -20,7 +22,10 @@ import { ResponseContract, Response } from '@poppinss/response'
 import { ProfilerRowContract, Profiler } from '@poppinss/profiler'
 
 import { makeUrl } from '../helpers'
-import { RouteNode, HttpContextContract, ServerConfigContract } from '../contracts'
+
+import { RouteNode } from '@ioc:Adonis/Core/Route'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
 
 /**
  * Http context is passed to all route handlers, middleware,
@@ -29,7 +34,7 @@ import { RouteNode, HttpContextContract, ServerConfigContract } from '../contrac
 export class HttpContext implements HttpContextContract {
   public params?: any
   public subdomains?: any
-  public route?: RouteNode<this>
+  public route?: RouteNode
 
   constructor (
     public request: RequestContract,

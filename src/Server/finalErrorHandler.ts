@@ -7,22 +7,25 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../../adonis-typings/index.ts" />
+
 import { useReturnValue } from './useReturnValue'
-import { ErrorHandlerNode, HttpContextContract } from '../contracts'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { ErrorHandlerNode } from '@ioc:Adonis/Core/Server'
 
 /**
  * Final handler executes the route handler based on it's resolved
  * type and the response body on various conditions (check method body)
  * for same.
  */
-export async function finalErrorHandler<Context extends HttpContextContract> (
-  errorHandler: ErrorHandlerNode<Context> | {
+export async function finalErrorHandler (
+  errorHandler: ErrorHandlerNode | {
     type: 'iocObject',
     value: any,
     method: string,
   },
   error: any,
-  ctx: Context,
+  ctx: HttpContextContract,
 ) {
   /**
    * When error handler is a plain javascript function, we will

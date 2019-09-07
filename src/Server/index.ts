@@ -11,6 +11,8 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../../adonis-typings/index.ts" />
+
 import { Middleware } from 'co-compose'
 import { Server as HttpsServer } from 'https'
 import { LoggerContract } from '@poppinss/logger'
@@ -21,14 +23,15 @@ import { ProfilerRowContract, ProfilerContract } from '@poppinss/profiler'
 import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
 
 import {
-  RouterContract,
   ServerContract,
-  MiddlewareStoreContract,
   ServerConfigContract,
   HookNode,
-  HttpContextContract,
   ErrorHandlerNode,
- } from '../contracts'
+} from '@ioc:Adonis/Core/Server'
+
+import { RouterContract } from '@ioc:Adonis/Core/Route'
+import { MiddlewareStoreContract } from '@ioc:Adonis/Core/Middleware'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import { exceptionCodes } from '../helpers'
 import { finalErrorHandler } from './finalErrorHandler'
@@ -53,13 +56,13 @@ class RouteNotFound extends Exception {}
  * http.createServer(server.handle.bind(server)).listen(3000)
  * ```
  */
-export class Server<Context extends HttpContextContract> implements ServerContract<Context> {
+export class Server implements ServerContract {
   /**
    * Hooks to be executed before and after the request
    */
   private _hooks: {
-    before: HookNode<Context>[],
-    after: HookNode<Context>[],
+    before: HookNode[],
+    after: HookNode[],
   } = {
     before: [],
     after: [],
@@ -74,18 +77,18 @@ export class Server<Context extends HttpContextContract> implements ServerContra
   /**
    * Hooks handler value is decided by [[Server.optimize]] method.
    */
-  private _hooksHandler: ((ctx: Context) => Promise<void>)
+  private _hooksHandler: ((ctx: HttpContextContract) => Promise<void>)
 
   /**
    * Route handler is called on every request. The actual of this var depends
    * upon certain factors. Check [[Server.optimize]] for same.
    */
-  private _routeHandler: ((ctx: Context) => Promise<void>)
+  private _routeHandler: ((ctx: HttpContextContract) => Promise<void>)
 
   /**
    * Value of error handler is again decided inside [[Server.optimize]] method.
    */
-  private _errorHandler: ErrorHandlerNode<Context> | {
+  private _errorHandler: ErrorHandlerNode | {
     type: 'iocObject',
     value: any,
     method: string,
@@ -105,10 +108,10 @@ export class Server<Context extends HttpContextContract> implements ServerContra
         response: ResponseContract,
         logger: LoggerContract,
         profiler: ProfilerRowContract,
-      ): Context,
+      ): HttpContextContract,
     },
-    private _router: RouterContract<Context>,
-    private _middlewareStore: MiddlewareStoreContract<Context>,
+    private _router: RouterContract,
+    private _middlewareStore: MiddlewareStoreContract,
     private _logger: LoggerContract,
     private _profiler: ProfilerContract,
     private _httpConfig: ServerConfigContract,
@@ -118,7 +121,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
    * Executes the global middleware chain before executing
    * the route handler
    */
-  private async _executeMiddleware (ctx: Context) {
+  private async _executeMiddleware (ctx: HttpContextContract) {
     await this
       ._globalMiddleware
       .runner()
@@ -132,14 +135,14 @@ export class Server<Context extends HttpContextContract> implements ServerContra
    * the middleware chain. This is used when global
    * middleware length is 0
    */
-  private async _executeFinalHandler (ctx: Context) {
+  private async _executeFinalHandler (ctx: HttpContextContract) {
     await ctx.route!.meta.finalHandler(ctx)
   }
 
   /**
    * Executes before hooks and then the route handler
    */
-  private async _executeHooksAndHandler (ctx: Context) {
+  private async _executeHooksAndHandler (ctx: HttpContextContract) {
     const shortcircuit = await ctx.profiler.profileAsync('http:before:hooks', {
       length: this._hooks.before.length,
     }, async () => this._executeBeforeHooks(ctx))
@@ -152,7 +155,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
   /**
    * Handles HTTP request
    */
-  private async _handleRequest (ctx: Context) {
+  private async _handleRequest (ctx: HttpContextContract) {
     const url = ctx.request.url()
     const method = ctx.request.method()
 
@@ -204,7 +207,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
    * one of the before hooks wants to end the request without further
    * processing it.
    */
-  private async _executeBeforeHooks (ctx: Context): Promise<boolean> {
+  private async _executeBeforeHooks (ctx: HttpContextContract): Promise<boolean> {
     for (let hook of this._hooks.before) {
       await hook(ctx)
       if (ctx.response.hasLazyBody || ctx.response.headersSent) {
@@ -218,7 +221,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
   /**
    * Handles error raised during the HTTP request
    */
-  private async _handleError (error: any, ctx: Context) {
+  private async _handleError (error: any, ctx: HttpContextContract) {
     if (!this._errorHandler) {
       ctx.response.status(error.status || 500).send(error.message)
       return
@@ -238,7 +241,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
   /**
    * Executing after hooks
    */
-  private async _executeAfterHooks (ctx: Context): Promise<void> {
+  private async _executeAfterHooks (ctx: HttpContextContract): Promise<void> {
     for (let hook of this._hooks.after) {
       await hook(ctx)
     }
@@ -248,7 +251,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
    * Define hooks to be executed as soon as a new request
    * has been received
    */
-  public before (cb: HookNode<Context>): this {
+  public before (cb: HookNode): this {
     this._hooks.before.push(cb)
     return this
   }
@@ -258,7 +261,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
    * can modify the lazy response. However, it shouldn't write the
    * response to the socket.
    */
-  public after (cb: HookNode<Context>): this {
+  public after (cb: HookNode): this {
     this._hooks.after.push(cb)
     return this
   }
@@ -267,7 +270,7 @@ export class Server<Context extends HttpContextContract> implements ServerContra
    * Define custom error handler to handler all errors
    * occurred during HTTP request
    */
-  public errorHandler (handler: ErrorHandlerNode<Context> | string): this {
+  public errorHandler (handler: ErrorHandlerNode | string): this {
     this._errorHandler = typeof (handler) === 'string'
       ? parseIocReference(`${handler}.handle`, undefined, undefined, true)
       : handler

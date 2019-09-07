@@ -11,6 +11,8 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../../adonis-typings/index.ts" />
+
 import matchit from 'matchit'
 import { pick, cloneDeep } from 'lodash'
 import { Exception } from '@poppinss/utils'
@@ -21,7 +23,8 @@ import {
   DomainNode,
   MethodNode,
   RoutesTree,
-} from '../contracts'
+} from '@ioc:Adonis/Core/Route'
+
 import { exceptionCodes } from '../helpers'
 
 /**
@@ -47,14 +50,14 @@ import { exceptionCodes } from '../helpers'
  * store.match('posts/1', 'GET')
  * ```
  */
-export class Store<Context> {
-  public tree: RoutesTree<Context> = { tokens: [], domains: {} }
+export class Store {
+  public tree: RoutesTree = { tokens: [], domains: {} }
 
   /**
    * Returns the domain node for a given domain. If domain node is missing,
    * it will added to the routes object and tokens are also generated
    */
-  private _getDomainNode (domain: string): DomainNode<Context> {
+  private _getDomainNode (domain: string): DomainNode {
     if (!this.tree.domains[domain]) {
       /**
        * The tokens are required to match dynamic domains
@@ -70,7 +73,7 @@ export class Store<Context> {
    * Returns the method node for a given domain and method. If method is
    * missing, it will be added to the domain node
    */
-  private _getMethodRoutes (domain: string, method: string): MethodNode<Context> {
+  private _getMethodRoutes (domain: string, method: string): MethodNode {
     const domainNode = this._getDomainNode(domain)
     if (!domainNode[method]) {
       domainNode[method] = { tokens: [], routes: {} }
@@ -96,7 +99,7 @@ export class Store<Context> {
    * })
    * ```
    */
-  public add (route: RouteDefinition<Context>): this {
+  public add (route: RouteDefinition): this {
     /**
      * Create a copy of route properties by cherry picking
      * fields. We create the copy outside the forEach
@@ -113,7 +116,7 @@ export class Store<Context> {
       'meta',
       'middleware',
       'name',
-    ])) as RouteNode<Context>
+    ])) as RouteNode
 
     route.methods.forEach((method) => {
       const methodRoutes = this._getMethodRoutes(route.domain || 'root', method)
@@ -152,7 +155,7 @@ export class Store<Context> {
    * route. `null` is returned when unable to match the URL against
    * registered routes.
    */
-  public match (url: string, method: string, domain?: string): null | MatchedRoute<Context> {
+  public match (url: string, method: string, domain?: string): null | MatchedRoute {
     /**
      * Start by matching the domain and return null, if unable to find
      * the domain

@@ -11,12 +11,14 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../adonis-typings/index.ts" />
+
 import { stringify } from 'querystring'
 import { Exception } from '@poppinss/utils'
 
 import { Route } from './Router/Route'
 import { RouteGroup } from './Router/Group'
-import { RouteDefinition } from './contracts'
+import { RouteDefinition } from '@ioc:Adonis/Core/Route'
 import { BriskRoute } from './Router/BriskRoute'
 import { RouteResource } from './Router/Resource'
 
@@ -36,10 +38,10 @@ export function dropSlash (input: string): string {
  * Converts and array of routes or route groups or route resource to a flat
  * list of route defination.
  */
-export function toRoutesJSON<Context extends any> (
-  routes: (RouteGroup<Context> | RouteResource<Context> | Route<Context> | BriskRoute<Context>)[],
-): RouteDefinition<Context>[] {
-  return routes.reduce((list: RouteDefinition<Context>[], route) => {
+export function toRoutesJSON (
+  routes: (RouteGroup | RouteResource | Route | BriskRoute)[],
+): RouteDefinition[] {
+  return routes.reduce((list: RouteDefinition[], route) => {
     if (route instanceof RouteGroup) {
       list = list.concat(toRoutesJSON(route.routes))
       return list

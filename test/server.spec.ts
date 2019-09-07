@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 
+/// <reference path="../adonis-typings/index.ts" />
+
 import 'reflect-metadata'
 import test from 'japa'
 import supertest from 'supertest'
@@ -15,7 +17,8 @@ import { createServer } from 'http'
 import { Ioc, inject } from '@adonisjs/fold'
 import { FakeLogger } from '@poppinss/logger'
 import { Profiler } from '@poppinss/profiler'
-import { ServerConfigContract, HttpContextContract } from '../src/contracts'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
 
 import { Server } from '../src/Server'
 import { Router } from '../src/Router'
@@ -50,7 +53,7 @@ test.group('Server | Response handling', () => {
     const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
     const httpServer = createServer(server.handle.bind(server))
 
-    router.get('/', ({ response }) => response.send('handled'))
+    router.get('/', async ({ response }) => response.send('handled'))
     router.commit()
     server.optimize()
 
@@ -75,7 +78,7 @@ test.group('Server | Response handling', () => {
 
   test('do not use return value when response.send is called', async (assert) => {
     const middlewareStore = new MiddlewareStore()
-    const router = new Router<HttpContext>((route) => routePreProcessor(route, middlewareStore))
+    const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
     const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
     const httpServer = createServer(server.handle.bind(server))
@@ -381,7 +384,6 @@ test.group('Server | hooks', () => {
     const router = new Router((route) => routePreProcessor(route, middlewareStore))
     const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
     server.before(async ({ response }) => {
-      response.explicitEnd = false
       stack.push('hook1')
       response.send('done')
     })

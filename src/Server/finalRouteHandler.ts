@@ -11,18 +11,21 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../../adonis-typings/index.ts" />
+
 import { ProfilerActionContract } from '@poppinss/profiler/build/src/Contracts'
 import { callIocReference } from '@poppinss/utils'
 import { useReturnValue } from './useReturnValue'
-import { ResolvedControllerNode, HttpContextContract } from '../contracts'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { ResolvedControllerNode } from '@ioc:Adonis/Core/Server'
 
 /**
  * Final handler executes the route handler based on it's resolved
  * type and the response body on various conditions (check method body)
  * for same.
  */
-export async function finalRouteHandler<Context extends HttpContextContract> (ctx: Context) {
-  const handler = ctx.route!.meta.resolvedHandler as ResolvedControllerNode<Context>
+export async function finalRouteHandler (ctx: HttpContextContract) {
+  const handler = ctx.route!.meta.resolvedHandler as ResolvedControllerNode
   let profilerAction: ProfilerActionContract
 
   try {

@@ -11,12 +11,14 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../../adonis-typings/index.ts" />
+
 import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
 
 import { Route } from './Route'
 import { exceptionCodes } from '../helpers'
-import { BriskRouteContract, RouteMatchers, RouteHandlerNode } from '../contracts'
+import { BriskRouteContract, RouteMatchers, RouteHandlerNode } from '@ioc:Adonis/Core/Route'
 
 /**
  * Brisk route enables you to expose expressive API for
@@ -26,7 +28,7 @@ import { BriskRouteContract, RouteMatchers, RouteHandlerNode } from '../contract
  * to render a view without defining a controller method or
  * closure.
  */
-export class BriskRoute<Context> extends Macroable implements BriskRouteContract<Context> {
+export class BriskRoute extends Macroable implements BriskRouteContract {
   protected static _macros = {}
   protected static _getters = {}
 
@@ -40,7 +42,7 @@ export class BriskRoute<Context> extends Macroable implements BriskRouteContract
   /**
    * Reference to route instance. Set after `setHandler` is called
    */
-  public route: null | Route<Context> = null
+  public route: null | Route = null
 
   constructor (
     private _pattern: string,
@@ -57,10 +59,10 @@ export class BriskRoute<Context> extends Macroable implements BriskRouteContract
    * times.
    */
   public setHandler (
-    handler: RouteHandlerNode<Context>,
+    handler: RouteHandlerNode,
     invokedBy: string,
     methods?: string[],
-  ): Route<Context> {
+  ): Route {
     if (this.route) {
       throw new Exception(
         `\`Route.${invokedBy}\` and \`${this._invokedBy}\` cannot be called together`,

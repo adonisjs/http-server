@@ -11,9 +11,11 @@
 * file that was distributed with this source code.
 */
 
+/// <reference path="../../adonis-typings/index.ts" />
+
 import { singular } from 'pluralize'
 import { Macroable } from 'macroable'
-import { RouteMatchers, RouteResourceContract } from '../contracts'
+import { RouteMatchers, RouteResourceContract } from '@ioc:Adonis/Core/Route'
 
 import { Route } from './Route'
 
@@ -27,11 +29,11 @@ import { Route } from './Route'
  * const resource = new RouteResource('articles', 'ArticlesController')
  * ```
  */
-export class RouteResource<Context> extends Macroable implements RouteResourceContract<Context> {
+export class RouteResource extends Macroable implements RouteResourceContract {
   protected static _macros = {}
   protected static _getters = {}
 
-  public routes: Route<Context>[] = []
+  public routes: Route[] = []
 
   constructor (
     private _resource: string,
