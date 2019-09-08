@@ -17,9 +17,10 @@ import { Request } from '@poppinss/request'
 import { IocContract } from '@adonisjs/fold'
 import { Response } from '@poppinss/response'
 import { Server as HttpsServer } from 'https'
-import { LoggerContract } from '@poppinss/logger'
-import { ProfilerContract, ProfilerRowContract } from '@poppinss/profiler'
 import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
+
+import { LoggerContract } from '@ioc:Adonis/Core/Logger'
+import { ProfilerContract, ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 
 import {
   ServerContract,

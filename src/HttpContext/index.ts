@@ -17,11 +17,11 @@ import { Socket } from 'net'
 import proxyAddr from 'proxy-addr'
 import { RouteNode } from '@ioc:Adonis/Core/Route'
 import { IncomingMessage, ServerResponse } from 'http'
-import { LoggerContract, Logger } from '@poppinss/logger'
+import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 import { RequestContract, Request } from '@poppinss/request'
 import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
+import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 import { ResponseContract, Response } from '@poppinss/response'
-import { ProfilerRowContract, Profiler } from '@poppinss/profiler'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import { makeUrl } from '../helpers'
@@ -48,6 +48,8 @@ export class HttpContext implements HttpContextContract {
   public static create (
     routePattern: string,
     routeParams: any,
+    logger: LoggerContract,
+    profiler: ProfilerRowContract,
     req?: IncomingMessage,
     res?: ServerResponse,
     serverConfig?: ServerConfigContract,
@@ -97,11 +99,7 @@ export class HttpContext implements HttpContextContract {
     /**
      * Creating new ctx instance
      */
-    const ctx = new HttpContext(request, response, new Logger({
-      name: 'adonis',
-      enabled: true,
-      level: 'trace',
-    }), new Profiler({}).create('fake context'))
+    const ctx = new HttpContext(request, response, logger, profiler)
 
     /**
      * Attaching route to the ctx

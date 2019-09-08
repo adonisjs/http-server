@@ -12,11 +12,11 @@
 */
 
 declare module '@ioc:Adonis/Core/HttpContext' {
+  import { RouteNode } from '@ioc:Adonis/Core/Route'
   import { RequestContract } from '@poppinss/request'
   import { ResponseContract } from '@poppinss/response'
-  import { LoggerContract } from '@poppinss/logger'
-  import { ProfilerRowContract } from '@poppinss/profiler'
-  import { RouteNode } from '@ioc:Adonis/Core/Route'
+  import { LoggerContract } from '@ioc:Adonis/Core/Logger'
+  import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 
   /**
    * Http request context passed to all middleware

@@ -3,5 +3,9 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-  }
+  },
+  "files": [
+    "./node_modules/@adonisjs/profiler/build/adonis-typings/profiler.d.ts",
+    "./node_modules/@adonisjs/logger/build/adonis-typings/logger.d.ts"
+  ]
 }
