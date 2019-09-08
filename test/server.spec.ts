@@ -519,6 +519,38 @@ test.group('Server | hooks', () => {
     assert.equal(text, 'Unexpected error')
     assert.deepEqual(stack, ['hook1', 'hook2', 'after hook1'])
   })
+
+  test('allow after hooks to set headers when route handler raises an exception', async (assert) => {
+    const stack: string[] = []
+
+    const server = new Server(new Ioc(), logger, profiler, config)
+
+    server.hooks.before(async () => {
+      stack.push('hook1')
+    })
+
+    server.hooks.before(async () => {
+      stack.push('hook2')
+    })
+
+    server.hooks.after(async ({ response }) => {
+      stack.push('after hook1')
+      response.header('x-after-hook', true)
+    })
+
+    server.router.get('/', () => {
+      throw new Error('What??')
+    })
+
+    server.optimize()
+
+    const httpServer = createServer(server.handle.bind(server))
+
+    const { text, header } = await supertest(httpServer).get('/').expect(500)
+    assert.property(header, 'x-after-hook')
+    assert.equal(text, 'What??')
+    assert.deepEqual(stack, ['hook1', 'hook2', 'after hook1'])
+  })
 })
 
 test.group('Server | error handler', () => {
