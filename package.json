@@ -28,9 +28,9 @@
   "license": "MIT",
   "devDependencies": {
     "@adonisjs/fold": "^6.1.5",
-    "@adonisjs/logger": "^1.1.4",
+    "@adonisjs/logger": "^1.1.5",
     "@adonisjs/mrm-preset": "^2.1.0",
-    "@adonisjs/profiler": "^1.2.2",
+    "@adonisjs/profiler": "^1.2.3",
     "@poppinss/dev-utils": "^1.0.1",
     "@types/lodash": "^4.14.138",
     "@types/node": "^12.7.2",
