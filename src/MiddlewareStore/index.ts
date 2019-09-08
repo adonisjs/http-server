@@ -13,13 +13,13 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
-import { IoCResolver } from '@poppinss/utils'
 import { IocContract } from '@adonisjs/fold'
+import { IoCResolver } from '@poppinss/utils'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import {
-  MiddlewareStoreContract,
   MiddlewareNode,
+  MiddlewareStoreContract,
   ResolvedMiddlewareNode,
 } from '@ioc:Adonis/Core/Middleware'
 

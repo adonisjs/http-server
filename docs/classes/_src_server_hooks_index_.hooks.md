@@ -10,6 +10,10 @@ Exposes to API to register and execute before and after hooks
 
 * **Hooks**
 
+## Implements
+
+* HooksContract
+
 ## Index
 
 ### Methods

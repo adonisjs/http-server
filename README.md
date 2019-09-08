@@ -12,7 +12,6 @@ Node.js HTTP server with a slick router used by AdonisJs. Think of it as an Expr
 ## Table of contents
 
 - [Usage](#usage)
-- [MiddlewareStore](#middlewarestore)
 - [Router](#router)
 - [Profiler action labels](#profiler-action-labels)
 - [API](#api)
@@ -33,57 +32,29 @@ yarn add @poppinss/http-server
 and then use it as follows:
 
 ```ts
+import proxyaddr from 'proxy-addr'
 import { createServer } from 'http'
+import { Logger } from '@adonisjs/logger/build/standalone'
+import { Profiler } from '@adonisjs/profiler/build/standalone'
+import { Server } from '@adonisjs/http-server/build/standalone'
 
-import { Logger } from '@poppinss/logger'
+const logger = new Logger({ enabled: false, level: 'trace', name: 'adonis' })
+const profiler = new Profiler({})
+const config = {
+  etag: false,
+  jsonpCallbackName: 'callback',
+  cookie: {},
+  subdomainOffset: 2,
+  generateRequestId: false,
+  secret: Math.random().toFixed(36).substring(2, 38),
+  trustProxy: proxyaddr.compile('loopback'),
+  allowMethodSpoofing: false,
+}
 
-import {
-  Server,
-  Router,
-  MiddlewareStore,
-  routePreProcessor,
-  HttpContext,
-} from '@poppinss/http-server'
-
-// more on middleware later
-const middleware = new MiddlewareStore()
-const router = new Router((route) => {
-  routePreProcessor(route, middleware)
-})
-router.get('/', async () => 'hello world')
-
-const server = new Server(HttpContext, router, middlewareStore, new Logger(), config)
-router.commit()
+const server = new Server({} as any, logger, profiler, config)
 server.optimize()
 
 createServer(server.handle.bind(server)).listen(3000)
-```
-
-Wow! too much boilerplate. That's why we recommend using AdonisJs over wiring up things by hand.
-
-## MiddlewareStore
-The middleware store is used to store global and named middleware. The global middleware runs on all HTTP requests and named one can be attached to a given route.
-
-```ts
-const middleware = new MiddlewareStore()
-
-// Global middleware
-middleware.register([
-  async function () {},
-  async function () {},
-])
-
-// Named middleware
-middleware.registerNamed({
-  auth: async function () {}
-})
-```
-
-The named middleware can be referenced on the route as follows:
-
-```ts
-router.get('/', async function () {
-}).middleware(['auth'])
 ```
 
 ## Router
@@ -104,8 +75,7 @@ Following is the list of actions profiled during an HTTP request
 - http:route:match
 - http:route:stack
 - http:after:hooks
-- http:route:closure
-- http:route:controller
+- http:route:handler
 
 We recommend you to check the API docs to get a complete reference of all the classes.
 

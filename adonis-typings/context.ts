@@ -13,9 +13,11 @@
 
 declare module '@ioc:Adonis/Core/HttpContext' {
   import { RouteNode } from '@ioc:Adonis/Core/Route'
+  import { IncomingMessage, ServerResponse } from 'http'
+  import { LoggerContract } from '@ioc:Adonis/Core/Logger'
   import { RequestContract } from '@ioc:Adonis/Core/Request'
   import { ResponseContract } from '@ioc:Adonis/Core/Response'
-  import { LoggerContract } from '@ioc:Adonis/Core/Logger'
+  import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
   import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 
   /**
@@ -31,4 +33,31 @@ declare module '@ioc:Adonis/Core/HttpContext' {
     params: any
     subdomains: any
   }
+
+  /**
+   * Shape of the constructor. We export the constructor and not
+   * the context instance, since that is passed to the HTTP
+   * lifecycle
+   */
+  export interface HttpContextConstructorContract {
+    create (
+      routePattern: string,
+      routeParams: any,
+      logger: LoggerContract,
+      profiler: ProfilerRowContract,
+      req?: IncomingMessage,
+      res?: ServerResponse,
+      serverConfig?: ServerConfigContract,
+    ): HttpContextContract
+
+    new (
+      request: RequestContract,
+      response: ResponseContract,
+      logger: LoggerContract,
+      profiler: ProfilerRowContract,
+    ): HttpContextContract
+  }
+
+  const HttpContext: HttpContextConstructorContract
+  export default HttpContext
 }

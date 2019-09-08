@@ -2,11 +2,12 @@
   "name": "@adonisjs/http-server",
   "version": "1.2.3",
   "description": "Extracted copy of AdonisJs HTTP server along with it's router",
-  "main": "build/index.js",
   "files": [
     "build/src",
-    "build/index.d.ts",
-    "build/index.js"
+    "build/providers",
+    "build/adonis-typings",
+    "build/standalone.d.ts",
+    "build/standalone.js"
   ],
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
@@ -24,7 +25,7 @@
     "http",
     "http-server"
   ],
-  "author": "virk,poppinss",
+  "author": "virk,adonisjs",
   "license": "MIT",
   "devDependencies": {
     "@adonisjs/fold": "^6.1.5",

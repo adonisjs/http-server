@@ -14,6 +14,7 @@
 declare module '@ioc:Adonis/Core/Response' {
   import { CookieOptions } from '@poppinss/cookie'
   import { ServerResponse, IncomingMessage } from 'http'
+  import { MacroableConstructorContract } from 'macroable'
 
   /**
    * Types from which response header can be casted to a
@@ -43,16 +44,6 @@ declare module '@ioc:Adonis/Core/Response' {
   export type LazyBody = {
     writer: any,
     args: any[],
-  }
-
-  /**
-   * Config accepted by response class
-   */
-  export type ResponseConfigContract = {
-    etag: boolean,
-    jsonpCallbackName: string,
-    cookie: Partial<CookieOptions>,
-    secret?: string,
   }
 
   /**
@@ -112,4 +103,30 @@ declare module '@ioc:Adonis/Core/Response' {
 
     finish (): void
   }
+
+  /**
+   * Config accepted by response the class
+   */
+  export type ResponseConfigContract = {
+    secret?: string,
+    etag: boolean,
+    jsonpCallbackName: string,
+    cookie: Partial<CookieOptions>,
+  }
+
+  /**
+   * Shape of response constructor, we export the constructor for others to
+   * add macros to the request class. Since, the instance is passed
+   * to the http request cycle
+   */
+  export interface ResponseConstructorContract extends MacroableConstructorContract {
+    new (
+      request: IncomingMessage,
+      response: ServerResponse,
+      config: ResponseConfigContract,
+    ): ResponseContract
+  }
+
+  const Response: ResponseConstructorContract
+  export default Response
 }

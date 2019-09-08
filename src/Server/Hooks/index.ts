@@ -13,13 +13,13 @@
 
 /// <reference path="../../../adonis-typings/index.ts" />
 
-import { HookNode } from '@ioc:Adonis/Core/Server'
+import { HookNode, HooksContract } from '@ioc:Adonis/Core/Server'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 /**
  * Exposes to API to register and execute before and after hooks
  */
-export class Hooks {
+export class Hooks implements HooksContract {
   /**
    * Registered before and after hooks
    */
@@ -62,7 +62,7 @@ export class Hooks {
         /**
          * We must break the loop when one of the hooks set the response
          */
-        if (ctx.response.hasLazyBody || ctx.response.headersSent) {
+        if (ctx.response.hasLazyBody || !ctx.response.isPending) {
           action.end()
           return true
         }

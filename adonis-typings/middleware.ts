@@ -12,6 +12,7 @@
 */
 
 declare module '@ioc:Adonis/Core/Middleware' {
+  import { IocContract } from '@adonisjs/fold'
   import { RouteNode } from '@ioc:Adonis/Core/Route'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
@@ -52,4 +53,16 @@ declare module '@ioc:Adonis/Core/Middleware' {
       params: [HttpContextContract, () => Promise<void>],
     ): Promise<void>
   }
+
+  /**
+   * The shape of the middleware store constructor. We default export the
+   * constructor, since the store instance must be pulled from the
+   * server to register/fetch middleware
+   */
+  export interface MiddlewareStoreConstructorContract {
+    new (container: IocContract): MiddlewareStoreContract
+  }
+
+  const MiddlewareStore: MiddlewareStoreConstructorContract
+  export default MiddlewareStore
 }

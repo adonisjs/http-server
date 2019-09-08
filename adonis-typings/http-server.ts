@@ -15,10 +15,10 @@ declare module '@ioc:Adonis/Core/Server' {
   import { Server as HttpsServer } from 'https'
   import { RequestConfigContract } from '@ioc:Adonis/Core/Request'
   import { ResponseConfigContract } from '@ioc:Adonis/Core/Response'
-  import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-  import { RouteHandlerNode, RouterContract } from '@ioc:Adonis/Core/Route'
   import { MiddlewareStoreContract } from '@ioc:Adonis/Core/Middleware'
+  import { RouteHandlerNode, RouterContract } from '@ioc:Adonis/Core/Route'
+  import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
 
   /**
    * Before hooks are executed before finding the route or finding
@@ -44,28 +44,25 @@ declare module '@ioc:Adonis/Core/Server' {
   }
 
   /**
+   * Shape of the public methods for the hooks contract. By `public`
+   * the one we want to expose to the end user
+   */
+  export interface HooksContract {
+    before (cb: HookNode): this
+    after (cb: HookNode): this
+  }
+
+  /**
    * HTTP server
    */
   export interface ServerContract {
     instance?: HttpServer | HttpsServer
     router: RouterContract
+    hooks: HooksContract
     middleware: MiddlewareStoreContract
     errorHandler (handler: ErrorHandlerNode): this
     handle (req: IncomingMessage, res: ServerResponse): Promise<void>
     optimize (): void
-  }
-
-  /**
-   * Node after resolving controller.method binding
-   * from the route
-   */
-  export type ResolvedControllerNode = {
-    type: 'function',
-    handler: Exclude<RouteHandlerNode, string>,
-  } | {
-    type: 'autoload' | 'binding',
-    namespace: string,
-    method: string,
   }
 
   /**

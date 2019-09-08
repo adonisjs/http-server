@@ -5,7 +5,8 @@
 # Class: ExceptionManager
 
 Exception manager exposes the API to register custom error handler
-and invoke it on exceptions raised during the HTTP lifecycle
+and invoke it when exceptions are raised during the HTTP
+lifecycle.
 
 ## Hierarchy
 

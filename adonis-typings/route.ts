@@ -15,12 +15,24 @@ declare module '@ioc:Adonis/Core/Route' {
   import { MacroableConstructorContract } from 'macroable'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
   import { MiddlewareNode, ResolvedMiddlewareNode } from '@ioc:Adonis/Core/Middleware'
-  import { ResolvedControllerNode } from '@ioc:Adonis/Core/Server'
 
   /**
    * The shape of the route handler
    */
   export type RouteHandlerNode = ((ctx: HttpContextContract) => Promise<any>) | string
+
+  /**
+   * Node after resolving controller.method binding
+   * from the route
+   */
+  export type ResolveRouteHandlerNode = {
+    type: 'function',
+    handler: Exclude<RouteHandlerNode, string>,
+  } | {
+    type: 'autoload' | 'binding',
+    namespace: string,
+    method: string,
+  }
 
   /**
    * Route look node is used to find the routes using
@@ -63,7 +75,7 @@ declare module '@ioc:Adonis/Core/Route' {
      * Any custom runtime properties to be added to the route
      */
     meta: {
-      resolvedHandler?: ResolvedControllerNode,
+      resolvedHandler?: ResolveRouteHandlerNode,
       resolvedMiddleware?: ResolvedMiddlewareNode[]
       namespace?: string,
     } & { [key: string]: any },
@@ -208,4 +220,7 @@ declare module '@ioc:Adonis/Core/Route' {
     lookup (routeIdentifier: string, domain?: string): null | RouteLookupNode
     forTesting (pattern?: string, methods?: string[], handler?: any): RouteContract
   }
+
+  const Route: RouterContract
+  export default Route
 }

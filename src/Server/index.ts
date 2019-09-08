@@ -15,18 +15,11 @@
 
 import { IocContract } from '@adonisjs/fold'
 import { Server as HttpsServer } from 'https'
-import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
-
 import { LoggerContract } from '@ioc:Adonis/Core/Logger'
-import { ProfilerContract, ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
-
-import {
-  ServerContract,
-  ServerConfigContract,
-  ErrorHandlerNode,
-} from '@ioc:Adonis/Core/Server'
-
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
+import { ProfilerContract, ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
+import { ServerContract, ServerConfigContract, ErrorHandlerNode } from '@ioc:Adonis/Core/Server'
 
 import { Hooks } from './Hooks'
 import { Router } from '../Router'

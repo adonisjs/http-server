@@ -15,6 +15,7 @@
 * ["adonis-typings/route"](modules/_adonis_typings_route_.md)
 * ["benchmarks/index"](modules/_benchmarks_index_.md)
 * ["benchmarks/ioc"](modules/_benchmarks_ioc_.md)
+* ["providers/HttpServerProvider"](modules/_providers_httpserverprovider_.md)
 * ["src/ExceptionManager/index"](modules/_src_exceptionmanager_index_.md)
 * ["src/HttpContext/index"](modules/_src_httpcontext_index_.md)
 * ["src/MiddlewareStore/index"](modules/_src_middlewarestore_index_.md)

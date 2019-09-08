@@ -16,6 +16,9 @@ declare module '@ioc:Adonis/Core/Request' {
   import { MacroableConstructorContract } from 'macroable'
   import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http'
 
+  /**
+   * Shape of the request class instance
+   */
   export interface RequestContract {
     parsedUrl: UrlWithStringQuery
     request: IncomingMessage
@@ -65,6 +68,9 @@ declare module '@ioc:Adonis/Core/Request' {
     plainCookie (key: string, defaultValue?: any): any
   }
 
+  /**
+   * Shape of the request config
+   */
   export type RequestConfigContract = {
     secret?: string,
     subdomainOffset: number,
@@ -74,8 +80,19 @@ declare module '@ioc:Adonis/Core/Request' {
     trustProxy: (address: string, distance: number) => boolean,
   }
 
-  export interface RequestConstructorContract extends MacroableConstructorContract {}
-  const Request: RequestConstructorContract
+  /**
+   * Shape of request constructor, we export the constructor for others to
+   * add macros to the request class. Since, the instance is passed
+   * to the http request cycle
+   */
+  export interface RequestConstructorContract extends MacroableConstructorContract {
+    new (
+      request: IncomingMessage,
+      response: ServerResponse,
+      config: RequestConfigContract,
+    ): RequestContract
+  }
 
+  const Request: RequestConstructorContract
   export default Request
 }

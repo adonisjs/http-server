@@ -415,13 +415,12 @@ export class Request extends Macroable implements RequestContract {
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
    */
   public protocol (): string {
-    const protocol = this.parsedUrl.protocol
     if (this.request.connection['encrypted']) {
       return 'https'
     }
 
     if (!this._config.trustProxy(this.request.connection.remoteAddress!, 0)) {
-      return protocol || 'http'
+      return this.parsedUrl.protocol || 'http'
     }
 
     const forwardedProtocol = this.header('X-Forwarded-Proto')

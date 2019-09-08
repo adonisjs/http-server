@@ -18,15 +18,15 @@ import proxyAddr from 'proxy-addr'
 import { RouteNode } from '@ioc:Adonis/Core/Route'
 import { IncomingMessage, ServerResponse } from 'http'
 import { LoggerContract } from '@ioc:Adonis/Core/Logger'
-import { Request } from '../Request'
+import { RequestContract } from '@ioc:Adonis/Core/Request'
+import { ResponseContract } from '@ioc:Adonis/Core/Response'
 import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
 import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
-import { Response } from '../Response'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import { makeUrl } from '../helpers'
-import { RequestContract } from '@ioc:Adonis/Core/Request'
-import { ResponseContract } from '@ioc:Adonis/Core/Response'
+import { Request } from '../Request'
+import { Response } from '../Response'
 
 /**
  * Http context is passed to all route handlers, middleware,
