@@ -1,9 +1,9 @@
 /**
- * @module @poppinss/http-server
+ * @module @adonisjs/http-server
  */
 
 /*
-* @poppinss/http-server
+* @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *
@@ -16,35 +16,29 @@
 import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
 import { RouteGroupContract } from '@ioc:Adonis/Core/Route'
+import { MiddlewareNode } from '@ioc:Adonis/Core/Middleware'
 
 import { Route } from './Route'
-import { RouteResource } from './Resource'
 import { BriskRoute } from './BriskRoute'
-import { exceptionCodes } from '../helpers'
+import { RouteResource } from './Resource'
 
 function missingRouteName () {
   return new Exception(
     'All routes inside a group must have names before calling Route.group.as',
     500,
-    exceptionCodes.E_MISSING_ROUTE_NAME,
+    'E_MISSING_ROUTE_NAME',
   )
 }
 
 /**
- * Group class exposes the API to take action on a group
- * of routes. The group routes must be pre-defined using
- * the constructor.
+ * Group class exposes the API to take action on a group of routes.
+ * The group routes must be pre-defined using the constructor.
  */
 export class RouteGroup extends Macroable implements RouteGroupContract {
   protected static _macros = {}
   protected static _getters = {}
 
-  constructor (public routes: (
-    Route |
-    RouteResource |
-    BriskRoute |
-    RouteGroup
-  )[]) {
+  constructor (public routes: (Route | RouteResource | BriskRoute | RouteGroup)[]) {
     super()
   }
 
@@ -58,9 +52,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
     params: any[],
   ) {
     if (route instanceof RouteResource) {
-      route.routes.forEach((child) => {
-        this._invoke(child, method, params)
-      })
+      route.routes.forEach((child) => this._invoke(child, method, params))
       return
     }
 
@@ -106,10 +98,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * ```
    */
   public where (param: string, matcher: RegExp | string): this {
-    this.routes.forEach((route) => {
-      this._invoke(route, 'where', [param, matcher])
-    })
-
+    this.routes.forEach((route) => this._invoke(route, 'where', [param, matcher]))
     return this
   }
 
@@ -123,10 +112,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * ```
    */
   public prefix (prefix: string): this {
-    this.routes.forEach((route) => {
-      this._invoke(route, 'prefix', [prefix])
-    })
-
+    this.routes.forEach((route) => this._invoke(route, 'prefix', [prefix]))
     return this
   }
 
@@ -140,10 +126,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * ```
    */
   public domain (domain: string): this {
-    this.routes.forEach((route) => {
-      this._invoke(route, 'domain', [domain])
-    })
-
+    this.routes.forEach((route) => this._invoke(route, 'domain', [domain]))
     return this
   }
 
@@ -157,10 +140,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * ```
    */
   public as (name: string): this {
-    this.routes.forEach((route) => {
-      this._invoke(route, 'as', [name, true])
-    })
-
+    this.routes.forEach((route) => this._invoke(route, 'as', [name, true]))
     return this
   }
 
@@ -173,11 +153,8 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * }).middleware(['auth'])
    * ```
    */
-  public middleware (middleware: any | any[]): this {
-    this.routes.forEach((route) => {
-      this._invoke(route, 'middleware', [middleware, true])
-    })
-
+  public middleware (middleware: MiddlewareNode | MiddlewareNode[]): this {
+    this.routes.forEach((route) => this._invoke(route, 'middleware', [middleware, true]))
     return this
   }
 
@@ -191,10 +168,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * ```
    */
   public namespace (namespace: string): this {
-    this.routes.forEach((route) => {
-      this._invoke(route, 'namespace', [namespace])
-    })
-
+    this.routes.forEach((route) => this._invoke(route, 'namespace', [namespace]))
     return this
   }
 }

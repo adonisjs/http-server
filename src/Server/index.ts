@@ -1,9 +1,9 @@
 /**
- * @module @poppinss/http-server
+ * @module @adonisjs/http-server
  */
 
 /*
-* @poppinss/http-server
+* @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *
@@ -13,87 +13,34 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
-import { Middleware } from 'co-compose'
+import { Request } from '@poppinss/request'
+import { IocContract } from '@adonisjs/fold'
+import { Response } from '@poppinss/response'
 import { Server as HttpsServer } from 'https'
 import { LoggerContract } from '@poppinss/logger'
-import { Request, RequestContract } from '@poppinss/request'
-import { Exception, parseIocReference } from '@poppinss/utils'
-import { Response, ResponseContract } from '@poppinss/response'
-import { ProfilerRowContract, ProfilerContract } from '@poppinss/profiler'
+import { ProfilerContract, ProfilerRowContract } from '@poppinss/profiler'
 import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
 
 import {
   ServerContract,
   ServerConfigContract,
-  HookNode,
   ErrorHandlerNode,
 } from '@ioc:Adonis/Core/Server'
 
-import { RouterContract } from '@ioc:Adonis/Core/Route'
-import { MiddlewareStoreContract } from '@ioc:Adonis/Core/Middleware'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-import { exceptionCodes } from '../helpers'
-import { finalErrorHandler } from './finalErrorHandler'
-import { finalMiddlewareHandler } from './finalMiddlewareHandler'
-
-class RouteNotFound extends Exception {}
+import { Hooks } from './Hooks'
+import { Router } from '../Router'
+import { PreCompiler } from './PreCompiler'
+import { HttpContext } from '../HttpContext'
+import { RequestHandler } from './RequestHandler'
+import { MiddlewareStore } from '../MiddlewareStore'
+import { ExceptionManager } from '../ExceptionManager'
 
 /**
  * Server class handles the HTTP requests by using all Adonis micro modules.
- *
- * ```
- * const http = require('http')
- * const { Request } = require('@adonisjs/request')
- * const { Response } = require('@adonisjs/response')
- * const { Router } = require('@adonisjs/router')
- * const { MiddlewareStore, Server, routePreProcessor } = require('@adonisjs/server')
- *
- * const middlewareStore = new MiddlewareStore()
- * const router = new Router((route) => routePreProcessor(route, middlewareStore))
- *
- * const server = new Server(Request, Response, router, middlewareStore)
- * http.createServer(server.handle.bind(server)).listen(3000)
- * ```
  */
 export class Server implements ServerContract {
-  /**
-   * Hooks to be executed before and after the request
-   */
-  private _hooks: {
-    before: HookNode[],
-    after: HookNode[],
-  } = {
-    before: [],
-    after: [],
-  }
-
-  /**
-   * Caching the handler based upon the existence of global middleware,
-   * hooks and error handler.
-   */
-  private _globalMiddleware: Middleware
-
-  /**
-   * Hooks handler value is decided by [[Server.optimize]] method.
-   */
-  private _hooksHandler: ((ctx: HttpContextContract) => Promise<void>)
-
-  /**
-   * Route handler is called on every request. The actual of this var depends
-   * upon certain factors. Check [[Server.optimize]] for same.
-   */
-  private _routeHandler: ((ctx: HttpContextContract) => Promise<void>)
-
-  /**
-   * Value of error handler is again decided inside [[Server.optimize]] method.
-   */
-  private _errorHandler: ErrorHandlerNode | {
-    type: 'iocObject',
-    value: any,
-    method: string,
-  }
-
   /**
    * The server itself doesn't create the http server instance. However, the consumer
    * of this class can create one and set the instance for further reference. This
@@ -101,180 +48,85 @@ export class Server implements ServerContract {
    */
   public instance?: HttpServer | HttpsServer
 
+  /**
+   * The middleware store to register global and named middleware
+   */
+  public middleware = new MiddlewareStore(this._container)
+
+  /**
+   * The route to register routes
+   */
+  public router = new Router((route) => this._precompiler.compileRoute(route))
+
+  /**
+   * Server before/after hooks
+   */
+  public hooks = new Hooks()
+
+  /**
+   * Precompiler to set the finalHandler for the route
+   */
+  private _precompiler = new PreCompiler(this._container, this.middleware)
+
+  /**
+   * Exception manager to handle exceptions
+   */
+  private _exception = new ExceptionManager(this._container)
+
+  /**
+   * Request handler to handle request after route is found
+   */
+  private _requestHandler = new RequestHandler(this.middleware, this.router)
+
   constructor (
-    private _context: {
-      new(
-        request: RequestContract,
-        response: ResponseContract,
-        logger: LoggerContract,
-        profiler: ProfilerRowContract,
-      ): HttpContextContract,
-    },
-    private _router: RouterContract,
-    private _middlewareStore: MiddlewareStoreContract,
+    private _container: IocContract,
     private _logger: LoggerContract,
     private _profiler: ProfilerContract,
     private _httpConfig: ServerConfigContract,
-  ) {}
-
-  /**
-   * Executes the global middleware chain before executing
-   * the route handler
-   */
-  private async _executeMiddleware (ctx: HttpContextContract) {
-    await this
-      ._globalMiddleware
-      .runner()
-      .resolve(finalMiddlewareHandler)
-      .finalHandler(ctx.route!.meta.finalHandler, [ctx])
-      .run([ctx])
-  }
-
-  /**
-   * Executes route handler directly without executing
-   * the middleware chain. This is used when global
-   * middleware length is 0
-   */
-  private async _executeFinalHandler (ctx: HttpContextContract) {
-    await ctx.route!.meta.finalHandler(ctx)
-  }
-
-  /**
-   * Executes before hooks and then the route handler
-   */
-  private async _executeHooksAndHandler (ctx: HttpContextContract) {
-    const shortcircuit = await ctx.profiler.profileAsync('http:before:hooks', {
-      length: this._hooks.before.length,
-    }, async () => this._executeBeforeHooks(ctx))
-
-    if (!shortcircuit) {
-      await this._handleRequest(ctx)
-    }
+  ) {
   }
 
   /**
    * Handles HTTP request
    */
   private async _handleRequest (ctx: HttpContextContract) {
-    const url = ctx.request.url()
-    const method = ctx.request.method()
-
     /**
-     * Profiling `route.match` method
+     * Start with before hooks upfront. If they raise error
+     * then execute error handler.
      */
-    const matchRoute = ctx.profiler.profile('http:route:match')
-    const route = this._router.match(url, method)
-    matchRoute.end()
-
-    /**
-     * Raise error when route is missing
-     */
-    if (!route) {
-      throw new RouteNotFound(`Cannot ${method}:${url}`, 404, exceptionCodes.E_ROUTE_NOT_FOUND)
-    }
-
-    /**
-     * Attach `params`, `subdomains` and `route` when route is found. This
-     * information only exists on a given route
-     */
-    ctx.params = route.params
-    ctx.subdomains = route.subdomains
-    ctx.route = route.route
-
-    /**
-     * Executing the global middleware, route middleware and route as a single
-     * row. For now, we do not profile them seperately, however, if required
-     * we may
-     */
-    const stackRow = ctx.profiler.child('http:route:stack', route)
-
-    /**
-     * The controller and middleware will receive a child row
-     */
-    ctx.profiler = stackRow
-
-    try {
-      await this._routeHandler(ctx)
-      stackRow.end()
-    } catch (error) {
-      stackRow.end()
-      throw error
+    const shortcircuit = await this.hooks.executeBefore(ctx)
+    if (!shortcircuit) {
+      await this._requestHandler.handle(ctx)
     }
   }
 
   /**
-   * Executing before hooks. If this method returns `true`, it means that
-   * one of the before hooks wants to end the request without further
-   * processing it.
+   * Returns the profiler row
    */
-  private async _executeBeforeHooks (ctx: HttpContextContract): Promise<boolean> {
-    for (let hook of this._hooks.before) {
-      await hook(ctx)
-      if (ctx.response.hasLazyBody || ctx.response.headersSent) {
-        return true
-      }
-    }
-
-    return false
+  private _getProfileRow (request: Request) {
+    return this._profiler.create('http:request', {
+      request_id: request.id(),
+      url: request.url(),
+      method: request.method(),
+    })
   }
 
   /**
-   * Handles error raised during the HTTP request
+   * Returns the context for the request
    */
-  private async _handleError (error: any, ctx: HttpContextContract) {
-    if (!this._errorHandler) {
-      ctx.response.status(error.status || 500).send(error.message)
-      return
-    }
-
-    try {
-      await finalErrorHandler(this._errorHandler, error, ctx)
-    } catch (finalError) {
-      ctx.response.status(error.status || 500).send(error.message)
-      this._logger.fatal(
-        finalError,
-        'Received error from the http exception handler. This may make your application unstable',
-      )
-    }
-  }
-
-  /**
-   * Executing after hooks
-   */
-  private async _executeAfterHooks (ctx: HttpContextContract): Promise<void> {
-    for (let hook of this._hooks.after) {
-      await hook(ctx)
-    }
-  }
-
-  /**
-   * Define hooks to be executed as soon as a new request
-   * has been received
-   */
-  public before (cb: HookNode): this {
-    this._hooks.before.push(cb)
-    return this
-  }
-
-  /**
-   * Define hooks to be executed after the route handler. The after hooks
-   * can modify the lazy response. However, it shouldn't write the
-   * response to the socket.
-   */
-  public after (cb: HookNode): this {
-    this._hooks.after.push(cb)
-    return this
+  private _getContext (request: Request, response: Response, profilerRow: ProfilerRowContract) {
+    return new HttpContext(request, response, this._logger.child({
+      request_id: request.id(),
+      serializers: {},
+    }), profilerRow)
   }
 
   /**
    * Define custom error handler to handler all errors
    * occurred during HTTP request
    */
-  public errorHandler (handler: ErrorHandlerNode | string): this {
-    this._errorHandler = typeof (handler) === 'string'
-      ? parseIocReference(`${handler}.handle`, undefined, undefined, true)
-      : handler
-
+  public errorHandler (handler: ErrorHandlerNode): this {
+    this._exception.registerHandler(handler)
     return this
   }
 
@@ -284,26 +136,9 @@ export class Server implements ServerContract {
    * increasing throughput by 10%
    */
   public optimize () {
-    /**
-     * Choose the correct route handler based upon existence
-     * of global middleware
-     */
-    if (this._middlewareStore.get().length) {
-      this._globalMiddleware = new Middleware().register(this._middlewareStore.get())
-      this._routeHandler = this._executeMiddleware.bind(this)
-    } else {
-      this._routeHandler = this._executeFinalHandler.bind(this)
-    }
-
-    /**
-     * Choose correct hooks handler, based upon existence
-     * of before hooks
-     */
-    if (this._hooks.before.length) {
-      this._hooksHandler = this._executeHooksAndHandler.bind(this)
-    } else {
-      this._hooksHandler = this._handleRequest.bind(this)
-    }
+    this.router.commit()
+    this.hooks.commit()
+    this._requestHandler.commit()
   }
 
   /**
@@ -314,45 +149,29 @@ export class Server implements ServerContract {
     const request = new Request(req, res, this._httpConfig)
     const response = new Response(req, res, this._httpConfig)
 
-    const requestRow = this._profiler.create('http:request', {
-      request_id: request.id(),
-      url: request.url(),
-      method: request.method(),
-    })
+    const requestAction = this._getProfileRow(request)
+    const ctx = this._getContext(request, response, requestAction)
 
     /**
-     * All request logs will have the request id. For now, we add it to all
-     * requests and if required, later we can make it configurable.
-     */
-    const ctx = new this._context(request, response, this._logger.child({
-      request_id: request.id(),
-      serializers: {},
-    }), requestRow)
-
-    /**
-     * Start with before hooks upfront. If they raise error
-     * then execute error handler.
+     * Handle request by executing hooks, request middleware stack
+     * and route handler
      */
     try {
-      await this._hooksHandler(ctx)
+      await this._handleRequest(ctx)
     } catch (error) {
-      await this._handleError(error, ctx)
+      await this._exception.handle(error, ctx)
     }
 
     /**
      * Excute hooks when there are one or more hooks
      */
-    if (this._hooks.after.length) {
-      const afterHooks = requestRow.child('http:after:hooks', { length: this._hooks.after.length })
-      try {
-        await this._executeAfterHooks(ctx)
-      } catch (error) {
-        await this._handleError(error, ctx)
-      }
-      afterHooks.end()
+    try {
+      await this.hooks.executeAfter(ctx)
+    } catch (error) {
+      await this._exception.handle(error, ctx)
     }
 
-    requestRow.end({ status_code: res.statusCode })
+    requestAction.end({ status_code: res.statusCode })
     ctx.response.finish()
   }
 }

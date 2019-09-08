@@ -21,10 +21,6 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
 
 import { Server } from '../src/Server'
-import { Router } from '../src/Router'
-import { HttpContext } from '../src/HttpContext'
-import { MiddlewareStore } from '../src/Server/MiddlewareStore'
-import { routePreProcessor } from '../src/Server/routePreProcessor'
 
 const config: ServerConfigContract = {
   etag: false,
@@ -47,14 +43,10 @@ const profiler = new Profiler({ enabled: false })
 
 test.group('Server | Response handling', () => {
   test('invoke router handler', async (assert) => {
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
+    const server = new Server(new Ioc(), logger, profiler, config)
     const httpServer = createServer(server.handle.bind(server))
 
-    router.get('/', async ({ response }) => response.send('handled'))
-    router.commit()
+    server.router.get('/', async ({ response }) => response.send('handled'))
     server.optimize()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -62,14 +54,10 @@ test.group('Server | Response handling', () => {
   })
 
   test('use route handler return value when response.send is not called', async (assert) => {
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
+    const server = new Server(new Ioc(), logger, profiler, config)
     const httpServer = createServer(server.handle.bind(server))
 
-    router.get('/', async () => 'handled')
-    router.commit()
+    server.router.get('/', async () => 'handled')
     server.optimize()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -77,17 +65,13 @@ test.group('Server | Response handling', () => {
   })
 
   test('do not use return value when response.send is called', async (assert) => {
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
+    const server = new Server(new Ioc(), logger, profiler, config)
     const httpServer = createServer(server.handle.bind(server))
 
-    router.get('/', async ({ response }) => {
+    server.router.get('/', async ({ response }) => {
       response.send('handled')
       return 'done'
     })
-    router.commit()
     server.optimize()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -99,8 +83,15 @@ test.group('Server | middleware', () => {
   test('execute global middleware before route handler', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    middlewareStore.register([
+    const server = new Server(new Ioc(), logger, profiler, config)
+    const httpServer = createServer(server.handle.bind(server))
+
+    server.router.get('/', async () => {
+      stack.push('handler')
+      return 'done'
+    })
+
+    server.middleware.register([
       async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn1')
         await next()
@@ -111,17 +102,6 @@ test.group('Server | middleware', () => {
       },
     ])
 
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-    const httpServer = createServer(server.handle.bind(server))
-
-    router.get('/', async () => {
-      stack.push('handler')
-      return 'done'
-    })
-
-    router.commit()
     server.optimize()
 
     await supertest(httpServer).get('/').expect(200)
@@ -131,8 +111,10 @@ test.group('Server | middleware', () => {
   test('execute global and route middleware before route handler', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    middlewareStore.register([
+    const server = new Server(new Ioc(), logger, profiler, config)
+    const httpServer = createServer(server.handle.bind(server))
+
+    server.middleware.register([
       async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn1')
         await next()
@@ -143,12 +125,7 @@ test.group('Server | middleware', () => {
       },
     ])
 
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-    const httpServer = createServer(server.handle.bind(server))
-
-    router.get('/', async () => {
+    server.router.get('/', async () => {
       stack.push('handler')
       return 'done'
     }).middleware(async function routeMiddleware (_ctx: HttpContextContract, next: any) {
@@ -156,7 +133,6 @@ test.group('Server | middleware', () => {
       await next()
     })
 
-    router.commit()
     server.optimize()
 
     await supertest(httpServer).get('/').expect(200)
@@ -166,8 +142,10 @@ test.group('Server | middleware', () => {
   test('terminate request from global middleware', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    middlewareStore.register([
+    const server = new Server(new Ioc(), logger, profiler, config)
+    const httpServer = createServer(server.handle.bind(server))
+
+    server.middleware.register([
       async function middlewareFn1 (ctx: HttpContextContract) {
         stack.push('fn1')
         ctx.response.send('completed')
@@ -178,12 +156,7 @@ test.group('Server | middleware', () => {
       },
     ])
 
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-    const httpServer = createServer(server.handle.bind(server))
-
-    router.get('/', async () => {
+    server.router.get('/', async () => {
       stack.push('handler')
       return 'done'
     }).middleware(async function routeMiddleware (_ctx: HttpContextContract, next: any) {
@@ -191,7 +164,6 @@ test.group('Server | middleware', () => {
       await next()
     })
 
-    router.commit()
     server.optimize()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -202,8 +174,10 @@ test.group('Server | middleware', () => {
   test('terminate request from global middleware with exception', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    middlewareStore.register([
+    const server = new Server(new Ioc(), logger, profiler, config)
+    const httpServer = createServer(server.handle.bind(server))
+
+    server.middleware.register([
       async function middlewareFn1 () {
         stack.push('fn1')
         throw new Error('Cannot process')
@@ -214,12 +188,7 @@ test.group('Server | middleware', () => {
       },
     ])
 
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-    const httpServer = createServer(server.handle.bind(server))
-
-    router.get('/', async () => {
+    server.router.get('/', async () => {
       stack.push('handler')
       return 'done'
     }).middleware(async function routeMiddleware (_ctx: HttpContextContract, next: any) {
@@ -227,7 +196,6 @@ test.group('Server | middleware', () => {
       await next()
     })
 
-    router.commit()
     server.optimize()
 
     const { text } = await supertest(httpServer).get('/').expect(500)
@@ -238,8 +206,10 @@ test.group('Server | middleware', () => {
   test('terminate request from named middleware with exception', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    middlewareStore.register([
+    const server = new Server(new Ioc(), logger, profiler, config)
+    const httpServer = createServer(server.handle.bind(server))
+
+    server.middleware.register([
       async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn1')
         await next()
@@ -250,19 +220,13 @@ test.group('Server | middleware', () => {
       },
     ])
 
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-    const httpServer = createServer(server.handle.bind(server))
-
-    router.get('/', async () => {
+    server.router.get('/', async () => {
       stack.push('handler')
       return 'done'
     }).middleware(async function routeMiddleware () {
       throw new Error('Short circuit')
     })
 
-    router.commit()
     server.optimize()
 
     const { text } = await supertest(httpServer).get('/').expect(500)
@@ -273,8 +237,10 @@ test.group('Server | middleware', () => {
   test('terminate request from named middleware by not calling next', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    middlewareStore.register([
+    const server = new Server(new Ioc(), logger, profiler, config)
+    const httpServer = createServer(server.handle.bind(server))
+
+    server.middleware.register([
       async function middlewareFn1 (_ctx: HttpContextContract, next: any) {
         stack.push('fn1')
         await next()
@@ -285,12 +251,7 @@ test.group('Server | middleware', () => {
       },
     ])
 
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-    const httpServer = createServer(server.handle.bind(server))
-
-    router.get('/', async () => {
+    server.router.get('/', async () => {
       stack.push('handler')
       return 'done'
     }).middleware(async function routeMiddleware (_ctx: HttpContextContract) {
@@ -298,7 +259,6 @@ test.group('Server | middleware', () => {
       _ctx.response.send('Short circuit')
     })
 
-    router.commit()
     server.optimize()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -311,18 +271,15 @@ test.group('Server | hooks', () => {
   test('execute all before hooks', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-    server.before(async () => {
+    const server = new Server(new Ioc(), logger, profiler, config)
+    server.hooks.before(async () => {
       stack.push('hook1')
     })
-    server.before(async () => {
+    server.hooks.before(async () => {
       stack.push('hook2')
     })
 
     const httpServer = createServer(server.handle.bind(server))
-    router.commit()
     server.optimize()
 
     await supertest(httpServer).get('/').expect(404)
@@ -332,18 +289,15 @@ test.group('Server | hooks', () => {
   test('do not execute next hook when first raises error', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-    server.before(async () => {
+    const server = new Server(new Ioc(), logger, profiler, config)
+    server.hooks.before(async () => {
       stack.push('hook1')
       throw new Error('Blown away')
     })
-    server.before(async () => {
+    server.hooks.before(async () => {
       stack.push('hook2')
     })
 
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -356,20 +310,17 @@ test.group('Server | hooks', () => {
   test('do not execute next hook when first writes the body', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-    server.before(async ({ response }) => {
+    const server = new Server(new Ioc(), logger, profiler, config)
+    server.hooks.before(async ({ response }) => {
       stack.push('hook1')
       response.send('done')
     })
-    server.before(async () => {
+
+    server.hooks.before(async () => {
       stack.push('hook2')
     })
 
     const httpServer = createServer(server.handle.bind(server))
-
-    router.commit()
     server.optimize()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -380,20 +331,18 @@ test.group('Server | hooks', () => {
   test('do not execute next hook when first writes the body in non-explicit mode', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-    server.before(async ({ response }) => {
+    const server = new Server(new Ioc(), logger, profiler, config)
+
+    server.hooks.before(async ({ response }) => {
       stack.push('hook1')
       response.send('done')
     })
-    server.before(async () => {
+
+    server.hooks.before(async () => {
       stack.push('hook2')
     })
 
     const httpServer = createServer(server.handle.bind(server))
-
-    router.commit()
     server.optimize()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -404,26 +353,25 @@ test.group('Server | hooks', () => {
   test('execute after hooks before writing the response', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
+    const server = new Server(new Ioc(), logger, profiler, config)
 
-    server.before(async () => {
+    server.hooks.before(async () => {
       stack.push('hook1')
     })
-    server.before(async () => {
+
+    server.hooks.before(async () => {
       stack.push('hook2')
     })
-    server.after(async () => {
+
+    server.hooks.after(async () => {
       stack.push('after hook1')
     })
 
-    router.get('/', async () => {
+    server.router.get('/', async () => {
       stack.push('handler')
       return 'done'
     })
 
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -436,26 +384,25 @@ test.group('Server | hooks', () => {
   test('execute after hooks when route handler raises error', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
+    const server = new Server(new Ioc(), logger, profiler, config)
 
-    server.before(async () => {
+    server.hooks.before(async () => {
       stack.push('hook1')
     })
-    server.before(async () => {
+
+    server.hooks.before(async () => {
       stack.push('hook2')
     })
-    server.after(async () => {
+
+    server.hooks.after(async () => {
       stack.push('after hook1')
     })
 
-    router.get('/', async () => {
+    server.router.get('/', async () => {
       stack.push('handler')
       throw new Error('handler error')
     })
 
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -468,21 +415,20 @@ test.group('Server | hooks', () => {
   test('execute after hooks when route is missing', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
+    const server = new Server(new Ioc(), logger, profiler, config)
 
-    server.before(async () => {
+    server.hooks.before(async () => {
       stack.push('hook1')
     })
-    server.before(async () => {
+
+    server.hooks.before(async () => {
       stack.push('hook2')
     })
-    server.after(async () => {
+
+    server.hooks.after(async () => {
       stack.push('after hook1')
     })
 
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -495,22 +441,21 @@ test.group('Server | hooks', () => {
   test('execute after hooks when before hook raises error', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
+    const server = new Server(new Ioc(), logger, profiler, config)
 
-    server.before(async () => {
+    server.hooks.before(async () => {
       stack.push('hook1')
       throw new Error('Short circuit')
     })
-    server.before(async () => {
+
+    server.hooks.before(async () => {
       stack.push('hook2')
     })
-    server.after(async () => {
+
+    server.hooks.after(async () => {
       stack.push('after hook1')
     })
 
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -523,23 +468,22 @@ test.group('Server | hooks', () => {
   test('execute after hooks when before hook writes response', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
+    const server = new Server(new Ioc(), logger, profiler, config)
 
-    server.before(async ({ response }) => {
+    server.hooks.before(async ({ response }) => {
       stack.push('hook1')
       response.send('handled inside before hook')
     })
-    server.before(async () => {
+
+    server.hooks.before(async () => {
       stack.push('hook2')
     })
-    server.after(async ({ response }) => {
+
+    server.hooks.after(async ({ response }) => {
       stack.push('after hook1')
       response.send('updated inside after hook')
     })
 
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -552,22 +496,21 @@ test.group('Server | hooks', () => {
   test('catch after hook errors', async (assert) => {
     const stack: string[] = []
 
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
+    const server = new Server(new Ioc(), logger, profiler, config)
 
-    server.before(async () => {
+    server.hooks.before(async () => {
       stack.push('hook1')
     })
-    server.before(async () => {
+
+    server.hooks.before(async () => {
       stack.push('hook2')
     })
-    server.after(async () => {
+
+    server.hooks.after(async () => {
       stack.push('after hook1')
       throw new Error('Unexpected error')
     })
 
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -580,19 +523,16 @@ test.group('Server | hooks', () => {
 
 test.group('Server | error handler', () => {
   test('pass before hook errors to error handler', async (assert) => {
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
 
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
+    const server = new Server(new Ioc(), logger, profiler, config)
     server.errorHandler(async (_error, { response }) => {
       response.status(200).send('handled by error handler')
     })
 
-    server.before(async () => {
+    server.hooks.before(async () => {
       throw new Error('Bump')
     })
 
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -602,19 +542,16 @@ test.group('Server | error handler', () => {
   })
 
   test('pass route handler errors to error handler', async (assert) => {
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
+    const server = new Server(new Ioc(), logger, profiler, config)
 
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
     server.errorHandler(async (_error, { response }) => {
       response.status(200).send('handled by error handler')
     })
 
-    router.get('/', async () => {
+    server.router.get('/', async () => {
       throw new Error('bump')
     })
 
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -624,23 +561,20 @@ test.group('Server | error handler', () => {
   })
 
   test('pass middleware error to custom error handler', async (assert) => {
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
+    const server = new Server(new Ioc(), logger, profiler, config)
 
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
     server.errorHandler(async (_error, { response }) => {
       response.status(200).send('handled by error handler')
     })
 
-    middlewareStore.register([async function middleware () {
+    server.middleware.register([async function middleware () {
       throw new Error('bump')
     }])
 
-    router.get('/', async () => {
+    server.router.get('/', async () => {
       return 'handled by route'
     })
 
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -650,19 +584,16 @@ test.group('Server | error handler', () => {
   })
 
   test('pass after hooks error to custom error handler', async (assert) => {
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
+    const server = new Server(new Ioc(), logger, profiler, config)
 
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
     server.errorHandler(async (_error, { response }) => {
       response.send('handled by error handler')
     })
 
-    server.after((async function afterHook () {
+    server.hooks.after((async function afterHook () {
       throw new Error('Bump')
     }))
 
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -672,15 +603,12 @@ test.group('Server | error handler', () => {
   })
 
    test('passing missing route error to error handler', async (assert) => {
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
+    const server = new Server(new Ioc(), logger, profiler, config)
 
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
     server.errorHandler(async (_error, { response }) => {
       response.send('handled by error handler')
     })
 
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -690,9 +618,6 @@ test.group('Server | error handler', () => {
   })
 
   test('bind ioc container reference as error handler', async (assert) => {
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
     class Reporter {
       public getMessage () {
         return 'handled by error handler'
@@ -708,18 +633,14 @@ test.group('Server | error handler', () => {
 
     const ioc = new Ioc()
     ioc.bind('App/Exceptions/Handler', () => new ErrorHandler())
-    global[Symbol.for('ioc.use')] = ioc.use.bind(ioc)
-    global[Symbol.for('ioc.make')] = ioc.make.bind(ioc)
-    global[Symbol.for('ioc.call')] = ioc.call.bind(ioc)
 
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
+    const server = new Server(ioc, logger, profiler, config)
     server.errorHandler('App/Exceptions/Handler')
 
-    router.get('/', async () => {
+    server.router.get('/', async () => {
       throw new Error('bump')
     })
 
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -737,11 +658,7 @@ test.group('Server | all', (group) => {
   })
 
   test('raise 404 when route is missing', async (assert) => {
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-    router.commit()
+    const server = new Server(new Ioc(), logger, profiler, config)
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -751,9 +668,6 @@ test.group('Server | all', (group) => {
   })
 
   test('execute IoC container controller binding by injecting dependencies', async (assert) => {
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
     class User {
       public username = 'virk'
     }
@@ -767,14 +681,9 @@ test.group('Server | all', (group) => {
 
     const ioc = new Ioc()
     ioc.bind('App/Controllers/Http/HomeController', () => new HomeController())
-    global[Symbol.for('ioc.make')] = ioc.make.bind(ioc)
-    global[Symbol.for('ioc.call')] = ioc.call.bind(ioc)
 
-    router.get('/', 'HomeController.index')
-
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-
-    router.commit()
+    const server = new Server(ioc, logger, profiler, config)
+    server.router.get('/', 'HomeController.index')
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))
@@ -784,9 +693,6 @@ test.group('Server | all', (group) => {
   })
 
   test('execute IoC container middleware binding by injecting dependencies', async (assert) => {
-    const middlewareStore = new MiddlewareStore()
-    const router = new Router((route) => routePreProcessor(route, middlewareStore))
-
     class User {
       public username = 'virk'
     }
@@ -801,21 +707,16 @@ test.group('Server | all', (group) => {
 
     const ioc = new Ioc()
     ioc.bind('App/Middleware/Auth', () => new AuthMiddleware())
-    global[Symbol.for('ioc.use')] = ioc.use.bind(ioc)
-    global[Symbol.for('ioc.make')] = ioc.make.bind(ioc)
-    global[Symbol.for('ioc.call')] = ioc.call.bind(ioc)
+    const server = new Server(ioc, logger, profiler, config)
 
-    middlewareStore.registerNamed({
+    server.middleware.registerNamed({
       auth: 'App/Middleware/Auth',
     })
 
-    router.get('/', (ctx: HttpContextContract) => {
+    server.router.get('/', (ctx: HttpContextContract) => {
       return ctx['user'].username
     }).middleware('auth')
 
-    const server = new Server(HttpContext, router, middlewareStore, logger, profiler, config)
-
-    router.commit()
     server.optimize()
 
     const httpServer = createServer(server.handle.bind(server))

@@ -1,9 +1,9 @@
 /**
- * @module @poppinss/http-server
+ * @module @adonisjs/http-server
  */
 
 /*
-* @poppinss/http-server
+* @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *
@@ -24,8 +24,6 @@ import {
   MethodNode,
   RoutesTree,
 } from '@ioc:Adonis/Core/Route'
-
-import { exceptionCodes } from '../helpers'
 
 /**
  * Store class is used to store a list of routes, along side with their tokens
@@ -130,7 +128,7 @@ export class Store {
         throw new Exception(
           `Duplicate route \`${method}:${route.pattern}\``,
           500,
-          exceptionCodes.E_DUPLICATE_ROUTE,
+          'E_DUPLICATE_ROUTE',
         )
       }
 

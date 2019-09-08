@@ -41,7 +41,7 @@ test.group('Router | add', () => {
       pattern: '/',
       methods: ['GET'],
       meta: {
-        namespace: 'App/Controllers/Http',
+        namespace: undefined,
       },
       matchers: {},
       domain: 'root',
@@ -54,7 +54,7 @@ test.group('Router | add', () => {
       pattern: '/',
       methods: ['POST'],
       meta: {
-        namespace: 'App/Controllers/Http',
+        namespace: undefined,
       },
       matchers: {},
       domain: 'root',
@@ -67,7 +67,7 @@ test.group('Router | add', () => {
       pattern: '/',
       methods: ['PUT'],
       meta: {
-        namespace: 'App/Controllers/Http',
+        namespace: undefined,
       },
       matchers: {},
       domain: 'root',
@@ -80,7 +80,7 @@ test.group('Router | add', () => {
       pattern: '/',
       methods: ['PATCH'],
       meta: {
-        namespace: 'App/Controllers/Http',
+        namespace: undefined,
       },
       matchers: {},
       domain: 'root',
@@ -93,7 +93,7 @@ test.group('Router | add', () => {
       pattern: '/',
       methods: ['DELETE'],
       meta: {
-        namespace: 'App/Controllers/Http',
+        namespace: undefined,
       },
       matchers: {},
       domain: 'root',
@@ -106,7 +106,7 @@ test.group('Router | add', () => {
       pattern: '/',
       methods: ['HEAD', 'OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
       meta: {
-        namespace: 'App/Controllers/Http',
+        namespace: undefined,
       },
       matchers: {},
       domain: 'root',
@@ -162,26 +162,6 @@ test.group('Router | add', () => {
     }
   })
 
-  test('define global namespace for all routes', (assert) => {
-    const router = new Router()
-    router.namespace('Admin/Controllers')
-
-    const getRoute = router.get('/', 'HomeController.index')
-
-    assert.deepEqual(getRoute.toJSON(), {
-      pattern: '/',
-      methods: ['GET'],
-      meta: {
-        namespace: 'Admin/Controllers',
-      },
-      matchers: {},
-      domain: 'root',
-      handler: 'HomeController.index',
-      middleware: [],
-      name: undefined,
-    })
-  })
-
   test('allow nested groups', (assert) => {
     assert.plan(1)
 
@@ -225,7 +205,7 @@ test.group('Router | add', () => {
                 pattern: '/api/v1',
                 handler,
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: undefined,
@@ -274,7 +254,7 @@ test.group('Router | add', () => {
                 pattern: '/',
                 handler,
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: ['auth', 'admin:acl'],
                 name: undefined,
@@ -323,7 +303,7 @@ test.group('Router | add', () => {
                 pattern: '/',
                 handler,
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: undefined,
@@ -429,7 +409,7 @@ test.group('Router | add', () => {
                 pattern: '/:user_id/:id',
                 handler,
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: undefined,
@@ -478,7 +458,7 @@ test.group('Router | add', () => {
                 pattern: '/',
                 handler,
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'api.admin.home',
@@ -520,7 +500,7 @@ test.group('Router | commit', () => {
                 pattern: '/',
                 handler,
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: undefined,
@@ -563,7 +543,7 @@ test.group('Router | commit', () => {
                 pattern: '/api',
                 handler,
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: undefined,
@@ -683,7 +663,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/posts',
                 handler: 'PostController.index',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.index',
@@ -692,7 +672,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/posts/create',
                 handler: 'PostController.create',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.create',
@@ -701,7 +681,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/posts/:id',
                 handler: 'PostController.show',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.show',
@@ -710,7 +690,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/posts/:id/edit',
                 handler: 'PostController.edit',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.edit',
@@ -739,7 +719,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/posts',
                 handler: 'PostController.store',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.store',
@@ -775,7 +755,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/posts/:id',
                 handler: 'PostController.update',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.update',
@@ -811,7 +791,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/posts/:id',
                 handler: 'PostController.update',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.update',
@@ -847,7 +827,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/posts/:id',
                 handler: 'PostController.destroy',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.destroy',
@@ -993,7 +973,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/v1/posts',
                 handler: 'PostController.index',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.index',
@@ -1002,7 +982,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/v1/posts/create',
                 handler: 'PostController.create',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.create',
@@ -1011,7 +991,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/v1/posts/:id',
                 handler: 'PostController.show',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.show',
@@ -1020,7 +1000,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/v1/posts/:id/edit',
                 handler: 'PostController.edit',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.edit',
@@ -1055,7 +1035,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/v1/posts',
                 handler: 'PostController.store',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.store',
@@ -1097,7 +1077,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/v1/posts/:id',
                 handler: 'PostController.update',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.update',
@@ -1139,7 +1119,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/v1/posts/:id',
                 handler: 'PostController.update',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.update',
@@ -1181,7 +1161,7 @@ test.group('Router | commit', () => {
                 pattern: '/api/v1/posts/:id',
                 handler: 'PostController.destroy',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.destroy',
@@ -1300,7 +1280,7 @@ test.group('Router | commit', () => {
                 pattern: '/posts/:post_id/comments',
                 handler: 'CommentsController.index',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.comments.index',
@@ -1309,7 +1289,7 @@ test.group('Router | commit', () => {
                 pattern: '/posts/:post_id/comments/create',
                 handler: 'CommentsController.create',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.comments.create',
@@ -1318,7 +1298,7 @@ test.group('Router | commit', () => {
                 pattern: '/comments/:id',
                 handler: 'CommentsController.show',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'comments.show',
@@ -1327,7 +1307,7 @@ test.group('Router | commit', () => {
                 pattern: '/comments/:id/edit',
                 handler: 'CommentsController.edit',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'comments.edit',
@@ -1363,7 +1343,7 @@ test.group('Router | commit', () => {
                 pattern: '/posts/:post_id/comments',
                 handler: 'CommentsController.store',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'posts.comments.store',
@@ -1393,7 +1373,7 @@ test.group('Router | commit', () => {
                 pattern: '/comments/:id',
                 handler: 'CommentsController.update',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'comments.update',
@@ -1423,7 +1403,7 @@ test.group('Router | commit', () => {
                 pattern: '/comments/:id',
                 handler: 'CommentsController.update',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'comments.update',
@@ -1453,7 +1433,7 @@ test.group('Router | commit', () => {
                 pattern: '/comments/:id',
                 handler: 'CommentsController.destroy',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'comments.destroy',
@@ -1520,7 +1500,7 @@ test.group('Router | commit', () => {
                 pattern: '/photos/create',
                 handler: 'PhotosController.create',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'v1.photos.create',
@@ -1566,7 +1546,7 @@ test.group('Router | commit', () => {
                 handler: 'FooHandler.get',
                 meta: {
                   processed: true,
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: undefined,
@@ -1618,7 +1598,7 @@ test.group('Router | commit', () => {
                 handler: 'PhotosController.create',
                 meta: {
                   processed: true,
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: 'photos.create',
@@ -1666,7 +1646,7 @@ test.group('Router | commit', () => {
                 handler: 'FooHandler.get',
                 meta: {
                   processed: true,
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: undefined,
@@ -1708,7 +1688,7 @@ test.group('Router | commit', () => {
                 pattern: '/:id',
                 handler,
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: undefined,
@@ -1732,7 +1712,7 @@ test.group('Router | match', () => {
       params: {},
       route: {
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         middleware: [],
         pattern: '/photos',
@@ -1746,7 +1726,7 @@ test.group('Router | match', () => {
       params: {},
       route: {
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         middleware: [],
         pattern: '/photos/create',
@@ -1760,7 +1740,7 @@ test.group('Router | match', () => {
       params: {},
       route: {
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         middleware: [],
         pattern: '/photos',
@@ -1776,7 +1756,7 @@ test.group('Router | match', () => {
       },
       route: {
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         middleware: [],
         pattern: '/photos/:id',
@@ -1792,7 +1772,7 @@ test.group('Router | match', () => {
       },
       route: {
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         middleware: [],
         pattern: '/photos/:id/edit',
@@ -1808,7 +1788,7 @@ test.group('Router | match', () => {
       },
       route: {
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         middleware: [],
         pattern: '/photos/:id',
@@ -1824,7 +1804,7 @@ test.group('Router | match', () => {
       },
       route: {
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         middleware: [],
         pattern: '/photos/:id',
@@ -1932,7 +1912,7 @@ test.group('Router | forTesting', () => {
                 pattern: '/_test_0',
                 handler: router['_testsHandler'],
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 middleware: [],
                 name: undefined,
@@ -1959,7 +1939,7 @@ test.group('Brisk route', () => {
         methods: ['GET'],
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         domain: 'root',
         middleware: [],
@@ -1983,7 +1963,7 @@ test.group('Brisk route', () => {
         methods: ['GET'],
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         domain: 'root',
         middleware: [],
@@ -2029,7 +2009,7 @@ test.group('Brisk route', () => {
               '/api/v1': {
                 pattern: '/api/v1',
                 meta: {
-                  namespace: 'App/Controllers/Http',
+                  namespace: undefined,
                 },
                 handler,
                 middleware: [],

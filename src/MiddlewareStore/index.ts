@@ -1,9 +1,9 @@
 /**
- * @module @poppinss/http-server
+ * @module @adonisjs/http-server
  */
 
 /*
-* @poppinss/http-server
+* @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *
@@ -13,8 +13,9 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
-import haye from 'haye'
-import { Exception, parseIocReference } from '@poppinss/utils'
+import { IoCResolver } from '@poppinss/utils'
+import { IocContract } from '@adonisjs/fold'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import {
   MiddlewareStoreContract,
@@ -22,18 +23,10 @@ import {
   ResolvedMiddlewareNode,
 } from '@ioc:Adonis/Core/Middleware'
 
-import { RouteNode } from '@ioc:Adonis/Core/Route'
-
-import { exceptionCodes } from '../helpers'
-
 /**
  * Middleware store register and keep all the application middleware at one
  * place. Also middleware are resolved during the registration and any
  * part of the application can read them without extra overhead.
- *
- * The middleware store transparently relies on `Ioc.use` and `Ioc.make`
- * globals. If you are not using the IoC container, then simply register
- * all middleware as plain functions and not `ioc namespaces`.
  *
  * @example
  * ```ts
@@ -51,8 +44,25 @@ import { exceptionCodes } from '../helpers'
  * ```
  */
 export class MiddlewareStore implements MiddlewareStoreContract {
+  /**
+   * A list of global middleware
+   */
   private _list: ResolvedMiddlewareNode[] = []
+
+  /**
+   * A map of named middleware. Named middleware are used as reference
+   * on the routes
+   */
   private _named: { [alias: string]: ResolvedMiddlewareNode } = {}
+
+  /**
+   * The resolver to resolve middleware from the IoC container
+   */
+  private _resolver: IoCResolver
+
+  constructor (container: IocContract) {
+    this._resolver = new IoCResolver(container)
+  }
 
   /**
    * Resolves the middleware node based upon it's type. If value is a string, then
@@ -63,14 +73,12 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    * The annoying part is that one has to create the middleware before registering
    * it, otherwise an exception will be raised.
    */
-  private _resolveMiddlewareItem (middleware: MiddlewareNode): ResolvedMiddlewareNode {
+  private _resolveMiddleware (middleware: MiddlewareNode): ResolvedMiddlewareNode {
     return typeof(middleware) === 'function' ? {
       type: 'function',
       value: middleware,
       args: [],
-    } : Object.assign(parseIocReference(`${middleware}.handle`, undefined, undefined, true), {
-      args: [],
-    })
+    } : Object.assign(this._resolver.resolve(`${middleware}.handle`), { args: [] })
   }
 
   /**
@@ -78,7 +86,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    * by HTTP server and executed on every request
    */
   public register (middleware: MiddlewareNode[]): this {
-    this._list = middleware.map(this._resolveMiddlewareItem.bind(this))
+    this._list = middleware.map(this._resolveMiddleware.bind(this))
     return this
   }
 
@@ -87,7 +95,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    */
   public registerNamed (middleware: { [alias: string]: MiddlewareNode }): this {
     this._named = Object.keys(middleware).reduce((result, alias) => {
-      result[alias] = this._resolveMiddlewareItem(middleware[alias])
+      result[alias] = this._resolveMiddleware(middleware[alias])
       return result
     }, {})
 
@@ -111,40 +119,18 @@ export class MiddlewareStore implements MiddlewareStoreContract {
   }
 
   /**
-   * A helper method to pre-compile route middleware using the middleware
-   * store. Resolved middleware will be attached to `route.meta`
-   * property, which can be read later by the middleware
-   * processing layer.
+   * Invokes a resolved middleware.
    */
-  public preCompileMiddleware (route: RouteNode) {
-    route.meta.resolvedMiddleware = route.middleware.map((item) => {
-      /**
-       * Plain old function
-       */
-      if (typeof (item) === 'function') {
-        return { type: 'function', value: item, args: [] }
-      }
+  public async invokeMiddleware (
+    middleware: ResolvedMiddlewareNode,
+    params: [HttpContextContract, () => Promise<void>],
+  ) {
+    if (middleware.type === 'function') {
+      return middleware.value(params[0], params[1], middleware.args)
+    }
 
-      /**
-       * Extract middleware name and args from the string
-       */
-      const [ { name, args } ] = haye.fromPipe(item).toArray()
-
-      /**
-       * Get resolved node for the given name and raise exception when that
-       * name is missing
-       */
-      const resolvedMiddleware = this.getNamed(name)
-      if (!resolvedMiddleware) {
-        throw new Exception(
-          `Cannot find named middleware ${name}`,
-          500,
-          exceptionCodes.E_MISSING_NAMED_MIDDLEWARE,
-        )
-      }
-
-      resolvedMiddleware.args = args
-      return resolvedMiddleware
-    })
+    const args: any[] = [params[0], params[1]]
+    args.push(middleware.args)
+    return this._resolver.call(middleware, undefined, args)
   }
 }

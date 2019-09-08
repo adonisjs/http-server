@@ -1,3 +1,16 @@
+/**
+ * @module @adonisjs/http-server
+ */
+
+/*
+* @adonisjs/http-server
+*
+* (c) Harminder Virk <virk@adonisjs.com>
+*
+* For the full copyright and license information, please view the LICENSE
+* file that was distributed with this source code.
+*/
+
 declare module '@ioc:Adonis/Core/HttpContext' {
   import { RequestContract } from '@poppinss/request'
   import { ResponseContract } from '@poppinss/response'
@@ -15,7 +28,7 @@ declare module '@ioc:Adonis/Core/HttpContext' {
     logger: LoggerContract
     profiler: ProfilerRowContract
     route?: RouteNode
-    params?: any
-    subdomains?: any
+    params: any
+    subdomains: any
   }
 }

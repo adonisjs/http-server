@@ -1,9 +1,9 @@
 /**
- * @module @poppinss/http-server
+ * @module @adonisjs/http-server
  */
 
 /*
-* @poppinss/http-server
+* @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *
@@ -14,7 +14,8 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import { Macroable } from 'macroable'
-import { RouteDefinition, RouteMatchers, RouteContract } from '@ioc:Adonis/Core/Route'
+import { RouteDefinition, RouteMatchers, RouteContract, RouteHandlerNode } from '@ioc:Adonis/Core/Route'
+import { MiddlewareNode } from '@ioc:Adonis/Core/Middleware'
 
 import { dropSlash } from '../helpers'
 
@@ -52,15 +53,15 @@ export class Route extends Macroable implements RouteContract {
   private _matchers: RouteMatchers = {}
 
   /**
-   * A custom prefix. Usually added to a group of
-   * routes
+   * Custom prefixes. Usually added to a group of routes. We keep an array of them
+   * since nested groups will want all of them ot concat.
    */
   private _prefixes: string[] = []
 
   /**
    * An array of middleware. Added using `middleware` function
    */
-  private _middleware: any[] = []
+  private _middleware: MiddlewareNode[] = []
 
   /**
    * Storing the namespace explicitly set using `route.namespace` method
@@ -83,8 +84,7 @@ export class Route extends Macroable implements RouteContract {
   constructor (
     private _pattern: string,
     private _methods: string[],
-    private _handler: any,
-    private _namespace: string,
+    private _handler: RouteHandlerNode,
     private _globalMatchers: RouteMatchers,
   ) {
     super()
@@ -109,7 +109,17 @@ export class Route extends Macroable implements RouteContract {
   }
 
   /**
-   * Define Regex matcher for a given param
+   * Define Regex matcher for a given param. If a matcher exists, then we do not
+   * override that, since the routes inside a group will set matchers before
+   * the group, so they should have priority over the route matchers.
+   *
+   * ```
+   * Route.group(() => {
+   *   Route.get('/:id', 'handler').where('id', /^[0-9]$/)
+   * }).where('id', /[^a-z$]/)
+   * ```
+   *
+   * The `/^[0-9]$/` should win over the matcher defined by the group
    */
   public where (param: string, matcher: string | RegExp): this {
     if (this._matchers[param]) {
@@ -121,9 +131,7 @@ export class Route extends Macroable implements RouteContract {
   }
 
   /**
-   * Define prefix for the route. Calling this method for multiple times will
-   * override the existing prefix.
-   *
+   * Define prefix for the route. Prefixes will be concated
    * This method is mainly exposed for the [[RouteGroup]]
    */
   public prefix (prefix: string): this {
@@ -132,7 +140,10 @@ export class Route extends Macroable implements RouteContract {
   }
 
   /**
-   * Define a custom domain for the route
+   * Define a custom domain for the route. Again we do not overwrite the domain
+   * unless `overwrite` flag is set to true.
+   *
+   * This is again done to make route.domain win over route.group.domain
    */
   public domain (domain: string, overwrite: boolean = false): this {
     if (this._domain === 'root' || overwrite) {
@@ -146,7 +157,7 @@ export class Route extends Macroable implements RouteContract {
    * is true, then middleware will be added to start of the existing
    * middleware. The option is exposed for [[RouteGroup]]
    */
-  public middleware (middleware: any | any[], prepend = false): this {
+  public middleware (middleware: MiddlewareNode | MiddlewareNode[], prepend = false): this {
     middleware = Array.isArray(middleware) ? middleware : [middleware]
     this._middleware = prepend ? middleware.concat(this._middleware) : this._middleware.concat(middleware)
     return this
@@ -184,10 +195,10 @@ export class Route extends Macroable implements RouteContract {
       pattern: this._getPattern(),
       matchers: this._getMatchers(),
       meta: {
-        namespace: this._explicitNamespace || this._namespace,
+        namespace: this._explicitNamespace,
       },
-      handler: this._handler,
       name: this.name,
+      handler: this._handler,
       methods: this._methods,
       middleware: this._middleware,
     }

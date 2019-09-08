@@ -1,9 +1,9 @@
 /**
- * @module @poppinss/http-server
+ * @module @adonisjs/http-server
  */
 
 /*
-* @poppinss/http-server
+* @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *
@@ -28,7 +28,7 @@ import { RouteResource } from './Resource'
 import { RouteGroup } from './Group'
 import { BriskRoute } from './BriskRoute'
 import { Store } from './Store'
-import { toRoutesJSON, exceptionCodes } from '../helpers'
+import { toRoutesJSON } from '../helpers'
 
 /**
  * Router class exposes unified API to create new routes, group them or
@@ -82,11 +82,6 @@ export class Router implements RouterContract {
   private _openedGroups: RouteGroup[] = []
 
   /**
-   * Controllers namespace to shorten the path
-   */
-  private _namespace: string = 'App/Controllers/Http'
-
-  /**
    * A counter to create unique routes during tests
    */
   private _testRoutePatternCounter = 0
@@ -109,7 +104,7 @@ export class Router implements RouterContract {
    * Add route for a given pattern and methods
    */
   public route (pattern: string, methods: string[], handler: RouteHandlerNode): Route {
-    const route = new Route(pattern, methods, handler, this._namespace, this._matchers)
+    const route = new Route(pattern, methods, handler, this._matchers)
     const openedGroup = this._getRecentGroup()
 
     if (openedGroup) {
@@ -209,7 +204,7 @@ export class Router implements RouterContract {
    * Registers a route resource with conventional set of routes
    */
   public resource (resource: string, controller: string): RouteResource {
-    const resourceInstance = new RouteResource(resource, controller, this._namespace, this._matchers)
+    const resourceInstance = new RouteResource(resource, controller, this._matchers)
     const openedGroup = this._getRecentGroup()
 
     if (openedGroup) {
@@ -225,7 +220,7 @@ export class Router implements RouterContract {
    * Register a route resource with shallow nested routes.
    */
   public shallowResource (resource: string, controller: string): RouteResource {
-    const resourceInstance = new RouteResource(resource, controller, this._namespace, this._matchers, true)
+    const resourceInstance = new RouteResource(resource, controller, this._matchers, true)
     const openedGroup = this._getRecentGroup()
 
     if (openedGroup) {
@@ -241,7 +236,7 @@ export class Router implements RouterContract {
    * Returns a brisk route instance for a given URL pattern
    */
   public on (pattern: string): BriskRoute {
-    const briskRoute = new BriskRoute(pattern, this._namespace, this._matchers)
+    const briskRoute = new BriskRoute(pattern, this._matchers)
     const openedGroup = this._getRecentGroup()
 
     if (openedGroup) {
@@ -258,15 +253,6 @@ export class Router implements RouterContract {
    */
   public where (param: string, matcher: string | RegExp): this {
     this._matchers[param] = typeof (matcher) === 'string' ? new RegExp(matcher) : matcher
-    return this
-  }
-
-  /**
-   * Define global controllers namespace for all the
-   * routes
-   */
-  public namespace (namespace: string): this {
-    this._namespace = namespace
     return this
   }
 
@@ -293,7 +279,7 @@ export class Router implements RouterContract {
         throw new Exception(
           `Duplicate route name \`${route.name}\``,
           500,
-          exceptionCodes.E_DUPLICATE_ROUTE_NAME,
+          'E_DUPLICATE_ROUTE_NAME',
         )
       }
 

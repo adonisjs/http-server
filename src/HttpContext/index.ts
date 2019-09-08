@@ -1,9 +1,9 @@
 /**
- * @module @poppinss/http-server
+ * @module @adonisjs/http-server
  */
 
 /*
-* @poppinss/http-server
+* @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *
@@ -15,25 +15,24 @@
 
 import { Socket } from 'net'
 import proxyAddr from 'proxy-addr'
+import { RouteNode } from '@ioc:Adonis/Core/Route'
 import { IncomingMessage, ServerResponse } from 'http'
 import { LoggerContract, Logger } from '@poppinss/logger'
 import { RequestContract, Request } from '@poppinss/request'
+import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
 import { ResponseContract, Response } from '@poppinss/response'
 import { ProfilerRowContract, Profiler } from '@poppinss/profiler'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import { makeUrl } from '../helpers'
-
-import { RouteNode } from '@ioc:Adonis/Core/Route'
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
 
 /**
  * Http context is passed to all route handlers, middleware,
  * error handler and server hooks.
  */
 export class HttpContext implements HttpContextContract {
-  public params?: any
-  public subdomains?: any
+  public params: any = {}
+  public subdomains: any = {}
   public route?: RouteNode
 
   constructor (

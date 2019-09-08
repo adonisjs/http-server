@@ -1,9 +1,9 @@
 /**
- * @module @poppinss/http-server
+ * @module @adonisjs/http-server
  */
 
 /*
-* @poppinss/http-server
+* @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *
@@ -15,6 +15,8 @@
 
 import { singular } from 'pluralize'
 import { Macroable } from 'macroable'
+
+import { MiddlewareNode } from '@ioc:Adonis/Core/Middleware'
 import { RouteMatchers, RouteResourceContract } from '@ioc:Adonis/Core/Route'
 
 import { Route } from './Route'
@@ -33,12 +35,14 @@ export class RouteResource extends Macroable implements RouteResourceContract {
   protected static _macros = {}
   protected static _getters = {}
 
+  /**
+   * A copy of routes that belongs to this resource
+   */
   public routes: Route[] = []
 
   constructor (
     private _resource: string,
     private _controller: string,
-    private _namespace: string,
     private _globalMatchers: RouteMatchers,
     private _shallow = false,
   ) {
@@ -54,7 +58,6 @@ export class RouteResource extends Macroable implements RouteResourceContract {
       pattern,
       methods,
       `${this._controller}.${action}`,
-      this._namespace,
       this._globalMatchers,
     )
 
@@ -128,7 +131,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
   /**
    * Add middleware to routes inside the resource
    */
-  public middleware (middleware: { [name: string]: any | any[] }): this {
+  public middleware (middleware: { [name: string]: MiddlewareNode | MiddlewareNode[] }): this {
     for (let name in middleware) {
       const route = this.routes.find((route) => route.name.endsWith(name))
       /* istanbul ignore else */

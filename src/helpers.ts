@@ -1,9 +1,9 @@
 /**
- * @module @poppinss/http-server
+ * @module @adonisjs/http-server
  */
 
 /*
-* @poppinss/http-server
+* @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *
@@ -18,9 +18,10 @@ import { Exception } from '@poppinss/utils'
 
 import { Route } from './Router/Route'
 import { RouteGroup } from './Router/Group'
-import { RouteDefinition } from '@ioc:Adonis/Core/Route'
 import { BriskRoute } from './Router/BriskRoute'
 import { RouteResource } from './Router/Resource'
+import { RouteDefinition } from '@ioc:Adonis/Core/Route'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 /**
  * Makes input string consistent by having only the starting
@@ -98,7 +99,7 @@ export function makeUrl (pattern: string, options: { params: any, qs: any }): st
         throw new Exception(
           `\`${paramName}\` param is required to make URL for \`${pattern}\` route`,
           500,
-          exceptionCodes.E_MISSING_ROUTE_PARAM_VALUE,
+          'E_MISSING_ROUTE_PARAM_VALUE',
         )
       }
 
@@ -114,15 +115,13 @@ export function makeUrl (pattern: string, options: { params: any, qs: any }): st
 }
 
 /**
- * Module wide exception codes
+ * Returns a boolean telling if the return value must be used as
+ * the response body or not
  */
-export const exceptionCodes = {
-  E_MISSING_ROUTE_NAME: 'E_MISSING_ROUTE_NAME',
-  E_MULTIPLE_BRISK_HANDLERS: 'E_MULTIPLE_BRISK_HANDLERS',
-  E_DUPLICATE_ROUTE: 'E_DUPLICATE_ROUTE',
-  E_NESTED_ROUTE_GROUPS: 'E_NESTED_ROUTE_GROUPS',
-  E_DUPLICATE_ROUTE_NAME: 'E_DUPLICATE_ROUTE_NAME',
-  E_MISSING_ROUTE_PARAM_VALUE: 'E_MISSING_ROUTE_PARAM_VALUE',
-  E_ROUTE_NOT_FOUND: 'E_ROUTE_NOT_FOUND',
-  E_MISSING_NAMED_MIDDLEWARE: 'E_MISSING_NAMED_MIDDLEWARE',
+export function useReturnValue (returnValue: any, ctx: HttpContextContract) {
+  return (
+    returnValue !== undefined &&            // Return value is explicitly defined
+    returnValue !== ctx.response &&         // Return value is not the instance of response object
+    !ctx.response.hasLazyBody               // Lazy body is not set
+  )
 }

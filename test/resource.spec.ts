@@ -12,14 +12,14 @@ import { RouteResource } from '../src/Router/Resource'
 
 test.group('Route Resource', () => {
   test('add base resource routes', (assert) => {
-    const resource = new RouteResource('photos', 'PhotosController', 'App/Controllers/Http', {})
+    const resource = new RouteResource('photos', 'PhotosController', {})
 
     assert.deepEqual(resource.routes.map((route) => route.toJSON()), [
       {
         pattern: '/photos',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['GET'],
         domain: 'root',
@@ -31,7 +31,7 @@ test.group('Route Resource', () => {
         pattern: '/photos/create',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['GET'],
         domain: 'root',
@@ -43,7 +43,7 @@ test.group('Route Resource', () => {
         pattern: '/photos',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['POST'],
         domain: 'root',
@@ -55,7 +55,7 @@ test.group('Route Resource', () => {
         pattern: '/photos/:id',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['GET'],
         domain: 'root',
@@ -67,7 +67,7 @@ test.group('Route Resource', () => {
         pattern: '/photos/:id/edit',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['GET'],
         domain: 'root',
@@ -79,7 +79,7 @@ test.group('Route Resource', () => {
         pattern: '/photos/:id',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['PUT', 'PATCH'],
         domain: 'root',
@@ -91,7 +91,7 @@ test.group('Route Resource', () => {
         pattern: '/photos/:id',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['DELETE'],
         domain: 'root',
@@ -103,14 +103,14 @@ test.group('Route Resource', () => {
   })
 
   test('add base nested resource routes', (assert) => {
-    const resource = new RouteResource('magazines.ads', 'AdsController', 'App/Controllers/Http', {}, false)
+    const resource = new RouteResource('magazines.ads', 'AdsController', {}, false)
 
     assert.deepEqual(resource.routes.map((route) => route.toJSON()), [
       {
         pattern: '/magazines/:magazine_id/ads',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['GET'],
         domain: 'root',
@@ -122,7 +122,7 @@ test.group('Route Resource', () => {
         pattern: '/magazines/:magazine_id/ads/create',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['GET'],
         domain: 'root',
@@ -136,7 +136,7 @@ test.group('Route Resource', () => {
         methods: ['POST'],
         domain: 'root',
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         middleware: [],
         handler: 'AdsController.store',
@@ -146,7 +146,7 @@ test.group('Route Resource', () => {
         pattern: '/magazines/:magazine_id/ads/:id',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['GET'],
         domain: 'root',
@@ -158,7 +158,7 @@ test.group('Route Resource', () => {
         pattern: '/magazines/:magazine_id/ads/:id/edit',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['GET'],
         domain: 'root',
@@ -172,7 +172,7 @@ test.group('Route Resource', () => {
         methods: ['PUT', 'PATCH'],
         domain: 'root',
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         middleware: [],
         handler: 'AdsController.update',
@@ -183,7 +183,7 @@ test.group('Route Resource', () => {
         matchers: {},
         methods: ['DELETE'],
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         domain: 'root',
         middleware: [],
@@ -194,14 +194,14 @@ test.group('Route Resource', () => {
   })
 
   test('add shallow nested resource routes', (assert) => {
-    const resource = new RouteResource('magazines.ads', 'AdsController', 'App/Controllers/Http', {}, true)
+    const resource = new RouteResource('magazines.ads', 'AdsController', {}, true)
 
     assert.deepEqual(resource.routes.map((route) => route.toJSON()), [
       {
         pattern: '/magazines/:magazine_id/ads',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['GET'],
         domain: 'root',
@@ -213,7 +213,7 @@ test.group('Route Resource', () => {
         pattern: '/magazines/:magazine_id/ads/create',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['GET'],
         domain: 'root',
@@ -226,7 +226,7 @@ test.group('Route Resource', () => {
         matchers: {},
         methods: ['POST'],
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         domain: 'root',
         middleware: [],
@@ -237,7 +237,7 @@ test.group('Route Resource', () => {
         pattern: '/ads/:id',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['GET'],
         domain: 'root',
@@ -249,7 +249,7 @@ test.group('Route Resource', () => {
         pattern: '/ads/:id/edit',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['GET'],
         domain: 'root',
@@ -261,7 +261,7 @@ test.group('Route Resource', () => {
         pattern: '/ads/:id',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['PUT', 'PATCH'],
         domain: 'root',
@@ -273,7 +273,7 @@ test.group('Route Resource', () => {
         pattern: '/ads/:id',
         matchers: {},
         meta: {
-          namespace: 'App/Controllers/Http',
+          namespace: undefined,
         },
         methods: ['DELETE'],
         domain: 'root',
@@ -285,7 +285,7 @@ test.group('Route Resource', () => {
   })
 
   test('mark non-api routes deleted', (assert) => {
-    const resource = new RouteResource('photos', 'PhotosController', 'App/Controllers/Http', {})
+    const resource = new RouteResource('photos', 'PhotosController', {})
     resource.apiOnly()
 
     assert.isTrue(resource.routes.find((route) => route.name === 'photos.create')!.deleted)
@@ -293,7 +293,7 @@ test.group('Route Resource', () => {
   })
 
   test('mark all other routes as deleted except defined one\'s', (assert) => {
-    const resource = new RouteResource('photos', 'PhotosController', 'App/Controllers/Http', {})
+    const resource = new RouteResource('photos', 'PhotosController', {})
     resource.only(['index', 'show'])
 
     assert.isFalse(resource.routes.find((route) => route.name === 'photos.index')!.deleted)
@@ -306,7 +306,7 @@ test.group('Route Resource', () => {
   })
 
   test('mark all defined as delete', (assert) => {
-    const resource = new RouteResource('photos', 'PhotosController', 'App/Controllers/Http', {})
+    const resource = new RouteResource('photos', 'PhotosController', {})
     resource.except(['index', 'show'])
 
     assert.isTrue(resource.routes.find((route) => route.name === 'photos.index')!.deleted)
@@ -319,7 +319,7 @@ test.group('Route Resource', () => {
   })
 
   test('define middleware on routes', (assert) => {
-    const resource = new RouteResource('photos', 'PhotosController', 'App/Controllers/Http', {})
+    const resource = new RouteResource('photos', 'PhotosController', {})
     resource.middleware({
       create: ['auth'],
       store: ['auth', 'acl:admin'],
@@ -362,7 +362,7 @@ test.group('Route Resource', () => {
   })
 
   test('define matcher for params', (assert) => {
-    const resource = new RouteResource('photos', 'PhotosController', 'App/Controllers/Http', {})
+    const resource = new RouteResource('photos', 'PhotosController', {})
     resource.where('id', '[a-z]')
 
     assert.deepEqual(
@@ -416,7 +416,7 @@ test.group('Route Resource', () => {
   })
 
   test('define namespace for all routes', (assert) => {
-    const resource = new RouteResource('photos', 'PhotosController', 'App/Controllers/Http', {})
+    const resource = new RouteResource('photos', 'PhotosController', {})
     resource.namespace('Admin/Controllers')
 
     assert.deepEqual(resource.routes.map((route) => route.toJSON().meta.namespace), [

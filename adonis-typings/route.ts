@@ -1,7 +1,21 @@
+/**
+ * @module @adonisjs/http-server
+ */
+
+/*
+* @adonisjs/http-server
+*
+* (c) Harminder Virk <virk@adonisjs.com>
+*
+* For the full copyright and license information, please view the LICENSE
+* file that was distributed with this source code.
+*/
+
 declare module '@ioc:Adonis/Core/Route' {
   import { MacroableConstructorContract } from 'macroable'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-  import { MiddlewareNode } from '@ioc:Adonis/Core/Middleware'
+  import { MiddlewareNode, ResolvedMiddlewareNode } from '@ioc:Adonis/Core/Middleware'
+  import { ResolvedControllerNode } from '@ioc:Adonis/Core/Server'
 
   /**
    * The shape of the route handler
@@ -48,7 +62,11 @@ declare module '@ioc:Adonis/Core/Route' {
     /**
      * Any custom runtime properties to be added to the route
      */
-    meta: any,
+    meta: {
+      resolvedHandler?: ResolvedControllerNode,
+      resolvedMiddleware?: ResolvedMiddlewareNode[]
+      namespace?: string,
+    } & { [key: string]: any },
 
     /**
      * A unique name to lookup routes by name
@@ -184,7 +202,6 @@ declare module '@ioc:Adonis/Core/Route' {
     shallowResource (resource: string, controller: string): RouteResourceContract
     on (pattern: string): BriskRouteContract
     where (key: string, matcher: string | RegExp): this
-    namespace (namespace: string): this
     toJSON (): RouteNode[]
     commit (): void
     match (url: string, method: string, domain?: string): null | MatchedRoute

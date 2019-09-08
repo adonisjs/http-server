@@ -1,9 +1,9 @@
 /**
- * @module @poppinss/http-server
+ * @module @adonisjs/http-server
  */
 
 /*
-* @poppinss/http-server
+* @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *
@@ -17,7 +17,8 @@ declare module '@ioc:Adonis/Core/Server' {
   import { ResponseConfigContract } from '@poppinss/response'
   import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-  import { RouteHandlerNode } from '@ioc:Adonis/Core/Route'
+  import { RouteHandlerNode, RouterContract } from '@ioc:Adonis/Core/Route'
+  import { MiddlewareStoreContract } from '@ioc:Adonis/Core/Middleware'
 
   /**
    * Before hooks are executed before finding the route or finding
@@ -28,18 +29,30 @@ declare module '@ioc:Adonis/Core/Server' {
   /**
    * Error handler node
    */
-  export type ErrorHandlerNode = ((error: any, ctx: HttpContextContract) => Promise<any>)
+  export type ErrorHandlerNode = string | ((error: any, ctx: HttpContextContract) => Promise<any>)
+
+  /**
+   * Shape of resolved error handler node
+   */
+  export type ResolvedErrorHandlerNode = {
+    type: 'function',
+    value: Exclude<ErrorHandlerNode, string>,
+  } | {
+    type: 'autoload' | 'binding',
+    namespace: string,
+    method: string,
+  }
 
   /**
    * HTTP server
    */
   export interface ServerContract {
     instance?: HttpServer | HttpsServer
-    errorHandler (handler: ErrorHandlerNode | string): this
+    router: RouterContract
+    middleware: MiddlewareStoreContract
+    errorHandler (handler: ErrorHandlerNode): this
     handle (req: IncomingMessage, res: ServerResponse): Promise<void>
     optimize (): void
-    before (cb: HookNode): this
-    after (cb: HookNode): this
   }
 
   /**
@@ -50,7 +63,7 @@ declare module '@ioc:Adonis/Core/Server' {
     type: 'function',
     handler: Exclude<RouteHandlerNode, string>,
   } | {
-    type: 'iocReference',
+    type: 'autoload' | 'binding',
     namespace: string,
     method: string,
   }

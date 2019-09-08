@@ -1,9 +1,9 @@
 /**
- * @module @poppinss/http-server
+ * @module @adonisjs/http-server
  */
 
 /*
-* @poppinss/http-server
+* @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *
@@ -17,7 +17,6 @@ import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
 
 import { Route } from './Route'
-import { exceptionCodes } from '../helpers'
 import { BriskRouteContract, RouteMatchers, RouteHandlerNode } from '@ioc:Adonis/Core/Route'
 
 /**
@@ -44,11 +43,7 @@ export class BriskRoute extends Macroable implements BriskRouteContract {
    */
   public route: null | Route = null
 
-  constructor (
-    private _pattern: string,
-    private _namespace: string,
-    private _globalMatchers: RouteMatchers,
-  ) {
+  constructor (private _pattern: string, private _globalMatchers: RouteMatchers) {
     super()
   }
 
@@ -67,13 +62,12 @@ export class BriskRoute extends Macroable implements BriskRouteContract {
       throw new Exception(
         `\`Route.${invokedBy}\` and \`${this._invokedBy}\` cannot be called together`,
         500,
-        exceptionCodes.E_MULTIPLE_BRISK_HANDLERS,
+        'E_MULTIPLE_BRISK_HANDLERS',
       )
     }
 
-    this.route = new Route(this._pattern, methods || ['GET'], handler, this._namespace, this._globalMatchers)
+    this.route = new Route(this._pattern, methods || ['GET'], handler, this._globalMatchers)
     this._invokedBy = invokedBy
-
     return this.route
   }
 }
