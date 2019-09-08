@@ -13,9 +13,7 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
-import { Request } from '@poppinss/request'
 import { IocContract } from '@adonisjs/fold'
-import { Response } from '@poppinss/response'
 import { Server as HttpsServer } from 'https'
 import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
 
@@ -32,6 +30,8 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import { Hooks } from './Hooks'
 import { Router } from '../Router'
+import { Request } from '../Request'
+import { Response } from '../Response'
 import { PreCompiler } from './PreCompiler'
 import { HttpContext } from '../HttpContext'
 import { RequestHandler } from './RequestHandler'

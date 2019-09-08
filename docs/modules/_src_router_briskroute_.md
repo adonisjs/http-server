@@ -1,4 +1,4 @@
-**[@poppinss/http-server](../README.md)**
+**[@adonisjs/http-server](../README.md)**
 
 [Globals](../README.md) › ["src/Router/BriskRoute"](_src_router_briskroute_.md)
 

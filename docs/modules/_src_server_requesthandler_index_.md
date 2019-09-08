@@ -1,4 +1,4 @@
-**[@poppinss/http-server](../README.md)**
+**[@adonisjs/http-server](../README.md)**
 
 [Globals](../README.md) › ["src/Server/RequestHandler/index"](_src_server_requesthandler_index_.md)
 

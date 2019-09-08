@@ -15,3 +15,5 @@
 /// <reference path="./http-server.ts" />
 /// <reference path="./middleware.ts" />
 /// <reference path="./route.ts" />
+/// <reference path="./request.ts" />
+/// <reference path="./response.ts" />

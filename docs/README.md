@@ -1,4 +1,4 @@
-**[@poppinss/http-server](README.md)**
+**[@adonisjs/http-server](README.md)**
 
 [Globals](README.md)
 
@@ -10,12 +10,16 @@
 * ["adonis-typings/http-server"](modules/_adonis_typings_http_server_.md)
 * ["adonis-typings/index"](modules/_adonis_typings_index_.md)
 * ["adonis-typings/middleware"](modules/_adonis_typings_middleware_.md)
+* ["adonis-typings/request"](modules/_adonis_typings_request_.md)
+* ["adonis-typings/response"](modules/_adonis_typings_response_.md)
 * ["adonis-typings/route"](modules/_adonis_typings_route_.md)
 * ["benchmarks/index"](modules/_benchmarks_index_.md)
 * ["benchmarks/ioc"](modules/_benchmarks_ioc_.md)
 * ["src/ExceptionManager/index"](modules/_src_exceptionmanager_index_.md)
 * ["src/HttpContext/index"](modules/_src_httpcontext_index_.md)
 * ["src/MiddlewareStore/index"](modules/_src_middlewarestore_index_.md)
+* ["src/Request/index"](modules/_src_request_index_.md)
+* ["src/Response/index"](modules/_src_response_index_.md)
 * ["src/Router/BriskRoute"](modules/_src_router_briskroute_.md)
 * ["src/Router/Group"](modules/_src_router_group_.md)
 * ["src/Router/Resource"](modules/_src_router_resource_.md)

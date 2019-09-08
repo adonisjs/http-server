@@ -1,4 +1,4 @@
-**[@poppinss/http-server](../README.md)**
+**[@adonisjs/http-server](../README.md)**
 
 [Globals](../README.md) › ["src/Router/Resource"](../modules/_src_router_resource_.md) › [RouteResource](_src_router_resource_.routeresource.md)
 

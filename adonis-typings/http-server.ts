@@ -13,8 +13,8 @@
 
 declare module '@ioc:Adonis/Core/Server' {
   import { Server as HttpsServer } from 'https'
-  import { RequestConfigContract } from '@poppinss/request'
-  import { ResponseConfigContract } from '@poppinss/response'
+  import { RequestConfigContract } from '@ioc:Adonis/Core/Request'
+  import { ResponseConfigContract } from '@ioc:Adonis/Core/Response'
   import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
   import { RouteHandlerNode, RouterContract } from '@ioc:Adonis/Core/Route'

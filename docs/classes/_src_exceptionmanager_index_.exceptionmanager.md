@@ -1,4 +1,4 @@
-**[@poppinss/http-server](../README.md)**
+**[@adonisjs/http-server](../README.md)**
 
 [Globals](../README.md) › ["src/ExceptionManager/index"](../modules/_src_exceptionmanager_index_.md) › [ExceptionManager](_src_exceptionmanager_index_.exceptionmanager.md)
 

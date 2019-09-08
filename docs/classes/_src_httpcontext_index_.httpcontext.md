@@ -1,4 +1,4 @@
-**[@poppinss/http-server](../README.md)**
+**[@adonisjs/http-server](../README.md)**
 
 [Globals](../README.md) › ["src/HttpContext/index"](../modules/_src_httpcontext_index_.md) › [HttpContext](_src_httpcontext_index_.httpcontext.md)
 

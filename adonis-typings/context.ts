@@ -13,8 +13,8 @@
 
 declare module '@ioc:Adonis/Core/HttpContext' {
   import { RouteNode } from '@ioc:Adonis/Core/Route'
-  import { RequestContract } from '@poppinss/request'
-  import { ResponseContract } from '@poppinss/response'
+  import { RequestContract } from '@ioc:Adonis/Core/Request'
+  import { ResponseContract } from '@ioc:Adonis/Core/Response'
   import { LoggerContract } from '@ioc:Adonis/Core/Logger'
   import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 
