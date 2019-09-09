@@ -632,11 +632,11 @@ test.group('Server | error handler', () => {
 
     const httpServer = createServer(server.handle.bind(server))
 
-    const { text } = await supertest(httpServer).get('/').expect(200)
+    const { text } = await supertest(httpServer).get('/').expect(500)
     assert.equal(text, 'handled by error handler')
   })
 
-   test('passing missing route error to error handler', async (assert) => {
+   test('pass missing route error to error handler', async (assert) => {
     const server = new Server(new Ioc(), logger, profiler, encryption, config)
 
     server.errorHandler(async (_error, { response }) => {
@@ -647,7 +647,7 @@ test.group('Server | error handler', () => {
 
     const httpServer = createServer(server.handle.bind(server))
 
-    const { text } = await supertest(httpServer).get('/').expect(200)
+    const { text } = await supertest(httpServer).get('/').expect(404)
     assert.equal(text, 'handled by error handler')
   })
 
