@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/Router/index"](_src_router_index_.md)
+[Globals](../README.md) › [&quot;src/Router/index&quot;](_src_router_index_.md)
 
 # External module: "src/Router/index"
 

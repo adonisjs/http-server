@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/Router/BriskRoute"](../modules/_src_router_briskroute_.md) › [BriskRoute](_src_router_briskroute_.briskroute.md)
+[Globals](../README.md) › [&quot;src/Router/BriskRoute&quot;](../modules/_src_router_briskroute_.md) › [BriskRoute](_src_router_briskroute_.briskroute.md)
 
 # Class: BriskRoute
 
@@ -154,7 +154,7 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 `callback` | MacroableFn |
-`singleton?` | undefined \| false \| true |
+`singleton?` | undefined &#124; false &#124; true |
 
 **Returns:** *void*
 

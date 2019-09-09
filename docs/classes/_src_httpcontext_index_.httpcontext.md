@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/HttpContext/index"](../modules/_src_httpcontext_index_.md) › [HttpContext](_src_httpcontext_index_.httpcontext.md)
+[Globals](../README.md) › [&quot;src/HttpContext/index&quot;](../modules/_src_httpcontext_index_.md) › [HttpContext](_src_httpcontext_index_.httpcontext.md)
 
 # Class: HttpContext
 
@@ -98,7 +98,7 @@ ___
 
 ### `Static` create
 
-▸ **create**(`routePattern`: string, `routeParams`: any, `logger`: LoggerContract, `profiler`: ProfilerRowContract, `req?`: IncomingMessage, `res?`: ServerResponse, `serverConfig?`: ServerConfigContract): *[HttpContext](_src_httpcontext_index_.httpcontext.md)*
+▸ **create**(`routePattern`: string, `routeParams`: any, `logger`: LoggerContract, `profiler`: ProfilerRowContract, `encryption`: EncryptionContract, `req?`: IncomingMessage, `res?`: ServerResponse, `serverConfig?`: ServerConfigContract): *[HttpContext](_src_httpcontext_index_.httpcontext.md)*
 
 Creates a new fake context instance for a given route.
 
@@ -110,6 +110,7 @@ Name | Type |
 `routeParams` | any |
 `logger` | LoggerContract |
 `profiler` | ProfilerRowContract |
+`encryption` | EncryptionContract |
 `req?` | IncomingMessage |
 `res?` | ServerResponse |
 `serverConfig?` | ServerConfigContract |

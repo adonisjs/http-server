@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/Router/Route"](../modules/_src_router_route_.md) › [Route](_src_router_route_.route.md)
+[Globals](../README.md) › [&quot;src/Router/Route&quot;](../modules/_src_router_route_.md) › [Route](_src_router_route_.route.md)
 
 # Class: Route
 
@@ -170,7 +170,7 @@ middleware. The option is exposed for [RouteGroup](_src_router_group_.routegroup
 
 Name | Type | Default |
 ------ | ------ | ------ |
-`middleware` | MiddlewareNode \| MiddlewareNode[] | - |
+`middleware` | MiddlewareNode &#124; MiddlewareNode[] | - |
 `prepend` | boolean | false |
 
 **Returns:** *this*
@@ -243,7 +243,7 @@ The `/^[0-9]$/` should win over the matcher defined by the group
 Name | Type |
 ------ | ------ |
 `param` | string |
-`matcher` | string \| RegExp |
+`matcher` | string &#124; RegExp |
 
 **Returns:** *this*
 
@@ -293,7 +293,7 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 `callback` | MacroableFn |
-`singleton?` | undefined \| false \| true |
+`singleton?` | undefined &#124; false &#124; true |
 
 **Returns:** *void*
 

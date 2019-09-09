@@ -27,6 +27,7 @@ import { parse, UrlWithStringQuery } from 'url'
 import { parse as parseCookie } from '@poppinss/cookie'
 import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'http'
 
+import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { RequestContract, RequestConfigContract } from '@ioc:Adonis/Core/Request'
 
 /**
@@ -95,6 +96,7 @@ export class Request extends Macroable implements RequestContract {
   constructor (
     public request: IncomingMessage,
     public response: ServerResponse,
+    private _encryption: EncryptionContract,
     private _config: DeepReadonly<RequestConfigContract>,
   ) {
     super()
@@ -816,5 +818,34 @@ export class Request extends Macroable implements RequestContract {
   public plainCookie (key: string, defaultValue?: string): any {
     this._parseCookies()
     return get(this._parsedCookies!.plainCookies, key, defaultValue)
+  }
+
+  /**
+   * Returns a boolean telling if a signed url as a valid signature
+   * or not.
+   */
+  public hasValidSignature () {
+    const { signature, ...rest } = this.get()
+    if (!signature) {
+      return false
+    }
+
+    /**
+     * Return false when signature fails
+     */
+    const signedUrl = this._encryption.child({ hmac: false }).decrypt(signature)
+    if (!signedUrl) {
+      return false
+    }
+
+    /**
+     * Return false when is expired
+     */
+    if (rest.expires_at && Number(rest.expires_at) < Date.now()) {
+      return false
+    }
+
+    const queryString = qs.stringify(rest)
+    return queryString ? `${this.url()}?${queryString}` === signedUrl : this.url() === signedUrl
   }
 }

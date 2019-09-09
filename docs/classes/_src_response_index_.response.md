@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/Response/index"](../modules/_src_response_index_.md) › [Response](_src_response_index_.response.md)
+[Globals](../README.md) › [&quot;src/Response/index&quot;](../modules/_src_response_index_.md) › [Response](_src_response_index_.response.md)
 
 # Class: Response
 
@@ -239,10 +239,10 @@ Internally calls [download](_src_response_index_.response.md#download)
 Name | Type |
 ------ | ------ |
 `filePath` | string |
-`name?` | undefined \| string |
-`disposition?` | undefined \| string |
-`generateEtag?` | undefined \| false \| true |
-`errorCallback?` | undefined \| function |
+`name?` | undefined &#124; string |
+`disposition?` | undefined &#124; string |
+`generateEtag?` | undefined &#124; false &#124; true |
+`errorCallback?` | undefined &#124; function |
 
 **Returns:** *void*
 
@@ -342,7 +342,7 @@ Name | Type | Default |
 ------ | ------ | ------ |
 `filePath` | string | - |
 `generateEtag` | boolean |  this._config.etag |
-`errorCallback?` | undefined \| function | - |
+`errorCallback?` | undefined &#124; function | - |
 
 **Returns:** *void*
 
@@ -371,7 +371,7 @@ Writes headers to the response.
 
 Name | Type |
 ------ | ------ |
-`statusCode?` | undefined \| number |
+`statusCode?` | undefined &#124; number |
 
 **Returns:** *this*
 
@@ -462,7 +462,7 @@ Alias of [send](_src_response_index_.response.md#send)
 Name | Type |
 ------ | ------ |
 `body` | any |
-`generateEtag?` | undefined \| false \| true |
+`generateEtag?` | undefined &#124; false &#124; true |
 
 **Returns:** *void*
 
@@ -547,7 +547,7 @@ by setting 2nd param to `true`.
 Name | Type | Default |
 ------ | ------ | ------ |
 `url` | string | - |
-`sendQueryParams?` | undefined \| false \| true | - |
+`sendQueryParams?` | undefined &#124; false &#124; true | - |
 `statusCode` | number | 302 |
 
 **Returns:** *void*
@@ -693,7 +693,7 @@ try {
 Name | Type |
 ------ | ------ |
 `body` | ResponseStream |
-`errorCallback?` | undefined \| function |
+`errorCallback?` | undefined &#124; function |
 
 **Returns:** *void*
 
@@ -719,7 +719,7 @@ response.type('.json') // Content-type: application/json
 Name | Type |
 ------ | ------ |
 `type` | string |
-`charset?` | undefined \| string |
+`charset?` | undefined &#124; string |
 
 **Returns:** *this*
 
@@ -785,7 +785,7 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 `callback` | MacroableFn |
-`singleton?` | undefined \| false \| true |
+`singleton?` | undefined &#124; false &#124; true |
 
 **Returns:** *void*
 

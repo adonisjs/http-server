@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/Request/index"](../modules/_src_request_index_.md) › [Request](_src_request_index_.request.md)
+[Globals](../README.md) › [&quot;src/Request/index&quot;](../modules/_src_request_index_.md) › [Request](_src_request_index_.request.md)
 
 # Class: Request
 
@@ -52,6 +52,7 @@ using `request.request` property.
 * [fresh](_src_request_index_.request.md#fresh)
 * [get](_src_request_index_.request.md#get)
 * [hasBody](_src_request_index_.request.md#hasbody)
+* [hasValidSignature](_src_request_index_.request.md#hasvalidsignature)
 * [header](_src_request_index_.request.md#header)
 * [headers](_src_request_index_.request.md#headers)
 * [hostname](_src_request_index_.request.md#hostname)
@@ -93,7 +94,7 @@ using `request.request` property.
 
 ###  constructor
 
-\+ **new Request**(`request`: IncomingMessage, `response`: ServerResponse, `_config`: DeepReadonly‹RequestConfigContract›): *[Request](_src_request_index_.request.md)*
+\+ **new Request**(`request`: IncomingMessage, `response`: ServerResponse, `_encryption`: EncryptionContract, `_config`: DeepReadonly‹RequestConfigContract›): *[Request](_src_request_index_.request.md)*
 
 **Parameters:**
 
@@ -101,6 +102,7 @@ Name | Type |
 ------ | ------ |
 `request` | IncomingMessage |
 `response` | ServerResponse |
+`_encryption` | EncryptionContract |
 `_config` | DeepReadonly‹RequestConfigContract› |
 
 **Returns:** *[Request](_src_request_index_.request.md)*
@@ -274,7 +276,7 @@ request.completeUrl(true)
 
 Name | Type |
 ------ | ------ |
-`includeQueryString?` | undefined \| false \| true |
+`includeQueryString?` | undefined &#124; false &#124; true |
 
 **Returns:** *string*
 
@@ -292,7 +294,7 @@ defaultValue is returned when actual value is undefined.
 Name | Type |
 ------ | ------ |
 `key` | string |
-`defaultValue?` | undefined \| string |
+`defaultValue?` | undefined &#124; string |
 
 **Returns:** *any*
 
@@ -419,6 +421,17 @@ ___
 ▸ **hasBody**(): *boolean*
 
 Returns a boolean telling if request has body
+
+**Returns:** *boolean*
+
+___
+
+###  hasValidSignature
+
+▸ **hasValidSignature**(): *boolean*
+
+Returns a boolean telling if a signed url as a valid signature
+or not.
 
 **Returns:** *boolean*
 
@@ -766,7 +779,7 @@ defaultValue is returned when actual value is undefined.
 Name | Type |
 ------ | ------ |
 `key` | string |
-`defaultValue?` | undefined \| string |
+`defaultValue?` | undefined &#124; string |
 
 **Returns:** *any*
 
@@ -978,7 +991,7 @@ request.url(true)
 
 Name | Type |
 ------ | ------ |
-`includeQueryString?` | undefined \| false \| true |
+`includeQueryString?` | undefined &#124; false &#124; true |
 
 **Returns:** *string*
 
@@ -1028,7 +1041,7 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 `callback` | MacroableFn |
-`singleton?` | undefined \| false \| true |
+`singleton?` | undefined &#124; false &#124; true |
 
 **Returns:** *void*
 

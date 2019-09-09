@@ -14,7 +14,7 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import ms from 'ms'
-import { stringify } from 'querystring'
+import { stringify } from 'qs'
 import { Exception } from '@poppinss/utils'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 

@@ -11,13 +11,16 @@ import test from 'japa'
 import { HttpContext } from '../src/HttpContext'
 import { Logger } from '@adonisjs/logger/build/standalone'
 import { Profiler } from '@adonisjs/profiler/build/standalone'
+import { Encryption } from '@adonisjs/encryption/build/standalone'
+
+const encryption = new Encryption('averylongrandom32charslongsecret')
 
 test.group('Http Context', () => {
   test('create fake Http context instance', async (assert) => {
     const logger = new Logger({ enabled: true, name: 'adonis', level: 'trace' })
     const profiler = new Profiler({})
 
-    const ctx = HttpContext.create('/', {}, logger, profiler.create('ctx'))
+    const ctx = HttpContext.create('/', {}, logger, profiler.create('ctx'), encryption)
 
     assert.instanceOf(ctx, HttpContext)
     assert.equal(ctx.route!.pattern, '/')
@@ -28,7 +31,7 @@ test.group('Http Context', () => {
     const logger = new Logger({ enabled: true, name: 'adonis', level: 'trace' })
     const profiler = new Profiler({})
 
-    const ctx = HttpContext.create('/:id', { id: '1' }, logger, profiler.create('ctx'))
+    const ctx = HttpContext.create('/:id', { id: '1' }, logger, profiler.create('ctx'), encryption)
 
     assert.instanceOf(ctx, HttpContext)
     assert.equal(ctx.route!.pattern, '/:id')

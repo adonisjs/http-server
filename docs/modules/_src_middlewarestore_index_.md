@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/MiddlewareStore/index"](_src_middlewarestore_index_.md)
+[Globals](../README.md) › [&quot;src/MiddlewareStore/index&quot;](_src_middlewarestore_index_.md)
 
 # External module: "src/MiddlewareStore/index"
 

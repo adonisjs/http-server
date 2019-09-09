@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/Router/Store"](../modules/_src_router_store_.md) › [Store](_src_router_store_.store.md)
+[Globals](../README.md) › [&quot;src/Router/Store&quot;](../modules/_src_router_store_.md) › [Store](_src_router_store_.store.md)
 
 # Class: Store
 
@@ -87,7 +87,7 @@ Name | Type |
 ------ | ------ |
 `url` | string |
 `method` | string |
-`domain?` | undefined \| string |
+`domain?` | undefined &#124; string |
 
 **Returns:** *null | MatchedRoute*
 

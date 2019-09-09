@@ -142,7 +142,7 @@ export class Server implements ServerContract {
    * server
    */
   public async handle (req: IncomingMessage, res: ServerResponse): Promise<void> {
-    const request = new Request(req, res, this._httpConfig)
+    const request = new Request(req, res, this._encryption, this._httpConfig)
     const response = new Response(req, res, this._httpConfig)
 
     const requestAction = this._getProfileRow(request)

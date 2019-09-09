@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/Server/PreCompiler/index"](../modules/_src_server_precompiler_index_.md) › [PreCompiler](_src_server_precompiler_index_.precompiler.md)
+[Globals](../README.md) › [&quot;src/Server/PreCompiler/index&quot;](../modules/_src_server_precompiler_index_.md) › [PreCompiler](_src_server_precompiler_index_.precompiler.md)
 
 # Class: PreCompiler
 

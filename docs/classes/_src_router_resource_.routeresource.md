@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/Router/Resource"](../modules/_src_router_resource_.md) › [RouteResource](_src_router_resource_.routeresource.md)
+[Globals](../README.md) › [&quot;src/Router/Resource&quot;](../modules/_src_router_resource_.md) › [RouteResource](_src_router_resource_.routeresource.md)
 
 # Class: RouteResource
 
@@ -184,7 +184,7 @@ Define matcher for params inside the resource
 Name | Type |
 ------ | ------ |
 `key` | string |
-`matcher` | string \| RegExp |
+`matcher` | string &#124; RegExp |
 
 **Returns:** *this*
 
@@ -234,7 +234,7 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 `callback` | MacroableFn |
-`singleton?` | undefined \| false \| true |
+`singleton?` | undefined &#124; false &#124; true |
 
 **Returns:** *void*
 

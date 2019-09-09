@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/Server/PreCompiler/index"](_src_server_precompiler_index_.md)
+[Globals](../README.md) › [&quot;src/Server/PreCompiler/index&quot;](_src_server_precompiler_index_.md)
 
 # External module: "src/Server/PreCompiler/index"
 

@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/Server/RequestHandler/index"](../modules/_src_server_requesthandler_index_.md) › [RequestHandler](_src_server_requesthandler_index_.requesthandler.md)
+[Globals](../README.md) › [&quot;src/Server/RequestHandler/index&quot;](../modules/_src_server_requesthandler_index_.md) › [RequestHandler](_src_server_requesthandler_index_.requesthandler.md)
 
 # Class: RequestHandler
 

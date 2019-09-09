@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/Router/index"](../modules/_src_router_index_.md) › [Router](_src_router_index_.router.md)
+[Globals](../README.md) › [&quot;src/Router/index&quot;](../modules/_src_router_index_.md) › [Router](_src_router_index_.router.md)
 
 # Class: Router
 
@@ -71,7 +71,7 @@ router.get('/', async function () {
 Name | Type |
 ------ | ------ |
 `_encryption` | EncryptionContract |
-`_routeProcessor?` | undefined \| function |
+`_routeProcessor?` | undefined &#124; function |
 
 **Returns:** *[Router](_src_router_index_.router.md)*
 
@@ -174,7 +174,7 @@ test middleware or validators by hitting a route from outside in.
 
 Name | Type |
 ------ | ------ |
-`pattern?` | undefined \| string |
+`pattern?` | undefined &#124; string |
 `methods?` | string[] |
 `handler?` | RouteHandlerNode |
 
@@ -228,7 +228,7 @@ info can be used to make url for a given route.
 Name | Type |
 ------ | ------ |
 `routeIdentifier` | string |
-`forDomain?` | undefined \| string |
+`forDomain?` | undefined &#124; string |
 
 **Returns:** *null | RouteLookupNode*
 
@@ -247,7 +247,7 @@ Name | Type |
 ------ | ------ |
 `routeIdentifier` | string |
 `options?` | MakeUrlOptions & object |
-`domain?` | undefined \| string |
+`domain?` | undefined &#124; string |
 
 **Returns:** *string | null*
 
@@ -266,7 +266,7 @@ Name | Type |
 ------ | ------ |
 `routeIdentifier` | string |
 `options?` | MakeUrlOptions |
-`domain?` | undefined \| string |
+`domain?` | undefined &#124; string |
 
 **Returns:** *string | null*
 
@@ -284,7 +284,7 @@ Name | Type |
 ------ | ------ |
 `url` | string |
 `method` | string |
-`domain?` | undefined \| string |
+`domain?` | undefined &#124; string |
 
 **Returns:** *null | MatchedRoute*
 
@@ -430,6 +430,6 @@ Define global route matcher
 Name | Type |
 ------ | ------ |
 `param` | string |
-`matcher` | string \| RegExp |
+`matcher` | string &#124; RegExp |
 
 **Returns:** *this*

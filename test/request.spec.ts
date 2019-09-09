@@ -7,13 +7,15 @@
  * file that was distributed with this source code.
  */
 
+import { escape } from 'querystring'
 import test from 'japa'
 import supertest from 'supertest'
 import proxyaddr from 'proxy-addr'
 import { createServer } from 'http'
 import { createCertificate } from 'pem'
-import { createServer as httpsServer } from 'https'
 import { serialize } from '@poppinss/cookie'
+import { Encryption } from '@adonisjs/encryption/build/standalone'
+import { createServer as httpsServer } from 'https'
 
 import { Request } from '../src/Request'
 import { RequestConfigContract } from '@ioc:Adonis/Core/Request'
@@ -28,10 +30,12 @@ const fakeConfig = (conf?: Partial<RequestConfigContract>) => {
   }, conf)
 }
 
+const encryption = new Encryption('averylongrandom32charslongsecret').child({ hmac: false })
+
 test.group('Request', () => {
   test('get http request query string', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.get()))
     })
@@ -42,7 +46,7 @@ test.group('Request', () => {
 
   test('update request initial body', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       request.setInitialBody({ username: 'virk' })
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({
@@ -62,7 +66,7 @@ test.group('Request', () => {
 
   test('updating request body later must not impact the original body', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       request.setInitialBody({ username: 'virk' })
       request.updateBody({ username: 'nikk' })
 
@@ -84,7 +88,7 @@ test.group('Request', () => {
 
   test('merge query string with all and original', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       request.setInitialBody({ username: 'virk' })
       request.updateBody({ username: 'nikk' })
 
@@ -106,7 +110,7 @@ test.group('Request', () => {
 
   test('raise error when setInitialBody is called twice', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       request.setInitialBody({})
 
       try {
@@ -125,7 +129,7 @@ test.group('Request', () => {
 
   test('compute original and all even if body was never set', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({
         post: request.post(),
@@ -144,7 +148,7 @@ test.group('Request', () => {
 
   test('compute all when query string is updated', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       request.updateQs({ age: '24' })
 
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -165,7 +169,7 @@ test.group('Request', () => {
 
   test('read input value from request', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ input: request.input('age') }))
@@ -179,7 +183,7 @@ test.group('Request', () => {
 
   test('read nested input value from request', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ input: request.input('users.1') }))
@@ -193,7 +197,7 @@ test.group('Request', () => {
 
   test('read nested input value from request', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ input: request.input('users.1') }))
@@ -207,7 +211,7 @@ test.group('Request', () => {
 
   test('get all except few keys', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.except(['age'])))
@@ -221,7 +225,7 @@ test.group('Request', () => {
 
   test('get only few keys', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.only(['age'])))
@@ -235,7 +239,7 @@ test.group('Request', () => {
 
   test('get request headers', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.headers()))
@@ -247,7 +251,7 @@ test.group('Request', () => {
 
   test('get value for a given request header', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ header: request.header('accept-encoding') }))
@@ -261,7 +265,7 @@ test.group('Request', () => {
 
   test('get ip address', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ip: request.ip() }))
@@ -275,7 +279,7 @@ test.group('Request', () => {
 
   test('get ip addresses as an array', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ip: request.ips() }))
@@ -289,7 +293,7 @@ test.group('Request', () => {
 
   test('get request protocol', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ protocol: request.protocol() }))
@@ -310,7 +314,7 @@ test.group('Request', () => {
       }
 
       const server = httpsServer({ key: keys.serviceKey, cert: keys.certificate }, (req, res) => {
-        const request = new Request(req, res, fakeConfig())
+        const request = new Request(req, res, encryption, fakeConfig())
         res.writeHead(200, { 'content-type': 'application/json' })
         res.end(JSON.stringify({ secure: request.secure() }))
       })
@@ -325,7 +329,7 @@ test.group('Request', () => {
 
   test('get request hostname', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hostname: request.hostname() }))
@@ -341,7 +345,7 @@ test.group('Request', () => {
     const server = createServer((req, res) => {
       req.headers.host = 'beta.adonisjs.com'
 
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ subdomains: request.subdomains() }))
     })
@@ -356,7 +360,7 @@ test.group('Request', () => {
     const server = createServer((req, res) => {
       req.headers.host = 'www.adonisjs.com'
 
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ subdomains: request.subdomains() }))
     })
@@ -369,7 +373,7 @@ test.group('Request', () => {
 
   test('return true for ajax when X-Requested-With is xmlhttprequest', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ajax: request.ajax() }))
     })
@@ -382,7 +386,7 @@ test.group('Request', () => {
 
   test('return false for ajax when X-Requested-With header is missing', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ajax: request.ajax() }))
     })
@@ -395,7 +399,7 @@ test.group('Request', () => {
 
   test('return true for ajax when X-Pjax header is set', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ pjax: request.pjax() }))
     })
@@ -408,7 +412,7 @@ test.group('Request', () => {
 
   test('return request url without query string', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.url() }))
     })
@@ -421,7 +425,7 @@ test.group('Request', () => {
 
   test('return request url with query string', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.url(true) }))
     })
@@ -434,7 +438,7 @@ test.group('Request', () => {
 
   test('return complete request url without query string', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.completeUrl() }))
     })
@@ -447,7 +451,7 @@ test.group('Request', () => {
 
   test('return complete request url with query string', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.completeUrl(true) }))
     })
@@ -460,7 +464,7 @@ test.group('Request', () => {
 
   test('content negotiate the request content-type', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ type: request.is(['json', 'html']) }))
     })
@@ -477,7 +481,7 @@ test.group('Request', () => {
 
   test('return null when request body is empty', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ type: request.is(['json', 'html']) }))
     })
@@ -490,7 +494,7 @@ test.group('Request', () => {
 
   test('return all types from most to least preferred', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ types: request.types() }))
     })
@@ -503,7 +507,7 @@ test.group('Request', () => {
 
   test('return the most relavant accept type', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ accepts: request.accepts(['jsonp', 'json']) }))
     })
@@ -516,7 +520,7 @@ test.group('Request', () => {
 
   test('return all accept languages', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ languages: request.languages() }))
     })
@@ -529,7 +533,7 @@ test.group('Request', () => {
 
   test('return the most relavant language', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ language: request.language(['en', 'en-us', 'de']) }))
     })
@@ -542,7 +546,7 @@ test.group('Request', () => {
 
   test('return all accept charsets', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ charsets: request.charsets() }))
     })
@@ -555,7 +559,7 @@ test.group('Request', () => {
 
   test('return most relevant charset', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ charset: request.charset(['utf-8', 'base64']) }))
     })
@@ -568,7 +572,7 @@ test.group('Request', () => {
 
   test('return all encodings', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ encodings: request.encodings() }))
     })
@@ -581,7 +585,7 @@ test.group('Request', () => {
 
   test('return matching encoding', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ encoding: request.encoding(['utf-8', 'gzip']) }))
     })
@@ -594,7 +598,7 @@ test.group('Request', () => {
 
   test('return false from hasBody when request has no body', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasBody: request.hasBody() }))
     })
@@ -607,7 +611,7 @@ test.group('Request', () => {
 
   test('return true from hasBody when request has no body', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasBody: request.hasBody() }))
     })
@@ -620,7 +624,7 @@ test.group('Request', () => {
 
   test('return true from request.fresh when etag and if-match-none are same', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.setHeader('etag', 'foo')
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ fresh: request.fresh() }))
@@ -634,7 +638,7 @@ test.group('Request', () => {
 
   test('return false from request.fresh when etag and if-match-none are same but method is POST', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.setHeader('etag', 'foo')
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ fresh: request.fresh() }))
@@ -648,7 +652,7 @@ test.group('Request', () => {
 
   test('return false from request.fresh when etag and if-match-none are same but statusCode is 301', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.setHeader('etag', 'foo')
       res.writeHead(301, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ fresh: request.fresh() }))
@@ -662,7 +666,7 @@ test.group('Request', () => {
 
   test('return request http method', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ method: request.method() }))
     })
@@ -676,7 +680,7 @@ test.group('Request', () => {
   test('return request spoofed http method when spoofing is enabled', async (assert) => {
     const server = createServer((req, res) => {
       const config = fakeConfig({ allowMethodSpoofing: true })
-      const request = new Request(req, res, config)
+      const request = new Request(req, res, encryption, config)
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ method: request.method() }))
     })
@@ -690,7 +694,7 @@ test.group('Request', () => {
   test('return original http method when spoofing is enabled but original method is GET', async (assert) => {
     const server = createServer((req, res) => {
       const config = fakeConfig({ allowMethodSpoofing: true })
-      const request = new Request(req, res, config)
+      const request = new Request(req, res, encryption, config)
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ method: request.method() }))
     })
@@ -709,7 +713,7 @@ test.group('Request', () => {
         },
       })
 
-      const request = new Request(req, res, config)
+      const request = new Request(req, res, encryption, config)
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ip: request.ip() }))
     })
@@ -722,7 +726,7 @@ test.group('Request', () => {
 
   test('return false from request.stale when etag and if-match-none are same', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.setHeader('etag', 'foo')
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ stale: request.stale() }))
@@ -736,7 +740,7 @@ test.group('Request', () => {
 
   test('handle referer header spelling inconsistencies', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ referrer: request.header('referrer'), referer: request.header('referer') }))
@@ -751,7 +755,7 @@ test.group('Request', () => {
 
   test('update request raw body', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       request.updateRawBody(JSON.stringify({ username: 'virk' }))
       res.writeHead(200, { 'content-type': 'text/plain' })
       res.end(request.raw())
@@ -763,7 +767,7 @@ test.group('Request', () => {
 
   test('get null when request hostname is missing', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       delete req.headers['host']
 
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -778,7 +782,7 @@ test.group('Request', () => {
 
   test('get empty array when for subdomains request hostname is missing', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       delete req.headers['host']
 
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -793,7 +797,7 @@ test.group('Request', () => {
 
   test('get all unsigned cookies via plainCookies', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ plainCookies: request.plainCookies(), cookies: request.cookies() }))
     })
@@ -812,7 +816,7 @@ test.group('Request', () => {
     const config = fakeConfig()
 
     const server = createServer((req, res) => {
-      const request = new Request(req, res, config)
+      const request = new Request(req, res, encryption, config)
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ plainCookies: request.plainCookies(), cookies: request.cookies() }))
     })
@@ -831,7 +835,7 @@ test.group('Request', () => {
     const config = fakeConfig()
 
     const server = createServer((req, res) => {
-      const request = new Request(req, res, config)
+      const request = new Request(req, res, encryption, config)
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.cookie('name') }))
     })
@@ -845,7 +849,7 @@ test.group('Request', () => {
 
   test('use default value when actual value is missing', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.cookie('name', 'nikk') }))
     })
@@ -858,7 +862,7 @@ test.group('Request', () => {
 
   test('get value for a single unsigned cookie', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.plainCookie('name') }))
     })
@@ -872,7 +876,7 @@ test.group('Request', () => {
 
   test('use default value when actual unsigned value is missing', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.plainCookie('name', 'nikk') }))
     })
@@ -885,7 +889,7 @@ test.group('Request', () => {
 
   test('set x-request-id header when id method is called', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({
         id: request.id(),
@@ -905,7 +909,7 @@ test.group('Request', () => {
 
   test('do not generate request id when generateRequestId is false', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, Object.assign(fakeConfig(), {
+      const request = new Request(req, res, encryption, Object.assign(fakeConfig(), {
         generateRequestId: false,
       }))
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -920,7 +924,7 @@ test.group('Request', () => {
 
   test('do not append ? when query string is empty', async (assert) => {
     const server = createServer((req, res) => {
-      const request = new Request(req, res, fakeConfig())
+      const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.url(true) }))
     })
@@ -928,6 +932,114 @@ test.group('Request', () => {
     const { body } = await supertest(server).get('/')
     assert.deepEqual(body, {
       url: '/',
+    })
+  })
+})
+
+test.group('Verify signed url', () => {
+  test('return false when signature query param is missing', async (assert) => {
+    const server = createServer((req, res) => {
+      const request = new Request(req, res, encryption, fakeConfig())
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
+    })
+
+    const { body } = await supertest(server).get('/')
+    assert.deepEqual(body, {
+      hasValidSignature: false,
+    })
+  })
+
+  test('return false when signature cannot be decrypted', async (assert) => {
+    const server = createServer((req, res) => {
+      const request = new Request(req, res, encryption, fakeConfig())
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
+    })
+
+    const { body } = await supertest(server).get('/?signature=sadjksadkjsaadjk')
+    assert.deepEqual(body, {
+      hasValidSignature: false,
+    })
+  })
+
+  test('return true when signature is valid', async (assert) => {
+    const server = createServer((req, res) => {
+      const request = new Request(req, res, encryption, fakeConfig())
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
+    })
+
+    const url = '/?name=virk'
+    const signature = escape(encryption.encrypt(url))
+
+    const { body } = await supertest(server).get(`${url}&signature=${signature}`)
+    assert.deepEqual(body, {
+      hasValidSignature: true,
+    })
+  })
+
+  test('return true when signature is valid without any querystring', async (assert) => {
+    const server = createServer((req, res) => {
+      const request = new Request(req, res, encryption, fakeConfig())
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
+    })
+
+    const url = '/'
+    const signature = escape(encryption.encrypt(url))
+
+    const { body } = await supertest(server).get(`${url}?signature=${signature}`)
+    assert.deepEqual(body, {
+      hasValidSignature: true,
+    })
+  })
+
+  test('return false when signature is valid but expired', async (assert) => {
+    const server = createServer((req, res) => {
+      const request = new Request(req, res, encryption, fakeConfig())
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
+    })
+
+    const url = `/?expires_at=${Date.now() - 10}`
+    const signature = escape(encryption.encrypt(url))
+
+    const { body } = await supertest(server).get(`${url}&signature=${signature}`)
+    assert.deepEqual(body, {
+      hasValidSignature: false,
+    })
+  })
+
+  test('return true when expiry is in future', async (assert) => {
+    const server = createServer((req, res) => {
+      const request = new Request(req, res, encryption, fakeConfig())
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
+    })
+
+    const url = `/?expires_at=${Date.now() + (60 * 60)}`
+    const signature = escape(encryption.encrypt(url))
+
+    const { body } = await supertest(server).get(`${url}&signature=${signature}`)
+    assert.deepEqual(body, {
+      hasValidSignature: true,
+    })
+  })
+
+  test('return false when expiry was tampered', async (assert) => {
+    const server = createServer((req, res) => {
+      const request = new Request(req, res, encryption, fakeConfig())
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
+    })
+
+    const url = `/?expires_at=${Date.now() - 10}`
+    const signature = escape(encryption.encrypt(url))
+
+    const { body } = await supertest(server).get(`/?expires_at=${Date.now() + 3600}&signature=${signature}`)
+    assert.deepEqual(body, {
+      hasValidSignature: false,
     })
   })
 })

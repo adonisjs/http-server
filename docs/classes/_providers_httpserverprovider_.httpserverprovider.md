@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["providers/HttpServerProvider"](../modules/_providers_httpserverprovider_.md) › [HttpServerProvider](_providers_httpserverprovider_.httpserverprovider.md)
+[Globals](../README.md) › [&quot;providers/HttpServerProvider&quot;](../modules/_providers_httpserverprovider_.md) › [HttpServerProvider](_providers_httpserverprovider_.httpserverprovider.md)
 
 # Class: HttpServerProvider
 

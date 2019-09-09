@@ -22,6 +22,7 @@ import { RequestContract } from '@ioc:Adonis/Core/Request'
 import { ResponseContract } from '@ioc:Adonis/Core/Response'
 import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
 import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
+import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import { processPattern } from '../helpers'
@@ -52,6 +53,7 @@ export class HttpContext implements HttpContextContract {
     routeParams: any,
     logger: LoggerContract,
     profiler: ProfilerRowContract,
+    encryption: EncryptionContract,
     req?: IncomingMessage,
     res?: ServerResponse,
     serverConfig?: ServerConfigContract,
@@ -82,7 +84,7 @@ export class HttpContext implements HttpContextContract {
     /**
      * Creating new request instance
      */
-    const request = new Request(req, res, {
+    const request = new Request(req, res, encryption, {
       allowMethodSpoofing: serverConfig.allowMethodSpoofing,
       subdomainOffset: serverConfig.subdomainOffset,
       trustProxy: serverConfig.trustProxy,

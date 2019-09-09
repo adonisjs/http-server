@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/Router/Group"](../modules/_src_router_group_.md) › [RouteGroup](_src_router_group_.routegroup.md)
+[Globals](../README.md) › [&quot;src/Router/Group&quot;](../modules/_src_router_group_.md) › [RouteGroup](_src_router_group_.routegroup.md)
 
 # Class: RouteGroup
 
@@ -55,7 +55,7 @@ The group routes must be pre-defined using the constructor.
 
 Name | Type |
 ------ | ------ |
-`routes` | [Route](_src_router_route_.route.md) \| [BriskRoute](_src_router_briskroute_.briskroute.md) \| [RouteResource](_src_router_resource_.routeresource.md) \| [RouteGroup](_src_router_group_.routegroup.md)[] |
+`routes` | [Route](_src_router_route_.route.md) &#124; [BriskRoute](_src_router_briskroute_.briskroute.md) &#124; [RouteResource](_src_router_resource_.routeresource.md) &#124; [RouteGroup](_src_router_group_.routegroup.md)[] |
 
 **Returns:** *[RouteGroup](_src_router_group_.routegroup.md)*
 
@@ -147,7 +147,7 @@ Route.group(() => {
 
 Name | Type |
 ------ | ------ |
-`middleware` | MiddlewareNode \| MiddlewareNode[] |
+`middleware` | MiddlewareNode &#124; MiddlewareNode[] |
 
 **Returns:** *this*
 
@@ -214,7 +214,7 @@ Route.group(() => {
 Name | Type |
 ------ | ------ |
 `param` | string |
-`matcher` | RegExp \| string |
+`matcher` | RegExp &#124; string |
 
 **Returns:** *this*
 
@@ -264,7 +264,7 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 `callback` | MacroableFn |
-`singleton?` | undefined \| false \| true |
+`singleton?` | undefined &#124; false &#124; true |
 
 **Returns:** *void*
 

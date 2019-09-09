@@ -1,6 +1,6 @@
 **[@adonisjs/http-server](../README.md)**
 
-[Globals](../README.md) › ["src/helpers"](_src_helpers_.md)
+[Globals](../README.md) › [&quot;src/helpers&quot;](_src_helpers_.md)
 
 # External module: "src/helpers"
 
@@ -60,7 +60,7 @@ list of route defination.
 
 Name | Type |
 ------ | ------ |
-`routes` | [Route](../classes/_src_router_route_.route.md) \| [BriskRoute](../classes/_src_router_briskroute_.briskroute.md) \| [RouteResource](../classes/_src_router_resource_.routeresource.md) \| [RouteGroup](../classes/_src_router_group_.routegroup.md)[] |
+`routes` | [Route](../classes/_src_router_route_.route.md) &#124; [BriskRoute](../classes/_src_router_briskroute_.briskroute.md) &#124; [RouteResource](../classes/_src_router_resource_.routeresource.md) &#124; [RouteGroup](../classes/_src_router_group_.routegroup.md)[] |
 
 **Returns:** *RouteDefinition[]*
 
