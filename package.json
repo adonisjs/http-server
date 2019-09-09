@@ -59,6 +59,11 @@
     "typedoc-plugin-markdown": "^2.1.4",
     "typescript": "^3.6.2"
   },
+  "peerDependencies": {
+    "@adonisjs/encryption": "^1.x.x",
+    "@adonisjs/logger": "^1.x.x",
+    "@adonisjs/profiler": "^1.x.x"
+  },
   "nyc": {
     "exclude": [
       "test"
