@@ -9,7 +9,7 @@
 ### Functions
 
 * [dropSlash](_src_helpers_.md#dropslash)
-* [makeUrl](_src_helpers_.md#makeurl)
+* [processPattern](_src_helpers_.md#processpattern)
 * [toRoutesJSON](_src_helpers_.md#toroutesjson)
 * [useReturnValue](_src_helpers_.md#usereturnvalue)
 
@@ -32,9 +32,9 @@ Name | Type |
 
 ___
 
-###  makeUrl
+###  processPattern
 
-▸ **makeUrl**(`pattern`: string, `options`: object): *string*
+▸ **processPattern**(`pattern`: string, `data`: any): *string*
 
 Makes url for a route pattern and params and querystring.
 
@@ -43,7 +43,7 @@ Makes url for a route pattern and params and querystring.
 Name | Type |
 ------ | ------ |
 `pattern` | string |
-`options` | object |
+`data` | any |
 
 **Returns:** *string*
 

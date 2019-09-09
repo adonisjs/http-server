@@ -47,6 +47,8 @@ router.get('/', async function () {
 * [get](_src_router_index_.router.md#get)
 * [group](_src_router_index_.router.md#group)
 * [lookup](_src_router_index_.router.md#lookup)
+* [makeSignedUrl](_src_router_index_.router.md#makesignedurl)
+* [makeUrl](_src_router_index_.router.md#makeurl)
 * [match](_src_router_index_.router.md#match)
 * [on](_src_router_index_.router.md#on)
 * [patch](_src_router_index_.router.md#patch)
@@ -62,12 +64,13 @@ router.get('/', async function () {
 
 ###  constructor
 
-\+ **new Router**(`_routeProcessor?`: undefined | function): *[Router](_src_router_index_.router.md)*
+\+ **new Router**(`_encryption`: EncryptionContract, `_routeProcessor?`: undefined | function): *[Router](_src_router_index_.router.md)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
+`_encryption` | EncryptionContract |
 `_routeProcessor?` | undefined \| function |
 
 **Returns:** *[Router](_src_router_index_.router.md)*
@@ -228,6 +231,44 @@ Name | Type |
 `forDomain?` | undefined \| string |
 
 **Returns:** *null | RouteLookupNode*
+
+___
+
+###  makeSignedUrl
+
+▸ **makeSignedUrl**(`routeIdentifier`: string, `options?`: MakeUrlOptions & object, `domain?`: undefined | string): *string | null*
+
+Makes a signed url, which can be confirmed for it's integrity without
+relying on any sort of backend storage.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`routeIdentifier` | string |
+`options?` | MakeUrlOptions & object |
+`domain?` | undefined \| string |
+
+**Returns:** *string | null*
+
+___
+
+###  makeUrl
+
+▸ **makeUrl**(`routeIdentifier`: string, `options?`: MakeUrlOptions, `domain?`: undefined | string): *string | null*
+
+Makes url to a registered route by looking it up with the route pattern,
+name or the controller.method
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`routeIdentifier` | string |
+`options?` | MakeUrlOptions |
+`domain?` | undefined \| string |
+
+**Returns:** *string | null*
 
 ___
 

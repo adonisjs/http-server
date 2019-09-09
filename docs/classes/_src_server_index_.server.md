@@ -37,7 +37,7 @@ Server class handles the HTTP requests by using all Adonis micro modules.
 
 ###  constructor
 
-\+ **new Server**(`_container`: IocContract, `_logger`: LoggerContract, `_profiler`: ProfilerContract, `_httpConfig`: ServerConfigContract): *[Server](_src_server_index_.server.md)*
+\+ **new Server**(`_container`: IocContract, `_logger`: LoggerContract, `_profiler`: ProfilerContract, `_encryption`: EncryptionContract, `_httpConfig`: ServerConfigContract): *[Server](_src_server_index_.server.md)*
 
 **Parameters:**
 
@@ -46,6 +46,7 @@ Name | Type |
 `_container` | IocContract |
 `_logger` | LoggerContract |
 `_profiler` | ProfilerContract |
+`_encryption` | EncryptionContract |
 `_httpConfig` | ServerConfigContract |
 
 **Returns:** *[Server](_src_server_index_.server.md)*
@@ -80,7 +81,7 @@ ___
 
 ###  router
 
-• **router**: *[Router](_src_router_index_.router.md)* =  new Router((route) => this._precompiler.compileRoute(route))
+• **router**: *[Router](_src_router_index_.router.md)* =  new Router(this._encryption, (route) => this._precompiler.compileRoute(route))
 
 The route to register routes
 
