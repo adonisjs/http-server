@@ -13,5 +13,7 @@
 
 export { Router } from './src/Router'
 export { Server } from './src/Server'
+export { Request } from './src/Request'
+export { Response } from './src/Response'
 export { HttpContext } from './src/HttpContext'
 export { MiddlewareStore } from './src/MiddlewareStore'
