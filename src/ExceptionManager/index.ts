@@ -58,11 +58,13 @@ export class ExceptionManager {
    * Handle the error
    */
   public async handle (error: any, ctx: HttpContextContract) {
+    ctx.response.safeStatus(error.status || 500)
+
     /**
      * Make response when no error handler has been registered
      */
     if (!this._resolvedErrorHandler) {
-      ctx.response.status(error.status || 500).send(error.message)
+      ctx.response.send(error.message)
       return
     }
 
