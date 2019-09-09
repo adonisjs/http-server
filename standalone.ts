@@ -13,6 +13,5 @@
 
 export { Router } from './src/Router'
 export { Server } from './src/Server'
-export { makeUrl } from './src/helpers'
 export { HttpContext } from './src/HttpContext'
 export { MiddlewareStore } from './src/MiddlewareStore'

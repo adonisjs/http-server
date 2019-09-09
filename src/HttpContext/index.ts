@@ -24,7 +24,7 @@ import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
 import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-import { makeUrl } from '../helpers'
+import { processPattern } from '../helpers'
 import { Request } from '../Request'
 import { Response } from '../Response'
 
@@ -77,7 +77,7 @@ export class HttpContext implements HttpContextContract {
      * Creating the url from the router pattern and params. Only
      * when actual URL isn't defined.
      */
-    req.url = req.url || makeUrl(routePattern, { params: routeParams, qs: {} })
+    req.url = req.url || processPattern(routePattern, routeParams)
 
     /**
      * Creating new request instance

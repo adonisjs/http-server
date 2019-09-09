@@ -12,6 +12,7 @@ import proxyaddr from 'proxy-addr'
 import { Ioc } from '@adonisjs/fold'
 import { Logger } from '@adonisjs/logger/build/standalone'
 import { Profiler } from '@adonisjs/profiler/build/standalone'
+import { Encryption } from '@adonisjs/encryption/build/standalone'
 import { Server } from '../standalone'
 
 const ioc = new Ioc()
@@ -26,7 +27,10 @@ ioc.singleton('App/Controllers/Http/HomeController', () => {
 })
 
 const logger = new Logger({ enabled: false, level: 'trace', name: 'adonis' })
-const server = new Server(ioc, logger, new Profiler({ enabled: false }), {
+const profiler = new Profiler({ enabled: false })
+const encryption = new Encryption('averylongrandom32charslongsecret')
+
+const server = new Server(new Ioc(), logger, profiler, encryption, {
   etag: false,
   jsonpCallbackName: 'callback',
   cookie: {},

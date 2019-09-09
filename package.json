@@ -28,6 +28,7 @@
   "author": "virk,adonisjs",
   "license": "MIT",
   "devDependencies": {
+    "@adonisjs/encryption": "^1.0.0",
     "@adonisjs/fold": "^6.1.6",
     "@adonisjs/logger": "^1.1.5",
     "@adonisjs/mrm-preset": "^2.1.0",
@@ -95,6 +96,7 @@
     "lodash": "^4.17.15",
     "macroable": "^2.0.2",
     "matchit": "git+https://github.com/thetutlage/matchit.git",
+    "ms": "^2.1.2",
     "on-finished": "^2.3.0",
     "pluralize": "^8.0.0",
     "qs": "^6.8.0",

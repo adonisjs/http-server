@@ -16,6 +16,7 @@
 import { IocContract } from '@adonisjs/fold'
 import { Server as HttpsServer } from 'https'
 import { LoggerContract } from '@ioc:Adonis/Core/Logger'
+import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
 import { ProfilerContract, ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
@@ -50,7 +51,7 @@ export class Server implements ServerContract {
   /**
    * The route to register routes
    */
-  public router = new Router((route) => this._precompiler.compileRoute(route))
+  public router = new Router(this._encryption, (route) => this._precompiler.compileRoute(route))
 
   /**
    * Server before/after hooks
@@ -76,6 +77,7 @@ export class Server implements ServerContract {
     private _container: IocContract,
     private _logger: LoggerContract,
     private _profiler: ProfilerContract,
+    private _encryption: EncryptionContract,
     private _httpConfig: ServerConfigContract,
   ) {
   }

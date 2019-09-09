@@ -188,6 +188,16 @@ declare module '@ioc:Adonis/Core/Route' {
   }
 
   /**
+   * Options accepted by makeUrl methods
+   */
+  export type MakeUrlOptions = {
+    qs?: any,
+    params?: any,
+    domainParams?: any,
+    prefixDomain?: boolean,
+  }
+
+  /**
    * Shape of router exposed for creating routes
    */
   export interface RouterContract {
@@ -219,6 +229,18 @@ declare module '@ioc:Adonis/Core/Route' {
     match (url: string, method: string, domain?: string): null | MatchedRoute
     lookup (routeIdentifier: string, domain?: string): null | RouteLookupNode
     forTesting (pattern?: string, methods?: string[], handler?: any): RouteContract
+
+    makeUrl (
+      routeIdentifier: string,
+      options?: MakeUrlOptions,
+      domain?: string,
+    ): string | null
+
+    makeSignedUrl (
+      routeIdentifier: string,
+      options?: MakeUrlOptions & { expiresIn?: string | number },
+      domain?: string,
+    ): string | null
   }
 
   const Route: RouterContract

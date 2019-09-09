@@ -8,16 +8,19 @@
  */
 
 import test from 'japa'
+import { parse } from 'querystring'
 import { Router } from '../src/Router'
 import { BriskRoute } from '../src/Router/BriskRoute'
 import { RouteResource } from '../src/Router/Resource'
 import { RouteGroup } from '../src/Router/Group'
 import { Route } from '../src/Router/Route'
-import { makeUrl } from '../src/helpers'
+import { Encryption } from '@adonisjs/encryption/build/standalone'
+
+const SECRET = 'averylongrandom32charslongsecret'
 
 test.group('Router', () => {
   test('add route class from the router instance', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
 
     assert.deepEqual(router.BriskRoute, BriskRoute)
     assert.deepEqual(router.RouteResource, RouteResource)
@@ -28,7 +31,7 @@ test.group('Router', () => {
 
 test.group('Router | add', () => {
   test('add routes', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
 
     const getRoute = router.get('/', 'HomeController.index')
     const postRoute = router.post('/', 'HomeController.store')
@@ -117,7 +120,7 @@ test.group('Router | add', () => {
   })
 
   test('raise error when route name is duplicate', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
 
     router.get('/', async function handler () {}).as('home')
     router.get('home', async function handler () {}).as('home')
@@ -129,7 +132,7 @@ test.group('Router | add', () => {
   test('raise error when prefixing route name of route with undefined name', (assert) => {
     assert.plan(1)
 
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
     async function handler () {}
 
     try {
@@ -147,7 +150,7 @@ test.group('Router | add', () => {
   test('raise error when prefixing brisk route name of route with undefined name', (assert) => {
     assert.plan(1)
 
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
     async function handler () {}
 
     try {
@@ -165,7 +168,7 @@ test.group('Router | add', () => {
   test('allow nested groups', (assert) => {
     assert.plan(1)
 
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
     async function handler () {}
 
     router.group(() => {
@@ -220,7 +223,7 @@ test.group('Router | add', () => {
   test('apply middleware in nested groups', (assert) => {
     assert.plan(1)
 
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
     async function handler () {}
 
     router.group(() => {
@@ -269,7 +272,7 @@ test.group('Router | add', () => {
   test('apply domain in nested groups', (assert) => {
     assert.plan(1)
 
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
     async function handler () {}
 
     router.group(() => {
@@ -318,7 +321,7 @@ test.group('Router | add', () => {
   test('apply namespace in nested groups', (assert) => {
     assert.plan(1)
 
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
     async function handler () {}
 
     router.group(() => {
@@ -367,7 +370,7 @@ test.group('Router | add', () => {
   test('apply route matchers in nested groups', (assert) => {
     assert.plan(1)
 
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
     async function handler () {}
 
     router.group(() => {
@@ -424,7 +427,7 @@ test.group('Router | add', () => {
   test('apply route names in group', (assert) => {
     assert.plan(1)
 
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
     async function handler () {}
 
     router.group(() => {
@@ -473,7 +476,7 @@ test.group('Router | add', () => {
 
 test.group('Router | commit', () => {
   test('commit routes to the store', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
 
     async function handler () {}
     router.get('/', handler)
@@ -513,7 +516,7 @@ test.group('Router | commit', () => {
   })
 
   test('commit routes group to the store', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
 
     async function handler () {}
     router.group(() => {
@@ -556,7 +559,7 @@ test.group('Router | commit', () => {
   })
 
   test('define resource inside a group', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
 
     router.group(() => {
       router.resource('posts', 'PostController')
@@ -840,7 +843,7 @@ test.group('Router | commit', () => {
   })
 
   test('define resource inside nested groups', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
 
     router.group(() => {
       router.group(() => {
@@ -1174,7 +1177,7 @@ test.group('Router | commit', () => {
   })
 
   test('define shallow resource', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
 
     router.shallowResource('posts.comments', 'CommentsController')
     router.commit()
@@ -1446,7 +1449,7 @@ test.group('Router | commit', () => {
   })
 
   test('do not commit route when deleted flag is set to true', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
 
     async function handler () {}
     const route = router.get('/', handler)
@@ -1461,7 +1464,7 @@ test.group('Router | commit', () => {
   })
 
   test('filter resource routes inside a named group', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
 
     router.group(() => {
       router.resource('photos', 'PhotosController').only(['create'])
@@ -1513,7 +1516,7 @@ test.group('Router | commit', () => {
   })
 
   test('process routes via pre processor if defined', (assert) => {
-    const router = new Router((routeJSON) => {
+    const router = new Router(new Encryption(SECRET), (routeJSON) => {
       routeJSON.meta.processed = true
     })
 
@@ -1559,7 +1562,7 @@ test.group('Router | commit', () => {
   })
 
   test('process resource via pre processor if defined', (assert) => {
-    const router = new Router((routeJSON) => {
+    const router = new Router(new Encryption(SECRET), (routeJSON) => {
       routeJSON.meta.processed = true
     })
 
@@ -1611,7 +1614,7 @@ test.group('Router | commit', () => {
   })
 
   test('process group routes via pre processor if defined', (assert) => {
-    const router = new Router((routeJSON) => {
+    const router = new Router(new Encryption(SECRET), (routeJSON) => {
       routeJSON.meta.processed = true
     })
 
@@ -1659,7 +1662,7 @@ test.group('Router | commit', () => {
   })
 
   test('define global matchers', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
     router.where('id', '^[a-z]+')
 
     async function handler () {}
@@ -1703,7 +1706,7 @@ test.group('Router | commit', () => {
 
 test.group('Router | match', () => {
   test('match route using URL', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
 
     router.resource('photos', 'PhotosController')
     router.commit()
@@ -1816,58 +1819,28 @@ test.group('Router | match', () => {
   })
 })
 
-test.group('Router | urlFor', () => {
-  test('make url using route controller.method', (assert) => {
-    const router = new Router()
+test.group('Router | lookup', () => {
+  test('lookup route using controller.method name', (assert) => {
+    const router = new Router(new Encryption(SECRET))
 
     router.resource('photos', 'PhotosController')
     router.commit()
 
-    assert.equal(
-      makeUrl(router.lookup('PhotosController.index')!.pattern, { params: {}, qs: {} }),
-      '/photos',
-    )
-
-    assert.equal(
-      makeUrl(router.lookup('PhotosController.show')!.pattern, { params: { id: '3' }, qs: {} }),
-      '/photos/3',
-    )
+    assert.equal(router.lookup('PhotosController.index')!.pattern, '/photos')
+    assert.equal(router.lookup('PhotosController.show')!.pattern, '/photos/:id')
   })
 
-  test('make url using route name', (assert) => {
-    const router = new Router()
+  test('lookup route by alias', (assert) => {
+    const router = new Router(new Encryption(SECRET))
 
     router.get('/posts/:id', 'PostController.show').as('showPost')
     router.commit()
 
-    assert.equal(
-      makeUrl(router.lookup('showPost')!.pattern, { params: { id: '3' }, qs: {} }),
-      '/posts/3',
-    )
+    assert.equal(router.lookup('showPost')!.pattern, '/posts/:id')
   })
 
-  test('raise error when required param is missing', (assert) => {
-    const router = new Router()
-
-    router.get('/posts/:id', 'PostController.show').as('showPost')
-    router.commit()
-
-    const fn = () => makeUrl(router.lookup('showPost')!.pattern, { params: {}, qs: {} })
-    assert.throw(fn, '`id` param is required to make URL for `/posts/:id` route')
-  })
-
-  test('append query string to the query', (assert) => {
-    const router = new Router()
-
-    router.get('/posts/:id', 'PostController.show').as('showPost')
-    router.commit()
-
-    const url = makeUrl(router.lookup('showPost')!.pattern, { params: { id: 1 }, qs: { username: 'virk' } })
-    assert.equal(url, '/posts/1?username=virk')
-  })
-
-  test('fetch only for given domain when defined', (assert) => {
-    const router = new Router()
+  test('lookup within a domain', (assert) => {
+    const router = new Router(new Encryption(SECRET))
 
     router.get('/posts/:id', 'PostController.show')
     router.get('/posts/:id', 'AdonisController.show').domain('adonisjs.com')
@@ -1879,7 +1852,7 @@ test.group('Router | urlFor', () => {
   })
 
   test('return null when unable to lookup route', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
 
     const route = router.lookup('/posts')
     assert.isNull(route)
@@ -1888,7 +1861,7 @@ test.group('Router | urlFor', () => {
 
 test.group('Router | forTesting', () => {
   test('auto commit testing routes to the store', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
     router.forTesting()
 
     assert.deepEqual(router['_store'].tree, {
@@ -1927,7 +1900,7 @@ test.group('Router | forTesting', () => {
 
 test.group('Brisk route', () => {
   test('define brisk route', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
     async function handler () {}
 
     router.on('/').setHandler(handler, 'render')
@@ -1948,7 +1921,7 @@ test.group('Brisk route', () => {
   })
 
   test('define brisk route inside a group', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
     async function handler () {}
 
     router.group(() => {
@@ -1972,7 +1945,7 @@ test.group('Brisk route', () => {
   })
 
   test('register brisk route to store', (assert) => {
-    const router = new Router()
+    const router = new Router(new Encryption(SECRET))
     async function handler () {}
 
     router.group(() => {
@@ -2020,5 +1993,153 @@ test.group('Brisk route', () => {
         },
       },
     })
+  })
+})
+
+test.group('Make url', () => {
+  test('make url to a given route', (assert) => {
+    const router = new Router(new Encryption(SECRET))
+    router.get('posts/:id', async function handler () {})
+    router.commit()
+
+    const url = router.makeUrl('/posts/:id', { params: { id: 1 } })!
+    assert.equal(url, '/posts/1')
+  })
+
+  test('make url to a given route by it\'s name', (assert) => {
+    const router = new Router(new Encryption(SECRET))
+    router.get('posts/:id', async function handler () {}).as('showPost')
+    router.commit()
+
+    const url = router.makeUrl('showPost', { params: { id: 1 } })!
+    assert.equal(url, '/posts/1')
+  })
+
+  test('make url to a given route by it\'s controller method', (assert) => {
+    const router = new Router(new Encryption(SECRET))
+    router.get('posts/:id', 'PostsController.index').as('showPost')
+    router.commit()
+
+    const url = router.makeUrl('PostsController.index', { params: { id: 1 } })!
+    assert.equal(url, '/posts/1')
+  })
+
+  test('make url to a given route by and append domain to it', (assert) => {
+    const router = new Router(new Encryption(SECRET))
+    router.get('posts/:id', 'PostsController.index').domain('blog.adonisjs.com')
+    router.commit()
+
+    const url = router.makeUrl('PostsController.index', { params: { id: 1 } })
+    assert.equal(url, '//blog.adonisjs.com/posts/1')
+  })
+})
+
+test.group('Make signed url', () => {
+  test('make signed url to a given route', (assert) => {
+    const encryption = new Encryption(SECRET)
+    const router = new Router(encryption)
+    router.get('posts/:id', async function handler () {})
+    router.commit()
+
+    const url = router.makeSignedUrl('/posts/:id', { params: { id: 1 } })!
+    const qs = parse(url.split('?')[1])
+    assert.equal(encryption.decrypt(qs.signature as string), '/posts/1')
+  })
+
+  test('make signed url to a given route by it\'s name', (assert) => {
+    const encryption = new Encryption(SECRET)
+    const router = new Router(encryption)
+
+    router.get('posts/:id', async function handler () {}).as('showPost')
+    router.commit()
+
+    const url = router.makeSignedUrl('showPost', { params: { id: 1 } })!
+    const qs = parse(url.split('?')[1])
+    assert.equal(encryption.decrypt(qs.signature as string), '/posts/1')
+  })
+
+  test('make signed url to a given route by it\'s controller method', (assert) => {
+    const encryption = new Encryption(SECRET)
+    const router = new Router(encryption)
+
+    router.get('posts/:id', 'PostsController.index').as('showPost')
+    router.commit()
+
+    const url = router.makeSignedUrl('PostsController.index', { params: { id: 1 } })!
+    const qs = parse(url.split('?')[1])
+    assert.equal(encryption.decrypt(qs.signature as string), '/posts/1')
+  })
+
+  test('make signed url to a given route by and append domain to it', (assert) => {
+    const encryption = new Encryption(SECRET)
+    const router = new Router(encryption)
+
+    router.get('posts/:id', 'PostsController.index').domain('blog.adonisjs.com')
+    router.commit()
+
+    const url = router.makeSignedUrl('PostsController.index', { params: { id: 1 } })!
+    const qs = parse(url.split('?')[1])
+    assert.equal(encryption.decrypt(qs.signature as string), '/posts/1')
+  })
+
+  test('make signed url with expiry', (assert) => {
+    const encryption = new Encryption(SECRET)
+    const router = new Router(encryption)
+
+    router.get('posts/:id', 'PostsController.index')
+    router.commit()
+
+    const url = router.makeSignedUrl('PostsController.index', { params: { id: 1 }, expiresIn: '1m' })!
+    const qs = parse(url.split('?')[1])
+
+    const timestamp = Date.now() + 1000 * 60 * 60
+    assert.equal(encryption.decrypt(qs.signature as string), `/posts/1?expires_at=${Number(qs.expires_at)}`)
+    assert.isBelow(Number(qs.expires_at), timestamp)
+  })
+
+  test('make signed url with custom query string', (assert) => {
+    const encryption = new Encryption(SECRET)
+    const router = new Router(encryption)
+
+    router.get('posts/:id', 'PostsController.index')
+    router.commit()
+
+    const url = router.makeSignedUrl('PostsController.index', {
+      params: { id: 1 },
+      qs: { page: 1 },
+      expiresIn: '1m',
+    })!
+    const qs = parse(url.split('?')[1])
+
+    const timestamp = Date.now() + 1000 * 60 * 60
+    assert.equal(
+      encryption.decrypt(qs.signature as string),
+      `/posts/1?page=1&expires_at=${Number(qs.expires_at)}`,
+    )
+    assert.isBelow(Number(qs.expires_at), timestamp)
+    assert.equal(Number(qs.page), 1)
+  })
+
+  test('make signed url with domain', (assert) => {
+    const encryption = new Encryption(SECRET)
+    const router = new Router(encryption)
+
+    router.get('posts/:id', 'PostsController.index').domain('blog.adonisjs.com')
+    router.commit()
+
+    const url = router.makeSignedUrl('PostsController.index', {
+      params: { id: 1 },
+      qs: { page: 1 },
+      expiresIn: '1m',
+    })!
+    const qs = parse(url.split('?')[1])
+
+    const timestamp = Date.now() + 1000 * 60 * 60
+    assert.equal(
+      encryption.decrypt(qs.signature as string),
+      `/posts/1?page=1&expires_at=${Number(qs.expires_at)}`,
+    )
+    assert.isBelow(Number(qs.expires_at), timestamp)
+    assert.equal(Number(qs.page), 1)
   })
 })

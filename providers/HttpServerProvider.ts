@@ -47,9 +47,10 @@ export default class HttpServerProvider {
       const Logger = this.$container.use('Adonis/Core/Logger')
       const Profiler = this.$container.use('Adonis/Core/Profiler')
       const Config = this.$container.use('Adonis/Core/Config')
+      const Encryption = this.$container.use('Adonis/Core/Encryption')
 
       const config = Object.assign({ secret: Config.get('app.appKey') }, Config.get('app.http', {}))
-      return new Server(this.$container, Logger, Profiler,config)
+      return new Server(this.$container, Logger, Profiler, Encryption, config)
     })
   }
 

@@ -13,7 +13,6 @@
 
 /// <reference path="../adonis-typings/index.ts" />
 
-import { stringify } from 'querystring'
 import { Exception } from '@poppinss/utils'
 
 import { Route } from './Router/Route'
@@ -71,7 +70,7 @@ export function toRoutesJSON (
 /**
  * Makes url for a route pattern and params and querystring.
  */
-export function makeUrl (pattern: string, options: { params: any, qs: any }): string {
+export function processPattern (pattern: string, data: any): string {
   let url = pattern
 
   if (url.indexOf(':') > -1) {
@@ -90,7 +89,7 @@ export function makeUrl (pattern: string, options: { params: any, qs: any }): st
 
       const isOptional = token.endsWith('?')
       const paramName = token.replace(/^:/, '').replace(/\?$/, '')
-      const param = options.params[paramName]
+      const param = data[paramName]
 
       /**
        * A required param is always required to make the complete URL
@@ -107,11 +106,7 @@ export function makeUrl (pattern: string, options: { params: any, qs: any }): st
     }).join('/')
   }
 
-  /**
-   * Stringify query string and append to the URL (if exists)
-   */
-  const qs = stringify(options.qs)
-  return qs ? `${url}?${qs}` : url
+  return url
 }
 
 /**

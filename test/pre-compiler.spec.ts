@@ -13,13 +13,16 @@ import { Ioc } from '@adonisjs/fold'
 
 import { MiddlewareStore } from '../src/MiddlewareStore'
 import { PreCompiler } from '../src/Server/PreCompiler'
+import { Encryption } from '@adonisjs/encryption/build/standalone'
+
+const encryption = new Encryption('averylongrandom32charslongsecret')
 
 test.group('Route precompiler', () => {
   test('process route by resolving function based middleware', (assert) => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
-    const router = new Router()
+    const router = new Router(encryption)
     const preCompiler = new PreCompiler(ioc, middlewareStore)
 
     async function middlewareFn () {}
@@ -38,7 +41,7 @@ test.group('Route precompiler', () => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
-    const router = new Router()
+    const router = new Router(encryption)
     const preCompiler = new PreCompiler(ioc, middlewareStore)
 
     async function middlewareFn () {}
@@ -58,7 +61,7 @@ test.group('Route precompiler', () => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
-    const router = new Router()
+    const router = new Router(encryption)
     const preCompiler = new PreCompiler(ioc, middlewareStore)
 
     class Auth {
@@ -83,7 +86,7 @@ test.group('Route precompiler', () => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
-    const router = new Router()
+    const router = new Router(encryption)
     const preCompiler = new PreCompiler(ioc, middlewareStore)
 
     async function handler () {}
@@ -101,7 +104,7 @@ test.group('Route precompiler', () => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
-    const router = new Router()
+    const router = new Router(encryption)
     const preCompiler = new PreCompiler(ioc, middlewareStore)
 
     class UserController {
@@ -124,7 +127,7 @@ test.group('Route precompiler', () => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
-    const router = new Router()
+    const router = new Router(encryption)
     const preCompiler = new PreCompiler(ioc, middlewareStore)
 
     class UserController {
@@ -147,7 +150,7 @@ test.group('Route precompiler', () => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
-    const router = new Router()
+    const router = new Router(encryption)
     const preCompiler = new PreCompiler(ioc, middlewareStore)
 
     const route = router.get('/', '/UserController.store').toJSON()

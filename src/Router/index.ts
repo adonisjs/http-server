@@ -13,6 +13,11 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
+import ms from 'ms'
+import { stringify } from 'querystring'
+import { Exception } from '@poppinss/utils'
+import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
+
 import {
   RouteMatchers,
   RouteNode,
@@ -20,15 +25,15 @@ import {
   MatchedRoute,
   RouteLookupNode,
   RouteHandlerNode,
+  MakeUrlOptions,
 } from '@ioc:Adonis/Core/Route'
-import { Exception } from '@poppinss/utils'
 
 import { Route } from './Route'
-import { RouteResource } from './Resource'
+import { Store } from './Store'
 import { RouteGroup } from './Group'
 import { BriskRoute } from './BriskRoute'
-import { Store } from './Store'
-import { toRoutesJSON } from '../helpers'
+import { RouteResource } from './Resource'
+import { toRoutesJSON, processPattern } from '../helpers'
 
 /**
  * Router class exposes unified API to create new routes, group them or
@@ -97,7 +102,10 @@ export class Router implements RouterContract {
     return 'handled by tests handler'
   }
 
-  constructor (private _routeProcessor?: (route: RouteNode) => void) {
+  constructor (
+    private _encryption: EncryptionContract,
+    private _routeProcessor?: (route: RouteNode) => void,
+  ) {
   }
 
   /**
@@ -331,6 +339,88 @@ export class Router implements RouterContract {
     return this._lookupStore.find(({ name, pattern, handler, domain }) => {
       return [name, pattern, handler].indexOf(routeIdentifier) > -1 && (!forDomain || forDomain === domain)
     }) || null
+  }
+
+  /**
+   * Makes url to a registered route by looking it up with the route pattern,
+   * name or the controller.method
+   */
+  public makeUrl (
+    routeIdentifier: string,
+    options?: MakeUrlOptions,
+    domain?: string,
+  ): string | null {
+    const route = this.lookup(routeIdentifier, domain)
+    if (!route) {
+      return null
+    }
+
+    /**
+     * Normalizing options
+     */
+    options = Object.assign({ qs: {}, params: {}, domainParams: {}, prefixDomain: true }, options)
+
+    /**
+     * Processing the route pattern with dynamic segments
+     */
+    let url = processPattern(route.pattern, options.params)
+
+    /**
+     * Append query string to the url when it is defined
+     */
+    const qs = stringify(options.qs)
+    if (qs) {
+      url = `${url}?${qs}`
+    }
+
+    return route.domain !== 'root' && options.prefixDomain
+      ? `//${processPattern(route.domain, options.domainParams)}${url}`
+      : url
+  }
+
+  /**
+   * Makes a signed url, which can be confirmed for it's integrity without
+   * relying on any sort of backend storage.
+   */
+  public makeSignedUrl (
+    routeIdentifier: string,
+    options?: MakeUrlOptions & { expiresIn?: string | number },
+    domain?: string,
+  ): string | null {
+    const route = this.lookup(routeIdentifier, domain)
+    if (!route) {
+      return null
+    }
+
+    options = Object.assign({ qs: {}, params: {}, domainParams: {}, prefixDomain: true }, options)
+    const expiresIn = options['expiresIn']
+
+    /**
+     * Setting the expiry of the url, when `expiresIn` duration is defined. We consider `0`
+     * as no expiry
+     */
+    if (expiresIn) {
+      const milliseconds = typeof (expiresIn) === 'string' ? ms(expiresIn) : expiresIn
+      options.qs.expires_at = Date.now() + milliseconds
+    }
+
+    /**
+     * Making the signature from the qualified url. We do not prefix the domain when
+     * make url for the signature, since it just makes the signature big.
+     *
+     * There might be a case, when someone wants to generate signature for the same route
+     * on their 2 different domains, but we ignore that case for now and can consider
+     * it later (when someone asks for it)
+     */
+    const signature = this._encryption
+      .child({ hmac: false })
+      .encrypt(this.makeUrl(route.pattern, { qs: options.qs, params: options.params, prefixDomain: false }))
+
+    /**
+     * Adding signature to the query string and re-making the url again
+     */
+    options.qs.signature = signature
+    return this.makeUrl(route.pattern, options)
   }
 
   /**
