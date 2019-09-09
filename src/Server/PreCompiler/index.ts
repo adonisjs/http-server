@@ -15,10 +15,10 @@
 
 import haye from 'haye'
 import { Middleware } from 'co-compose'
-import { IocContract } from '@adonisjs/fold'
+import { Exception } from '@poppinss/utils'
 import { RouteNode } from '@ioc:Adonis/Core/Route'
-import { IoCResolver, Exception } from '@poppinss/utils'
 import { MiddlewareStoreContract } from '@ioc:Adonis/Core/Middleware'
+import { IocContract, IocResolverContract } from '@adonisjs/fold'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import { useReturnValue } from '../../helpers'
@@ -78,13 +78,13 @@ export class PreCompiler {
   /**
    * The resolver used to resolve the controllers from IoC container
    */
-  private _resolver: IoCResolver
+  private _resolver: IocResolverContract
 
   constructor (
     container: IocContract,
     private _middlewareStore: MiddlewareStoreContract,
   ) {
-    this._resolver = new IoCResolver(container, 'httpControllers', 'App/Controllers/Http')
+    this._resolver = container.getResolver(undefined, 'httpControllers', 'App/Controllers/Http')
   }
 
   /**

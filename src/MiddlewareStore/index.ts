@@ -13,8 +13,7 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
-import { IocContract } from '@adonisjs/fold'
-import { IoCResolver } from '@poppinss/utils'
+import { IocContract, IocResolverContract } from '@adonisjs/fold'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import {
@@ -58,10 +57,10 @@ export class MiddlewareStore implements MiddlewareStoreContract {
   /**
    * The resolver to resolve middleware from the IoC container
    */
-  private _resolver: IoCResolver
+  private _resolver: IocResolverContract
 
   constructor (container: IocContract) {
-    this._resolver = new IoCResolver(container)
+    this._resolver = container.getResolver()
   }
 
   /**

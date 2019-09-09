@@ -13,8 +13,7 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
-import { IocContract } from '@adonisjs/fold'
-import { IoCResolver } from '@poppinss/utils'
+import { IocContract, IocResolverContract } from '@adonisjs/fold'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { ErrorHandlerNode, ResolvedErrorHandlerNode } from '@ioc:Adonis/Core/Server'
 
@@ -35,10 +34,10 @@ export class ExceptionManager {
    * A reference to ioc resolver to resolve the error handler from
    * the IoC container
    */
-  private _resolver: IoCResolver
+  private _resolver: IocResolverContract
 
   constructor (container: IocContract) {
-    this._resolver = new IoCResolver(container)
+    this._resolver = container.getResolver()
   }
 
   /**
