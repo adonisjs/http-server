@@ -14,6 +14,7 @@
 declare module '@ioc:Adonis/Core/Request' {
   import { UrlWithStringQuery } from 'url'
   import { MacroableConstructorContract } from 'macroable'
+  import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
   import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http'
 
   /**
@@ -90,6 +91,7 @@ declare module '@ioc:Adonis/Core/Request' {
     new (
       request: IncomingMessage,
       response: ServerResponse,
+      encryption: EncryptionContract,
       config: RequestConfigContract,
     ): RequestContract
   }
