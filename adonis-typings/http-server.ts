@@ -69,4 +69,6 @@ declare module '@ioc:Adonis/Core/Server' {
    * Config requried by request and response
    */
   export type ServerConfigContract = RequestConfigContract & ResponseConfigContract
+  const Server: ServerContract
+  export default Server
 }
