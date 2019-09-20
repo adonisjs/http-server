@@ -20,6 +20,7 @@ import { Profiler } from '@adonisjs/profiler/build/standalone'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
 import { Encryption } from '@adonisjs/encryption/build/standalone'
+import { ProfilerActionDataPacket, ProfilerRowDataPacket } from '@ioc:Adonis/Core/Profiler'
 
 import { Server } from '../src/Server'
 
@@ -266,6 +267,66 @@ test.group('Server | middleware', () => {
     const { text } = await supertest(httpServer).get('/').expect(200)
     assert.deepEqual(stack, ['fn1', 'fn2', 'route fn1'])
     assert.equal(text, 'Short circuit')
+  })
+
+  test('middleware must profile in the request scope', async (assert) => {
+    const profiler = new Profiler({ enabled: true })
+    const server = new Server(new Ioc(), logger, profiler, encryption, config)
+
+    let requestPacket: ProfilerRowDataPacket
+    let hookPacket: ProfilerActionDataPacket
+
+    server.router.get('/', async () => {
+      return 'done'
+    }).middleware(async function routeMiddleware ({ profiler }, next) {
+      profiler.profile('foo').end()
+      return next()
+    })
+
+    server.optimize()
+
+    profiler.subscribe((packet) => {
+      if (packet.label === 'foo') {
+        hookPacket = packet as ProfilerActionDataPacket
+      } else {
+        requestPacket = packet as ProfilerRowDataPacket
+      }
+    })
+
+    const httpServer = createServer(server.handle.bind(server))
+    await supertest(httpServer).get('/').expect(200)
+
+    assert.equal(hookPacket!.parent_id, requestPacket!.id)
+  })
+
+  test('upstream middleware must profile in the request scope', async (assert) => {
+    const profiler = new Profiler({ enabled: true })
+    const server = new Server(new Ioc(), logger, profiler, encryption, config)
+
+    let requestPacket: ProfilerRowDataPacket
+    let hookPacket: ProfilerActionDataPacket
+
+    server.router.get('/', async () => {
+      return 'done'
+    }).middleware(async function routeMiddleware ({ profiler }, next) {
+      await next()
+      profiler.profile('foo').end()
+    })
+
+    server.optimize()
+
+    profiler.subscribe((packet) => {
+      if (packet.label === 'foo') {
+        hookPacket = packet as ProfilerActionDataPacket
+      } else {
+        requestPacket = packet as ProfilerRowDataPacket
+      }
+    })
+
+    const httpServer = createServer(server.handle.bind(server))
+    await supertest(httpServer).get('/').expect(200)
+
+    assert.equal(hookPacket!.parent_id, requestPacket!.id)
   })
 })
 
@@ -552,6 +613,37 @@ test.group('Server | hooks', () => {
     assert.property(header, 'x-after-hook')
     assert.equal(text, 'What??')
     assert.deepEqual(stack, ['hook1', 'hook2', 'after hook1'])
+  })
+
+  test('after hooks must profile in the request scope', async (assert) => {
+    const profiler = new Profiler({ enabled: true })
+    const server = new Server(new Ioc(), logger, profiler, encryption, config)
+
+    let requestPacket: ProfilerRowDataPacket
+    let hookPacket: ProfilerActionDataPacket
+
+    server.hooks.after(async ({ profiler }) => {
+      profiler.profile('foo').end()
+    })
+
+    server.router.get('/', async () => {
+      return 'done'
+    })
+
+    server.optimize()
+
+    profiler.subscribe((packet) => {
+      if (packet.label === 'foo') {
+        hookPacket = packet as ProfilerActionDataPacket
+      } else {
+        requestPacket = packet as ProfilerRowDataPacket
+      }
+    })
+
+    const httpServer = createServer(server.handle.bind(server))
+    await supertest(httpServer).get('/').expect(200)
+
+    assert.equal(hookPacket!.parent_id, requestPacket!.id)
   })
 })
 

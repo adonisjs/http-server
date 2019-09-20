@@ -38,8 +38,13 @@ export class PreCompiler {
   private _finalRouteHandler = async function finalRouteHandler (ctx: HttpContextContract) {
     let data: any = {}
 
-    const controllerRow = ctx.profiler.child('http:route:handler', data)
-    ctx.profiler = controllerRow
+    let requestProfiler = ctx.profiler
+
+    /**
+     * Passing a child to the route handler, so that all internal
+     * actions can have their own child row
+     */
+    ctx.profiler = ctx.profiler.child('http:route:handler', data)
 
     const routeHandler = ctx.route!.meta.resolvedHandler!
     let returnValue: any
@@ -56,9 +61,12 @@ export class PreCompiler {
       if (useReturnValue(returnValue, ctx)) {
         ctx.response.send(returnValue)
       }
-      controllerRow.end()
+
+      ctx.profiler.end()
+      ctx.profiler = requestProfiler
     } catch (error) {
-      controllerRow.end()
+      ctx.profiler.end()
+      ctx.profiler = requestProfiler
       throw error
     }
   }.bind(this)

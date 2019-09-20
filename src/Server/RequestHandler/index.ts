@@ -79,22 +79,7 @@ export class RequestHandler {
    */
   public async handle (ctx: HttpContextContract) {
     this._findRoute(ctx)
-
-    const routeStackRow = ctx.profiler.child('http:route:stack')
-
-    /**
-     * Updating the profiler, so that all internal actions points to this
-     * row vs the main request row
-     */
-    ctx.profiler = routeStackRow
-
-    try {
-      await this._invokeHandler(ctx)
-      routeStackRow.end()
-    } catch (error) {
-      routeStackRow.end()
-      throw error
-    }
+    await this._invokeHandler(ctx)
   }
 
   /**
