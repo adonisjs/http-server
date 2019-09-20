@@ -1,6 +1,4 @@
-**[@adonisjs/http-server](../README.md)**
-
-[Globals](../README.md) › [&quot;src/Response/index&quot;](../modules/_src_response_index_.md) › [Response](_src_response_index_.response.md)
+[@adonisjs/http-server](../README.md) › ["src/Response/index"](../modules/_src_response_index_.md) › [Response](_src_response_index_.response.md)
 
 # Class: Response
 
@@ -30,7 +28,7 @@ This is how `explicitEnd` mode works in nutshell.
 
 * Macroable
 
-  * **Response**
+  ↳ **Response**
 
 ## Implements
 

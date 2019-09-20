@@ -1,6 +1,4 @@
-**[@adonisjs/http-server](../README.md)**
-
-[Globals](../README.md) › [&quot;src/Router/BriskRoute&quot;](../modules/_src_router_briskroute_.md) › [BriskRoute](_src_router_briskroute_.briskroute.md)
+[@adonisjs/http-server](../README.md) › ["src/Router/BriskRoute"](../modules/_src_router_briskroute_.md) › [BriskRoute](_src_router_briskroute_.briskroute.md)
 
 # Class: BriskRoute
 
@@ -15,7 +13,7 @@ closure.
 
 * Macroable
 
-  * **BriskRoute**
+  ↳ **BriskRoute**
 
 ## Implements
 

@@ -1,6 +1,4 @@
-**[@adonisjs/http-server](../README.md)**
-
-[Globals](../README.md) › [&quot;src/Server/Hooks/index&quot;](../modules/_src_server_hooks_index_.md) › [Hooks](_src_server_hooks_index_.hooks.md)
+[@adonisjs/http-server](../README.md) › ["src/Server/Hooks/index"](../modules/_src_server_hooks_index_.md) › [Hooks](_src_server_hooks_index_.hooks.md)
 
 # Class: Hooks
 

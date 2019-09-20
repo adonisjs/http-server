@@ -1,6 +1,4 @@
-**[@adonisjs/http-server](../README.md)**
-
-[Globals](../README.md) › [&quot;src/MiddlewareStore/index&quot;](../modules/_src_middlewarestore_index_.md) › [MiddlewareStore](_src_middlewarestore_index_.middlewarestore.md)
+[@adonisjs/http-server](../README.md) › ["src/MiddlewareStore/index"](../modules/_src_middlewarestore_index_.md) › [MiddlewareStore](_src_middlewarestore_index_.middlewarestore.md)
 
 # Class: MiddlewareStore
 

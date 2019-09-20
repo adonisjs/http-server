@@ -1,6 +1,4 @@
-**[@adonisjs/http-server](../README.md)**
-
-[Globals](../README.md) › [&quot;src/ExceptionManager/index&quot;](../modules/_src_exceptionmanager_index_.md) › [ExceptionManager](_src_exceptionmanager_index_.exceptionmanager.md)
+[@adonisjs/http-server](../README.md) › ["src/ExceptionManager/index"](../modules/_src_exceptionmanager_index_.md) › [ExceptionManager](_src_exceptionmanager_index_.exceptionmanager.md)
 
 # Class: ExceptionManager
 

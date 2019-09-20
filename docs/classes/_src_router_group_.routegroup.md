@@ -1,6 +1,4 @@
-**[@adonisjs/http-server](../README.md)**
-
-[Globals](../README.md) › [&quot;src/Router/Group&quot;](../modules/_src_router_group_.md) › [RouteGroup](_src_router_group_.routegroup.md)
+[@adonisjs/http-server](../README.md) › ["src/Router/Group"](../modules/_src_router_group_.md) › [RouteGroup](_src_router_group_.routegroup.md)
 
 # Class: RouteGroup
 
@@ -11,7 +9,7 @@ The group routes must be pre-defined using the constructor.
 
 * Macroable
 
-  * **RouteGroup**
+  ↳ **RouteGroup**
 
 ## Implements
 

@@ -1,6 +1,4 @@
-**[@adonisjs/http-server](../README.md)**
-
-[Globals](../README.md) › [&quot;src/Request/index&quot;](../modules/_src_request_index_.md) › [Request](_src_request_index_.request.md)
+[@adonisjs/http-server](../README.md) › ["src/Request/index"](../modules/_src_request_index_.md) › [Request](_src_request_index_.request.md)
 
 # Class: Request
 
@@ -16,7 +14,7 @@ using `request.request` property.
 
 * Macroable
 
-  * **Request**
+  ↳ **Request**
 
 ## Implements
 

@@ -1,6 +1,4 @@
-**[@adonisjs/http-server](../README.md)**
-
-[Globals](../README.md) › [&quot;src/Router/Resource&quot;](../modules/_src_router_resource_.md) › [RouteResource](_src_router_resource_.routeresource.md)
+[@adonisjs/http-server](../README.md) › ["src/Router/Resource"](../modules/_src_router_resource_.md) › [RouteResource](_src_router_resource_.routeresource.md)
 
 # Class: RouteResource
 
@@ -17,7 +15,7 @@ const resource = new RouteResource('articles', 'ArticlesController')
 
 * Macroable
 
-  * **RouteResource**
+  ↳ **RouteResource**
 
 ## Implements
 

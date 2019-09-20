@@ -1,6 +1,4 @@
-**[@adonisjs/http-server](../README.md)**
-
-[Globals](../README.md) › [&quot;src/Router/Store&quot;](../modules/_src_router_store_.md) › [Store](_src_router_store_.store.md)
+[@adonisjs/http-server](../README.md) › ["src/Router/Store"](../modules/_src_router_store_.md) › [Store](_src_router_store_.store.md)
 
 # Class: Store
 

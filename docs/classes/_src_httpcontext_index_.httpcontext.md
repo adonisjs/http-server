@@ -1,6 +1,4 @@
-**[@adonisjs/http-server](../README.md)**
-
-[Globals](../README.md) › [&quot;src/HttpContext/index&quot;](../modules/_src_httpcontext_index_.md) › [HttpContext](_src_httpcontext_index_.httpcontext.md)
+[@adonisjs/http-server](../README.md) › ["src/HttpContext/index"](../modules/_src_httpcontext_index_.md) › [HttpContext](_src_httpcontext_index_.httpcontext.md)
 
 # Class: HttpContext
 

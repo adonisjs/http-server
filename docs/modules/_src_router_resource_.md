@@ -1,6 +1,4 @@
-**[@adonisjs/http-server](../README.md)**
-
-[Globals](../README.md) › [&quot;src/Router/Resource&quot;](_src_router_resource_.md)
+[@adonisjs/http-server](../README.md) › ["src/Router/Resource"](_src_router_resource_.md)
 
 # External module: "src/Router/Resource"
 

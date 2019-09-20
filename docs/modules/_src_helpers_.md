@@ -1,6 +1,4 @@
-**[@adonisjs/http-server](../README.md)**
-
-[Globals](../README.md) › [&quot;src/helpers&quot;](_src_helpers_.md)
+[@adonisjs/http-server](../README.md) › ["src/helpers"](_src_helpers_.md)
 
 # External module: "src/helpers"
 

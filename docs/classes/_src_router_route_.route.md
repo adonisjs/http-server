@@ -1,6 +1,4 @@
-**[@adonisjs/http-server](../README.md)**
-
-[Globals](../README.md) › [&quot;src/Router/Route&quot;](../modules/_src_router_route_.md) › [Route](_src_router_route_.route.md)
+[@adonisjs/http-server](../README.md) › ["src/Router/Route"](../modules/_src_router_route_.md) › [Route](_src_router_route_.route.md)
 
 # Class: Route
 
@@ -23,7 +21,7 @@ route
 
 * Macroable
 
-  * **Route**
+  ↳ **Route**
 
 ## Implements
 
