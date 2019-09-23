@@ -53,42 +53,25 @@ export class Hooks implements HooksContract {
    * without further processing it.
    */
   public async executeBefore (ctx: HttpContextContract): Promise<boolean> {
-    const action = ctx.profiler.profile('http:before:hooks')
+    for (let hook of this._hooks.before) {
+      await hook(ctx)
 
-    try {
-      for (let hook of this._hooks.before) {
-        await hook(ctx)
-
-        /**
-         * We must break the loop when one of the hooks set the response
-         */
-        if (ctx.response.hasLazyBody || !ctx.response.isPending) {
-          action.end()
-          return true
-        }
+      /**
+       * We must break the loop when one of the hooks set the response
+       */
+      if (ctx.response.hasLazyBody || !ctx.response.isPending) {
+        return true
       }
-      action.end()
-      return false
-    } catch (error) {
-      action.end()
-      throw error
     }
+    return false
   }
 
   /**
    * Executes after hooks in series.
    */
   public async executeAfter (ctx: HttpContextContract) {
-    const action = ctx.profiler.profile('http:after:hooks')
-
-    try {
-      for (let hook of this._hooks.after) {
-        await hook(ctx)
-      }
-      action.end()
-    } catch (error) {
-      action.end()
-      throw error
+    for (let hook of this._hooks.after) {
+      await hook(ctx)
     }
   }
 
