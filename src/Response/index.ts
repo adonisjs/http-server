@@ -58,7 +58,7 @@ function statFn (filePath: string): Promise<Stats> {
 /**
  * Custom exception to abort requests as one liners
  */
-class HttpResponseException extends Exception {
+class HttpException extends Exception {
   public body
 
   /**
@@ -80,7 +80,7 @@ class HttpResponseException extends Exception {
    * Handle itself by making the response. This only works when using the
    * base exception handler shipped by AdonisJs
    */
-  public handle (error: HttpResponseException, ctx: HttpContextContract) {
+  public handle (error: HttpException, ctx: HttpContextContract) {
     ctx.response.status(error.status).send(error.body)
   }
 }
@@ -814,7 +814,7 @@ export class Response extends Macroable implements ResponseContract {
    * used when status is not defined
    */
   public abort (body: any, status?: number): void {
-    throw HttpResponseException.invoke(body, status || 400)
+    throw HttpException.invoke(body, status || 400)
   }
 
   /**
