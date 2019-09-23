@@ -57,6 +57,8 @@ This is how `explicitEnd` mode works in nutshell.
 
 ### Methods
 
+* [abort](_src_response_index_.response.md#abort)
+* [abortIf](_src_response_index_.response.md#abortif)
 * [append](_src_response_index_.response.md#append)
 * [attachment](_src_response_index_.response.md#attachment)
 * [buildResponseBody](_src_response_index_.response.md#buildresponsebody)
@@ -197,6 +199,43 @@ and body.
 **Returns:** *boolean*
 
 ## Methods
+
+###  abort
+
+▸ **abort**(`body`: any, `status?`: undefined | number): *void*
+
+Abort the request with custom body and a status code. 400 is
+used when status is not defined
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`status?` | undefined &#124; number |
+
+**Returns:** *void*
+
+___
+
+###  abortIf
+
+▸ **abortIf**(`condition`: any, `body`: any, `status?`: undefined | number): *void*
+
+Abort the request with custom body and a status code when
+passed condition returns `true`
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`condition` | any |
+`body` | any |
+`status?` | undefined &#124; number |
+
+**Returns:** *void*
+
+___
 
 ###  append
 
