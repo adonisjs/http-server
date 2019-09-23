@@ -22,6 +22,7 @@ import destroy from 'destroy'
 import { extname } from 'path'
 import onFinished from 'on-finished'
 import { Macroable } from 'macroable'
+import { Exception } from '@poppinss/utils'
 import { DeepReadonly } from 'ts-essentials'
 import { createReadStream, stat, Stats } from 'fs'
 import contentDisposition from 'content-disposition'
@@ -37,6 +38,8 @@ import {
   ResponseConfigContract,
 } from '@ioc:Adonis/Core/Response'
 
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+
 /**
  * Wraps `fs.stat` to promise interface.
  */
@@ -50,6 +53,36 @@ function statFn (filePath: string): Promise<Stats> {
       resolve(stats)
     })
   })
+}
+
+/**
+ * Custom exception to abort requests as one liners
+ */
+class HttpResponseException extends Exception {
+  public body
+
+  /**
+   * This method returns an instance of the exception class
+   */
+  public static invoke (body: any, status: number) {
+    if (typeof (body) === 'object') {
+      const error = new this(body.message || `Request aborted with status code${status}`, status)
+      error.body = body
+      return error
+    }
+
+    const error = new this(body || `Request aborted with status code${status}`, status)
+    error.body = error.message
+    return error
+  }
+
+  /**
+   * Handle itself by making the response. This only works when using the
+   * base exception handler shipped by AdonisJs
+   */
+  public handle (error: HttpResponseException, ctx: HttpContextContract) {
+    ctx.response.status(error.status).send(error.body)
+  }
 }
 
 /**
@@ -774,6 +807,24 @@ export class Response extends Macroable implements ResponseContract {
     this.safeStatus(statusCode || 302)
     this.type('text/plain; charset=utf-8')
     this.send(`Redirecting to ${url}`)
+  }
+
+  /**
+   * Abort the request with custom body and a status code. 400 is
+   * used when status is not defined
+   */
+  public abort (body: any, status?: number): void {
+    throw HttpResponseException.invoke(body, status || 400)
+  }
+
+  /**
+   * Abort the request with custom body and a status code when
+   * passed condition returns `true`
+   */
+  public abortIf (condition: any, body: any, status?: number): void {
+    if (condition) {
+      this.abort(body, status)
+    }
   }
 
   /**

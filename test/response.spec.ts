@@ -969,4 +969,88 @@ test.group('Response', (group) => {
       },
     ])
   })
+
+  test('abort request by raising exception', async (assert) => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response = new Response(req, res, config)
+      try {
+        response.abort('Bad request')
+      } catch (error) {
+        error.handle(error, { response })
+      }
+
+      response.finish()
+    })
+
+    const { text } = await supertest(server).get('/').expect(400)
+    assert.equal(text, 'Bad request')
+  })
+
+  test('abort request with json body', async (assert) => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response = new Response(req, res, config)
+      try {
+        response.abort({ message: 'Bad request' })
+      } catch (error) {
+        error.handle(error, { response })
+      }
+
+      response.finish()
+    })
+
+    const { body } = await supertest(server).get('/').expect(400)
+    assert.deepEqual(body, { message: 'Bad request' })
+  })
+
+  test('abort request with custom status code', async (assert) => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response = new Response(req, res, config)
+      try {
+        response.abort({ message: 'Not allowed' }, 401)
+      } catch (error) {
+        error.handle(error, { response })
+      }
+
+      response.finish()
+    })
+
+    const { body } = await supertest(server).get('/').expect(401)
+    assert.deepEqual(body, { message: 'Not allowed' })
+  })
+
+  test('abort request when condition is truthy', async (assert) => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response = new Response(req, res, config)
+      try {
+        response.abortIf(true, { message: 'Not allowed' }, 401)
+      } catch (error) {
+        error.handle(error, { response })
+      }
+
+      response.finish()
+    })
+
+    const { body } = await supertest(server).get('/').expect(401)
+    assert.deepEqual(body, { message: 'Not allowed' })
+  })
+
+  test('do not abort request when condition is falsy', async () => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response = new Response(req, res, config)
+      try {
+        response.abortIf(false, { message: 'Not allowed' }, 401)
+      } catch (error) {
+        error.handle(error, { response })
+      }
+
+      response.finish()
+    })
+
+    await supertest(server).get('/').expect(200)
+  })
 })

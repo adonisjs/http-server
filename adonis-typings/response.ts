@@ -101,6 +101,9 @@ declare module '@ioc:Adonis/Core/Response' {
     plainCookie (key: string, value: any, options?: Partial<CookieOptions>): this
     clearCookie (key: string): this
 
+    abort (body: any, status?: number): void
+    abortIf (conditional: any, body: any, status?: number): void
+
     finish (): void
   }
 
