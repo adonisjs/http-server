@@ -75,6 +75,7 @@ using `request.request` property.
 * [setInitialBody](_src_request_index_.request.md#setinitialbody)
 * [stale](_src_request_index_.request.md#stale)
 * [subdomains](_src_request_index_.request.md#subdomains)
+* [toJSON](_src_request_index_.request.md#tojson)
 * [types](_src_request_index_.request.md#types)
 * [updateBody](_src_request_index_.request.md#updatebody)
 * [updateQs](_src_request_index_.request.md#updateqs)
@@ -902,6 +903,16 @@ returned if [hostname](_src_request_index_.request.md#hostname) is `null` or is 
 Also `www` is not considered as a subdomain
 
 **Returns:** *string[]*
+
+___
+
+###  toJSON
+
+▸ **toJSON**(): *object*
+
+toJSON copy of the request
+
+**Returns:** *object*
 
 ___
 
