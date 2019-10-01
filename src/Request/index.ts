@@ -848,4 +848,18 @@ export class Request extends Macroable implements RequestContract {
     const queryString = qs.stringify(rest)
     return queryString ? `${this.url()}?${queryString}` === signedUrl : this.url() === signedUrl
   }
+
+  /**
+   * toJSON copy of the request
+   */
+  public toJSON () {
+    return {
+      id: this.id(),
+      url: this.url(),
+      query: this.parsedUrl.query,
+      headers: this.headers(),
+      method: this.method(),
+      protocol: this.protocol(),
+    }
+  }
 }

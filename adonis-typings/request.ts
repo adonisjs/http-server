@@ -68,6 +68,7 @@ declare module '@ioc:Adonis/Core/Request' {
     cookie (key: string, defaultValue?: any): any
     plainCookie (key: string, defaultValue?: any): any
     hasValidSignature (): boolean
+    toJSON (): any
   }
 
   /**
