@@ -269,7 +269,7 @@ export class Response extends Macroable implements ResponseContract {
        * Listen for errors on the stream and properly destroy
        * stream
        */
-      body.on('error', (error) => {
+      body.on('error', (error: NodeJS.ErrnoException) => {
         /* istanbul ignore if */
         if (finished) {
           return
@@ -283,7 +283,7 @@ export class Response extends Macroable implements ResponseContract {
         } else {
           this._end(
             error.code === 'ENOENT' ? 'File not found' : 'Cannot process file',
-            error.status || 500,
+            error.code === 'ENOENT' ? 404 : 500,
           )
           resolve()
         }
