@@ -396,6 +396,19 @@ test.group('Response', (group) => {
     assert.equal(text, 'hello world')
   })
 
+  test('raise error when we try to stream a non-existing file', async (assert) => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response = new Response(req, res, config)
+      response.stream(createReadStream(join(fs.basePath, 'i-dont-exist.txt')))
+      response.finish()
+    })
+
+    const { text, status } = await supertest(server).get('/')
+    assert.equal(status, 404)
+    assert.equal(text, 'File not found')
+  })
+
   test('raise error when input is not a stream', async (assert) => {
     assert.plan(1)
 
