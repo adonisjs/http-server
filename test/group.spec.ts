@@ -341,4 +341,70 @@ test.group('Route Group', () => {
       },
     ])
   })
+
+  test('multiples routes group insede of group', (assert) => {
+    async function handlerIds () {}
+    async function handlerUsers () {}
+    async function handler () {}
+
+    const apiV1 = new RouteGroup([
+      new Route('/:id', ['GET'], handlerIds, {}),
+      new Route('/users', ['GET'], handlerUsers, {}),
+    ])
+      .prefix('v1')
+      .middleware('auth')
+    apiV1.where('id', '[a-z]')
+
+    const apiV2 = new RouteGroup([new Route('/:id', ['GET'], handler, {})])
+      .prefix('v2')
+      .middleware('limitter')
+    apiV2.where('id', '[a-z]')
+
+    const group = new RouteGroup([apiV1, apiV2]).prefix('api')
+
+    assert.deepEqual(toRoutesJSON(group.routes), [
+      {
+        pattern: '/api/v1/:id',
+        matchers: {
+          id: new RegExp('[a-z]'),
+        },
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: ['auth'],
+        name: undefined,
+        handler: handlerIds,
+      },
+      {
+        pattern: '/api/v1/users',
+        matchers: {
+          id: new RegExp('[a-z]'),
+        },
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: ['auth'],
+        name: undefined,
+        handler: handlerUsers,
+      },
+      {
+        pattern: '/api/v2/:id',
+        matchers: {
+          id: new RegExp('[a-z]'),
+        },
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: ['limitter'],
+        name: undefined,
+        handler,
+      },
+    ])
+  })
 })
