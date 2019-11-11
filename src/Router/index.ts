@@ -328,7 +328,32 @@ export class Router implements RouterContract {
    * Find route for a given URL, method and optionally domain
    */
   public match (url: string, method: string, domain?: string): null | MatchedRoute {
-    return this._store.match(url, method, domain)
+    /**
+     * 1. If domain is not mentioned, then we lookup for root level defined
+     *    routes.
+     *
+     * 2. If domain is mentioned, then we check the store to see if user has registered
+     *    one or more routes for that domain or not.
+     *
+     *    - If they have not registered any routes for the mentioned domain, it means,
+     *      they don't want any special treatment for this domain, hence we search
+     *      with the the root level routes. (Same as 1)
+     *
+     *    - Else we search within the routes of the mentioned domain.
+     */
+
+    const matchingDomain = domain ? this._store.matchDomain(domain) : []
+    if (!matchingDomain.length) {
+      return this._store.match(url, method)
+    }
+
+    /**
+     * Search within the domain
+     */
+    return this._store.match(url, method, {
+      storeMatch: matchingDomain,
+      value: domain!,
+    })
   }
 
   /**

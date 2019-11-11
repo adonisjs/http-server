@@ -46,6 +46,11 @@ declare module '@ioc:Adonis/Core/Route' {
   }
 
   /**
+   * Shape of match from the route store
+   */
+  export type RouteStoreMatch = { old: string, type: number, val: string }
+
+  /**
    * Shape of route param matchers
    */
   export type RouteMatchers = {

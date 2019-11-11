@@ -47,12 +47,13 @@ export class RequestHandler {
   private _findRoute (ctx: HttpContextContract) {
     const url = ctx.request.url()
     const method = ctx.request.method()
+    const hostname = ctx.request.hostname()
 
     /**
      * Profiling `route.match` method
      */
     const matchRoute = ctx.profiler.profile('http:route:match')
-    const route = this._router.match(url, method)
+    const route = this._router.match(url, method, hostname || undefined)
     matchRoute.end()
 
     /**

@@ -17,12 +17,13 @@ import matchit from 'matchit'
 import { pick, cloneDeep } from 'lodash'
 import { Exception } from '@poppinss/utils'
 import {
-  RouteDefinition,
   RouteNode,
-  MatchedRoute,
   DomainNode,
   MethodNode,
   RoutesTree,
+  MatchedRoute,
+  RouteDefinition,
+  RouteStoreMatch,
 } from '@ioc:Adonis/Core/Route'
 
 /**
@@ -149,17 +150,28 @@ export class Store {
   }
 
   /**
+   * Matches the domain pattern for a given string
+   */
+  public matchDomain (domain: string): RouteStoreMatch[] {
+    return matchit.match(domain || 'root', this.tree.tokens)
+  }
+
+  /**
    * Matches the url, method and optionally domain to pull the matching
    * route. `null` is returned when unable to match the URL against
    * registered routes.
+   *
+   * The domain parameter has to be a registered pattern and not the fully
+   * qualified runtime domain. You must call `matchDomain` first to fetch
+   * the pattern for qualified domain
    */
-  public match (url: string, method: string, domain?: string): null | MatchedRoute {
-    /**
-     * Start by matching the domain and return null, if unable to find
-     * the domain
-     */
-    const matchedDomain = matchit.match(domain || 'root', this.tree.tokens)
-    if (!matchedDomain.length) {
+  public match (
+    url: string,
+    method: string,
+    domain?: { storeMatch: RouteStoreMatch[], value: string },
+  ): null | MatchedRoute {
+    const matchedDomain = this.tree.domains[domain?.storeMatch[0]?.old || 'root']
+    if (!matchedDomain) {
       return null
     }
 
@@ -168,7 +180,7 @@ export class Store {
      * method node is missing, means no routes ever got registered for that
      * method
      */
-    const matchedMethod = this.tree.domains[matchedDomain[0].old][method]
+    const matchedMethod = this.tree.domains[domain?.storeMatch[0].old || 'root'][method]
     if (!matchedMethod) {
       return null
     }
@@ -185,7 +197,9 @@ export class Store {
     return {
       route: matchedMethod.routes[matchedRoute[0].old],
       params: matchit.exec(url, matchedRoute),
-      subdomains: matchit.exec(domain || 'root', matchedDomain),
+      subdomains: domain?.value
+        ? matchit.exec(domain.value || 'root', domain.storeMatch)
+        : {},
     }
   }
 }

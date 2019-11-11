@@ -442,7 +442,11 @@ test.group('Store | match', () => {
       methods: ['GET'],
     })
 
-    assert.deepEqual(store.match('/1', 'GET', 'foo.com'), {
+    const domain = store.matchDomain('foo.com')
+    assert.deepEqual(store.match('/1', 'GET', {
+      storeMatch: domain,
+      value: 'foo.com',
+    }), {
       route: {
         pattern: '/:id',
         handler,
@@ -470,7 +474,11 @@ test.group('Store | match', () => {
       methods: ['GET'],
     })
 
-    assert.deepEqual(store.match('/1', 'GET', 'blog.adonisjs.com'), {
+    const domain = store.matchDomain('blog.adonisjs.com')
+    assert.deepEqual(store.match('/1', 'GET', {
+      storeMatch: domain,
+      value: 'blog.adonisjs.com',
+    }), {
       route: {
         pattern: '/:id',
         handler,
@@ -486,7 +494,7 @@ test.group('Store | match', () => {
     })
   })
 
-  test('return null when unable to match the route domain', (assert) => {
+  test('return empty array when unable to match the route domain', (assert) => {
     async function handler () {}
 
     const store = new Store()
@@ -497,9 +505,10 @@ test.group('Store | match', () => {
       meta: {},
       middleware: [],
       methods: ['GET'],
+      domain: 'foo.adonisjs.com',
     })
 
-    assert.isNull(store.match('/1', 'GET', 'blog.adonisjs.com'))
+    assert.deepEqual(store.matchDomain('blog.adonisjs.com'), [])
   })
 
   test('return null when unable to match the method', (assert) => {
@@ -515,7 +524,7 @@ test.group('Store | match', () => {
       methods: ['GET'],
     })
 
-    assert.isNull(store.match('/1', 'POST', 'root'))
+    assert.isNull(store.match('/1', 'POST'))
   })
 
   test('return null when unable to match the route url', (assert) => {
@@ -531,6 +540,6 @@ test.group('Store | match', () => {
       methods: ['GET'],
     })
 
-    assert.isNull(store.match('/hello', 'GET', 'root'))
+    assert.isNull(store.match('/hello', 'GET'))
   })
 })
