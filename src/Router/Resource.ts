@@ -15,6 +15,7 @@
 
 import { singular } from 'pluralize'
 import { Macroable } from 'macroable'
+import { snakeCase } from 'lodash'
 
 import { MiddlewareNode } from '@ioc:Adonis/Core/Middleware'
 import { RouteMatchers, RouteResourceContract } from '@ioc:Adonis/Core/Route'
@@ -54,6 +55,8 @@ export class RouteResource extends Macroable implements RouteResourceContract {
    * Add a new route for the given pattern, methods and controller action
    */
   private _makeRoute (pattern: string, methods: string[], action: string, baseName: string) {
+    baseName = baseName.split('.').map((token) => snakeCase(token)).join('.')
+
     const route = new Route(
       pattern,
       methods,
@@ -72,22 +75,24 @@ export class RouteResource extends Macroable implements RouteResourceContract {
     this._resource = this._resource.replace(/^\//, '').replace(/\/$/, '')
 
     const resourceTokens = this._resource.split('.')
-    const mainResource = resourceTokens.pop()
+    const baseName = resourceTokens.map((token) => snakeCase(token)).join('.')
+    const mainResource = resourceTokens.pop()!
 
-    const baseUrl = `${resourceTokens
-      .map((token) => `${token}/:${singular(token)}_id`)
+    const fullUrl = `${resourceTokens
+      .map((token) => {
+        return `${token}/:${snakeCase(singular(token))}_id`
+      })
       .join('/')}/${mainResource}`
 
-    const memberBaseUrl = this._shallow ? mainResource : baseUrl
-    const baseName = this._shallow ? mainResource! : this._resource
+    const shallowUrl = this._shallow ? mainResource : fullUrl
 
-    this._makeRoute(baseUrl, ['GET'], 'index', this._resource)
-    this._makeRoute(`${baseUrl}/create`, ['GET'], 'create', this._resource)
-    this._makeRoute(baseUrl, ['POST'], 'store', this._resource)
-    this._makeRoute(`${memberBaseUrl}/:id`, ['GET'], 'show', baseName)
-    this._makeRoute(`${memberBaseUrl}/:id/edit`, ['GET'], 'edit', baseName)
-    this._makeRoute(`${memberBaseUrl}/:id`, ['PUT', 'PATCH'], 'update', baseName)
-    this._makeRoute(`${memberBaseUrl}/:id`, ['DELETE'], 'destroy', baseName)
+    this._makeRoute(fullUrl, ['GET'], 'index', baseName)
+    this._makeRoute(`${fullUrl}/create`, ['GET'], 'create', baseName)
+    this._makeRoute(fullUrl, ['POST'], 'store', baseName)
+    this._makeRoute(`${shallowUrl}/:id`, ['GET'], 'show', baseName)
+    this._makeRoute(`${shallowUrl}/:id/edit`, ['GET'], 'edit', baseName)
+    this._makeRoute(`${shallowUrl}/:id`, ['PUT', 'PATCH'], 'update', baseName)
+    this._makeRoute(`${shallowUrl}/:id`, ['DELETE'], 'destroy', baseName)
   }
 
   /**

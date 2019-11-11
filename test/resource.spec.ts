@@ -243,7 +243,7 @@ test.group('Route Resource', () => {
         domain: 'root',
         middleware: [],
         handler: 'AdsController.show',
-        name: 'ads.show',
+        name: 'magazines.ads.show',
       },
       {
         pattern: '/ads/:id/edit',
@@ -255,7 +255,7 @@ test.group('Route Resource', () => {
         domain: 'root',
         middleware: [],
         handler: 'AdsController.edit',
-        name: 'ads.edit',
+        name: 'magazines.ads.edit',
       },
       {
         pattern: '/ads/:id',
@@ -267,7 +267,7 @@ test.group('Route Resource', () => {
         domain: 'root',
         middleware: [],
         handler: 'AdsController.update',
-        name: 'ads.update',
+        name: 'magazines.ads.update',
       },
       {
         pattern: '/ads/:id',
@@ -279,7 +279,7 @@ test.group('Route Resource', () => {
         domain: 'root',
         middleware: [],
         handler: 'AdsController.destroy',
-        name: 'ads.destroy',
+        name: 'magazines.ads.destroy',
       },
     ])
   })
@@ -517,6 +517,188 @@ test.group('Route Resource', () => {
         middleware: [],
         handler: 'PhotosController.destroy',
         name: 'photos.destroy',
+      },
+    ])
+  })
+
+  test('create proper route name when resource name is in dash-case', (assert) => {
+    const resource = new RouteResource('user-profile', 'ProfileController', {})
+
+    assert.deepEqual(resource.routes.map((route) => route.toJSON()), [
+      {
+        pattern: '/user-profile',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: [],
+        handler: 'ProfileController.index',
+        name: 'user_profile.index',
+      },
+      {
+        pattern: '/user-profile/create',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: [],
+        handler: 'ProfileController.create',
+        name: 'user_profile.create',
+      },
+      {
+        pattern: '/user-profile',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['POST'],
+        domain: 'root',
+        middleware: [],
+        handler: 'ProfileController.store',
+        name: 'user_profile.store',
+      },
+      {
+        pattern: '/user-profile/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: [],
+        handler: 'ProfileController.show',
+        name: 'user_profile.show',
+      },
+      {
+        pattern: '/user-profile/:id/edit',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: [],
+        handler: 'ProfileController.edit',
+        name: 'user_profile.edit',
+      },
+      {
+        pattern: '/user-profile/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['PUT', 'PATCH'],
+        domain: 'root',
+        middleware: [],
+        handler: 'ProfileController.update',
+        name: 'user_profile.update',
+      },
+      {
+        pattern: '/user-profile/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['DELETE'],
+        domain: 'root',
+        middleware: [],
+        handler: 'ProfileController.destroy',
+        name: 'user_profile.destroy',
+      },
+    ])
+  })
+
+  test('create proper param name when nested resource name is in dash-case', (assert) => {
+    const resource = new RouteResource('user-profile.comments', 'CommentsController', {})
+
+    assert.deepEqual(resource.routes.map((route) => route.toJSON()), [
+      {
+        pattern: '/user-profile/:user_profile_id/comments',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: [],
+        handler: 'CommentsController.index',
+        name: 'user_profile.comments.index',
+      },
+      {
+        pattern: '/user-profile/:user_profile_id/comments/create',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: [],
+        handler: 'CommentsController.create',
+        name: 'user_profile.comments.create',
+      },
+      {
+        pattern: '/user-profile/:user_profile_id/comments',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['POST'],
+        domain: 'root',
+        middleware: [],
+        handler: 'CommentsController.store',
+        name: 'user_profile.comments.store',
+      },
+      {
+        pattern: '/user-profile/:user_profile_id/comments/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: [],
+        handler: 'CommentsController.show',
+        name: 'user_profile.comments.show',
+      },
+      {
+        pattern: '/user-profile/:user_profile_id/comments/:id/edit',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: [],
+        handler: 'CommentsController.edit',
+        name: 'user_profile.comments.edit',
+      },
+      {
+        pattern: '/user-profile/:user_profile_id/comments/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['PUT', 'PATCH'],
+        domain: 'root',
+        middleware: [],
+        handler: 'CommentsController.update',
+        name: 'user_profile.comments.update',
+      },
+      {
+        pattern: '/user-profile/:user_profile_id/comments/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['DELETE'],
+        domain: 'root',
+        middleware: [],
+        handler: 'CommentsController.destroy',
+        name: 'user_profile.comments.destroy',
       },
     ])
   })
