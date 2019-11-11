@@ -328,7 +328,6 @@ export class Response extends Macroable implements ResponseContract {
        * Set appropriate headers
        */
       this.header('Last-Modified', stats.mtime.toUTCString())
-      this.header('Content-length', stats.size)
       this.type(extname(filePath))
 
       /**
@@ -360,6 +359,13 @@ export class Response extends Macroable implements ResponseContract {
         this._end(null, 304)
         return
       }
+
+      /**
+       * Fix for https://tools.ietf.org/html/rfc7232#section-4.1. It is
+       * recommended to ignore headers other than Cache-Control,
+       * Content-Location, Date, ETag, Expires, and Vary.
+       */
+      this.header('Content-length', stats.size)
 
       /**
        * Finally stream the file
