@@ -69,6 +69,8 @@ export class RouteResource extends Macroable implements RouteResourceContract {
    * Build routes for the given resource
    */
   private _buildRoutes () {
+    this._resource = this._resource.replace(/^\//, '').replace(/\/$/, '')
+
     const resourceTokens = this._resource.split('.')
     const mainResource = resourceTokens.pop()
 

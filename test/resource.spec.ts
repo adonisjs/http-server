@@ -429,4 +429,95 @@ test.group('Route Resource', () => {
       'Admin/Controllers',
     ])
   })
+
+  test('normalize resource name by droping starting and ending slashes', (assert) => {
+    const resource = new RouteResource('/photos/', 'PhotosController', {})
+
+    assert.deepEqual(resource.routes.map((route) => route.toJSON()), [
+      {
+        pattern: '/photos',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: [],
+        handler: 'PhotosController.index',
+        name: 'photos.index',
+      },
+      {
+        pattern: '/photos/create',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: [],
+        handler: 'PhotosController.create',
+        name: 'photos.create',
+      },
+      {
+        pattern: '/photos',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['POST'],
+        domain: 'root',
+        middleware: [],
+        handler: 'PhotosController.store',
+        name: 'photos.store',
+      },
+      {
+        pattern: '/photos/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: [],
+        handler: 'PhotosController.show',
+        name: 'photos.show',
+      },
+      {
+        pattern: '/photos/:id/edit',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: [],
+        handler: 'PhotosController.edit',
+        name: 'photos.edit',
+      },
+      {
+        pattern: '/photos/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['PUT', 'PATCH'],
+        domain: 'root',
+        middleware: [],
+        handler: 'PhotosController.update',
+        name: 'photos.update',
+      },
+      {
+        pattern: '/photos/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['DELETE'],
+        domain: 'root',
+        middleware: [],
+        handler: 'PhotosController.destroy',
+        name: 'photos.destroy',
+      },
+    ])
+  })
 })
