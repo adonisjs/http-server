@@ -142,7 +142,7 @@ declare module '@ioc:Adonis/Core/Route' {
     where (param: string, matcher: string | RegExp): this
     prefix (prefix: string): this
     domain (domain: string): this
-    middleware (middleware: any | any[], prepend?: boolean): this
+    middleware (middleware: MiddlewareNode | MiddlewareNode[], prepend?: boolean): this
     as (name: string, append?: boolean): this
     namespace (namespace: string): this
     toJSON (): RouteDefinition
@@ -156,7 +156,7 @@ declare module '@ioc:Adonis/Core/Route' {
     only (names: string[]): this
     except (names: string[]): this
     apiOnly (): this
-    middleware (middleware: { [name: string]: any | any[] }): this
+    middleware (middleware: { [name: string]: MiddlewareNode | MiddlewareNode[] }): this
     where (key: string, matcher: string | RegExp): this
     namespace (namespace: string): this
   }
@@ -175,7 +175,7 @@ declare module '@ioc:Adonis/Core/Route' {
     prefix (prefix: string): this
     domain (domain: string): this
     as (name: string): this
-    middleware (middleware: any | any[]): this
+    middleware (middleware: MiddlewareNode | MiddlewareNode[]): this
     namespace (namespace: string): this
   }
 
