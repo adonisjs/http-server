@@ -702,4 +702,44 @@ test.group('Route Resource', () => {
       },
     ])
   })
+
+  test('define middleware with wildcard', (assert) => {
+    const resource = new RouteResource('photos', 'PhotosController', {})
+    resource.middleware({ '*': ['auth'] })
+
+    const registeredMiddleware = resource.routes.reduce((result, route) => {
+      result[route.name] = route['_middleware']
+      return result
+    }, {})
+
+    assert.deepEqual(registeredMiddleware, {
+      'photos.index': ['auth'],
+      'photos.create': ['auth'],
+      'photos.store': ['auth'],
+      'photos.show': ['auth'],
+      'photos.edit': ['auth'],
+      'photos.update': ['auth'],
+      'photos.destroy': ['auth'],
+    })
+  })
+
+  test('define middleware with wildcard and for select routes', (assert) => {
+    const resource = new RouteResource('photos', 'PhotosController', {})
+    resource.middleware({ '*': ['auth'], 'update': ['self'] })
+
+    const registeredMiddleware = resource.routes.reduce((result, route) => {
+      result[route.name] = route['_middleware']
+      return result
+    }, {})
+
+    assert.deepEqual(registeredMiddleware, {
+      'photos.index': ['auth'],
+      'photos.create': ['auth'],
+      'photos.store': ['auth'],
+      'photos.show': ['auth'],
+      'photos.edit': ['auth'],
+      'photos.update': ['auth', 'self'],
+      'photos.destroy': ['auth'],
+    })
+  })
 })
