@@ -122,7 +122,7 @@ declare module '@ioc:Adonis/Core/Response' {
    * add macros to the request class. Since, the instance is passed
    * to the http request cycle
    */
-  export interface ResponseConstructorContract extends MacroableConstructorContract {
+  export interface ResponseConstructorContract extends MacroableConstructorContract<ResponseContract> {
     new (
       request: IncomingMessage,
       response: ServerResponse,

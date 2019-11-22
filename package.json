@@ -99,7 +99,7 @@
     "fresh": "^0.5.2",
     "haye": "^2.0.2",
     "lodash": "^4.17.15",
-    "macroable": "^2.0.2",
+    "macroable": "^3.0.0",
     "matchit": "git+https://github.com/thetutlage/matchit.git",
     "ms": "^2.1.2",
     "on-finished": "^2.3.0",

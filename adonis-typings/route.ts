@@ -207,10 +207,10 @@ declare module '@ioc:Adonis/Core/Route' {
    * Shape of router exposed for creating routes
    */
   export interface RouterContract {
-    BriskRoute: MacroableConstructorContract,
-    RouteGroup: MacroableConstructorContract,
-    RouteResource: MacroableConstructorContract,
-    Route: MacroableConstructorContract,
+    BriskRoute: MacroableConstructorContract<BriskRouteContract>,
+    RouteGroup: MacroableConstructorContract<RouteGroupContract>,
+    RouteResource: MacroableConstructorContract<RouteResourceContract>,
+    Route: MacroableConstructorContract<RouteContract>,
     routes: (
       RouteContract |
       RouteResourceContract |
