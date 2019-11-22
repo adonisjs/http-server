@@ -41,6 +41,13 @@ export class RouteResource extends Macroable implements RouteResourceContract {
    */
   public routes: Route[] = []
 
+  /**
+   * Resource name
+   */
+  private _resourceName: string = this._resource.
+    split('.')
+    .map((token) => snakeCase(token)).join('.')
+
   constructor (
     private _resource: string,
     private _controller: string,
@@ -54,9 +61,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
   /**
    * Add a new route for the given pattern, methods and controller action
    */
-  private _makeRoute (pattern: string, methods: string[], action: string, baseName: string) {
-    baseName = baseName.split('.').map((token) => snakeCase(token)).join('.')
-
+  private _makeRoute (pattern: string, methods: string[], action: string) {
     const route = new Route(
       pattern,
       methods,
@@ -64,7 +69,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
       this._globalMatchers,
     )
 
-    route.as(`${baseName}.${action}`)
+    route.as(`${this._resourceName}.${action}`)
     this.routes.push(route)
   }
 
@@ -75,7 +80,6 @@ export class RouteResource extends Macroable implements RouteResourceContract {
     this._resource = this._resource.replace(/^\//, '').replace(/\/$/, '')
 
     const resourceTokens = this._resource.split('.')
-    const baseName = resourceTokens.map((token) => snakeCase(token)).join('.')
     const mainResource = resourceTokens.pop()!
 
     const fullUrl = `${resourceTokens
@@ -86,13 +90,13 @@ export class RouteResource extends Macroable implements RouteResourceContract {
 
     const shallowUrl = this._shallow ? mainResource : fullUrl
 
-    this._makeRoute(fullUrl, ['GET'], 'index', baseName)
-    this._makeRoute(`${fullUrl}/create`, ['GET'], 'create', baseName)
-    this._makeRoute(fullUrl, ['POST'], 'store', baseName)
-    this._makeRoute(`${shallowUrl}/:id`, ['GET'], 'show', baseName)
-    this._makeRoute(`${shallowUrl}/:id/edit`, ['GET'], 'edit', baseName)
-    this._makeRoute(`${shallowUrl}/:id`, ['PUT', 'PATCH'], 'update', baseName)
-    this._makeRoute(`${shallowUrl}/:id`, ['DELETE'], 'destroy', baseName)
+    this._makeRoute(fullUrl, ['GET'], 'index')
+    this._makeRoute(`${fullUrl}/create`, ['GET'], 'create')
+    this._makeRoute(fullUrl, ['POST'], 'store')
+    this._makeRoute(`${shallowUrl}/:id`, ['GET'], 'show')
+    this._makeRoute(`${shallowUrl}/:id/edit`, ['GET'], 'edit')
+    this._makeRoute(`${shallowUrl}/:id`, ['PUT', 'PATCH'], 'update')
+    this._makeRoute(`${shallowUrl}/:id`, ['DELETE'], 'destroy')
   }
 
   /**
@@ -173,6 +177,19 @@ export class RouteResource extends Macroable implements RouteResourceContract {
       route.namespace(namespace)
     })
 
+    return this
+  }
+
+  /**
+   * Prepend name to the routes names
+   */
+  public as (name: string): this {
+    name = snakeCase(name)
+    this.routes.forEach((route) => {
+      route.as(route.name.replace(this._resourceName, name), false)
+    })
+
+    this._resourceName = name
     return this
   }
 }

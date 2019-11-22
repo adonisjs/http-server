@@ -742,4 +742,34 @@ test.group('Route Resource', () => {
       'photos.destroy': ['auth'],
     })
   })
+
+  test('define resource name', (assert) => {
+    const resource = new RouteResource('photos', 'PhotosController', {})
+    resource.as('public-photos')
+
+    assert.deepEqual(resource.routes.map((route) => route.toJSON().name), [
+      'public_photos.index',
+      'public_photos.create',
+      'public_photos.store',
+      'public_photos.show',
+      'public_photos.edit',
+      'public_photos.update',
+      'public_photos.destroy',
+    ])
+  })
+
+  test('allow re-defining resource name for multiple times', (assert) => {
+    const resource = new RouteResource('main-photos', 'PhotosController', {})
+    resource.as('public-photos').as('photos')
+
+    assert.deepEqual(resource.routes.map((route) => route.toJSON().name), [
+      'photos.index',
+      'photos.create',
+      'photos.store',
+      'photos.show',
+      'photos.edit',
+      'photos.update',
+      'photos.destroy',
+    ])
+  })
 })

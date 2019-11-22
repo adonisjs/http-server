@@ -167,11 +167,11 @@ export class Route extends Macroable implements RouteContract {
    * Give memorizable name to the route. This is helpful, when you
    * want to lookup route defination by it's name.
    *
-   * If `append` is true, then it will keep on appending to the existing
+   * If `prepend` is true, then it will keep on prepending to the existing
    * name. This option is exposed for [[RouteGroup]]
    */
-  public as (name: string, append = false): this {
-    this.name = append ? `${name}.${this.name}` : name
+  public as (name: string, prepend = false): this {
+    this.name = prepend ? `${name}.${this.name}` : name
     return this
   }
 

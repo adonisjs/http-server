@@ -148,7 +148,7 @@ declare module '@ioc:Adonis/Core/Route' {
     prefix (prefix: string): this
     domain (domain: string): this
     middleware (middleware: MiddlewareNode | MiddlewareNode[], prepend?: boolean): this
-    as (name: string, append?: boolean): this
+    as (name: string, prepend?: boolean): this
     namespace (namespace: string): this
     toJSON (): RouteDefinition
   }
@@ -164,6 +164,7 @@ declare module '@ioc:Adonis/Core/Route' {
     middleware (middleware: { [name: string]: MiddlewareNode | MiddlewareNode[] }): this
     where (key: string, matcher: string | RegExp): this
     namespace (namespace: string): this
+    as (name: string): this
   }
 
   /**
