@@ -15,6 +15,7 @@
 
 import { Socket } from 'net'
 import proxyAddr from 'proxy-addr'
+import { Macroable } from 'macroable'
 import { RouteNode } from '@ioc:Adonis/Core/Route'
 import { IncomingMessage, ServerResponse } from 'http'
 import { LoggerContract } from '@ioc:Adonis/Core/Logger'
@@ -33,17 +34,26 @@ import { Response } from '../Response'
  * Http context is passed to all route handlers, middleware,
  * error handler and server hooks.
  */
-export class HttpContext implements HttpContextContract {
+export class HttpContext extends Macroable implements HttpContextContract {
   public params: any = {}
   public subdomains: any = {}
   public route?: RouteNode
+
+  /**
+   * Required by macroable
+   * @type {Object}
+   */
+  protected _macros = {}
+  protected _getters = {}
 
   constructor (
     public request: RequestContract,
     public response: ResponseContract,
     public logger: LoggerContract,
     public profiler: ProfilerRowContract,
-  ) {}
+  ) {
+    super()
+  }
 
   /**
    * Creates a new fake context instance for a given route.
