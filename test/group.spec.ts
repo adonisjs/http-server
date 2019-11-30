@@ -342,7 +342,7 @@ test.group('Route Group', () => {
     ])
   })
 
-  test('multiples routes group insede of group', (assert) => {
+  test('multiples routes group inside of group', (assert) => {
     async function handlerIds () {}
     async function handlerUsers () {}
     async function handler () {}
