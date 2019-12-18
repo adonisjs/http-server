@@ -65,7 +65,7 @@ class HttpException extends Exception {
    * This method returns an instance of the exception class
    */
   public static invoke (body: any, status: number) {
-    if (typeof (body) === 'object') {
+    if (body !== null && typeof (body) === 'object') {
       const error = new this(body.message || `Request aborted with status code${status}`, status)
       error.body = body
       return error

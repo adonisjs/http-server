@@ -13,6 +13,7 @@
 
 /// <reference path="../../../adonis-typings/index.ts" />
 
+import { Exception } from '@poppinss/utils'
 import { Middleware } from 'co-compose'
 import { MiddlewareStoreContract } from '@ioc:Adonis/Core/Middleware'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
@@ -59,7 +60,9 @@ export class RequestHandler {
     /**
      * Raise error when route is missing
      */
-    ctx.response.abortIf(!route, `Cannot ${method}:${url}`, 404)
+    if (!route) {
+      throw new Exception(`Cannot ${method}:${url}`, 404, 'E_ROUTE_NOT_FOUND')
+    }
 
     /**
      * Attach `params`, `subdomains` and `route` when route is found. This

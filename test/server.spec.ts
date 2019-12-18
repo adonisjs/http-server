@@ -497,7 +497,7 @@ test.group('Server | hooks', () => {
     const httpServer = createServer(server.handle.bind(server))
 
     const { text } = await supertest(httpServer).get('/').expect(404)
-    assert.equal(text, 'Cannot GET:/')
+    assert.equal(text, 'E_ROUTE_NOT_FOUND: Cannot GET:/')
     assert.deepEqual(stack, ['hook1', 'hook2', 'after hook1'])
   })
 
@@ -790,7 +790,7 @@ test.group('Server | all', (group) => {
     const httpServer = createServer(server.handle.bind(server))
 
     const { text } = await supertest(httpServer).get('/').expect(404)
-    assert.equal(text, 'Cannot GET:/')
+    assert.equal(text, 'E_ROUTE_NOT_FOUND: Cannot GET:/')
   })
 
   test('execute IoC container controller binding by injecting dependencies', async (assert) => {
