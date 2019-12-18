@@ -707,6 +707,42 @@ test.group('Response', (group) => {
     await supertest(server).get('/').redirects(1).expect(301)
   })
 
+  test('redirect back to referrer', async (assert) => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response = new Response(req, res, config)
+      response.redirect('back')
+      response.finish()
+    })
+
+    const { header } = await supertest(server).get('/').set('referrer', '/foo').redirects(1)
+    assert.equal(header.location, '/foo')
+  })
+
+  test('redirect back to referer', async (assert) => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response = new Response(req, res, config)
+      response.redirect('back')
+      response.finish()
+    })
+
+    const { header } = await supertest(server).get('/').set('referer', '/foo').redirects(1)
+    assert.equal(header.location, '/foo')
+  })
+
+  test('redirect back to root (/) when referrer header is not set', async (assert) => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response = new Response(req, res, config)
+      response.redirect('back')
+      response.finish()
+    })
+
+    const { header } = await supertest(server).get('/').redirects(1)
+    assert.equal(header.location, '/')
+  })
+
   test('add multiple vary fields', async () => {
     const server = createServer((req, res) => {
       const config = fakeConfig()

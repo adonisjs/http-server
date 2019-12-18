@@ -20,6 +20,7 @@ import { parse } from 'url'
 import mime from 'mime-types'
 import destroy from 'destroy'
 import { extname } from 'path'
+import encodeurl from 'encodeurl'
 import onFinished from 'on-finished'
 import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
@@ -807,9 +808,17 @@ export class Response extends Macroable implements ResponseContract {
    * Redirect request to a different URL. Current request `query string` can be forwared
    * by setting 2nd param to `true`.
    */
-  public redirect (url: string, sendQueryParams?: boolean, statusCode: number = 302): void {
+  public redirect (
+    url: string,
+    sendQueryParams?: boolean,
+    statusCode: number = 302,
+  ): void {
+    url = url === 'back'
+      ? (this.request.headers['referer'] || this.request.headers['referrer'] || '/') as string
+      : url
+
     url = sendQueryParams ? `${url}?${parse(this.request.url!, false).query}` : url
-    this.location(url)
+    this.location(encodeurl(url))
     this.safeStatus(statusCode || 302)
     this.type('text/plain; charset=utf-8')
     this.send(`Redirecting to ${url}`)
