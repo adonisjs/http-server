@@ -1,6 +1,6 @@
 {
   "name": "@adonisjs/http-server",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "Extracted copy of AdonisJs HTTP server along with it's router",
   "files": [
     "build/src",
