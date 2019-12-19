@@ -103,6 +103,7 @@ declare module '@ioc:Adonis/Core/Response' {
 
     abort (body: any, status?: number): never
     abortIf (conditional: any, body: any, status?: number): void
+    abortUnless (conditional: any, body: any, status?: number): asserts conditional
 
     finish (): void
   }

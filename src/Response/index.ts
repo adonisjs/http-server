@@ -834,6 +834,16 @@ export class Response extends Macroable implements ResponseContract {
   }
 
   /**
+   * Abort the request with custom body and a status code when
+   * passed condition returns `false`
+   */
+  public abortUnless (condition: any, body: any, status?: number): asserts condition {
+    if (!condition) {
+      this.abort(body, status)
+    }
+  }
+
+  /**
    * Set signed cookie as the response header. The inline options overrides
    * all options from the config (means they are not merged).
    */
