@@ -3,7 +3,9 @@
   "ts": true,
   "license": "MIT",
   "services": [
+    "appveyor",
     "circleci"
   ],
-  "minNodeVersion": "10.15.3"
+  "appveyorUsername": "thetutlage",
+  "minNodeVersion": "12.0.0"
 }
