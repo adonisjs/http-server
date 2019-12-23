@@ -438,7 +438,7 @@ export class Router implements RouterContract {
      * it later (when someone asks for it)
      */
     const signature = this._encryption
-      .child({ hmac: false })
+      .create({ hmac: false })
       .encrypt(this.makeUrl(route.pattern, { qs: options.qs, params: options.params, prefixDomain: false }))
 
     /**

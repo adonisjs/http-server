@@ -36,8 +36,8 @@ import { dropSlash } from '../helpers'
  * ```
  */
 export class Route extends Macroable implements RouteContract {
-  protected static _macros = {}
-  protected static _getters = {}
+  protected static macros = {}
+  protected static getters = {}
 
   /**
    * By default the route is part of `root` domain. Root

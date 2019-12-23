@@ -41,10 +41,9 @@ export class HttpContext extends Macroable implements HttpContextContract {
 
   /**
    * Required by macroable
-   * @type {Object}
    */
-  protected _macros = {}
-  protected _getters = {}
+  protected static macros = {}
+  protected static getters = {}
 
   constructor (
     public request: RequestContract,

@@ -119,8 +119,8 @@ export class Response extends Macroable implements ResponseContract {
    */
   public lazyBody: LazyBody | null = null
 
-  protected static _macros = {}
-  protected static _getters = {}
+  protected static macros = {}
+  protected static getters = {}
 
   private _headers: any = {}
   private _explicitStatus = false

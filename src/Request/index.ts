@@ -90,8 +90,8 @@ export class Request extends Macroable implements RequestContract {
   /**
    * Required by Macroable
    */
-  protected static _macros = {}
-  protected static _getters = {}
+  protected static macros = {}
+  protected static getters = {}
 
   constructor (
     public request: IncomingMessage,
@@ -833,7 +833,7 @@ export class Request extends Macroable implements RequestContract {
     /**
      * Return false when signature fails
      */
-    const signedUrl = this._encryption.child({ hmac: false }).decrypt(signature)
+    const signedUrl = this._encryption.create({ hmac: false }).decrypt(signature)
     if (!signedUrl) {
       return false
     }

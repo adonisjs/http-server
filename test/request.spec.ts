@@ -30,7 +30,7 @@ const fakeConfig = (conf?: Partial<RequestConfigContract>) => {
   }, conf)
 }
 
-const encryption = new Encryption('averylongrandom32charslongsecret').child({ hmac: false })
+const encryption = new Encryption('averylongrandom32charslongsecret').create({ hmac: false })
 
 test.group('Request', () => {
   test('get http request query string', async (assert) => {

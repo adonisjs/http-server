@@ -35,8 +35,8 @@ function missingRouteName () {
  * The group routes must be pre-defined using the constructor.
  */
 export class RouteGroup extends Macroable implements RouteGroupContract {
-  protected static _macros = {}
-  protected static _getters = {}
+  protected static macros = {}
+  protected static getters = {}
 
   constructor (public routes: (Route | RouteResource | BriskRoute | RouteGroup)[]) {
     super()

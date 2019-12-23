@@ -28,8 +28,8 @@ import { BriskRouteContract, RouteMatchers, RouteHandlerNode } from '@ioc:Adonis
  * closure.
  */
 export class BriskRoute extends Macroable implements BriskRouteContract {
-  protected static _macros = {}
-  protected static _getters = {}
+  protected static macros = {}
+  protected static getters = {}
 
   /**
    * Invoked by is reference to the parent method that calls `setHandler` on

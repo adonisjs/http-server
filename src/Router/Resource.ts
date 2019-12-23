@@ -33,8 +33,8 @@ import { Route } from './Route'
  * ```
  */
 export class RouteResource extends Macroable implements RouteResourceContract {
-  protected static _macros = {}
-  protected static _getters = {}
+  protected static macros = {}
+  protected static getters = {}
 
   /**
    * A copy of routes that belongs to this resource
