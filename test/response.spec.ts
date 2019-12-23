@@ -12,6 +12,7 @@ import etag from 'etag'
 import { join } from 'path'
 import supertest from 'supertest'
 import { createServer } from 'http'
+import status from 'http-status-codes'
 import { parse } from '@poppinss/cookie'
 import { Filesystem } from '@poppinss/dev-utils'
 import { createWriteStream, createReadStream } from 'fs'
@@ -1134,5 +1135,65 @@ test.group('Response', (group) => {
     })
 
     await supertest(server).get('/').expect(200)
+  })
+
+  test('set appropriate status from the description methods', async (assert) => {
+    const req: any = {}
+    const res: any = {
+      statusCode: null,
+    }
+
+    const response: Response = new Response(req, res, fakeConfig())
+
+    const methods = [
+      'switchingProtocols',
+      'ok',
+      'created',
+      'accepted',
+      'nonAuthoritativeInformation',
+      'noContent',
+      'resetContent',
+      'partialContent',
+      'multipleChoices',
+      'movedPermanently',
+      'movedTemporarily',
+      'seeOther',
+      'notModified',
+      'useProxy',
+      'temporaryRedirect',
+      'badRequest',
+      'unauthorized',
+      'paymentRequired',
+      'forbidden',
+      'notFound',
+      'methodNotAllowed',
+      'notAcceptable',
+      'proxyAuthenticationRequired',
+      'requestTimeout',
+      'conflict',
+      'gone',
+      'lengthRequired',
+      'preconditionFailed',
+      'requestEntityTooLarge',
+      'requestUriTooLong',
+      'unsupportedMediaType',
+      'requestedRangeNotSatisfiable',
+      'expectationFailed',
+      'unprocessableEntity',
+      'tooManyRequests',
+      'internalServerError',
+      'notImplemented',
+      'badGateway',
+      'serviceUnavailable',
+      'gatewayTimeout',
+      'httpVersionNotSupported',
+    ]
+
+    methods.forEach((method) => {
+      response[method]('')
+      let statusText = method.replace(/[A-Z]/g, (g) => `_${g.toLowerCase()}`).toUpperCase()
+      statusText = statusText === 'REQUEST_ENTITY_TOO_LARGE' ? 'REQUEST_TOO_LONG' : statusText
+      assert.equal(res.statusCode, status[statusText])
+    })
   })
 })
