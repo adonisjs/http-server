@@ -405,8 +405,8 @@ test.group('Response', (group) => {
       response.finish()
     })
 
-    const { text, status } = await supertest(server).get('/')
-    assert.equal(status, 404)
+    const { text, status: statusCode } = await supertest(server).get('/')
+    assert.equal(statusCode, 404)
     assert.equal(text, 'File not found')
   })
 

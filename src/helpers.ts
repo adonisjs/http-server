@@ -116,9 +116,9 @@ export function processPattern (pattern: string, data: any): string {
  */
 export function useReturnValue (returnValue: any, ctx: HttpContextContract) {
   return (
-    returnValue !== undefined &&            // Return value is explicitly defined
-    returnValue !== ctx.response &&         // Return value is not the instance of response object
-    !ctx.response.hasLazyBody               // Lazy body is not set
+    returnValue !== undefined && // Return value is explicitly defined
+    returnValue !== ctx.response && // Return value is not the instance of response object
+    !ctx.response.hasLazyBody // Lazy body is not set
   )
 }
 

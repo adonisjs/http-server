@@ -104,7 +104,7 @@ export class Route extends Macroable implements RouteContract {
    */
   private getPattern (): string {
     const pattern = dropSlash(this.pattern)
-    const prefix = this.prefixes.slice().reverse().map((prefix) => dropSlash(prefix)).join('')
+    const prefix = this.prefixes.slice().reverse().map((one) => dropSlash(one)).join('')
     return prefix ? `${prefix}${pattern === '/' ? '' : pattern}` : pattern
   }
 

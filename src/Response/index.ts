@@ -136,7 +136,7 @@ export class Response extends Macroable implements ResponseContract {
   /**
    * Returns a boolean telling if lazy body is already set or not
    */
-  get hasLazyBody (): boolean {
+  public get hasLazyBody (): boolean {
     return !!(this.lazyBody && this.lazyBody.writer)
   }
 
@@ -145,7 +145,7 @@ export class Response extends Macroable implements ResponseContract {
    * Any more attempts to update headers or body will result
    * in raised exceptions.
    */
-  get finished (): boolean {
+  public get finished (): boolean {
     return this.response.finished
   }
 
@@ -154,7 +154,7 @@ export class Response extends Macroable implements ResponseContract {
    * Any more attempts to update headers will result in raised
    * exceptions.
    */
-  get headersSent (): boolean {
+  public get headersSent (): boolean {
     return this.response.headersSent
   }
 
@@ -163,7 +163,7 @@ export class Response extends Macroable implements ResponseContract {
    * or not. When value is `true`, you can feel free to write headers
    * and body.
    */
-  get isPending (): boolean {
+  public get isPending (): boolean {
     return (!this.headersSent && !this.finished)
   }
 

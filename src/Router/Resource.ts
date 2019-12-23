@@ -135,9 +135,9 @@ export class RouteResource extends Macroable implements RouteResourceContract {
   public middleware (middleware: { [name: string]: MiddlewareNode | MiddlewareNode[] }): this {
     for (let name in middleware) {
       if (name === '*') {
-        this.routes.forEach((route) => route.middleware(middleware[name]))
+        this.routes.forEach((one) => one.middleware(middleware[name]))
       } else {
-        const route = this.routes.find((route) => route.name.endsWith(name))
+        const route = this.routes.find((one) => one.name.endsWith(name))
         /* istanbul ignore else */
         if (route) {
           route.middleware(middleware[name])

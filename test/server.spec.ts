@@ -270,22 +270,22 @@ test.group('Server | middleware', () => {
   })
 
   test('middleware must profile in the request scope', async (assert) => {
-    const profiler = new Profiler({ enabled: true })
-    const server = new Server(new Ioc(), logger, profiler, encryption, config)
+    const customProfiler = new Profiler({ enabled: true })
+    const server = new Server(new Ioc(), logger, customProfiler, encryption, config)
 
     let requestPacket: ProfilerRowDataPacket
     let hookPacket: ProfilerActionDataPacket
 
     server.router.get('/', async () => {
       return 'done'
-    }).middleware(async function routeMiddleware ({ profiler }, next) {
-      profiler.profile('foo').end()
+    }).middleware(async function routeMiddleware (ctx, next) {
+      ctx.profiler.profile('foo').end()
       return next()
     })
 
     server.optimize()
 
-    profiler.subscribe((packet) => {
+    customProfiler.subscribe((packet) => {
       if (packet.label === 'foo') {
         hookPacket = packet as ProfilerActionDataPacket
       } else {
@@ -300,22 +300,22 @@ test.group('Server | middleware', () => {
   })
 
   test('upstream middleware must profile in the request scope', async (assert) => {
-    const profiler = new Profiler({ enabled: true })
-    const server = new Server(new Ioc(), logger, profiler, encryption, config)
+    const customProfiler = new Profiler({ enabled: true })
+    const server = new Server(new Ioc(), logger, customProfiler, encryption, config)
 
     let requestPacket: ProfilerRowDataPacket
     let hookPacket: ProfilerActionDataPacket
 
     server.router.get('/', async () => {
       return 'done'
-    }).middleware(async function routeMiddleware ({ profiler }, next) {
+    }).middleware(async function routeMiddleware (ctx, next) {
       await next()
-      profiler.profile('foo').end()
+      ctx.profiler.profile('foo').end()
     })
 
     server.optimize()
 
-    profiler.subscribe((packet) => {
+    customProfiler.subscribe((packet) => {
       if (packet.label === 'foo') {
         hookPacket = packet as ProfilerActionDataPacket
       } else {
@@ -616,14 +616,14 @@ test.group('Server | hooks', () => {
   })
 
   test('after hooks must profile in the request scope', async (assert) => {
-    const profiler = new Profiler({ enabled: true })
-    const server = new Server(new Ioc(), logger, profiler, encryption, config)
+    const customProfiler = new Profiler({ enabled: true })
+    const server = new Server(new Ioc(), logger, customProfiler, encryption, config)
 
     let requestPacket: ProfilerRowDataPacket
     let hookPacket: ProfilerActionDataPacket
 
-    server.hooks.after(async ({ profiler }) => {
-      profiler.profile('foo').end()
+    server.hooks.after(async (ctx) => {
+      ctx.profiler.profile('foo').end()
     })
 
     server.router.get('/', async () => {
@@ -632,7 +632,7 @@ test.group('Server | hooks', () => {
 
     server.optimize()
 
-    profiler.subscribe((packet) => {
+    customProfiler.subscribe((packet) => {
       if (packet.label === 'foo') {
         hookPacket = packet as ProfilerActionDataPacket
       } else {
@@ -649,7 +649,6 @@ test.group('Server | hooks', () => {
 
 test.group('Server | error handler', () => {
   test('pass before hook errors to error handler', async (assert) => {
-
     const server = new Server(new Ioc(), logger, profiler, encryption, config)
     server.errorHandler(async (_error, { response }) => {
       response.status(200).send('handled by error handler')
@@ -728,7 +727,7 @@ test.group('Server | error handler', () => {
     assert.equal(text, 'handled by error handler')
   })
 
-   test('pass missing route error to error handler', async (assert) => {
+  test('pass missing route error to error handler', async (assert) => {
     const server = new Server(new Ioc(), logger, profiler, encryption, config)
 
     server.errorHandler(async (_error, { response }) => {

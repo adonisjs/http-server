@@ -61,8 +61,7 @@ export default class HttpServerProvider {
    */
   protected $registerRouter () {
     this.$container.singleton('Adonis/Core/Route', () => {
-      const Server = this.$container.use('Adonis/Core/Server')
-      return Server.router
+      return this.$container.use('Adonis/Core/Server').router
     })
   }
 
