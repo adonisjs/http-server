@@ -13,7 +13,7 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
-import { snakeCase } from 'lodash'
+import { snakeCase } from 'snake-case'
 import { singular } from 'pluralize'
 import { Macroable } from 'macroable'
 

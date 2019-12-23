@@ -17,11 +17,11 @@ import qs from 'qs'
 import cuid from 'cuid'
 import fresh from 'fresh'
 import { isIP } from 'net'
+import get from 'get-value'
 import typeIs from 'type-is'
 import accepts from 'accepts'
 import proxyaddr from 'proxy-addr'
 import { Macroable } from 'macroable'
-import { omit, pick, get } from 'lodash'
 import { DeepReadonly } from 'ts-essentials'
 import { parse, UrlWithStringQuery } from 'url'
 import { parse as parseCookie } from '@poppinss/cookie'
@@ -29,6 +29,8 @@ import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'http'
 
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { RequestContract, RequestConfigContract } from '@ioc:Adonis/Core/Request'
+
+import { pick } from '../helpers'
 
 /**
  * HTTP Request class exposes the interface to consistently read values
@@ -259,7 +261,12 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public except (keys: string[]): { [key: string]: any } {
-    return omit(this.requestData, keys)
+    return Object.keys(this.requestData).reduce((result: { [key: string]: any }, key: string) => {
+      if (!keys.includes(key) && this.requestData[key] !== undefined) {
+        result[key] = this.requestData[key]
+      }
+      return result
+    }, {})
   }
 
   /**
@@ -271,7 +278,7 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public only <T extends string, U = { [K in T]: any }> (keys: T[]): U {
-    return pick(this.requestData, keys) as unknown as U
+    return pick(this.requestData, keys)
   }
 
   /**

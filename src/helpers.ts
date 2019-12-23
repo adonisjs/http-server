@@ -120,3 +120,15 @@ export function useReturnValue (returnValue: any, ctx: HttpContextContract) {
     !ctx.response.hasLazyBody               // Lazy body is not set
   )
 }
+
+/**
+ * Pick a subset of values for a plain object
+ */
+export function pick<T extends string, U = { [K in T]: any }> (collection: { [key: string]: any }, keys: T[]): U {
+  return keys.reduce((result, key: string) => {
+    if (collection.hasOwnProperty(key)) {
+      result[key] = collection[key]
+    }
+    return result
+  }, {} as U)
+}
