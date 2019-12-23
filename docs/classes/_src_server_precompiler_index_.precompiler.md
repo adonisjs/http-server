@@ -27,14 +27,14 @@ route middleware and the route actual handler
 
 ###  constructor
 
-\+ **new PreCompiler**(`container`: IocContract, `_middlewareStore`: MiddlewareStoreContract): *[PreCompiler](_src_server_precompiler_index_.precompiler.md)*
+\+ **new PreCompiler**(`container`: IocContract, `middlewareStore`: MiddlewareStoreContract): *[PreCompiler](_src_server_precompiler_index_.precompiler.md)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `container` | IocContract |
-`_middlewareStore` | MiddlewareStoreContract |
+`middlewareStore` | MiddlewareStoreContract |
 
 **Returns:** *[PreCompiler](_src_server_precompiler_index_.precompiler.md)*
 

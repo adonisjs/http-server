@@ -34,6 +34,7 @@ store.match('posts/1', 'GET')
 
 * [add](_src_router_store_.store.md#add)
 * [match](_src_router_store_.store.md#match)
+* [matchDomain](_src_router_store_.store.md#matchdomain)
 
 ### Object literals
 
@@ -73,11 +74,15 @@ ___
 
 ###  match
 
-▸ **match**(`url`: string, `method`: string, `domain?`: undefined | string): *null | MatchedRoute*
+▸ **match**(`url`: string, `method`: string, `domain?`: undefined | object): *null | MatchedRoute*
 
 Matches the url, method and optionally domain to pull the matching
 route. `null` is returned when unable to match the URL against
 registered routes.
+
+The domain parameter has to be a registered pattern and not the fully
+qualified runtime domain. You must call `matchDomain` first to fetch
+the pattern for qualified domain
 
 **Parameters:**
 
@@ -85,9 +90,25 @@ Name | Type |
 ------ | ------ |
 `url` | string |
 `method` | string |
-`domain?` | undefined &#124; string |
+`domain?` | undefined &#124; object |
 
 **Returns:** *null | MatchedRoute*
+
+___
+
+###  matchDomain
+
+▸ **matchDomain**(`domain`: string): *RouteStoreMatch[]*
+
+Matches the domain pattern for a given string
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`domain` | string |
+
+**Returns:** *RouteStoreMatch[]*
 
 ## Object literals
 

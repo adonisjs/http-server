@@ -7,33 +7,69 @@
  * file that was distributed with this source code.
 */
 
-import { createServer } from 'http'
-import proxyaddr from 'proxy-addr'
-import { Ioc } from '@adonisjs/fold'
-import { Logger } from '@adonisjs/logger/build/standalone'
-import { Profiler } from '@adonisjs/profiler/build/standalone'
-import { Encryption } from '@adonisjs/encryption/build/standalone'
-import { Server } from '../standalone'
+import { join } from 'path'
+import { fork } from 'child_process'
+import autocannon from 'autocannon'
 
-const logger = new Logger({ enabled: false, level: 'trace', name: 'adonis' })
-const profiler = new Profiler({ enabled: false })
-const encryption = new Encryption('averylongrandom32charslongsecret')
+function coolOff () {
+  return new Promise((resolve) => setTimeout(resolve, 2000))
+}
 
-const server = new Server(new Ioc(), logger, profiler, encryption, {
-  etag: false,
-  jsonpCallbackName: 'callback',
-  cookie: {},
-  subdomainOffset: 2,
-  generateRequestId: false,
-  secret: Math.random().toFixed(36).substring(2, 38),
-  trustProxy: proxyaddr.compile('loopback'),
-  allowMethodSpoofing: false,
-})
+function autocannonRun (opts: any) {
+  return new Promise((resolve) => {
+    const instance = autocannon(opts, () => {
+      resolve()
+    })
+    autocannon.track(instance)
+  })
+}
 
-server.router.get('/', async () => {
-  return { 'hello': 'world' }
-})
+async function adonisRun () {
+  console.log('ADONIS')
+  const forked = fork(join(__dirname, 'adonis'))
 
-server.optimize()
+  await coolOff()
+  await autocannonRun({
+    url: 'http://localhost:4000',
+    connections: 100,
+    duration: 40,
+    pipelining: 10,
+  })
 
-createServer(server.handle.bind(server)).listen('3333')
+  await autocannonRun({
+    url: 'http://localhost:4000',
+    connections: 100,
+    duration: 40,
+    pipelining: 10,
+  })
+
+  forked.kill('SIGINT')
+  console.log('Completed')
+}
+
+async function fastifyRun () {
+  console.log('FASTIFY')
+  const forked = fork(join(__dirname, 'fastify'))
+
+  await coolOff()
+  await autocannonRun({
+    url: 'http://localhost:3000',
+    connections: 100,
+    duration: 40,
+    pipelining: 10,
+  })
+
+  await autocannonRun({
+    url: 'http://localhost:3000',
+    connections: 100,
+    duration: 40,
+    pipelining: 10,
+  })
+
+  forked.kill('SIGINT')
+  console.log('Completed')
+}
+
+fastifyRun()
+  .then(coolOff)
+  .then(adonisRun)

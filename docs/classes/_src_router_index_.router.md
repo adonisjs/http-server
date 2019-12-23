@@ -62,14 +62,14 @@ router.get('/', async function () {
 
 ###  constructor
 
-\+ **new Router**(`_encryption`: EncryptionContract, `_routeProcessor?`: undefined | function): *[Router](_src_router_index_.router.md)*
+\+ **new Router**(`encryption`: EncryptionContract, `routeProcessor?`: undefined | function): *[Router](_src_router_index_.router.md)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`_encryption` | EncryptionContract |
-`_routeProcessor?` | undefined &#124; function |
+`encryption` | EncryptionContract |
+`routeProcessor?` | undefined &#124; function |
 
 **Returns:** *[Router](_src_router_index_.router.md)*
 
@@ -104,7 +104,7 @@ ___
 
 ###  routes
 
-• **routes**: *[Route](_src_router_route_.route.md) | [BriskRoute](_src_router_briskroute_.briskroute.md) | [RouteResource](_src_router_resource_.routeresource.md) | [RouteGroup](_src_router_group_.routegroup.md)[]* =  []
+• **routes**: *[Route](_src_router_route_.route.md)‹› | [BriskRoute](_src_router_briskroute_.briskroute.md)‹› | [RouteResource](_src_router_resource_.routeresource.md)‹› | [RouteGroup](_src_router_group_.routegroup.md)‹›[]* =  []
 
 Collection of routes, including route resource and route
 group. To get a flat list of routes, call `router.toJSON()`

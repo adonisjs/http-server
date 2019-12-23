@@ -1,46 +1,76 @@
-<div align="center">
-  <img src="https://res.cloudinary.com/adonisjs/image/upload/q_100/v1564392111/adonis-banner_o9lunk.png" width="600px">
-</div>
+<div align="center"><img src="https://res.cloudinary.com/adonisjs/image/upload/q_100/v1564392111/adonis-banner_o9lunk.png" width="600px"></div>
 
-# Http Server
-[![circleci-image]][circleci-url] [![npm-image]][npm-url] ![][typescript-image] [![license-image]][license-url]
+# AdonisJS Http Server
+> Decently fast HTTP server used by AdonisJS
 
-Node.js HTTP server with a slick router used by AdonisJs. Think of it as an ExpressJs style server written in Typescript.
+[![appveyor-image]][appveyor-url] [![circleci-image]][circleci-url] [![typescript-image]][typescript-url] [![npm-image]][npm-url] [![license-image]][license-url]
+
+This module is extracted from the AdonisJS framework to work as a standalone HTTP server. The performance of the server is on par with Fastify (not as fast as fastify though).
+
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of contents
 
+- [Benchmarks](#benchmarks)
+- [Features](#features)
 - [Usage](#usage)
-- [Router](#router)
-- [Profiler action labels](#profiler-action-labels)
-- [API](#api)
-- [Maintainers](#maintainers)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+## Benchmarks
+The benchmarking scheme is taken from the Fastify github repo. 
+
+**Machine**: Quad-Core Intel Core i7, 2.2GHz, 16GB RAM
+**Method**: autocannon -c 100 -d 40 -p 10 localhost:3000 * 2, taking the second average
+
+| Framework          | Version                    | Router?      |  Requests/sec |
+| :----------------- | :------------------------- | :----------: | ------------: |
+| **Fastify**        | **2.0.0**                  | **&#10003;** | **52709**    |
+| **AdonisJs**        | **1.5.4**                 | **&#10003;** | **47791**    |
+
+You can run the same benchmarks by cloning the repo and then running the following command.
+
+```sh
+npm run benchmark
+```
+
+Since the program correctness and reliability is more important over micro optimizations. We pay penality on following fronts in comparison to Fastify.
+
+- **The AdonisJS query string parser can parse arrays inside query string** `(/api?foo[]=bar&foo[]=fuzz&foo[]=buzz
+)`, wherease fastify doesn't parse it by default for performance reasons. However, you can also define your own query string parser with fastify, but again, you will end up paying the same performance penality.
+- **Subdomain based routing** is another front, where AdonisJS has to perform little bit extra work to find the correct route and it's handler.
+
+## Features
+
+- The most advanced router with support for **route resources**, **route groups**, **subdomains routing**.
+- Support for **global** and **route specific** middleware.
+- Reliable and stable query string parser.
+- Global exception handler to catch all exceptions handled during an HTTP request.
+- Sends data to AdonisJS inbuilt profiler
+
 ## Usage
-Install the package from npm registry as follows:
+You must be using the server inside a fully fledged AdonisJS application. Still, here's how you can start the standlone server.
 
 ```sh
 npm i @adonisjs/http-server
-
-# yarn
-yarn add @adonisjs/http-server
 ```
-
-and then use it as follows:
 
 ```ts
 import proxyaddr from 'proxy-addr'
 import { createServer } from 'http'
+import { Ioc } from '@adonisjs/fold'
 import { Logger } from '@adonisjs/logger/build/standalone'
 import { Profiler } from '@adonisjs/profiler/build/standalone'
-import { Server } from '@adonisjs/http-server/build/standalone'
+import { Encryption } from '@adonisjs/encryption/build/standalone'
 
-const logger = new Logger({ enabled: false, level: 'trace', name: 'adonis' })
-const profiler = new Profiler({})
-const config = {
+import { Server } from '@adonisjs/http-server'
+
+const logger = new Logger({ enabled: true, level: 'trace', name: 'adonis' })
+const profiler = new Profiler({ enabled: true })
+const encryption = new Encryption('averylongrandom32charslongsecret')
+
+const server = new Server(new Ioc(), logger, profiler, encryption, {
   etag: false,
   jsonpCallbackName: 'callback',
   cookie: {},
@@ -49,51 +79,27 @@ const config = {
   secret: Math.random().toFixed(36).substring(2, 38),
   trustProxy: proxyaddr.compile('loopback'),
   allowMethodSpoofing: false,
-}
+})
 
-const server = new Server({} as any, logger, profiler, config)
+server.router.get('/', async () => {
+  return { hello: 'world' }
+})
 server.optimize()
 
-createServer(server.handle.bind(server)).listen(3000)
+createServer(server.handle.bind(server)).listen(4000)
 ```
 
-## Router
-AdonisJs has one of the most advanced and fast router. It has support for `Route groups`, `Resourceful resources` and many more.
-
-```ts
-router.group(() => {
-  router.get('/', async () => {
-  })
-}).prefix('v1')
-```
-
-## Profiler action labels
-Following is the list of actions profiled during an HTTP request
-
-- http:request
-- http:before:hooks
-- http:route:match
-- http:route:stack
-- http:after:hooks
-- http:route:handler
-
-We recommend you to check the API docs to get a complete reference of all the classes.
-
-## API
-Following are the autogenerated files via Typedoc
-
-* [API](docs/README.md)
-
-## Maintainers
-[Harminder virk](https://github.com/thetutlage)
+[appveyor-image]: https://img.shields.io/appveyor/ci/thetutlage/http-server/master.svg?style=for-the-badge&logo=appveyor
+[appveyor-url]: https://ci.appveyor.com/project/thetutlage/http-server "appveyor"
 
 [circleci-image]: https://img.shields.io/circleci/project/github/adonisjs/http-server/master.svg?style=for-the-badge&logo=circleci
 [circleci-url]: https://circleci.com/gh/adonisjs/http-server "circleci"
 
+[typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
+[typescript-url]:  "typescript"
+
 [npm-image]: https://img.shields.io/npm/v/@adonisjs/http-server.svg?style=for-the-badge&logo=npm
 [npm-url]: https://npmjs.org/package/@adonisjs/http-server "npm"
 
-[typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
-
-[license-url]: LICENSE.md
-[license-image]: https://img.shields.io/aur/license/pac.svg?style=for-the-badge
+[license-image]: https://img.shields.io/npm/l/@adonisjs/http-server?color=blueviolet&style=for-the-badge
+[license-url]: LICENSE.md "license"

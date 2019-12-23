@@ -45,8 +45,8 @@ This is how `explicitEnd` mode works in nutshell.
 * [lazyBody](_src_response_index_.response.md#lazybody)
 * [request](_src_response_index_.response.md#request)
 * [response](_src_response_index_.response.md#response)
-* [_getters](_src_response_index_.response.md#static-protected-_getters)
-* [_macros](_src_response_index_.response.md#static-protected-_macros)
+* [getters](_src_response_index_.response.md#static-protected-getters)
+* [macros](_src_response_index_.response.md#static-protected-macros)
 
 ### Accessors
 
@@ -96,7 +96,9 @@ This is how `explicitEnd` mode works in nutshell.
 
 ###  constructor
 
-\+ **new Response**(`request`: IncomingMessage, `response`: ServerResponse, `_config`: DeepReadonly‹ResponseConfigContract›): *[Response](_src_response_index_.response.md)*
+\+ **new Response**(`request`: IncomingMessage, `response`: ServerResponse, `config`: DeepReadonly‹ResponseConfigContract›): *[Response](_src_response_index_.response.md)*
+
+*Overrides void*
 
 **Parameters:**
 
@@ -104,7 +106,7 @@ Name | Type |
 ------ | ------ |
 `request` | IncomingMessage |
 `response` | ServerResponse |
-`_config` | DeepReadonly‹ResponseConfigContract› |
+`config` | DeepReadonly‹ResponseConfigContract› |
 
 **Returns:** *[Response](_src_response_index_.response.md)*
 
@@ -134,9 +136,9 @@ ___
 
 ___
 
-### `Static` `Protected` _getters
+### `Static` `Protected` getters
 
-▪ **_getters**: *object*
+▪ **getters**: *object*
 
 *Overrides void*
 
@@ -144,9 +146,9 @@ ___
 
 ___
 
-### `Static` `Protected` _macros
+### `Static` `Protected` macros
 
-▪ **_macros**: *object*
+▪ **macros**: *object*
 
 *Overrides void*
 
@@ -378,7 +380,7 @@ try {
 Name | Type | Default |
 ------ | ------ | ------ |
 `filePath` | string | - |
-`generateEtag` | boolean |  this._config.etag |
+`generateEtag` | boolean |  this.config.etag |
 `errorCallback?` | undefined &#124; function | - |
 
 **Returns:** *void*
@@ -525,8 +527,8 @@ behavior and do not change, unless you know what you are doing.
 Name | Type | Default |
 ------ | ------ | ------ |
 `body` | any | - |
-`callbackName` | string |  this._config.jsonpCallbackName |
-`generateEtag` | boolean |  this._config.etag |
+`callbackName` | string |  this.config.jsonpCallbackName |
+`generateEtag` | boolean |  this.config.etag |
 
 **Returns:** *void*
 
@@ -656,7 +658,7 @@ behavior and do not change, unless you know what you are doing.
 Name | Type | Default |
 ------ | ------ | ------ |
 `body` | any | - |
-`generateEtag` | boolean |  this._config.etag |
+`generateEtag` | boolean |  this.config.etag |
 
 **Returns:** *void*
 
@@ -780,9 +782,11 @@ ___
 
 ### `Static` getGetter
 
-▸ **getGetter**(`name`: string): *MacroableFn | undefined*
+▸ **getGetter**(`name`: string): *MacroableFn‹any› | undefined*
 
 *Inherited from void*
+
+Return the existing getter or null if it doesn't exists
 
 **Parameters:**
 
@@ -790,15 +794,17 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *MacroableFn | undefined*
+**Returns:** *MacroableFn‹any› | undefined*
 
 ___
 
 ### `Static` getMacro
 
-▸ **getMacro**(`name`: string): *MacroableFn | undefined*
+▸ **getMacro**(`name`: string): *MacroableFn‹any› | undefined*
 
 *Inherited from void*
+
+Return the existing macro or null if it doesn't exists
 
 **Parameters:**
 
@@ -806,22 +812,45 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *MacroableFn | undefined*
+**Returns:** *MacroableFn‹any› | undefined*
 
 ___
 
 ### `Static` getter
 
-▸ **getter**(`name`: string, `callback`: MacroableFn, `singleton?`: undefined | false | true): *void*
+▸ **getter**<**T**>(`name`: string, `callback`: MacroableFn‹T›, `singleton?`: undefined | false | true): *void*
 
 *Inherited from void*
+
+Define a getter, which is invoked everytime the value is accessed. This method
+also allows adding single getters, whose value is cached after first time
+
+**`example`** 
+```js
+Macroable.getter('time', function () {
+  return new Date().getTime()
+})
+
+console.log(new Macroable().time)
+
+// Singletons
+Macroable.getter('time', function () {
+  return new Date().getTime()
+}, true)
+
+console.log(new Macroable().time)
+```
+
+**Type parameters:**
+
+▪ **T**: *any*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `name` | string |
-`callback` | MacroableFn |
+`callback` | MacroableFn‹T› |
 `singleton?` | undefined &#124; false &#124; true |
 
 **Returns:** *void*
@@ -833,6 +862,8 @@ ___
 ▸ **hasGetter**(`name`: string): *boolean*
 
 *Inherited from void*
+
+Returns a boolean telling if a getter exists
 
 **Parameters:**
 
@@ -850,6 +881,8 @@ ___
 
 *Inherited from void*
 
+Returns a boolean telling if a macro exists
+
 **Parameters:**
 
 Name | Type |
@@ -866,21 +899,39 @@ ___
 
 *Inherited from void*
 
+Cleanup getters and macros from the class
+
 **Returns:** *void*
 
 ___
 
 ### `Static` macro
 
-▸ **macro**(`name`: string, `callback`: MacroableFn): *void*
+▸ **macro**<**T**>(`name`: string, `callback`: MacroableFn‹T›): *void*
 
 *Inherited from void*
+
+Add a macro to the class. This method is a better to manually adding
+to `class.prototype.method`.
+
+Also macros added using `Macroable.macro` can be cleared anytime
+
+**`example`** 
+```js
+Macroable.macro('getUsername', function () {
+  return 'virk'
+})
+```
+
+**Type parameters:**
+
+▪ **T**: *any*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `name` | string |
-`callback` | MacroableFn |
+`callback` | MacroableFn‹T› |
 
 **Returns:** *void*

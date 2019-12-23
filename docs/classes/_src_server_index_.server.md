@@ -35,17 +35,17 @@ Server class handles the HTTP requests by using all Adonis micro modules.
 
 ###  constructor
 
-\+ **new Server**(`_container`: IocContract, `_logger`: LoggerContract, `_profiler`: ProfilerContract, `_encryption`: EncryptionContract, `_httpConfig`: ServerConfigContract): *[Server](_src_server_index_.server.md)*
+\+ **new Server**(`container`: IocContract, `logger`: LoggerContract, `profiler`: ProfilerContract, `encryption`: EncryptionContract, `httpConfig`: ServerConfigContract): *[Server](_src_server_index_.server.md)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`_container` | IocContract |
-`_logger` | LoggerContract |
-`_profiler` | ProfilerContract |
-`_encryption` | EncryptionContract |
-`_httpConfig` | ServerConfigContract |
+`container` | IocContract |
+`logger` | LoggerContract |
+`profiler` | ProfilerContract |
+`encryption` | EncryptionContract |
+`httpConfig` | ServerConfigContract |
 
 **Returns:** *[Server](_src_server_index_.server.md)*
 
@@ -53,7 +53,7 @@ Name | Type |
 
 ###  hooks
 
-• **hooks**: *[Hooks](_src_server_hooks_index_.hooks.md)* =  new Hooks()
+• **hooks**: *[Hooks](_src_server_hooks_index_.hooks.md)‹›* =  new Hooks()
 
 Server before/after hooks
 
@@ -71,7 +71,7 @@ ___
 
 ###  middleware
 
-• **middleware**: *[MiddlewareStore](_src_middlewarestore_index_.middlewarestore.md)* =  new MiddlewareStore(this._container)
+• **middleware**: *[MiddlewareStore](_src_middlewarestore_index_.middlewarestore.md)‹›* =  new MiddlewareStore(this.container)
 
 The middleware store to register global and named middleware
 
@@ -79,7 +79,7 @@ ___
 
 ###  router
 
-• **router**: *[Router](_src_router_index_.router.md)* =  new Router(this._encryption, (route) => this._precompiler.compileRoute(route))
+• **router**: *[Router](_src_router_index_.router.md)‹›* =  new Router(this.encryption, (route) => this.precompiler.compileRoute(route))
 
 The route to register routes
 

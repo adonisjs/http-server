@@ -28,8 +28,8 @@ closure.
 ### Properties
 
 * [route](_src_router_briskroute_.briskroute.md#route)
-* [_getters](_src_router_briskroute_.briskroute.md#static-protected-_getters)
-* [_macros](_src_router_briskroute_.briskroute.md#static-protected-_macros)
+* [getters](_src_router_briskroute_.briskroute.md#static-protected-getters)
+* [macros](_src_router_briskroute_.briskroute.md#static-protected-macros)
 
 ### Methods
 
@@ -46,14 +46,16 @@ closure.
 
 ###  constructor
 
-\+ **new BriskRoute**(`_pattern`: string, `_globalMatchers`: RouteMatchers): *[BriskRoute](_src_router_briskroute_.briskroute.md)*
+\+ **new BriskRoute**(`pattern`: string, `globalMatchers`: RouteMatchers): *[BriskRoute](_src_router_briskroute_.briskroute.md)*
+
+*Overrides void*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`_pattern` | string |
-`_globalMatchers` | RouteMatchers |
+`pattern` | string |
+`globalMatchers` | RouteMatchers |
 
 **Returns:** *[BriskRoute](_src_router_briskroute_.briskroute.md)*
 
@@ -67,9 +69,9 @@ Reference to route instance. Set after `setHandler` is called
 
 ___
 
-### `Static` `Protected` _getters
+### `Static` `Protected` getters
 
-▪ **_getters**: *object*
+▪ **getters**: *object*
 
 *Overrides void*
 
@@ -77,9 +79,9 @@ ___
 
 ___
 
-### `Static` `Protected` _macros
+### `Static` `Protected` macros
 
-▪ **_macros**: *object*
+▪ **macros**: *object*
 
 *Overrides void*
 
@@ -110,9 +112,11 @@ ___
 
 ### `Static` getGetter
 
-▸ **getGetter**(`name`: string): *MacroableFn | undefined*
+▸ **getGetter**(`name`: string): *MacroableFn‹any› | undefined*
 
 *Inherited from void*
+
+Return the existing getter or null if it doesn't exists
 
 **Parameters:**
 
@@ -120,15 +124,17 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *MacroableFn | undefined*
+**Returns:** *MacroableFn‹any› | undefined*
 
 ___
 
 ### `Static` getMacro
 
-▸ **getMacro**(`name`: string): *MacroableFn | undefined*
+▸ **getMacro**(`name`: string): *MacroableFn‹any› | undefined*
 
 *Inherited from void*
+
+Return the existing macro or null if it doesn't exists
 
 **Parameters:**
 
@@ -136,22 +142,45 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *MacroableFn | undefined*
+**Returns:** *MacroableFn‹any› | undefined*
 
 ___
 
 ### `Static` getter
 
-▸ **getter**(`name`: string, `callback`: MacroableFn, `singleton?`: undefined | false | true): *void*
+▸ **getter**<**T**>(`name`: string, `callback`: MacroableFn‹T›, `singleton?`: undefined | false | true): *void*
 
 *Inherited from void*
+
+Define a getter, which is invoked everytime the value is accessed. This method
+also allows adding single getters, whose value is cached after first time
+
+**`example`** 
+```js
+Macroable.getter('time', function () {
+  return new Date().getTime()
+})
+
+console.log(new Macroable().time)
+
+// Singletons
+Macroable.getter('time', function () {
+  return new Date().getTime()
+}, true)
+
+console.log(new Macroable().time)
+```
+
+**Type parameters:**
+
+▪ **T**: *any*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `name` | string |
-`callback` | MacroableFn |
+`callback` | MacroableFn‹T› |
 `singleton?` | undefined &#124; false &#124; true |
 
 **Returns:** *void*
@@ -163,6 +192,8 @@ ___
 ▸ **hasGetter**(`name`: string): *boolean*
 
 *Inherited from void*
+
+Returns a boolean telling if a getter exists
 
 **Parameters:**
 
@@ -180,6 +211,8 @@ ___
 
 *Inherited from void*
 
+Returns a boolean telling if a macro exists
+
 **Parameters:**
 
 Name | Type |
@@ -196,21 +229,39 @@ ___
 
 *Inherited from void*
 
+Cleanup getters and macros from the class
+
 **Returns:** *void*
 
 ___
 
 ### `Static` macro
 
-▸ **macro**(`name`: string, `callback`: MacroableFn): *void*
+▸ **macro**<**T**>(`name`: string, `callback`: MacroableFn‹T›): *void*
 
 *Inherited from void*
+
+Add a macro to the class. This method is a better to manually adding
+to `class.prototype.method`.
+
+Also macros added using `Macroable.macro` can be cleared anytime
+
+**`example`** 
+```js
+Macroable.macro('getUsername', function () {
+  return 'virk'
+})
+```
+
+**Type parameters:**
+
+▪ **T**: *any*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
 `name` | string |
-`callback` | MacroableFn |
+`callback` | MacroableFn‹T› |
 
 **Returns:** *void*

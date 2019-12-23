@@ -24,14 +24,14 @@ route finalHandler
 
 ###  constructor
 
-\+ **new RequestHandler**(`_middlewareStore`: MiddlewareStoreContract, `_router`: RouterContract): *[RequestHandler](_src_server_requesthandler_index_.requesthandler.md)*
+\+ **new RequestHandler**(`middlewareStore`: MiddlewareStoreContract, `router`: RouterContract): *[RequestHandler](_src_server_requesthandler_index_.requesthandler.md)*
 
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`_middlewareStore` | MiddlewareStoreContract |
-`_router` | RouterContract |
+`middlewareStore` | MiddlewareStoreContract |
+`router` | RouterContract |
 
 **Returns:** *[RequestHandler](_src_server_requesthandler_index_.requesthandler.md)*
 

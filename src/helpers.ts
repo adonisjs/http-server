@@ -13,6 +13,7 @@
 
 /// <reference path="../adonis-typings/index.ts" />
 
+import QuickLru from 'quick-lru'
 import { Exception } from '@poppinss/utils'
 
 import { Route } from './Router/Route'
@@ -131,4 +132,20 @@ export function pick<T extends string, U = { [K in T]: any }> (collection: { [ke
     }
     return result
   }, {} as U)
+}
+
+const proxyCache = new QuickLru({ maxSize: 100 })
+
+/**
+ * Since finding the trusted proxy based upon the remote address
+ * is an expensive function, we cache its result
+ */
+export function trustProxy (remoteAddress: string, proxyFn: (addr: string, distance: number) => boolean): boolean {
+  if (proxyCache.has(remoteAddress)) {
+    return proxyCache.get(remoteAddress) as boolean
+  }
+
+  const result = proxyFn(remoteAddress, 0)
+  proxyCache.set(remoteAddress, result)
+  return result
 }

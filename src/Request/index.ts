@@ -30,7 +30,7 @@ import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'http'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { RequestContract, RequestConfigContract } from '@ioc:Adonis/Core/Request'
 
-import { pick } from '../helpers'
+import { pick, trustProxy } from '../helpers'
 
 /**
  * HTTP Request class exposes the interface to consistently read values
@@ -313,7 +313,6 @@ export class Request extends Macroable implements RequestContract {
     if (this.config.allowMethodSpoofing && this.intended() === 'POST') {
       return this.input('_method', this.intended()).toUpperCase()
     }
-
     return this.intended()
   }
 
@@ -428,7 +427,7 @@ export class Request extends Macroable implements RequestContract {
       return 'https'
     }
 
-    if (!this.config.trustProxy(this.request.connection.remoteAddress!, 0)) {
+    if (!trustProxy(this.request.connection.remoteAddress!, this.config.trustProxy)) {
       return this.parsedUrl.protocol || 'http'
     }
 
@@ -469,7 +468,7 @@ export class Request extends Macroable implements RequestContract {
      * Use X-Fowarded-Host when we trust the proxy header and it
      * exists
      */
-    if (this.config.trustProxy(this.request.connection.remoteAddress!, 0)) {
+    if (!trustProxy(this.request.connection.remoteAddress!, this.config.trustProxy)) {
       host = this.header('X-Forwarded-Host') || host
     }
 

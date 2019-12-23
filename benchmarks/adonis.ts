@@ -13,18 +13,8 @@ import { Ioc } from '@adonisjs/fold'
 import { Logger } from '@adonisjs/logger/build/standalone'
 import { Profiler } from '@adonisjs/profiler/build/standalone'
 import { Encryption } from '@adonisjs/encryption/build/standalone'
+
 import { Server } from '../standalone'
-
-const ioc = new Ioc()
-class HomeController {
-  public handle () {
-    return { hello: 'world' }
-  }
-}
-
-ioc.singleton('App/Controllers/Http/HomeController', () => {
-  return new HomeController()
-})
 
 const logger = new Logger({ enabled: false, level: 'trace', name: 'adonis' })
 const profiler = new Profiler({ enabled: false })
@@ -41,8 +31,11 @@ const server = new Server(new Ioc(), logger, profiler, encryption, {
   allowMethodSpoofing: false,
 })
 
-server.router.get('/', 'HomeController')
-
+server.router.get('/', async () => {
+  return { hello: 'world' }
+})
 server.optimize()
 
-createServer(server.handle.bind(server)).listen('3333')
+createServer(server.handle.bind(server)).listen(4000, () => {
+  console.log('listening on 4000')
+})
