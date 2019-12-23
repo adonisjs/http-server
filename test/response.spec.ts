@@ -1070,7 +1070,7 @@ test.group('Response', (group) => {
     assert.deepEqual(body, { message: 'Not allowed' })
   })
 
-  test('abort request when condition is truthy', async (assert) => {
+  test('abortIf: abort request when condition is truthy', async (assert) => {
     const server = createServer((req, res) => {
       const config = fakeConfig()
       const response = new Response(req, res, config)
@@ -1087,12 +1087,45 @@ test.group('Response', (group) => {
     assert.deepEqual(body, { message: 'Not allowed' })
   })
 
-  test('do not abort request when condition is falsy', async () => {
+  test('abortIf: do not abort request when condition is falsy', async () => {
     const server = createServer((req, res) => {
       const config = fakeConfig()
       const response = new Response(req, res, config)
       try {
         response.abortIf(false, { message: 'Not allowed' }, 401)
+      } catch (error) {
+        error.handle(error, { response })
+      }
+
+      response.finish()
+    })
+
+    await supertest(server).get('/').expect(200)
+  })
+
+  test('abortUnless: abort request when condition is falsy', async (assert) => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response: Response = new Response(req, res, config)
+      try {
+        response.abortUnless(false, { message: 'Not allowed' }, 401)
+      } catch (error) {
+        error.handle(error, { response })
+      }
+
+      response.finish()
+    })
+
+    const { body } = await supertest(server).get('/').expect(401)
+    assert.deepEqual(body, { message: 'Not allowed' })
+  })
+
+  test('abortUnless: do not abort request when condition is truthy', async () => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response: Response = new Response(req, res, config)
+      try {
+        response.abortUnless(true, { message: 'Not allowed' }, 401)
       } catch (error) {
         error.handle(error, { response })
       }

@@ -828,7 +828,7 @@ export class Response extends Macroable implements ResponseContract {
    * Abort the request with custom body and a status code. 400 is
    * used when status is not defined
    */
-  public abort (body: any, status?: number): void {
+  public abort (body: any, status?: number): never {
     throw HttpException.invoke(body, status || 400)
   }
 
@@ -838,6 +838,16 @@ export class Response extends Macroable implements ResponseContract {
    */
   public abortIf (condition: any, body: any, status?: number): void {
     if (condition) {
+      this.abort(body, status)
+    }
+  }
+
+  /**
+   * Abort the request with custom body and a status code when
+   * passed condition returns `false`
+   */
+  public abortUnless (condition: any, body: any, status?: number): asserts condition {
+    if (!condition) {
       this.abort(body, status)
     }
   }
