@@ -8,11 +8,12 @@
 */
 
 import { IocContract } from '@adonisjs/fold'
+
+import { Server } from '../src/Server'
 import { Request } from '../src/Request'
 import { Response } from '../src/Response'
-import { MiddlewareStore } from '../src/MiddlewareStore'
-import { Server } from '../src/Server'
 import { HttpContext } from '../src/HttpContext'
+import { MiddlewareStore } from '../src/MiddlewareStore'
 
 export default class HttpServerProvider {
   constructor (protected $container: IocContract) {}
