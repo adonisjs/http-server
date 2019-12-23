@@ -13,9 +13,9 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
+import { snakeCase } from 'lodash'
 import { singular } from 'pluralize'
 import { Macroable } from 'macroable'
-import { snakeCase } from 'lodash'
 
 import { MiddlewareNode } from '@ioc:Adonis/Core/Middleware'
 import { RouteMatchers, RouteResourceContract } from '@ioc:Adonis/Core/Route'
@@ -44,65 +44,61 @@ export class RouteResource extends Macroable implements RouteResourceContract {
   /**
    * Resource name
    */
-  private _resourceName: string = this._resource.
-    split('.')
+  private resourceName: string = this.resource
+    .split('.')
     .map((token) => snakeCase(token)).join('.')
 
   constructor (
-    private _resource: string,
-    private _controller: string,
-    private _globalMatchers: RouteMatchers,
-    private _shallow = false,
+    private resource: string,
+    private controller: string,
+    private globalMatchers: RouteMatchers,
+    private shallow = false,
   ) {
     super()
-    this._buildRoutes()
+    this.buildRoutes()
   }
 
   /**
    * Add a new route for the given pattern, methods and controller action
    */
-  private _makeRoute (pattern: string, methods: string[], action: string) {
+  private makeRoute (pattern: string, methods: string[], action: string) {
     const route = new Route(
       pattern,
       methods,
-      `${this._controller}.${action}`,
-      this._globalMatchers,
+      `${this.controller}.${action}`,
+      this.globalMatchers,
     )
 
-    route.as(`${this._resourceName}.${action}`)
+    route.as(`${this.resourceName}.${action}`)
     this.routes.push(route)
   }
 
   /**
    * Build routes for the given resource
    */
-  private _buildRoutes () {
-    this._resource = this._resource.replace(/^\//, '').replace(/\/$/, '')
+  private buildRoutes () {
+    this.resource = this.resource.replace(/^\//, '').replace(/\/$/, '')
 
-    const resourceTokens = this._resource.split('.')
+    const resourceTokens = this.resource.split('.')
     const mainResource = resourceTokens.pop()!
 
     const fullUrl = `${resourceTokens
-      .map((token) => {
-        return `${token}/:${snakeCase(singular(token))}_id`
-      })
+      .map((token) => `${token}/:${snakeCase(singular(token))}_id`)
       .join('/')}/${mainResource}`
 
-    const shallowUrl = this._shallow ? mainResource : fullUrl
-
-    this._makeRoute(fullUrl, ['GET'], 'index')
-    this._makeRoute(`${fullUrl}/create`, ['GET'], 'create')
-    this._makeRoute(fullUrl, ['POST'], 'store')
-    this._makeRoute(`${shallowUrl}/:id`, ['GET'], 'show')
-    this._makeRoute(`${shallowUrl}/:id/edit`, ['GET'], 'edit')
-    this._makeRoute(`${shallowUrl}/:id`, ['PUT', 'PATCH'], 'update')
-    this._makeRoute(`${shallowUrl}/:id`, ['DELETE'], 'destroy')
+    this.makeRoute(fullUrl, ['GET'], 'index')
+    this.makeRoute(`${fullUrl}/create`, ['GET'], 'create')
+    this.makeRoute(fullUrl, ['POST'], 'store')
+    this.makeRoute(`${this.shallow ? mainResource : fullUrl}/:id`, ['GET'], 'show')
+    this.makeRoute(`${this.shallow ? mainResource : fullUrl}/:id/edit`, ['GET'], 'edit')
+    this.makeRoute(`${this.shallow ? mainResource : fullUrl}/:id`, ['PUT', 'PATCH'], 'update')
+    this.makeRoute(`${this.shallow ? mainResource : fullUrl}/:id`, ['DELETE'], 'destroy')
   }
 
   /**
    * Filter the routes based on their partial names
    */
-  private _filter (names: string[], inverse: boolean) {
+  private filter (names: string[], inverse: boolean) {
     return this.routes.filter((route) => {
       const match = names.find((name) => route.name.endsWith(name))
       return inverse ? !match : match
@@ -113,10 +109,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
    * Register only given routes and remove others
    */
   public only (names: string[]): this {
-    this
-      ._filter(names, true)
-      .forEach((route) => (route.deleted = true))
-
+    this.filter(names, true).forEach((route) => (route.deleted = true))
     return this
   }
 
@@ -124,10 +117,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
    * Register all routes, except the one's defined
    */
   public except (names: string[]): this {
-    this
-      ._filter(names, false)
-      .forEach((route) => (route.deleted = true))
-
+    this.filter(names, false).forEach((route) => (route.deleted = true))
     return this
   }
 
@@ -186,10 +176,10 @@ export class RouteResource extends Macroable implements RouteResourceContract {
   public as (name: string): this {
     name = snakeCase(name)
     this.routes.forEach((route) => {
-      route.as(route.name.replace(this._resourceName, name), false)
+      route.as(route.name.replace(this.resourceName, name), false)
     })
 
-    this._resourceName = name
+    this.resourceName = name
     return this
   }
 }

@@ -326,37 +326,37 @@ test.group('Route Resource', () => {
     })
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.index')!['_middleware'],
+      resource.routes.find((route) => route.name === 'photos.index')!['routeMiddleware'],
       [],
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.create')!['_middleware'],
+      resource.routes.find((route) => route.name === 'photos.create')!['routeMiddleware'],
       ['auth'],
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.store')!['_middleware'],
+      resource.routes.find((route) => route.name === 'photos.store')!['routeMiddleware'],
       ['auth', 'acl:admin'],
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.show')!['_middleware'],
+      resource.routes.find((route) => route.name === 'photos.show')!['routeMiddleware'],
       [],
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.edit')!['_middleware'],
+      resource.routes.find((route) => route.name === 'photos.edit')!['routeMiddleware'],
       [],
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.update')!['_middleware'],
+      resource.routes.find((route) => route.name === 'photos.update')!['routeMiddleware'],
       [],
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.destroy')!['_middleware'],
+      resource.routes.find((route) => route.name === 'photos.destroy')!['routeMiddleware'],
       [],
     )
   })
@@ -366,49 +366,49 @@ test.group('Route Resource', () => {
     resource.where('id', '[a-z]')
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.index')!['_matchers'],
+      resource.routes.find((route) => route.name === 'photos.index')!['matchers'],
       {
         id: /[a-z]/,
       },
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.create')!['_matchers'],
+      resource.routes.find((route) => route.name === 'photos.create')!['matchers'],
       {
         id: /[a-z]/,
       },
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.store')!['_matchers'],
+      resource.routes.find((route) => route.name === 'photos.store')!['matchers'],
       {
         id: /[a-z]/,
       },
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.show')!['_matchers'],
+      resource.routes.find((route) => route.name === 'photos.show')!['matchers'],
       {
         id: /[a-z]/,
       },
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.edit')!['_matchers'],
+      resource.routes.find((route) => route.name === 'photos.edit')!['matchers'],
       {
         id: /[a-z]/,
       },
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.update')!['_matchers'],
+      resource.routes.find((route) => route.name === 'photos.update')!['matchers'],
       {
         id: /[a-z]/,
       },
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.destroy')!['_matchers'],
+      resource.routes.find((route) => route.name === 'photos.destroy')!['matchers'],
       {
         id: /[a-z]/,
       },
@@ -708,7 +708,7 @@ test.group('Route Resource', () => {
     resource.middleware({ '*': ['auth'] })
 
     const registeredMiddleware = resource.routes.reduce((result, route) => {
-      result[route.name] = route['_middleware']
+      result[route.name] = route['routeMiddleware']
       return result
     }, {})
 
@@ -728,7 +728,7 @@ test.group('Route Resource', () => {
     resource.middleware({ '*': ['auth'], 'update': ['self'] })
 
     const registeredMiddleware = resource.routes.reduce((result, route) => {
-      result[route.name] = route['_middleware']
+      result[route.name] = route['routeMiddleware']
       return result
     }, {})
 

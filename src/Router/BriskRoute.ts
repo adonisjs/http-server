@@ -36,14 +36,14 @@ export class BriskRoute extends Macroable implements BriskRouteContract {
    * this class. We keep a reference to the parent method name for raising
    * meaningful exception
    */
-  private _invokedBy: string = ''
+  private invokedBy: string = ''
 
   /**
    * Reference to route instance. Set after `setHandler` is called
    */
   public route: null | Route = null
 
-  constructor (private _pattern: string, private _globalMatchers: RouteMatchers) {
+  constructor (private pattern: string, private globalMatchers: RouteMatchers) {
     super()
   }
 
@@ -60,14 +60,14 @@ export class BriskRoute extends Macroable implements BriskRouteContract {
   ): Route {
     if (this.route) {
       throw new Exception(
-        `\`Route.${invokedBy}\` and \`${this._invokedBy}\` cannot be called together`,
+        `\`Route.${invokedBy}\` and \`${this.invokedBy}\` cannot be called together`,
         500,
         'E_MULTIPLE_BRISK_HANDLERS',
       )
     }
 
-    this.route = new Route(this._pattern, methods || ['GET'], handler, this._globalMatchers)
-    this._invokedBy = invokedBy
+    this.route = new Route(this.pattern, methods || ['GET'], handler, this.globalMatchers)
+    this.invokedBy = invokedBy
     return this.route
   }
 }

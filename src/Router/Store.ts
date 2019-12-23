@@ -56,7 +56,7 @@ export class Store {
    * Returns the domain node for a given domain. If domain node is missing,
    * it will added to the routes object and tokens are also generated
    */
-  private _getDomainNode (domain: string): DomainNode {
+  private getDomainNode (domain: string): DomainNode {
     if (!this.tree.domains[domain]) {
       /**
        * The tokens are required to match dynamic domains
@@ -72,8 +72,8 @@ export class Store {
    * Returns the method node for a given domain and method. If method is
    * missing, it will be added to the domain node
    */
-  private _getMethodRoutes (domain: string, method: string): MethodNode {
-    const domainNode = this._getDomainNode(domain)
+  private getMethodRoutes (domain: string, method: string): MethodNode {
+    const domainNode = this.getDomainNode(domain)
     if (!domainNode[method]) {
       domainNode[method] = { tokens: [], routes: {} }
     }
@@ -118,7 +118,7 @@ export class Store {
     ])) as RouteNode
 
     route.methods.forEach((method) => {
-      const methodRoutes = this._getMethodRoutes(route.domain || 'root', method)
+      const methodRoutes = this.getMethodRoutes(route.domain || 'root', method)
 
       /**
        * Ensure that route doesn't pre-exists. In that case, we need to throw

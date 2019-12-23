@@ -46,21 +46,21 @@ export class MiddlewareStore implements MiddlewareStoreContract {
   /**
    * A list of global middleware
    */
-  private _list: ResolvedMiddlewareNode[] = []
+  private list: ResolvedMiddlewareNode[] = []
 
   /**
    * A map of named middleware. Named middleware are used as reference
    * on the routes
    */
-  private _named: { [alias: string]: ResolvedMiddlewareNode } = {}
+  private named: { [alias: string]: ResolvedMiddlewareNode } = {}
 
   /**
    * The resolver to resolve middleware from the IoC container
    */
-  private _resolver: IocResolverContract
+  private resolver: IocResolverContract
 
   constructor (container: IocContract) {
-    this._resolver = container.getResolver()
+    this.resolver = container.getResolver()
   }
 
   /**
@@ -72,12 +72,12 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    * The annoying part is that one has to create the middleware before registering
    * it, otherwise an exception will be raised.
    */
-  private _resolveMiddleware (middleware: MiddlewareNode): ResolvedMiddlewareNode {
+  private resolveMiddleware (middleware: MiddlewareNode): ResolvedMiddlewareNode {
     return typeof(middleware) === 'function' ? {
       type: 'function',
       value: middleware,
       args: [],
-    } : Object.assign(this._resolver.resolve(`${middleware}.handle`), { args: [] })
+    } : Object.assign(this.resolver.resolve(`${middleware}.handle`), { args: [] })
   }
 
   /**
@@ -85,7 +85,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    * by HTTP server and executed on every request
    */
   public register (middleware: MiddlewareNode[]): this {
-    this._list = middleware.map(this._resolveMiddleware.bind(this))
+    this.list = middleware.map(this.resolveMiddleware.bind(this))
     return this
   }
 
@@ -93,8 +93,8 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    * Register named middleware that can be referenced later on routes
    */
   public registerNamed (middleware: { [alias: string]: MiddlewareNode }): this {
-    this._named = Object.keys(middleware).reduce((result, alias) => {
-      result[alias] = this._resolveMiddleware(middleware[alias])
+    this.named = Object.keys(middleware).reduce((result, alias) => {
+      result[alias] = this.resolveMiddleware(middleware[alias])
       return result
     }, {})
 
@@ -106,7 +106,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    * method
    */
   public get (): ResolvedMiddlewareNode[] {
-    return this._list
+    return this.list
   }
 
   /**
@@ -114,7 +114,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    * using [[MiddlewareStore.registerNamed]] method.
    */
   public getNamed (name: string): null | ResolvedMiddlewareNode {
-    return this._named[name] || null
+    return this.named[name] || null
   }
 
   /**
@@ -130,6 +130,6 @@ export class MiddlewareStore implements MiddlewareStoreContract {
 
     const args: any[] = [params[0], params[1]]
     args.push(middleware.args)
-    return this._resolver.call(middleware, undefined, args)
+    return this.resolver.call(middleware, undefined, args)
   }
 }

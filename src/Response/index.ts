@@ -122,13 +122,13 @@ export class Response extends Macroable implements ResponseContract {
   protected static macros = {}
   protected static getters = {}
 
-  private _headers: any = {}
-  private _explicitStatus = false
+  private headers: any = {}
+  private explicitStatus = false
 
   constructor (
     public request: IncomingMessage,
     public response: ServerResponse,
-    private _config: DeepReadonly<ResponseConfigContract>,
+    private config: DeepReadonly<ResponseConfigContract>,
   ) {
     super()
   }
@@ -170,7 +170,7 @@ export class Response extends Macroable implements ResponseContract {
   /**
    * Normalizes header value to a string or an array of string
    */
-  private _castHeaderValue (value: any): string | string[] {
+  private castHeaderValue (value: any): string | string[] {
     return Array.isArray(value) ? (value as any).map(String) : String(value)
   }
 
@@ -180,7 +180,7 @@ export class Response extends Macroable implements ResponseContract {
    *
    * Empty body results in `204`.
    */
-  private _writeBody (content: any, generateEtag: boolean, jsonpCallbackName?: string): void {
+  private writeBody (content: any, generateEtag: boolean, jsonpCallbackName?: string): void {
     let { type, body, originalType } = this.buildResponseBody(content)
 
     /**
@@ -192,7 +192,7 @@ export class Response extends Macroable implements ResponseContract {
       this.removeHeader('Content-Type')
       this.removeHeader('Content-Length')
       this.removeHeader('Transfer-Encoding')
-      this._end()
+      this.endResponse()
       return
     }
 
@@ -210,7 +210,7 @@ export class Response extends Macroable implements ResponseContract {
       this.removeHeader('Content-Type')
       this.removeHeader('Content-Length')
       this.removeHeader('Transfer-Encoding')
-      this._end(body)
+      this.endResponse(body)
       return
     }
 
@@ -256,13 +256,13 @@ export class Response extends Macroable implements ResponseContract {
      * Compute content length
      */
     this.header('Content-Length', Buffer.byteLength(body))
-    this._end(body)
+    this.endResponse(body)
   }
 
   /**
    * Stream the body to the response and handles cleaning up the stream
    */
-  private _streamBody (body: ResponseStream, errorCallback?: ((error: NodeJS.ErrnoException) => any)) {
+  private streamBody (body: ResponseStream, errorCallback?: ((error: NodeJS.ErrnoException) => any)) {
     return new Promise((resolve) => {
       let finished = false
 
@@ -280,9 +280,9 @@ export class Response extends Macroable implements ResponseContract {
         destroy(body)
 
         if (typeof (errorCallback) === 'function') {
-          this._end(errorCallback(error))
+          this.endResponse(errorCallback(error))
         } else {
-          this._end(
+          this.endResponse(
             error.code === 'ENOENT' ? 'File not found' : 'Cannot process file',
             error.code === 'ENOENT' ? 404 : 500,
           )
@@ -314,7 +314,7 @@ export class Response extends Macroable implements ResponseContract {
   /**
    * Downloads a file by streaming it to the response
    */
-  private async _download (
+  private async streamFileForDownload (
     filePath: string,
     generateEtag: boolean,
     errorCallback?: ((error: NodeJS.ErrnoException) => any),
@@ -348,7 +348,7 @@ export class Response extends Macroable implements ResponseContract {
        * 304: When etags are used and cache is fresh
        */
       if (this.request.method === 'HEAD') {
-        this._end(null, generateEtag && this.fresh() ? 304 : 200)
+        this.endResponse(null, generateEtag && this.fresh() ? 304 : 200)
         return
       }
 
@@ -357,7 +357,7 @@ export class Response extends Macroable implements ResponseContract {
        * cache is fresh, then we must respond with 304
        */
       if (generateEtag && this.fresh()) {
-        this._end(null, 304)
+        this.endResponse(null, 304)
         return
       }
 
@@ -371,12 +371,12 @@ export class Response extends Macroable implements ResponseContract {
       /**
        * Finally stream the file
        */
-      return this._streamBody(createReadStream(filePath), errorCallback)
+      return this.streamBody(createReadStream(filePath), errorCallback)
     } catch (error) {
       if (typeof (errorCallback) === 'function') {
-        this._end(errorCallback(error))
+        this.endResponse(errorCallback(error))
       } else {
-        this._end('Cannot process file', 404)
+        this.endResponse('Cannot process file', 404)
       }
     }
   }
@@ -384,7 +384,7 @@ export class Response extends Macroable implements ResponseContract {
   /**
    * Ends the response by flushing headers and writing body
    */
-  private _end (body?: any, statusCode?: number) {
+  private endResponse (body?: any, statusCode?: number) {
     this.flushHeaders(statusCode)
 
     // avoid ArgumentsAdaptorTrampoline from V8 (inspired by fastify)
@@ -396,8 +396,8 @@ export class Response extends Macroable implements ResponseContract {
    * Writes headers to the response.
    */
   public flushHeaders (statusCode?: number): this {
-    this.response.writeHead(statusCode || this.response.statusCode, this._headers)
-    this._headers = {}
+    this.response.writeHead(statusCode || this.response.statusCode, this.headers)
+    this.headers = {}
 
     return this
   }
@@ -407,7 +407,7 @@ export class Response extends Macroable implements ResponseContract {
    * header.
    */
   public getHeader (key: string) {
-    const value = this._headers[key.toLowerCase()]
+    const value = this.headers[key.toLowerCase()]
     return value === undefined ? this.response.getHeader(key) : value
   }
 
@@ -424,7 +424,7 @@ export class Response extends Macroable implements ResponseContract {
    */
   public header (key: string, value: CastableHeader): this {
     if (value) {
-      this._headers[key.toLowerCase()] = this._castHeaderValue(value)
+      this.headers[key.toLowerCase()] = this.castHeaderValue(value)
     }
     return this
   }
@@ -449,21 +449,21 @@ export class Response extends Macroable implements ResponseContract {
     key = key.toLowerCase()
 
     let existingHeader = this.getHeader(key)
-    let casted = this._castHeaderValue(value)
+    let casted = this.castHeaderValue(value)
 
     /**
      * If there isn't any header, then setHeader right
      * away
      */
     if (!existingHeader) {
-      this._headers[key] = casted
+      this.headers[key] = casted
       return this
     }
 
-    existingHeader = this._castHeaderValue(existingHeader)
+    existingHeader = this.castHeaderValue(existingHeader)
     casted = Array.isArray(existingHeader) ? existingHeader.concat(casted) : [existingHeader].concat(casted)
 
-    this._headers[key] = casted
+    this.headers[key] = casted
     return this
   }
 
@@ -481,7 +481,7 @@ export class Response extends Macroable implements ResponseContract {
    * Removes the existing response header from being sent.
    */
   public removeHeader (key: string): this {
-    delete this._headers[key.toLowerCase()]
+    delete this.headers[key.toLowerCase()]
     return this
   }
 
@@ -489,7 +489,7 @@ export class Response extends Macroable implements ResponseContract {
    * Set HTTP status code
    */
   public status (code: number): this {
-    this._explicitStatus = true
+    this.explicitStatus = true
     this.response.statusCode = code
     return this
   }
@@ -499,7 +499,7 @@ export class Response extends Macroable implements ResponseContract {
    * set
    */
   public safeStatus (code: number): this {
-    if (this._explicitStatus) {
+    if (this.explicitStatus) {
       return this
     }
 
@@ -577,7 +577,7 @@ export class Response extends Macroable implements ResponseContract {
 
     const status = this.response.statusCode
     if ((status >= 200 && status < 300) || status === 304) {
-      return fresh(this.request.headers, this._headers)
+      return fresh(this.request.headers, this.headers)
     }
 
     return false
@@ -665,9 +665,9 @@ export class Response extends Macroable implements ResponseContract {
    * This method buffers the body if `explicitEnd = true`, which is the default
    * behavior and do not change, unless you know what you are doing.
    */
-  public send (body: any, generateEtag: boolean = this._config.etag): void {
+  public send (body: any, generateEtag: boolean = this.config.etag): void {
     this.lazyBody = {
-      writer: this._writeBody,
+      writer: this.writeBody,
       args: [body, generateEtag],
     }
   }
@@ -693,11 +693,11 @@ export class Response extends Macroable implements ResponseContract {
    */
   public jsonp (
     body: any,
-    callbackName: string = this._config.jsonpCallbackName,
-    generateEtag: boolean = this._config.etag,
+    callbackName: string = this.config.jsonpCallbackName,
+    generateEtag: boolean = this.config.etag,
   ) {
     this.lazyBody = {
-      writer: this._writeBody,
+      writer: this.writeBody,
       args: [body, generateEtag, callbackName],
     }
   }
@@ -732,7 +732,7 @@ export class Response extends Macroable implements ResponseContract {
     }
 
     this.lazyBody = {
-      writer: this._streamBody,
+      writer: this.streamBody,
       args: [body, errorCallback],
     }
   }
@@ -764,11 +764,11 @@ export class Response extends Macroable implements ResponseContract {
    */
   public download (
     filePath: string,
-    generateEtag: boolean = this._config.etag,
+    generateEtag: boolean = this.config.etag,
     errorCallback?: ((error: NodeJS.ErrnoException) => any),
   ): void {
     this.lazyBody = {
-      writer: this._download,
+      writer: this.streamFileForDownload,
       args: [filePath, generateEtag, errorCallback],
     }
   }
@@ -847,9 +847,9 @@ export class Response extends Macroable implements ResponseContract {
    * all options from the config (means they are not merged).
    */
   public cookie (key: string, value: any, options?: Partial<CookieOptions>): this {
-    options = Object.assign({}, this._config.cookie, options)
+    options = Object.assign({}, this.config.cookie, options)
 
-    const serialized = serialize(key, value, this._config.secret, options)
+    const serialized = serialize(key, value, this.config.secret, options)
     if (!serialized) {
       return this
     }
@@ -863,7 +863,7 @@ export class Response extends Macroable implements ResponseContract {
    * all options from the config (means they are not merged)
    */
   public plainCookie (key: string, value: any, options?: Partial<CookieOptions>): this {
-    options = Object.assign({}, this._config.cookie, options)
+    options = Object.assign({}, this.config.cookie, options)
 
     const serialized = serialize(key, value, undefined, options)
     if (!serialized) {
@@ -878,7 +878,7 @@ export class Response extends Macroable implements ResponseContract {
    * Clear existing cookie.
    */
   public clearCookie (key: string, options?: Partial<CookieOptions>): this {
-    options = Object.assign({}, this._config.cookie, options)
+    options = Object.assign({}, this.config.cookie, options)
     options.expires = new Date(1)
 
     const serialized = serialize(key, '', undefined, options)
@@ -901,7 +901,7 @@ export class Response extends Macroable implements ResponseContract {
       this.lazyBody.writer.bind(this)(...this.lazyBody.args)
       this.lazyBody = null
     } else if (this.isPending) {
-      this._end()
+      this.endResponse()
     }
   }
 }

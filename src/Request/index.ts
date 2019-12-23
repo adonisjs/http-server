@@ -50,39 +50,39 @@ export class Request extends Macroable implements RequestContract {
   /**
    * Request body set using `setBody` method
    */
-  private _body: object = {}
+  private requestBody: object = {}
 
   /**
-   * A merged copy of `request` body and `querystring`
+   * A merged copy of `request body` and `querystring`
    */
-  private _all: object = {}
+  private requestData: object = {}
 
   /**
    * Original merged copy of `request body` and `querystring`.
    * Further mutation to this object are not allowed
    */
-  private _original: object = {}
+  private originalRequestData: object = {}
 
   /**
    * Parsed query string
    */
-  private _qs: object = {}
+  private requestQs: object = {}
 
   /**
    * Raw request body as text
    */
-  private _raw: string | null = null
+  private rawRequestBody: string | null = null
 
   /**
    * Cached copy of `accepts` fn to do content
    * negotiation.
    */
-  private _lazyAccepts: any = null
+  private lazyAccepts: any = null
 
   /**
    * Copy of lazily parsed signed and plain cookies.
    */
-  private _parsedCookies: {
+  private parsedCookies: {
     signedCookies: { [key: string]: any },
     plainCookies: { [key: string]: any },
   } | null = null
@@ -96,20 +96,20 @@ export class Request extends Macroable implements RequestContract {
   constructor (
     public request: IncomingMessage,
     public response: ServerResponse,
-    private _encryption: EncryptionContract,
-    private _config: DeepReadonly<RequestConfigContract>,
+    private encryption: EncryptionContract,
+    private config: DeepReadonly<RequestConfigContract>,
   ) {
     super()
-    this._parseQueryString()
+    this.parseQueryString()
   }
 
   /**
    * Parses the query string
    */
-  private _parseQueryString () {
+  private parseQueryString () {
     if (this.parsedUrl.query) {
       this.updateQs(qs.parse(this.parsedUrl.query))
-      this._original = { ...this._all }
+      this.originalRequestData = { ...this.requestData }
     }
   }
 
@@ -117,9 +117,9 @@ export class Request extends Macroable implements RequestContract {
    * Parse cookies, if not already parsed cookies. Cookies are only
    * parsed, when any of the cookie methods are used.
    */
-  private _parseCookies () {
-    if (!this._parsedCookies) {
-      this._parsedCookies = parseCookie(this.header('cookie')!, this._config.secret)
+  private parseCookies () {
+    if (!this.parsedCookies) {
+      this.parsedCookies = parseCookie(this.header('cookie')!, this.config.secret)
     }
   }
 
@@ -128,8 +128,8 @@ export class Request extends Macroable implements RequestContract {
    * the request headers only when one of the content-negotiation
    * methods are used.
    */
-  private _initiateAccepts () {
-    this._lazyAccepts = this._lazyAccepts || accepts(this.request)
+  private initiateAccepts () {
+    this.lazyAccepts = this.lazyAccepts || accepts(this.request)
   }
 
   /**
@@ -138,7 +138,7 @@ export class Request extends Macroable implements RequestContract {
    */
   public id (): string | undefined {
     let requestId = this.header('x-request-id')
-    if (!requestId && this._config.generateRequestId) {
+    if (!requestId && this.config.generateRequestId) {
       requestId = cuid()
       this.request.headers['x-request-id'] = requestId
     }
@@ -155,7 +155,7 @@ export class Request extends Macroable implements RequestContract {
    * once. For further mutations make use of `updateBody` method.
    */
   public setInitialBody (body: object) {
-    if (this._original && Object.isFrozen(this._original)) {
+    if (this.originalRequestData && Object.isFrozen(this.originalRequestData)) {
       throw new Error('Cannot re-set initial body. Use request.updateBody instead')
     }
 
@@ -164,7 +164,7 @@ export class Request extends Macroable implements RequestContract {
     /**
      * Freeze the original object
      */
-    this._original = Object.freeze({ ...this._all })
+    this.originalRequestData = Object.freeze({ ...this.requestData })
   }
 
   /**
@@ -173,8 +173,8 @@ export class Request extends Macroable implements RequestContract {
    * body.
    */
   public updateBody (body: object) {
-    this._body = body
-    this._all = { ...this._body, ...this._qs }
+    this.requestBody = body
+    this.requestData = { ...this.requestBody, ...this.requestQs }
   }
 
   /**
@@ -182,7 +182,7 @@ export class Request extends Macroable implements RequestContract {
    * the request body or when request is multipart/form-data.
    */
   public updateRawBody (rawBody: string) {
-    this._raw = rawBody
+    this.rawRequestBody = rawBody
   }
 
   /**
@@ -190,22 +190,22 @@ export class Request extends Macroable implements RequestContract {
    * will be re-computed by merging the query and the request body.
    */
   public updateQs (data: object) {
-    this._qs = data
-    this._all = { ...this._body, ...this._qs }
+    this.requestQs = data
+    this.requestData = { ...this.requestBody, ...this.requestQs }
   }
 
   /**
    * Returns reference to the query string object
    */
   public get (): { [key: string]: any } {
-    return this._qs
+    return this.requestQs
   }
 
   /**
    * Returns reference to the request body
    */
   public post (): { [key: string]: any } {
-    return this._body
+    return this.requestBody
   }
 
   /**
@@ -213,7 +213,7 @@ export class Request extends Macroable implements RequestContract {
    * and query string
    */
   public all (): { [key: string]: any } {
-    return this._all
+    return this.requestData
   }
 
   /**
@@ -221,7 +221,7 @@ export class Request extends Macroable implements RequestContract {
    * query string and body
    */
   public original (): { [key: string]: any } {
-    return this._original
+    return this.originalRequestData
   }
 
   /**
@@ -231,7 +231,7 @@ export class Request extends Macroable implements RequestContract {
    * [[post]] methods. The `raw` body is always a string.
    */
   public raw (): string | null {
-    return this._raw
+    return this.rawRequestBody
   }
 
   /**
@@ -247,7 +247,7 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public input (key: string, defaultValue?: any): any {
-    return get(this._all, key, defaultValue)
+    return get(this.requestData, key, defaultValue)
   }
 
   /**
@@ -259,7 +259,7 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public except (keys: string[]): { [key: string]: any } {
-    return omit(this._all, keys)
+    return omit(this.requestData, keys)
   }
 
   /**
@@ -271,7 +271,7 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public only <T extends string, U = { [K in T]: any }> (keys: T[]): U {
-    return pick(this._all, keys) as unknown as U
+    return pick(this.requestData, keys) as unknown as U
   }
 
   /**
@@ -303,7 +303,7 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public method (): string {
-    if (this._config.allowMethodSpoofing && this.intended() === 'POST') {
+    if (this.config.allowMethodSpoofing && this.intended() === 'POST') {
       return this.input('_method', this.intended()).toUpperCase()
     }
 
@@ -366,12 +366,12 @@ export class Request extends Macroable implements RequestContract {
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
    */
   public ip (): string {
-    const ipFn = this._config.getIp
+    const ipFn = this.config.getIp
     if (typeof (ipFn) === 'function') {
       return ipFn(this)
     }
 
-    return proxyaddr(this.request, this._config.trustProxy)
+    return proxyaddr(this.request, this.config.trustProxy)
   }
 
   /**
@@ -393,7 +393,7 @@ export class Request extends Macroable implements RequestContract {
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
    */
   public ips (): string[] {
-    return proxyaddr.all(this.request, this._config.trustProxy)
+    return proxyaddr.all(this.request, this.config.trustProxy)
   }
 
   /**
@@ -421,7 +421,7 @@ export class Request extends Macroable implements RequestContract {
       return 'https'
     }
 
-    if (!this._config.trustProxy(this.request.connection.remoteAddress!, 0)) {
+    if (!this.config.trustProxy(this.request.connection.remoteAddress!, 0)) {
       return this.parsedUrl.protocol || 'http'
     }
 
@@ -462,7 +462,7 @@ export class Request extends Macroable implements RequestContract {
      * Use X-Fowarded-Host when we trust the proxy header and it
      * exists
      */
-    if (this._config.trustProxy(this.request.connection.remoteAddress!, 0)) {
+    if (this.config.trustProxy(this.request.connection.remoteAddress!, 0)) {
       host = this.header('X-Forwarded-Host') || host
     }
 
@@ -495,7 +495,7 @@ export class Request extends Macroable implements RequestContract {
       return []
     }
 
-    const offset = this._config.subdomainOffset
+    const offset = this.config.subdomainOffset
     const subdomains = hostname.split('.').reverse().slice(offset)
 
     /**
@@ -615,8 +615,8 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public accepts (types: string[]): string | null {
-    this._initiateAccepts()
-    return this._lazyAccepts.type(types) || null
+    this.initiateAccepts()
+    return this.lazyAccepts.type(types) || null
   }
 
   /**
@@ -627,8 +627,8 @@ export class Request extends Macroable implements RequestContract {
    * docs too.
    */
   public types (): string[] {
-    this._initiateAccepts()
-    return this._lazyAccepts.types()
+    this.initiateAccepts()
+    return this.lazyAccepts.types()
   }
 
   /**
@@ -653,8 +653,8 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public language (languages: string[]): string | null {
-    this._initiateAccepts()
-    return this._lazyAccepts.language(languages) || null
+    this.initiateAccepts()
+    return this.lazyAccepts.language(languages) || null
   }
 
   /**
@@ -665,8 +665,8 @@ export class Request extends Macroable implements RequestContract {
    * docs too.
    */
   public languages (): string[] {
-    this._initiateAccepts()
-    return this._lazyAccepts.languages()
+    this.initiateAccepts()
+    return this.lazyAccepts.languages()
   }
 
   /**
@@ -689,8 +689,8 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public charset (charsets: string[]): string | null {
-    this._initiateAccepts()
-    return this._lazyAccepts.charset(charsets) || null
+    this.initiateAccepts()
+    return this.lazyAccepts.charset(charsets) || null
   }
 
   /**
@@ -701,8 +701,8 @@ export class Request extends Macroable implements RequestContract {
    * docs too.
    */
   public charsets (): string[] {
-    this._initiateAccepts()
-    return this._lazyAccepts.charsets()
+    this.initiateAccepts()
+    return this.lazyAccepts.charsets()
   }
 
   /**
@@ -715,8 +715,8 @@ export class Request extends Macroable implements RequestContract {
    * docs too.
    */
   public encoding (encodings: string[]): string | null {
-    this._initiateAccepts()
-    return this._lazyAccepts.encoding(encodings) || null
+    this.initiateAccepts()
+    return this.lazyAccepts.encoding(encodings) || null
   }
 
   /**
@@ -727,8 +727,8 @@ export class Request extends Macroable implements RequestContract {
    * docs too.
    */
   public encodings (): string[] {
-    this._initiateAccepts()
-    return this._lazyAccepts.encodings()
+    this.initiateAccepts()
+    return this.lazyAccepts.encodings()
   }
 
   /**
@@ -788,8 +788,8 @@ export class Request extends Macroable implements RequestContract {
    * that their value isn't tampered.
    */
   public cookies () {
-    this._parseCookies()
-    return this._parsedCookies!.signedCookies
+    this.parseCookies()
+    return this.parsedCookies!.signedCookies
   }
 
   /**
@@ -797,8 +797,8 @@ export class Request extends Macroable implements RequestContract {
    * defaultValue is returned when actual value is undefined.
    */
   public cookie (key: string, defaultValue?: string): any {
-    this._parseCookies()
-    return get(this._parsedCookies!.signedCookies, key, defaultValue)
+    this.parseCookies()
+    return get(this.parsedCookies!.signedCookies, key, defaultValue)
   }
 
   /**
@@ -807,8 +807,8 @@ export class Request extends Macroable implements RequestContract {
    * when cookie is set by the client and not the server
    */
   public plainCookies () {
-    this._parseCookies()
-    return this._parsedCookies!.plainCookies
+    this.parseCookies()
+    return this.parsedCookies!.plainCookies
   }
 
   /**
@@ -816,8 +816,8 @@ export class Request extends Macroable implements RequestContract {
    * defaultValue is returned when actual value is undefined.
    */
   public plainCookie (key: string, defaultValue?: string): any {
-    this._parseCookies()
-    return get(this._parsedCookies!.plainCookies, key, defaultValue)
+    this.parseCookies()
+    return get(this.parsedCookies!.plainCookies, key, defaultValue)
   }
 
   /**
@@ -833,7 +833,7 @@ export class Request extends Macroable implements RequestContract {
     /**
      * Return false when signature fails
      */
-    const signedUrl = this._encryption.create({ hmac: false }).decrypt(signature)
+    const signedUrl = this.encryption.create({ hmac: false }).decrypt(signature)
     if (!signedUrl) {
       return false
     }

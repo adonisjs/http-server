@@ -43,30 +43,30 @@ export class Route extends Macroable implements RouteContract {
    * By default the route is part of `root` domain. Root
    * domain is used when no domain is defined
    */
-  private _domain: string = 'root'
+  private routeDomain: string = 'root'
 
   /**
    * An object of matchers to be forwarded to the
    * store. The matchers list is populated by
    * calling `where` method
    */
-  private _matchers: RouteMatchers = {}
+  private matchers: RouteMatchers = {}
 
   /**
    * Custom prefixes. Usually added to a group of routes. We keep an array of them
    * since nested groups will want all of them ot concat.
    */
-  private _prefixes: string[] = []
+  private prefixes: string[] = []
 
   /**
    * An array of middleware. Added using `middleware` function
    */
-  private _middleware: MiddlewareNode[] = []
+  private routeMiddleware: MiddlewareNode[] = []
 
   /**
    * Storing the namespace explicitly set using `route.namespace` method
    */
-  private _explicitNamespace: string
+  private routeNamespace: string
 
   /**
    * A boolean to prevent route from getting registered within
@@ -82,10 +82,10 @@ export class Route extends Macroable implements RouteContract {
   public name: string
 
   constructor (
-    private _pattern: string,
-    private _methods: string[],
-    private _handler: RouteHandlerNode,
-    private _globalMatchers: RouteMatchers,
+    private pattern: string,
+    private methods: string[],
+    private handler: RouteHandlerNode,
+    private globalMatchers: RouteMatchers,
   ) {
     super()
   }
@@ -95,16 +95,16 @@ export class Route extends Macroable implements RouteContract {
    * matchers. The local copy is given preference over the global
    * one's
    */
-  private _getMatchers (): RouteMatchers {
-    return Object.assign({}, this._globalMatchers, this._matchers)
+  private getMatchers (): RouteMatchers {
+    return Object.assign({}, this.globalMatchers, this.matchers)
   }
 
   /**
    * Returns a normalized pattern string by prefixing the `prefix` (if defined).
    */
-  private _getPattern (): string {
-    const pattern = dropSlash(this._pattern)
-    const prefix = this._prefixes.slice().reverse().map((prefix) => dropSlash(prefix)).join('')
+  private getPattern (): string {
+    const pattern = dropSlash(this.pattern)
+    const prefix = this.prefixes.slice().reverse().map((prefix) => dropSlash(prefix)).join('')
     return prefix ? `${prefix}${pattern === '/' ? '' : pattern}` : pattern
   }
 
@@ -122,11 +122,11 @@ export class Route extends Macroable implements RouteContract {
    * The `/^[0-9]$/` should win over the matcher defined by the group
    */
   public where (param: string, matcher: string | RegExp): this {
-    if (this._matchers[param]) {
+    if (this.matchers[param]) {
       return this
     }
 
-    this._matchers[param] = typeof (matcher) === 'string' ? new RegExp(matcher) : matcher
+    this.matchers[param] = typeof (matcher) === 'string' ? new RegExp(matcher) : matcher
     return this
   }
 
@@ -135,7 +135,7 @@ export class Route extends Macroable implements RouteContract {
    * This method is mainly exposed for the [[RouteGroup]]
    */
   public prefix (prefix: string): this {
-    this._prefixes.push(prefix)
+    this.prefixes.push(prefix)
     return this
   }
 
@@ -146,8 +146,8 @@ export class Route extends Macroable implements RouteContract {
    * This is again done to make route.domain win over route.group.domain
    */
   public domain (domain: string, overwrite: boolean = false): this {
-    if (this._domain === 'root' || overwrite) {
-      this._domain = domain
+    if (this.routeDomain === 'root' || overwrite) {
+      this.routeDomain = domain
     }
     return this
   }
@@ -159,7 +159,7 @@ export class Route extends Macroable implements RouteContract {
    */
   public middleware (middleware: MiddlewareNode | MiddlewareNode[], prepend = false): this {
     middleware = Array.isArray(middleware) ? middleware : [middleware]
-    this._middleware = prepend ? middleware.concat(this._middleware) : this._middleware.concat(middleware)
+    this.routeMiddleware = prepend ? middleware.concat(this.routeMiddleware) : this.routeMiddleware.concat(middleware)
     return this
   }
 
@@ -179,8 +179,8 @@ export class Route extends Macroable implements RouteContract {
    * Define controller namespace for a given route
    */
   public namespace (namespace: string, overwrite: boolean = false): this {
-    if (!this._explicitNamespace || overwrite) {
-      this._explicitNamespace = namespace
+    if (!this.routeNamespace || overwrite) {
+      this.routeNamespace = namespace
     }
     return this
   }
@@ -191,16 +191,16 @@ export class Route extends Macroable implements RouteContract {
    */
   public toJSON (): RouteDefinition {
     return {
-      domain: this._domain,
-      pattern: this._getPattern(),
-      matchers: this._getMatchers(),
+      domain: this.routeDomain,
+      pattern: this.getPattern(),
+      matchers: this.getMatchers(),
       meta: {
-        namespace: this._explicitNamespace,
+        namespace: this.routeNamespace,
       },
       name: this.name,
-      handler: this._handler,
-      methods: this._methods,
-      middleware: this._middleware,
+      handler: this.handler,
+      methods: this.methods,
+      middleware: this.routeMiddleware,
     }
   }
 }

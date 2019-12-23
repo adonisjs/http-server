@@ -46,13 +46,13 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * Invokes a given method with params on the route instance or route
    * resource instance
    */
-  private _invoke (
+  private invoke (
     route: Route | RouteResource | BriskRoute | RouteGroup,
     method: string,
     params: any[],
   ) {
     if (route instanceof RouteResource) {
-      route.routes.forEach((child) => this._invoke(child, method, params))
+      route.routes.forEach((child) => this.invoke(child, method, params))
       return
     }
 
@@ -98,7 +98,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * ```
    */
   public where (param: string, matcher: RegExp | string): this {
-    this.routes.forEach((route) => this._invoke(route, 'where', [param, matcher]))
+    this.routes.forEach((route) => this.invoke(route, 'where', [param, matcher]))
     return this
   }
 
@@ -112,7 +112,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * ```
    */
   public prefix (prefix: string): this {
-    this.routes.forEach((route) => this._invoke(route, 'prefix', [prefix]))
+    this.routes.forEach((route) => this.invoke(route, 'prefix', [prefix]))
     return this
   }
 
@@ -126,7 +126,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * ```
    */
   public domain (domain: string): this {
-    this.routes.forEach((route) => this._invoke(route, 'domain', [domain]))
+    this.routes.forEach((route) => this.invoke(route, 'domain', [domain]))
     return this
   }
 
@@ -140,7 +140,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * ```
    */
   public as (name: string): this {
-    this.routes.forEach((route) => this._invoke(route, 'as', [name, true]))
+    this.routes.forEach((route) => this.invoke(route, 'as', [name, true]))
     return this
   }
 
@@ -154,7 +154,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * ```
    */
   public middleware (middleware: MiddlewareNode | MiddlewareNode[]): this {
-    this.routes.forEach((route) => this._invoke(route, 'middleware', [middleware, true]))
+    this.routes.forEach((route) => this.invoke(route, 'middleware', [middleware, true]))
     return this
   }
 
@@ -168,7 +168,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * ```
    */
   public namespace (namespace: string): this {
-    this.routes.forEach((route) => this._invoke(route, 'namespace', [namespace]))
+    this.routes.forEach((route) => this.invoke(route, 'namespace', [namespace]))
     return this
   }
 }

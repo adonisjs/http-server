@@ -28,16 +28,16 @@ export class ExceptionManager {
   /**
    * Resolved copy of error handler
    */
-  private _resolvedErrorHandler?: ResolvedErrorHandlerNode
+  private resolvedErrorHandler?: ResolvedErrorHandlerNode
 
   /**
    * A reference to ioc resolver to resolve the error handler from
    * the IoC container
    */
-  private _resolver: IocResolverContract
+  private resolver: IocResolverContract
 
   constructor (container: IocContract) {
-    this._resolver = container.getResolver()
+    this.resolver = container.getResolver()
   }
 
   /**
@@ -45,9 +45,9 @@ export class ExceptionManager {
    */
   public registerHandler (handler: ErrorHandlerNode) {
     if (typeof (handler) === 'string') {
-      this._resolvedErrorHandler = this._resolver.resolve(handler)
+      this.resolvedErrorHandler = this.resolver.resolve(handler)
     } else {
-      this._resolvedErrorHandler = {
+      this.resolvedErrorHandler = {
         type: 'function',
         value: handler,
       }
@@ -63,7 +63,7 @@ export class ExceptionManager {
     /**
      * Make response when no error handler has been registered
      */
-    if (!this._resolvedErrorHandler) {
+    if (!this.resolvedErrorHandler) {
       ctx.response.send(error.message)
       return
     }
@@ -77,10 +77,10 @@ export class ExceptionManager {
     try {
       let value: any = null
 
-      if (this._resolvedErrorHandler.type === 'function') {
-        value = await this._resolvedErrorHandler.value(error, ctx)
+      if (this.resolvedErrorHandler.type === 'function') {
+        value = await this.resolvedErrorHandler.value(error, ctx)
       } else {
-        value = await this._resolver.call(this._resolvedErrorHandler, undefined, [error, ctx])
+        value = await this.resolver.call(this.resolvedErrorHandler, undefined, [error, ctx])
       }
 
       if (useReturnValue(value, ctx)) {

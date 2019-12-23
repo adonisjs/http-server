@@ -67,44 +67,44 @@ export class Router implements RouterContract {
   /**
    * Global matchers to test route params against regular expressions.
    */
-  private _matchers: RouteMatchers = {}
+  private matchers: RouteMatchers = {}
 
   /**
    * Store with tokenized routes
    */
-  private _store: Store = new Store()
+  private store: Store = new Store()
 
   /**
    * Lookup store to find route by it's name, handler or pattern
    * and then form a complete URL from it
    */
-  private _lookupStore: RouteLookupNode[] = []
+  private lookupStore: RouteLookupNode[] = []
 
   /**
    * A boolean to tell the router that a group is in
    * open state right now
    */
-  private _openedGroups: RouteGroup[] = []
+  private openedGroups: RouteGroup[] = []
 
   /**
    * A counter to create unique routes during tests
    */
-  private _testRoutePatternCounter = 0
+  private testRoutePatternCounter = 0
 
-  private _getRecentGroup () {
-    return this._openedGroups[this._openedGroups.length - 1]
+  private getRecentGroup () {
+    return this.openedGroups[this.openedGroups.length - 1]
   }
 
   /**
    * A handler to handle routes created for testing
    */
-  private _testsHandler: RouteHandlerNode = async () => {
+  private testsHandler: RouteHandlerNode = async () => {
     return 'handled by tests handler'
   }
 
   constructor (
-    private _encryption: EncryptionContract,
-    private _routeProcessor?: (route: RouteNode) => void,
+    private encryption: EncryptionContract,
+    private routeProcessor?: (route: RouteNode) => void,
   ) {
   }
 
@@ -112,8 +112,8 @@ export class Router implements RouterContract {
    * Add route for a given pattern and methods
    */
   public route (pattern: string, methods: string[], handler: RouteHandlerNode): Route {
-    const route = new Route(pattern, methods, handler, this._matchers)
-    const openedGroup = this._getRecentGroup()
+    const route = new Route(pattern, methods, handler, this.matchers)
+    const openedGroup = this.getRecentGroup()
 
     if (openedGroup) {
       openedGroup.routes.push(route)
@@ -181,7 +181,7 @@ export class Router implements RouterContract {
      * push this new group to the old group, otherwise we push it to
      * the list of routes.
      */
-    const openedGroup = this._getRecentGroup()
+    const openedGroup = this.getRecentGroup()
     if (openedGroup) {
       openedGroup.routes.push(group)
     } else {
@@ -192,7 +192,7 @@ export class Router implements RouterContract {
      * Track the group, so that the upcoming calls inside the callback
      * can use this group
      */
-    this._openedGroups.push(group)
+    this.openedGroups.push(group)
 
     /**
      * Execute the callback. Now all registered routes will be
@@ -203,7 +203,7 @@ export class Router implements RouterContract {
     /**
      * Now the callback is over, get rid of the opened group
      */
-    this._openedGroups.pop()
+    this.openedGroups.pop()
 
     return group
   }
@@ -212,8 +212,8 @@ export class Router implements RouterContract {
    * Registers a route resource with conventional set of routes
    */
   public resource (resource: string, controller: string): RouteResource {
-    const resourceInstance = new RouteResource(resource, controller, this._matchers)
-    const openedGroup = this._getRecentGroup()
+    const resourceInstance = new RouteResource(resource, controller, this.matchers)
+    const openedGroup = this.getRecentGroup()
 
     if (openedGroup) {
       openedGroup.routes.push(resourceInstance)
@@ -228,8 +228,8 @@ export class Router implements RouterContract {
    * Register a route resource with shallow nested routes.
    */
   public shallowResource (resource: string, controller: string): RouteResource {
-    const resourceInstance = new RouteResource(resource, controller, this._matchers, true)
-    const openedGroup = this._getRecentGroup()
+    const resourceInstance = new RouteResource(resource, controller, this.matchers, true)
+    const openedGroup = this.getRecentGroup()
 
     if (openedGroup) {
       openedGroup.routes.push(resourceInstance)
@@ -244,8 +244,8 @@ export class Router implements RouterContract {
    * Returns a brisk route instance for a given URL pattern
    */
   public on (pattern: string): BriskRoute {
-    const briskRoute = new BriskRoute(pattern, this._matchers)
-    const openedGroup = this._getRecentGroup()
+    const briskRoute = new BriskRoute(pattern, this.matchers)
+    const openedGroup = this.getRecentGroup()
 
     if (openedGroup) {
       openedGroup.routes.push(briskRoute)
@@ -260,7 +260,7 @@ export class Router implements RouterContract {
    * Define global route matcher
    */
   public where (param: string, matcher: string | RegExp): this {
-    this._matchers[param] = typeof (matcher) === 'string' ? new RegExp(matcher) : matcher
+    this.matchers[param] = typeof (matcher) === 'string' ? new RegExp(matcher) : matcher
     return this
   }
 
@@ -302,26 +302,26 @@ export class Router implements RouterContract {
        * If a pre-processor is defined then pass the [[RouteNode]]
        * to it.
        */
-      if (this._routeProcessor) {
-        this._routeProcessor(route)
+      if (this.routeProcessor) {
+        this.routeProcessor(route)
       }
 
       /**
        * Maintain an array of values, using which a route can be lookedup. The `handler` lookup
        * only works, when Handler is defined as a string
        */
-      this._lookupStore.push({
+      this.lookupStore.push({
         handler: route.handler,
         name: route.name,
         pattern: route.pattern,
         domain: route.domain || 'root',
       })
 
-      this._store.add(route)
+      this.store.add(route)
     })
 
     this.routes = []
-    this._matchers = {}
+    this.matchers = {}
   }
 
   /**
@@ -342,15 +342,15 @@ export class Router implements RouterContract {
      *    - Else we search within the routes of the mentioned domain.
      */
 
-    const matchingDomain = domain ? this._store.matchDomain(domain) : []
+    const matchingDomain = domain ? this.store.matchDomain(domain) : []
     if (!matchingDomain.length) {
-      return this._store.match(url, method)
+      return this.store.match(url, method)
     }
 
     /**
      * Search within the domain
      */
-    return this._store.match(url, method, {
+    return this.store.match(url, method, {
       storeMatch: matchingDomain,
       value: domain!,
     })
@@ -361,7 +361,7 @@ export class Router implements RouterContract {
    * info can be used to make url for a given route.
    */
   public lookup (routeIdentifier: string, forDomain?: string): null | RouteLookupNode {
-    return this._lookupStore.find(({ name, pattern, handler, domain }) => {
+    return this.lookupStore.find(({ name, pattern, handler, domain }) => {
       return [name, pattern, handler].indexOf(routeIdentifier) > -1 && (!forDomain || forDomain === domain)
     }) || null
   }
@@ -437,7 +437,7 @@ export class Router implements RouterContract {
      * on their 2 different domains, but we ignore that case for now and can consider
      * it later (when someone asks for it)
      */
-    const signature = this._encryption
+    const signature = this.encryption
       .create({ hmac: false })
       .encrypt(this.makeUrl(route.pattern, { qs: options.qs, params: options.params, prefixDomain: false }))
 
@@ -462,9 +462,9 @@ export class Router implements RouterContract {
     methods?: string[],
     handler?: RouteHandlerNode,
   ): Route {
-    pattern = pattern || `_test_${this._testRoutePatternCounter++}`
+    pattern = pattern || `_test_${this.testRoutePatternCounter++}`
     methods = methods || ['GET']
-    handler = handler || this._testsHandler
+    handler = handler || this.testsHandler
 
     const route = this.route(pattern, methods, handler)
     this.commit()

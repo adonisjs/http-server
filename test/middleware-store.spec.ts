@@ -29,7 +29,7 @@ test.group('Middleware', () => {
     async function handler () {}
 
     middleware.registerNamed({ auth: handler })
-    assert.deepEqual(middleware['_named'], {
+    assert.deepEqual(middleware['named'], {
       auth: { type: 'function', value: handler, args: [] },
     })
   })

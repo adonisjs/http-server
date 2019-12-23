@@ -179,7 +179,7 @@ test.group('Router | add', () => {
 
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -234,7 +234,7 @@ test.group('Router | add', () => {
 
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -283,7 +283,7 @@ test.group('Router | add', () => {
 
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'foo.com',
         type: 0,
@@ -332,7 +332,7 @@ test.group('Router | add', () => {
 
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -381,7 +381,7 @@ test.group('Router | add', () => {
 
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -438,7 +438,7 @@ test.group('Router | add', () => {
 
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -482,7 +482,7 @@ test.group('Router | commit', () => {
     router.get('/', handler)
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -525,7 +525,7 @@ test.group('Router | commit', () => {
 
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -567,7 +567,7 @@ test.group('Router | commit', () => {
 
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -853,7 +853,7 @@ test.group('Router | commit', () => {
 
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -1182,7 +1182,7 @@ test.group('Router | commit', () => {
     router.shallowResource('posts.comments', 'CommentsController')
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -1457,7 +1457,7 @@ test.group('Router | commit', () => {
 
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [],
       domains: {},
     })
@@ -1472,7 +1472,7 @@ test.group('Router | commit', () => {
 
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -1523,7 +1523,7 @@ test.group('Router | commit', () => {
     router.get('/', 'FooHandler.get')
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -1569,7 +1569,7 @@ test.group('Router | commit', () => {
     router.resource('photos', 'PhotosController').only(['create'])
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -1623,7 +1623,7 @@ test.group('Router | commit', () => {
     })
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -1669,7 +1669,7 @@ test.group('Router | commit', () => {
     router.get('/:id', handler)
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -1864,7 +1864,7 @@ test.group('Router | forTesting', () => {
     const router = new Router(new Encryption(SECRET))
     router.forTesting()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,
@@ -1883,7 +1883,7 @@ test.group('Router | forTesting', () => {
             routes: {
               '/_test_0': {
                 pattern: '/_test_0',
-                handler: router['_testsHandler'],
+                handler: router['testsHandler'],
                 meta: {
                   namespace: undefined,
                 },
@@ -1954,7 +1954,7 @@ test.group('Brisk route', () => {
 
     router.commit()
 
-    assert.deepEqual(router['_store'].tree, {
+    assert.deepEqual(router['store'].tree, {
       tokens: [[{
         old: 'root',
         type: 0,

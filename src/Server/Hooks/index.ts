@@ -23,7 +23,7 @@ export class Hooks implements HooksContract {
   /**
    * Registered before and after hooks
    */
-  private _hooks: {
+  private hooks: {
     before: HookNode[],
     after: HookNode[],
   } = {
@@ -35,7 +35,7 @@ export class Hooks implements HooksContract {
    * Register before hook
    */
   public before (cb: HookNode): this {
-    this._hooks.before.push(cb)
+    this.hooks.before.push(cb)
     return this
   }
 
@@ -43,7 +43,7 @@ export class Hooks implements HooksContract {
    * Register after hook
    */
   public after (cb: HookNode): this {
-    this._hooks.after.push(cb)
+    this.hooks.after.push(cb)
     return this
   }
 
@@ -53,7 +53,7 @@ export class Hooks implements HooksContract {
    * without further processing it.
    */
   public async executeBefore (ctx: HttpContextContract): Promise<boolean> {
-    for (let hook of this._hooks.before) {
+    for (let hook of this.hooks.before) {
       await hook(ctx)
 
       /**
@@ -70,7 +70,7 @@ export class Hooks implements HooksContract {
    * Executes after hooks in series.
    */
   public async executeAfter (ctx: HttpContextContract) {
-    for (let hook of this._hooks.after) {
+    for (let hook of this.hooks.after) {
       await hook(ctx)
     }
   }
@@ -80,11 +80,11 @@ export class Hooks implements HooksContract {
    * for runtime peformance
    */
   public commit () {
-    if (this._hooks.before.length === 0) {
+    if (this.hooks.before.length === 0) {
       this.executeBefore = async () => false
     }
 
-    if (this._hooks.after.length === 0) {
+    if (this.hooks.after.length === 0) {
       this.executeAfter = async () => {}
     }
   }

@@ -24,20 +24,20 @@ import { RouterContract } from '@ioc:Adonis/Core/Route'
  * route finalHandler
  */
 export class RequestHandler {
-  private _globalMiddleware: Middleware
+  private globalMiddleware: Middleware
   constructor (
-    private _middlewareStore: MiddlewareStoreContract,
-    private _router: RouterContract,
+    private middlewareStore: MiddlewareStoreContract,
+    private router: RouterContract,
   ) {}
 
   /**
    * Executes the middleware chain, followed by the route handler.
    */
-  private async _invokeHandler (ctx: HttpContextContract) {
+  private async invokeHandler (ctx: HttpContextContract) {
     await this
-      ._globalMiddleware
+      .globalMiddleware
       .runner()
-      .resolve(this._middlewareStore.invokeMiddleware.bind(this._middlewareStore))
+      .resolve(this.middlewareStore.invokeMiddleware.bind(this.middlewareStore))
       .finalHandler(ctx.route!.meta.finalHandler, [ctx])
       .run([ctx])
   }
@@ -45,7 +45,7 @@ export class RequestHandler {
   /**
    * Finds the route for the request
    */
-  private _findRoute (ctx: HttpContextContract) {
+  private findRoute (ctx: HttpContextContract) {
     const url = ctx.request.url()
     const method = ctx.request.method()
     const hostname = ctx.request.hostname()
@@ -54,7 +54,7 @@ export class RequestHandler {
      * Profiling `route.match` method
      */
     const matchRoute = ctx.profiler.profile('http:route:match')
-    const route = this._router.match(url, method, hostname || undefined)
+    const route = this.router.match(url, method, hostname || undefined)
     matchRoute.end()
 
     /**
@@ -77,19 +77,19 @@ export class RequestHandler {
    * Handles the request and invokes required middleware/handlers
    */
   public async handle (ctx: HttpContextContract) {
-    this._findRoute(ctx)
-    await this._invokeHandler(ctx)
+    this.findRoute(ctx)
+    await this.invokeHandler(ctx)
   }
 
   /**
    * Computing certain methods to optimize for runtime performance
    */
   public commit () {
-    const middleware = this._middlewareStore.get()
+    const middleware = this.middlewareStore.get()
     if (middleware.length) {
-      this._globalMiddleware = new Middleware().register(middleware)
+      this.globalMiddleware = new Middleware().register(middleware)
     } else {
-      this._invokeHandler = async (ctx) => ctx.route!.meta.finalHandler(ctx)
+      this.invokeHandler = async (ctx) => ctx.route!.meta.finalHandler(ctx)
     }
   }
 }
