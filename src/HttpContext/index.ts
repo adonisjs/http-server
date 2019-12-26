@@ -94,6 +94,7 @@ export class HttpContext extends Macroable implements HttpContextContract {
      * Creating new request instance
      */
     const request = new Request(req, res, encryption, {
+      secret: serverConfig.secret,
       allowMethodSpoofing: serverConfig.allowMethodSpoofing,
       subdomainOffset: serverConfig.subdomainOffset,
       trustProxy: serverConfig.trustProxy,
@@ -104,6 +105,7 @@ export class HttpContext extends Macroable implements HttpContextContract {
      * Creating new response instance
      */
     const response = new Response(req, res, {
+      secret: serverConfig.secret,
       etag: serverConfig.etag,
       cookie: serverConfig.cookie,
       jsonpCallbackName: serverConfig.jsonpCallbackName,
