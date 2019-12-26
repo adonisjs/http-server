@@ -195,12 +195,12 @@ test.group('Request', () => {
     })
   })
 
-  test('read nested input value from request', async (assert) => {
+  test('read array input value from request', async (assert) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, fakeConfig())
 
       res.writeHead(200, { 'content-type': 'application/json' })
-      res.end(JSON.stringify({ input: request.input('users.1') }))
+      res.end(JSON.stringify({ input: request.input('users[1]') }))
     })
 
     const { body } = await supertest(server).get('/?users[0]=virk&users[1]=nikk')
@@ -223,6 +223,23 @@ test.group('Request', () => {
     })
   })
 
+  test('get all except few keys from nested object', async (assert) => {
+    const server = createServer((req, res) => {
+      const request = new Request(req, res, encryption, fakeConfig())
+      request.setInitialBody({ user: { username: 'virk', age: 22 } })
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify(request.except(['user.age'])))
+    })
+
+    const { body } = await supertest(server).get('/')
+    assert.deepEqual(body, {
+      user: {
+        username: 'virk',
+      },
+    })
+  })
+
   test('get only few keys', async (assert) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, fakeConfig())
@@ -234,6 +251,23 @@ test.group('Request', () => {
     const { body } = await supertest(server).get('/?age=22&username=virk')
     assert.deepEqual(body, {
       age: '22',
+    })
+  })
+
+  test('get only few keys from nested object', async (assert) => {
+    const server = createServer((req, res) => {
+      const request = new Request(req, res, encryption, fakeConfig())
+      request.setInitialBody({ user: { username: 'virk', age: 22 } })
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify(request.only(['user.age'])))
+    })
+
+    const { body } = await supertest(server).get('/')
+    assert.deepEqual(body, {
+      user: {
+        age: 22,
+      },
     })
   })
 

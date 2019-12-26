@@ -13,11 +13,16 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
+/**
+ * Once lodash fixes this issue https://github.com/lodash/lodash/issues/4459. We
+ * can go back and use individual modules vs the full blown dependency
+ */
+import { get, omit, pick } from 'lodash'
+
 import qs from 'qs'
 import cuid from 'cuid'
 import fresh from 'fresh'
 import { isIP } from 'net'
-import get from 'get-value'
 import typeIs from 'type-is'
 import accepts from 'accepts'
 import proxyaddr from 'proxy-addr'
@@ -30,7 +35,7 @@ import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'http'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { RequestContract, RequestConfigContract } from '@ioc:Adonis/Core/Request'
 
-import { pick, trustProxy } from '../helpers'
+import { trustProxy } from '../helpers'
 
 /**
  * HTTP Request class exposes the interface to consistently read values
@@ -261,12 +266,7 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public except (keys: string[]): { [key: string]: any } {
-    return Object.keys(this.requestData).reduce((result: { [key: string]: any }, key: string) => {
-      if (!keys.includes(key) && this.requestData[key] !== undefined) {
-        result[key] = this.requestData[key]
-      }
-      return result
-    }, {})
+    return omit(this.requestData, keys)
   }
 
   /**

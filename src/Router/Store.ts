@@ -14,6 +14,7 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import matchit from 'matchit'
+import { pick } from 'lodash'
 import cloneDeep from 'clone-deep'
 import { Exception } from '@poppinss/utils'
 import {
@@ -25,8 +26,6 @@ import {
   RouteDefinition,
   RouteStoreMatch,
 } from '@ioc:Adonis/Core/Route'
-
-import { pick } from '../helpers'
 
 /**
  * Store class is used to store a list of routes, along side with their tokens
