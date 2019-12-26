@@ -27,6 +27,10 @@ declare module '@ioc:Adonis/Core/HttpContext' {
    * and route handler
    */
   export interface HttpContextContract {
+    /**
+     * A helper to see top level properties on the context object
+     */
+    inspect (): any,
     request: RequestContract
     response: ResponseContract
     logger: LoggerContract

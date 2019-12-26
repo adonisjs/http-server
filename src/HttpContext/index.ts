@@ -14,6 +14,7 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import { Socket } from 'net'
+import { inspect } from 'util'
 import proxyAddr from 'proxy-addr'
 import { Macroable } from 'macroable'
 import { RouteNode } from '@ioc:Adonis/Core/Route'
@@ -52,6 +53,13 @@ export class HttpContext extends Macroable implements HttpContextContract {
     public profiler: ProfilerRowContract,
   ) {
     super()
+  }
+
+  /**
+   * A helper to see top level properties on the context object
+   */
+  public inspect () {
+    return inspect(this, false, 1, true)
   }
 
   /**
