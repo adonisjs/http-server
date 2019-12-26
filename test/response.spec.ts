@@ -697,6 +697,18 @@ test.group('Response', (group) => {
     assert.equal(header.location, '/foo?username=virk')
   })
 
+  test('do not set query string when originally there was no query string', async (assert) => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response = new Response(req, res, config)
+      response.redirect('/foo', true)
+      response.finish()
+    })
+
+    const { header } = await supertest(server).get('/').redirects(1)
+    assert.equal(header.location, '/foo')
+  })
+
   test('redirect to given url and set custom statusCode', async () => {
     const server = createServer((req, res) => {
       const config = fakeConfig()

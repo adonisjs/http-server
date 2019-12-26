@@ -817,7 +817,8 @@ export class Response extends Macroable implements ResponseContract {
       ? (this.request.headers['referer'] || this.request.headers['referrer'] || '/') as string
       : url
 
-    url = sendQueryParams ? `${url}?${parse(this.request.url!, false).query}` : url
+    const { query } = parse(this.request.url!, false)
+    url = sendQueryParams && query ? `${url}?${query}` : url
     this.location(encodeurl(url))
     this.safeStatus(statusCode || 302)
     this.type('text/plain; charset=utf-8')
