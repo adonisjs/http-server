@@ -37,7 +37,7 @@
     "@adonisjs/mrm-preset": "^2.2.3",
     "@adonisjs/profiler": "^1.2.4",
     "@poppinss/dev-utils": "^1.0.3",
-    "@types/node": "^12.12.21",
+    "@types/node": "^13.1.0",
     "@types/pluralize": "0.0.29",
     "@types/proxy-addr": "^2.0.0",
     "@types/supertest": "^2.0.8",
