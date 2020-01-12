@@ -849,4 +849,17 @@ test.group('Server | all', (group) => {
     const { text } = await supertest(httpServer).get('/')
     assert.equal(text, 'virk')
   })
+
+  test('set accept header when forceContentNegotiationToJson is true', async (assert) => {
+    const server = new Server(new Ioc(), logger, profiler, encryption, Object.assign({
+      forceContentNegotiationToJSON: true,
+    }, config))
+    const httpServer = createServer(server.handle.bind(server))
+
+    server.router.get('/', async ({ request, response }) => response.send(request.header('accept')))
+    server.optimize()
+
+    const { text } = await supertest(httpServer).get('/').expect(200)
+    assert.equal(text, 'application/json')
+  })
 })

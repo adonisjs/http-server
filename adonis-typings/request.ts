@@ -76,6 +76,7 @@ declare module '@ioc:Adonis/Core/Request' {
    */
   export type RequestConfigContract = {
     secret?: string,
+    forceContentNegotiationToJSON?: boolean,
     subdomainOffset: number,
     generateRequestId: boolean,
     allowMethodSpoofing: boolean,

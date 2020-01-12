@@ -142,6 +142,13 @@ export class Server implements ServerContract {
    * server
    */
   public async handle (req: IncomingMessage, res: ServerResponse): Promise<void> {
+    /**
+     * Reset accept header when `forceContentNegotiationToJSON = true`
+     */
+    if (this.httpConfig.forceContentNegotiationToJSON) {
+      req.headers['accept'] = 'application/json'
+    }
+
     const request = new Request(req, res, this.encryption, this.httpConfig)
     const response = new Response(req, res, this.httpConfig)
 
