@@ -80,6 +80,23 @@ test.group('Server | Response handling', () => {
     const { text } = await supertest(httpServer).get('/').expect(200)
     assert.equal(text, 'handled')
   })
+
+  test('pre process cookie max age', async (assert) => {
+    const server = new Server(new Ioc(), logger, profiler, encryption, Object.assign({}, config, {
+      cookie: {
+        maxAge: '2h',
+      },
+    }))
+    const httpServer = createServer(server.handle.bind(server))
+
+    server.router.get('/', async ({ response }) => {
+      response.cookie('username', 'virk').send('handled')
+    })
+    server.optimize()
+
+    const { header } = await supertest(httpServer).get('/').expect(200)
+    assert.equal(header['set-cookie'][0].split(';')[1].trim(), 'Max-Age=7200')
+  })
 })
 
 test.group('Server | middleware', () => {

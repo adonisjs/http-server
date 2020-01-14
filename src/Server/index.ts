@@ -13,6 +13,7 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
+import ms from 'ms'
 import { IocContract } from '@adonisjs/fold'
 import { Server as HttpsServer } from 'https'
 import { LoggerContract } from '@ioc:Adonis/Core/Logger'
@@ -80,6 +81,12 @@ export class Server implements ServerContract {
     private encryption: EncryptionContract,
     private httpConfig: ServerConfigContract,
   ) {
+    /**
+     * Pre process config to convert max age string to seconds.
+     */
+    if (httpConfig.cookie.maxAge && typeof (httpConfig.cookie.maxAge) === 'string') {
+      httpConfig.cookie.maxAge = ms(httpConfig.cookie.maxAge) / 1000
+    }
   }
 
   /**
