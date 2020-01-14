@@ -1007,7 +1007,7 @@ test.group('Response', (group) => {
     ])
   })
 
-  test('clear cookie by setting expiry in fast', async (assert) => {
+  test('clear cookie by setting expiry and maxAge in past', async (assert) => {
     const server = createServer((req, res) => {
       const config = fakeConfig()
       const response = new Response(req, res, config)
@@ -1027,7 +1027,7 @@ test.group('Response', (group) => {
           signedCookies: {},
           plainCookies: {},
         },
-        options: ['Max-Age=90', 'Path=/', 'Expires=Thu, 01 Jan 1970 00:00:00 GMT', 'HttpOnly'],
+        options: ['Max-Age=-1', 'Path=/', 'Expires=Thu, 01 Jan 1970 00:00:00 GMT', 'HttpOnly'],
       },
     ])
   })

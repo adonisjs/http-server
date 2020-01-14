@@ -891,6 +891,7 @@ export class Response extends Macroable implements ResponseContract {
   public clearCookie (key: string, options?: Partial<CookieOptions>): this {
     options = Object.assign({}, this.config.cookie, options)
     options.expires = new Date(1)
+    options.maxAge = -1
 
     const serialized = serialize(key, '', undefined, options)
     if (!serialized) {
