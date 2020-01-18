@@ -542,4 +542,61 @@ test.group('Store | match', () => {
 
     assert.isNull(store.match('/hello', 'GET'))
   })
+
+  test('do not execute regex when param is optional and missing', (assert) => {
+    async function handler () {}
+
+    const store = new Store()
+    store.add({
+      pattern: '/users/:id?',
+      handler,
+      meta: {},
+      matchers: {
+        id: new RegExp(/^[0-9]+$/),
+      },
+      middleware: [],
+      methods: ['GET'],
+    })
+
+    assert.deepEqual(store.match('/users', 'GET'), {
+      route: {
+        pattern: '/users/:id?',
+        handler,
+        meta: {},
+        middleware: [],
+      },
+      params: {
+      },
+      subdomains: {},
+    })
+  })
+
+  test('do execute regex when param is optional and defined in url', (assert) => {
+    async function handler () {}
+
+    const store = new Store()
+    store.add({
+      pattern: '/users/:id?',
+      handler,
+      meta: {},
+      matchers: {
+        id: new RegExp(/^[0-9]+$/),
+      },
+      middleware: [],
+      methods: ['GET'],
+    })
+
+    assert.deepEqual(store.match('/users/1', 'GET'), {
+      route: {
+        pattern: '/users/:id?',
+        handler,
+        meta: {},
+        middleware: [],
+      },
+      params: {
+        id: '1',
+      },
+      subdomains: {},
+    })
+  })
 })
