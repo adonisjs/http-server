@@ -37,7 +37,7 @@
     "@adonisjs/mrm-preset": "^2.2.3",
     "@adonisjs/profiler": "^1.2.4",
     "@poppinss/dev-utils": "^1.0.3",
-    "@types/node": "^13.1.6",
+    "@types/node": "^13.1.8",
     "@types/pluralize": "0.0.29",
     "@types/proxy-addr": "^2.0.0",
     "@types/supertest": "^2.0.8",
@@ -50,7 +50,7 @@
     "eslint-plugin-adonis": "^1.0.5",
     "fastify": "^2.11.0",
     "http-status-codes": "^1.4.0",
-    "husky": "^4.0.7",
+    "husky": "^4.0.10",
     "japa": "^3.0.0",
     "mrm": "^2.0.2",
     "np": "^5.2.1",
@@ -58,10 +58,10 @@
     "reflect-metadata": "^0.1.13",
     "supertest": "^4.0.2",
     "ts-node": "^8.6.2",
-    "typedoc": "^0.16.2",
-    "typedoc-plugin-external-module-name": "^2.1.0",
+    "typedoc": "^0.16.7",
+    "typedoc-plugin-external-module-name": "^3.0.0",
     "typedoc-plugin-markdown": "^2.2.16",
-    "typescript": "^3.7.4"
+    "typescript": "^3.7.5"
   },
   "peerDependencies": {
     "@adonisjs/encryption": "^1.x.x",
