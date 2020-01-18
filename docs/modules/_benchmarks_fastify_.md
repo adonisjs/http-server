@@ -2,4 +2,14 @@
 
 # External module: "benchmarks/fastify"
 
+## Index
 
+### Variables
+
+* [fastify](_benchmarks_fastify_.md#const-fastify)
+
+## Variables
+
+### `Const` fastify
+
+• **fastify**: *any* = require('fastify')()

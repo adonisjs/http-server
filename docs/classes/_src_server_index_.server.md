@@ -53,7 +53,7 @@ Name | Type |
 
 ###  hooks
 
-• **hooks**: *[Hooks](_src_server_hooks_index_.hooks.md)‹›* =  new Hooks()
+• **hooks**: *[Hooks](_src_server_hooks_index_.hooks.md)‹›* = new Hooks()
 
 Server before/after hooks
 
@@ -71,7 +71,7 @@ ___
 
 ###  middleware
 
-• **middleware**: *[MiddlewareStore](_src_middlewarestore_index_.middlewarestore.md)‹›* =  new MiddlewareStore(this.container)
+• **middleware**: *[MiddlewareStore](_src_middlewarestore_index_.middlewarestore.md)‹›* = new MiddlewareStore(this.container)
 
 The middleware store to register global and named middleware
 
@@ -79,7 +79,7 @@ ___
 
 ###  router
 
-• **router**: *[Router](_src_router_index_.router.md)‹›* =  new Router(this.encryption, (route) => this.precompiler.compileRoute(route))
+• **router**: *[Router](_src_router_index_.router.md)‹›* = new Router(this.encryption, (route) => this.precompiler.compileRoute(route))
 
 The route to register routes
 

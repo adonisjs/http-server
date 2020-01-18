@@ -20,7 +20,6 @@
 * ["src/ExceptionManager/index"](modules/_src_exceptionmanager_index_.md)
 * ["src/HttpContext/index"](modules/_src_httpcontext_index_.md)
 * ["src/MiddlewareStore/index"](modules/_src_middlewarestore_index_.md)
-* ["src/Request/index"](modules/_src_request_index_.md)
 * ["src/Response/index"](modules/_src_response_index_.md)
 * ["src/Router/BriskRoute"](modules/_src_router_briskroute_.md)
 * ["src/Router/Group"](modules/_src_router_group_.md)
@@ -34,3 +33,4 @@
 * ["src/Server/index"](modules/_src_server_index_.md)
 * ["src/helpers"](modules/_src_helpers_.md)
 * ["standalone"](modules/_standalone_.md)
+* [@poppinss/request](modules/_poppinss_request.md)

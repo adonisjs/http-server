@@ -77,7 +77,7 @@ Name | Type |
 
 ###  BriskRoute
 
-• **BriskRoute**: *[BriskRoute](_src_router_briskroute_.briskroute.md)* =  BriskRoute
+• **BriskRoute**: *[BriskRoute](_src_router_briskroute_.briskroute.md)* = BriskRoute
 
 Exposing BriskRoute, RouteGroup and RouteResource constructors
 to be extended from outside
@@ -86,25 +86,25 @@ ___
 
 ###  Route
 
-• **Route**: *[Route](_src_router_route_.route.md)* =  Route
+• **Route**: *[Route](_src_router_route_.route.md)* = Route
 
 ___
 
 ###  RouteGroup
 
-• **RouteGroup**: *[RouteGroup](_src_router_group_.routegroup.md)* =  RouteGroup
+• **RouteGroup**: *[RouteGroup](_src_router_group_.routegroup.md)* = RouteGroup
 
 ___
 
 ###  RouteResource
 
-• **RouteResource**: *[RouteResource](_src_router_resource_.routeresource.md)* =  RouteResource
+• **RouteResource**: *[RouteResource](_src_router_resource_.routeresource.md)* = RouteResource
 
 ___
 
 ###  routes
 
-• **routes**: *[Route](_src_router_route_.route.md)‹› | [BriskRoute](_src_router_briskroute_.briskroute.md)‹› | [RouteResource](_src_router_resource_.routeresource.md)‹› | [RouteGroup](_src_router_group_.routegroup.md)‹›[]* =  []
+• **routes**: *[Route](_src_router_route_.route.md)‹› | [BriskRoute](_src_router_briskroute_.briskroute.md)‹› | [RouteResource](_src_router_resource_.routeresource.md)‹› | [RouteGroup](_src_router_group_.routegroup.md)‹›[]* = []
 
 Collection of routes, including route resource and route
 group. To get a flat list of routes, call `router.toJSON()`

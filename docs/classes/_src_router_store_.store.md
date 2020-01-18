@@ -124,4 +124,4 @@ Name | Type |
 
 ###  tokens
 
-• **tokens**: *never[]* =  []
+• **tokens**: *never[]* = []

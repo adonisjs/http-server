@@ -14,15 +14,15 @@
 
 ### Properties
 
-* [$container](_providers_httpserverprovider_.httpserverprovider.md#protected-$container)
+* [$container](_providers_httpserverprovider_.httpserverprovider.md#protected-container)
 
 ### Methods
 
-* [$registerHTTPContext](_providers_httpserverprovider_.httpserverprovider.md#protected-$registerhttpcontext)
-* [$registerHttpServer](_providers_httpserverprovider_.httpserverprovider.md#protected-$registerhttpserver)
-* [$registerMiddlewareStore](_providers_httpserverprovider_.httpserverprovider.md#protected-$registermiddlewarestore)
-* [$registerRequestResponse](_providers_httpserverprovider_.httpserverprovider.md#protected-$registerrequestresponse)
-* [$registerRouter](_providers_httpserverprovider_.httpserverprovider.md#protected-$registerrouter)
+* [$registerHTTPContext](_providers_httpserverprovider_.httpserverprovider.md#protected-registerhttpcontext)
+* [$registerHttpServer](_providers_httpserverprovider_.httpserverprovider.md#protected-registerhttpserver)
+* [$registerMiddlewareStore](_providers_httpserverprovider_.httpserverprovider.md#protected-registermiddlewarestore)
+* [$registerRequestResponse](_providers_httpserverprovider_.httpserverprovider.md#protected-registerrequestresponse)
+* [$registerRouter](_providers_httpserverprovider_.httpserverprovider.md#protected-registerrouter)
 * [register](_providers_httpserverprovider_.httpserverprovider.md#register)
 
 ## Constructors

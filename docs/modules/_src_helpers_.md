@@ -7,7 +7,6 @@
 ### Functions
 
 * [dropSlash](_src_helpers_.md#dropslash)
-* [pick](_src_helpers_.md#pick)
 * [processPattern](_src_helpers_.md#processpattern)
 * [toRoutesJSON](_src_helpers_.md#toroutesjson)
 * [trustProxy](_src_helpers_.md#trustproxy)
@@ -29,29 +28,6 @@ Name | Type |
 `input` | string |
 
 **Returns:** *string*
-
-___
-
-###  pick
-
-▸ **pick**<**T**, **U**>(`collection`: object, `keys`: T[]): *U*
-
-Pick a subset of values for a plain object
-
-**Type parameters:**
-
-▪ **T**: *string*
-
-▪ **U**
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`collection` | object |
-`keys` | T[] |
-
-**Returns:** *U*
 
 ___
 

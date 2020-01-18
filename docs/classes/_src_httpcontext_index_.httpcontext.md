@@ -35,6 +35,7 @@ error handler and server hooks.
 
 ### Methods
 
+* [inspect](_src_httpcontext_index_.httpcontext.md#inspect)
 * [create](_src_httpcontext_index_.httpcontext.md#static-create)
 * [getGetter](_src_httpcontext_index_.httpcontext.md#static-getgetter)
 * [getMacro](_src_httpcontext_index_.httpcontext.md#static-getmacro)
@@ -129,6 +130,16 @@ Required by macroable
 
 ## Methods
 
+###  inspect
+
+▸ **inspect**(): *string*
+
+A helper to see top level properties on the context object
+
+**Returns:** *string*
+
+___
+
 ### `Static` create
 
 ▸ **create**(`routePattern`: string, `routeParams`: any, `logger`: LoggerContract, `profiler`: ProfilerRowContract, `encryption`: EncryptionContract, `req?`: IncomingMessage, `res?`: ServerResponse, `serverConfig?`: ServerConfigContract): *[HttpContext](_src_httpcontext_index_.httpcontext.md)‹›*
@@ -156,7 +167,7 @@ ___
 
 ▸ **getGetter**(`name`: string): *MacroableFn‹any› | undefined*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[getGetter](_src_router_briskroute_.briskroute.md#static-getgetter)*
 
 Return the existing getter or null if it doesn't exists
 
@@ -174,7 +185,7 @@ ___
 
 ▸ **getMacro**(`name`: string): *MacroableFn‹any› | undefined*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[getMacro](_src_router_briskroute_.briskroute.md#static-getmacro)*
 
 Return the existing macro or null if it doesn't exists
 
@@ -192,7 +203,7 @@ ___
 
 ▸ **getter**<**T**>(`name`: string, `callback`: MacroableFn‹T›, `singleton?`: undefined | false | true): *void*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[getter](_src_router_briskroute_.briskroute.md#static-getter)*
 
 Define a getter, which is invoked everytime the value is accessed. This method
 also allows adding single getters, whose value is cached after first time
@@ -233,7 +244,7 @@ ___
 
 ▸ **hasGetter**(`name`: string): *boolean*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[hasGetter](_src_router_briskroute_.briskroute.md#static-hasgetter)*
 
 Returns a boolean telling if a getter exists
 
@@ -251,7 +262,7 @@ ___
 
 ▸ **hasMacro**(`name`: string): *boolean*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[hasMacro](_src_router_briskroute_.briskroute.md#static-hasmacro)*
 
 Returns a boolean telling if a macro exists
 
@@ -269,7 +280,7 @@ ___
 
 ▸ **hydrate**(): *void*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[hydrate](_src_router_briskroute_.briskroute.md#static-hydrate)*
 
 Cleanup getters and macros from the class
 
@@ -281,7 +292,7 @@ ___
 
 ▸ **macro**<**T**>(`name`: string, `callback`: MacroableFn‹T›): *void*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[macro](_src_router_briskroute_.briskroute.md#static-macro)*
 
 Add a macro to the class. This method is a better to manually adding
 to `class.prototype.method`.

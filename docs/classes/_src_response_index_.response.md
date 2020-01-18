@@ -59,30 +59,73 @@ This is how `explicitEnd` mode works in nutshell.
 
 * [abort](_src_response_index_.response.md#abort)
 * [abortIf](_src_response_index_.response.md#abortif)
+* [abortUnless](_src_response_index_.response.md#abortunless)
+* [accepted](_src_response_index_.response.md#accepted)
 * [append](_src_response_index_.response.md#append)
 * [attachment](_src_response_index_.response.md#attachment)
+* [badGateway](_src_response_index_.response.md#badgateway)
+* [badRequest](_src_response_index_.response.md#badrequest)
 * [buildResponseBody](_src_response_index_.response.md#buildresponsebody)
 * [clearCookie](_src_response_index_.response.md#clearcookie)
+* [conflict](_src_response_index_.response.md#conflict)
+* [continue](_src_response_index_.response.md#continue)
 * [cookie](_src_response_index_.response.md#cookie)
+* [created](_src_response_index_.response.md#created)
 * [download](_src_response_index_.response.md#download)
+* [expectationFailed](_src_response_index_.response.md#expectationfailed)
 * [finish](_src_response_index_.response.md#finish)
 * [flushHeaders](_src_response_index_.response.md#flushheaders)
+* [forbidden](_src_response_index_.response.md#forbidden)
 * [fresh](_src_response_index_.response.md#fresh)
+* [gatewayTimeout](_src_response_index_.response.md#gatewaytimeout)
 * [getHeader](_src_response_index_.response.md#getheader)
+* [gone](_src_response_index_.response.md#gone)
 * [header](_src_response_index_.response.md#header)
+* [httpVersionNotSupported](_src_response_index_.response.md#httpversionnotsupported)
+* [internalServerError](_src_response_index_.response.md#internalservererror)
 * [json](_src_response_index_.response.md#json)
 * [jsonp](_src_response_index_.response.md#jsonp)
+* [lengthRequired](_src_response_index_.response.md#lengthrequired)
 * [location](_src_response_index_.response.md#location)
+* [methodNotAllowed](_src_response_index_.response.md#methodnotallowed)
+* [movedPermanently](_src_response_index_.response.md#movedpermanently)
+* [movedTemporarily](_src_response_index_.response.md#movedtemporarily)
+* [multipleChoices](_src_response_index_.response.md#multiplechoices)
+* [noContent](_src_response_index_.response.md#nocontent)
+* [nonAuthoritativeInformation](_src_response_index_.response.md#nonauthoritativeinformation)
+* [notAcceptable](_src_response_index_.response.md#notacceptable)
+* [notFound](_src_response_index_.response.md#notfound)
+* [notImplemented](_src_response_index_.response.md#notimplemented)
+* [notModified](_src_response_index_.response.md#notmodified)
+* [ok](_src_response_index_.response.md#ok)
+* [partialContent](_src_response_index_.response.md#partialcontent)
+* [paymentRequired](_src_response_index_.response.md#paymentrequired)
 * [plainCookie](_src_response_index_.response.md#plaincookie)
+* [preconditionFailed](_src_response_index_.response.md#preconditionfailed)
+* [proxyAuthenticationRequired](_src_response_index_.response.md#proxyauthenticationrequired)
 * [redirect](_src_response_index_.response.md#redirect)
 * [removeHeader](_src_response_index_.response.md#removeheader)
+* [requestEntityTooLarge](_src_response_index_.response.md#requestentitytoolarge)
+* [requestTimeout](_src_response_index_.response.md#requesttimeout)
+* [requestUriTooLong](_src_response_index_.response.md#requesturitoolong)
+* [requestedRangeNotSatisfiable](_src_response_index_.response.md#requestedrangenotsatisfiable)
+* [resetContent](_src_response_index_.response.md#resetcontent)
 * [safeHeader](_src_response_index_.response.md#safeheader)
 * [safeStatus](_src_response_index_.response.md#safestatus)
+* [seeOther](_src_response_index_.response.md#seeother)
 * [send](_src_response_index_.response.md#send)
+* [serviceUnavailable](_src_response_index_.response.md#serviceunavailable)
 * [setEtag](_src_response_index_.response.md#setetag)
 * [status](_src_response_index_.response.md#status)
 * [stream](_src_response_index_.response.md#stream)
+* [switchingProtocols](_src_response_index_.response.md#switchingprotocols)
+* [temporaryRedirect](_src_response_index_.response.md#temporaryredirect)
+* [tooManyRequests](_src_response_index_.response.md#toomanyrequests)
 * [type](_src_response_index_.response.md#type)
+* [unauthorized](_src_response_index_.response.md#unauthorized)
+* [unprocessableEntity](_src_response_index_.response.md#unprocessableentity)
+* [unsupportedMediaType](_src_response_index_.response.md#unsupportedmediatype)
+* [useProxy](_src_response_index_.response.md#useproxy)
 * [vary](_src_response_index_.response.md#vary)
 * [getGetter](_src_response_index_.response.md#static-getgetter)
 * [getMacro](_src_response_index_.response.md#static-getmacro)
@@ -114,7 +157,7 @@ Name | Type |
 
 ###  lazyBody
 
-• **lazyBody**: *LazyBody | null* =  null
+• **lazyBody**: *LazyBody | null* = null
 
 Lazy body is used to set the response body. However, do not
 write it on the socket immediately unless `response.finish`
@@ -204,7 +247,7 @@ and body.
 
 ###  abort
 
-▸ **abort**(`body`: any, `status?`: undefined | number): *void*
+▸ **abort**(`body`: any, `status?`: undefined | number): *never*
 
 Abort the request with custom body and a status code. 400 is
 used when status is not defined
@@ -216,7 +259,7 @@ Name | Type |
 `body` | any |
 `status?` | undefined &#124; number |
 
-**Returns:** *void*
+**Returns:** *never*
 
 ___
 
@@ -234,6 +277,40 @@ Name | Type |
 `condition` | any |
 `body` | any |
 `status?` | undefined &#124; number |
+
+**Returns:** *void*
+
+___
+
+###  abortUnless
+
+▸ **abortUnless**(`condition`: any, `body`: any, `status?`: undefined | number): *asserts condition*
+
+Abort the request with custom body and a status code when
+passed condition returns `false`
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`condition` | any |
+`body` | any |
+`status?` | undefined &#124; number |
+
+**Returns:** *asserts condition*
+
+___
+
+###  accepted
+
+▸ **accepted**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
 
 **Returns:** *void*
 
@@ -287,6 +364,36 @@ Name | Type |
 
 ___
 
+###  badGateway
+
+▸ **badGateway**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  badRequest
+
+▸ **badRequest**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
 ###  buildResponseBody
 
 ▸ **buildResponseBody**(`body`: any): *object*
@@ -309,6 +416,12 @@ Name | Type |
 
 **Returns:** *object*
 
+* **body**: *any*
+
+* **originalType**? : *undefined | string*
+
+* **type**: *ResponseContentType*
+
 ___
 
 ###  clearCookie
@@ -328,6 +441,36 @@ Name | Type |
 
 ___
 
+###  conflict
+
+▸ **conflict**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  continue
+
+▸ **continue**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
 ###  cookie
 
 ▸ **cookie**(`key`: string, `value`: any, `options?`: Partial‹CookieOptions›): *this*
@@ -344,6 +487,21 @@ Name | Type |
 `options?` | Partial‹CookieOptions› |
 
 **Returns:** *this*
+
+___
+
+###  created
+
+▸ **created**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
 
 ___
 
@@ -380,8 +538,23 @@ try {
 Name | Type | Default |
 ------ | ------ | ------ |
 `filePath` | string | - |
-`generateEtag` | boolean |  this.config.etag |
+`generateEtag` | boolean | this.config.etag |
 `errorCallback?` | undefined &#124; function | - |
+
+**Returns:** *void*
+
+___
+
+###  expectationFailed
+
+▸ **expectationFailed**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
 
 **Returns:** *void*
 
@@ -413,6 +586,21 @@ Name | Type |
 `statusCode?` | undefined &#124; number |
 
 **Returns:** *this*
+
+___
+
+###  forbidden
+
+▸ **forbidden**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
 
 ___
 
@@ -448,6 +636,21 @@ if (response.fresh()) {
 
 ___
 
+###  gatewayTimeout
+
+▸ **gatewayTimeout**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
 ###  getHeader
 
 ▸ **getHeader**(`key`: string): *any*
@@ -462,6 +665,21 @@ Name | Type |
 `key` | string |
 
 **Returns:** *any*
+
+___
+
+###  gone
+
+▸ **gone**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
 
 ___
 
@@ -487,6 +705,36 @@ Name | Type |
 `value` | CastableHeader |
 
 **Returns:** *this*
+
+___
+
+###  httpVersionNotSupported
+
+▸ **httpVersionNotSupported**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  internalServerError
+
+▸ **internalServerError**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
 
 ___
 
@@ -527,8 +775,23 @@ behavior and do not change, unless you know what you are doing.
 Name | Type | Default |
 ------ | ------ | ------ |
 `body` | any | - |
-`callbackName` | string |  this.config.jsonpCallbackName |
-`generateEtag` | boolean |  this.config.etag |
+`callbackName` | string | this.config.jsonpCallbackName |
+`generateEtag` | boolean | this.config.etag |
+
+**Returns:** *void*
+
+___
+
+###  lengthRequired
+
+▸ **lengthRequired**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
 
 **Returns:** *void*
 
@@ -555,6 +818,201 @@ Name | Type |
 
 ___
 
+###  methodNotAllowed
+
+▸ **methodNotAllowed**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  movedPermanently
+
+▸ **movedPermanently**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  movedTemporarily
+
+▸ **movedTemporarily**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  multipleChoices
+
+▸ **multipleChoices**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  noContent
+
+▸ **noContent**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  nonAuthoritativeInformation
+
+▸ **nonAuthoritativeInformation**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  notAcceptable
+
+▸ **notAcceptable**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  notFound
+
+▸ **notFound**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  notImplemented
+
+▸ **notImplemented**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  notModified
+
+▸ **notModified**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  ok
+
+▸ **ok**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  partialContent
+
+▸ **partialContent**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  paymentRequired
+
+▸ **paymentRequired**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
 ###  plainCookie
 
 ▸ **plainCookie**(`key`: string, `value`: any, `options?`: Partial‹CookieOptions›): *this*
@@ -571,6 +1029,36 @@ Name | Type |
 `options?` | Partial‹CookieOptions› |
 
 **Returns:** *this*
+
+___
+
+###  preconditionFailed
+
+▸ **preconditionFailed**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  proxyAuthenticationRequired
+
+▸ **proxyAuthenticationRequired**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
 
 ___
 
@@ -609,6 +1097,81 @@ Name | Type |
 
 ___
 
+###  requestEntityTooLarge
+
+▸ **requestEntityTooLarge**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  requestTimeout
+
+▸ **requestTimeout**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  requestUriTooLong
+
+▸ **requestUriTooLong**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  requestedRangeNotSatisfiable
+
+▸ **requestedRangeNotSatisfiable**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  resetContent
+
+▸ **resetContent**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
 ###  safeHeader
 
 ▸ **safeHeader**(`key`: string, `value`: CastableHeader): *this*
@@ -643,6 +1206,21 @@ Name | Type |
 
 ___
 
+###  seeOther
+
+▸ **seeOther**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
 ###  send
 
 ▸ **send**(`body`: any, `generateEtag`: boolean): *void*
@@ -658,7 +1236,22 @@ behavior and do not change, unless you know what you are doing.
 Name | Type | Default |
 ------ | ------ | ------ |
 `body` | any | - |
-`generateEtag` | boolean |  this.config.etag |
+`generateEtag` | boolean | this.config.etag |
+
+**Returns:** *void*
+
+___
+
+###  serviceUnavailable
+
+▸ **serviceUnavailable**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
 
 **Returns:** *void*
 
@@ -738,6 +1331,51 @@ Name | Type |
 
 ___
 
+###  switchingProtocols
+
+▸ **switchingProtocols**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  temporaryRedirect
+
+▸ **temporaryRedirect**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  tooManyRequests
+
+▸ **tooManyRequests**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
 ###  type
 
 ▸ **type**(`type`: string, `charset?`: undefined | string): *this*
@@ -764,6 +1402,66 @@ Name | Type |
 
 ___
 
+###  unauthorized
+
+▸ **unauthorized**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  unprocessableEntity
+
+▸ **unprocessableEntity**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  unsupportedMediaType
+
+▸ **unsupportedMediaType**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
+###  useProxy
+
+▸ **useProxy**(`body`: any, `generateEtag?`: undefined | false | true): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`body` | any |
+`generateEtag?` | undefined &#124; false &#124; true |
+
+**Returns:** *void*
+
+___
+
 ###  vary
 
 ▸ **vary**(`field`: string): *this*
@@ -784,7 +1482,7 @@ ___
 
 ▸ **getGetter**(`name`: string): *MacroableFn‹any› | undefined*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[getGetter](_src_router_briskroute_.briskroute.md#static-getgetter)*
 
 Return the existing getter or null if it doesn't exists
 
@@ -802,7 +1500,7 @@ ___
 
 ▸ **getMacro**(`name`: string): *MacroableFn‹any› | undefined*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[getMacro](_src_router_briskroute_.briskroute.md#static-getmacro)*
 
 Return the existing macro or null if it doesn't exists
 
@@ -820,7 +1518,7 @@ ___
 
 ▸ **getter**<**T**>(`name`: string, `callback`: MacroableFn‹T›, `singleton?`: undefined | false | true): *void*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[getter](_src_router_briskroute_.briskroute.md#static-getter)*
 
 Define a getter, which is invoked everytime the value is accessed. This method
 also allows adding single getters, whose value is cached after first time
@@ -861,7 +1559,7 @@ ___
 
 ▸ **hasGetter**(`name`: string): *boolean*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[hasGetter](_src_router_briskroute_.briskroute.md#static-hasgetter)*
 
 Returns a boolean telling if a getter exists
 
@@ -879,7 +1577,7 @@ ___
 
 ▸ **hasMacro**(`name`: string): *boolean*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[hasMacro](_src_router_briskroute_.briskroute.md#static-hasmacro)*
 
 Returns a boolean telling if a macro exists
 
@@ -897,7 +1595,7 @@ ___
 
 ▸ **hydrate**(): *void*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[hydrate](_src_router_briskroute_.briskroute.md#static-hydrate)*
 
 Cleanup getters and macros from the class
 
@@ -909,7 +1607,7 @@ ___
 
 ▸ **macro**<**T**>(`name`: string, `callback`: MacroableFn‹T›): *void*
 
-*Inherited from void*
+*Inherited from [BriskRoute](_src_router_briskroute_.briskroute.md).[macro](_src_router_briskroute_.briskroute.md#static-macro)*
 
 Add a macro to the class. This method is a better to manually adding
 to `class.prototype.method`.
