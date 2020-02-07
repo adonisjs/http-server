@@ -17,7 +17,7 @@ import { Encryption } from '@adonisjs/encryption/build/standalone'
 import { Server } from '../standalone'
 
 const logger = new Logger({ enabled: false, level: 'trace', name: 'adonis' })
-const profiler = new Profiler({ enabled: false })
+const profiler = new Profiler(__dirname, logger, { enabled: false })
 const encryption = new Encryption('averylongrandom32charslongsecret')
 
 const server = new Server(new Ioc(), logger, profiler, encryption, {

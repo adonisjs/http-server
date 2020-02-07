@@ -20,7 +20,7 @@ const encryption = new Encryption('averylongrandom32charslongsecret')
 test.group('Http Context', () => {
   test('create fake Http context instance', async (assert) => {
     const logger = new Logger({ enabled: true, name: 'adonis', level: 'trace' })
-    const profiler = new Profiler({})
+    const profiler = new Profiler(__dirname, logger, {})
 
     const ctx = HttpContext.create('/', {}, logger, profiler.create('ctx'), encryption)
 
@@ -31,7 +31,7 @@ test.group('Http Context', () => {
 
   test('compute request url from params', async (assert) => {
     const logger = new Logger({ enabled: true, name: 'adonis', level: 'trace' })
-    const profiler = new Profiler({})
+    const profiler = new Profiler(__dirname, logger, {})
 
     const ctx = HttpContext.create('/:id', { id: '1' }, logger, profiler.create('ctx'), encryption)
 
@@ -43,7 +43,7 @@ test.group('Http Context', () => {
 
   test('add macro to http context', async (assert) => {
     const logger = new Logger({ enabled: true, name: 'adonis', level: 'trace' })
-    const profiler = new Profiler({})
+    const profiler = new Profiler(__dirname, logger, {})
 
     HttpContext.macro('url', function url () {
       return `user/${this.params.id}`

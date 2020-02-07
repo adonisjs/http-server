@@ -41,7 +41,7 @@ const logger = new FakeLogger({
   level: 'debug',
 })
 
-const profiler = new Profiler({ enabled: false })
+const profiler = new Profiler(__dirname, logger, { enabled: false })
 const encryption = new Encryption('averylongrandom32charslongsecret')
 
 test.group('Server | Response handling', () => {
@@ -287,7 +287,7 @@ test.group('Server | middleware', () => {
   })
 
   test('middleware must profile in the request scope', async (assert) => {
-    const customProfiler = new Profiler({ enabled: true })
+    const customProfiler = new Profiler(__dirname, logger, { enabled: true })
     const server = new Server(new Ioc(), logger, customProfiler, encryption, config)
 
     let requestPacket: ProfilerRowDataPacket
@@ -302,7 +302,7 @@ test.group('Server | middleware', () => {
 
     server.optimize()
 
-    customProfiler.subscribe((packet) => {
+    customProfiler.process((packet) => {
       if (packet.label === 'foo') {
         hookPacket = packet as ProfilerActionDataPacket
       } else {
@@ -317,7 +317,7 @@ test.group('Server | middleware', () => {
   })
 
   test('upstream middleware must profile in the request scope', async (assert) => {
-    const customProfiler = new Profiler({ enabled: true })
+    const customProfiler = new Profiler(__dirname, logger, { enabled: true })
     const server = new Server(new Ioc(), logger, customProfiler, encryption, config)
 
     let requestPacket: ProfilerRowDataPacket
@@ -332,7 +332,7 @@ test.group('Server | middleware', () => {
 
     server.optimize()
 
-    customProfiler.subscribe((packet) => {
+    customProfiler.process((packet) => {
       if (packet.label === 'foo') {
         hookPacket = packet as ProfilerActionDataPacket
       } else {
@@ -633,7 +633,7 @@ test.group('Server | hooks', () => {
   })
 
   test('after hooks must profile in the request scope', async (assert) => {
-    const customProfiler = new Profiler({ enabled: true })
+    const customProfiler = new Profiler(__dirname, logger, { enabled: true })
     const server = new Server(new Ioc(), logger, customProfiler, encryption, config)
 
     let requestPacket: ProfilerRowDataPacket
@@ -649,7 +649,7 @@ test.group('Server | hooks', () => {
 
     server.optimize()
 
-    customProfiler.subscribe((packet) => {
+    customProfiler.process((packet) => {
       if (packet.label === 'foo') {
         hookPacket = packet as ProfilerActionDataPacket
       } else {

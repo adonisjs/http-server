@@ -44,7 +44,7 @@ export class PreCompiler {
      * Passing a child to the route handler, so that all internal
      * actions can have their own child row
      */
-    ctx.profiler = ctx.profiler.child('http:route:handler', data)
+    ctx.profiler = ctx.profiler.create('http:route:handler', data)
 
     const routeHandler = ctx.route!.meta.resolvedHandler!
     let returnValue: any
