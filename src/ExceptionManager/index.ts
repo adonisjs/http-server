@@ -36,7 +36,7 @@ export class ExceptionManager {
    */
   private resolver: IocResolverContract
 
-  constructor (container: IocContract) {
+  constructor (private container: IocContract) {
     this.resolver = container.getResolver()
   }
 
@@ -45,7 +45,10 @@ export class ExceptionManager {
    */
   public registerHandler (handler: ErrorHandlerNode) {
     if (typeof (handler) === 'string') {
-      this.resolvedErrorHandler = this.resolver.resolve(handler)
+      this.resolvedErrorHandler = {
+        type: 'class',
+        value: this.container.make(this.resolver.resolve(handler)),
+      }
     } else {
       this.resolvedErrorHandler = {
         type: 'function',
@@ -55,9 +58,9 @@ export class ExceptionManager {
   }
 
   /**
-   * Handle the error
+   * Handle error
    */
-  public async handle (error: any, ctx: HttpContextContract) {
+  private async handleError (error: any, ctx: HttpContextContract) {
     ctx.response.safeStatus(error.status || 500)
 
     /**
@@ -80,7 +83,7 @@ export class ExceptionManager {
       if (this.resolvedErrorHandler.type === 'function') {
         value = await this.resolvedErrorHandler.value(error, ctx)
       } else {
-        value = await this.resolver.call(this.resolvedErrorHandler, undefined, [error, ctx])
+        value = await this.container.call(this.resolvedErrorHandler.value, 'handle', [error, ctx])
       }
 
       if (useReturnValue(value, ctx)) {
@@ -91,7 +94,32 @@ export class ExceptionManager {
        * Unexpected block
        */
       ctx.response.status(error.status || 500).send(error.message)
-      ctx.logger.fatal(finalError, 'Unexpected exception raised from http exception handler')
+      ctx.logger.fatal(finalError, 'Unexpected exception raised from HTTP ExceptionHandler "handle" method')
     }
+  }
+
+  /**
+   * Report error when report method exists
+   */
+  private async reportError (error: any, ctx: HttpContextContract) {
+    if (
+      this.resolvedErrorHandler &&
+      this.resolvedErrorHandler.type === 'class' &&
+      typeof (this.resolvedErrorHandler.value['report']) === 'function'
+    ) {
+      try {
+        await this.resolvedErrorHandler.value['report'](error, ctx)
+      } catch (finalError) {
+        ctx.logger.fatal(finalError, 'Unexpected exception raised from HTTP ExceptionHandler "report" method')
+      }
+    }
+  }
+
+  /**
+   * Handle the error
+   */
+  public async handle (error: any, ctx: HttpContextContract) {
+    await this.handleError(error, ctx)
+    this.reportError(error, ctx)
   }
 }

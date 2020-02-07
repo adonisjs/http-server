@@ -791,6 +791,38 @@ test.group('Server | error handler', () => {
     assert.equal(text, 'handled by error handler')
   })
 
+  test('call report method on the error handler', async (assert) => {
+    assert.plan(2)
+
+    class ErrorHandler {
+      @inject()
+      public async handle (_error: any, { response }) {
+        response.status(200).send('handled by error handler')
+      }
+
+      public async report (error: any) {
+        assert.equal(error.message, 'bump')
+      }
+    }
+
+    const ioc = new Ioc()
+    ioc.bind('App/Exceptions/Handler', () => new ErrorHandler())
+
+    const server = new Server(ioc, logger, profiler, encryption, config)
+    server.errorHandler('App/Exceptions/Handler')
+
+    server.router.get('/', async () => {
+      throw new Error('bump')
+    })
+
+    server.optimize()
+
+    const httpServer = createServer(server.handle.bind(server))
+
+    const { text } = await supertest(httpServer).get('/').expect(200)
+    assert.equal(text, 'handled by error handler')
+  })
+
   test('pass response toJSON error to error handler', async (assert) => {
     const server = new Server(new Ioc(), logger, profiler, encryption, config)
 

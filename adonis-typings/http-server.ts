@@ -38,9 +38,8 @@ declare module '@ioc:Adonis/Core/Server' {
     type: 'function',
     value: Exclude<ErrorHandlerNode, string>,
   } | {
-    type: 'autoload' | 'binding',
-    namespace: string,
-    method: string,
+    type: 'class',
+    value: any,
   }
 
   /**
