@@ -790,6 +790,28 @@ test.group('Server | error handler', () => {
     const { text } = await supertest(httpServer).get('/').expect(200)
     assert.equal(text, 'handled by error handler')
   })
+
+  test('pass response toJSON error to error handler', async (assert) => {
+    const server = new Server(new Ioc(), logger, profiler, encryption, config)
+
+    server.errorHandler(async (_error, { response }) => {
+      response.send('handled by error handler')
+    })
+
+    server.router.get('/', async () => {
+      return {
+        toJSON () {
+          throw new Error('blowup')
+        },
+      }
+    })
+
+    server.optimize()
+    const httpServer = createServer(server.handle.bind(server))
+
+    const { text } = await supertest(httpServer).get('/').expect(500)
+    assert.equal(text, 'handled by error handler')
+  })
 })
 
 test.group('Server | all', (group) => {

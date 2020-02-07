@@ -60,7 +60,7 @@ function statFn (filePath: string): Promise<Stats> {
  * Custom exception to abort requests as one liners
  */
 class HttpException extends Exception {
-  public body
+  public body: any
 
   /**
    * This method returns an instance of the exception class

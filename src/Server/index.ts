@@ -177,11 +177,12 @@ export class Server implements ServerContract {
      */
     try {
       await this.hooks.executeAfter(ctx)
+      requestAction.end({ status_code: res.statusCode })
+      ctx.response.finish()
     } catch (error) {
       await this.exception.handle(error, ctx)
+      requestAction.end({ status_code: res.statusCode, error })
+      ctx.response.finish()
     }
-
-    requestAction.end({ status_code: res.statusCode })
-    ctx.response.finish()
   }
 }
