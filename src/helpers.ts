@@ -23,6 +23,8 @@ import { RouteResource } from './Router/Resource'
 import { RouteDefinition } from '@ioc:Adonis/Core/Route'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
+const proxyCache = new QuickLru({ maxSize: 100 })
+
 /**
  * Makes input string consistent by having only the starting
  * slash
@@ -122,13 +124,14 @@ export function useReturnValue (returnValue: any, ctx: HttpContextContract) {
   )
 }
 
-const proxyCache = new QuickLru({ maxSize: 100 })
-
 /**
  * Since finding the trusted proxy based upon the remote address
  * is an expensive function, we cache its result
  */
-export function trustProxy (remoteAddress: string, proxyFn: (addr: string, distance: number) => boolean): boolean {
+export function trustProxy (
+  remoteAddress: string,
+  proxyFn: (addr: string, distance: number) => boolean,
+): boolean {
   if (proxyCache.has(remoteAddress)) {
     return proxyCache.get(remoteAddress) as boolean
   }
