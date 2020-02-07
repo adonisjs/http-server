@@ -1,6 +1,6 @@
 {
   "name": "@adonisjs/http-server",
-  "version": "1.6.6",
+  "version": "1.7.0",
   "description": "Extracted copy of AdonisJs HTTP server along with it's router",
   "main": "build/providers/HttpServerProvider.js",
   "files": [
