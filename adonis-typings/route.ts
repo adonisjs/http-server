@@ -40,6 +40,7 @@ declare module '@ioc:Adonis/Core/Route' {
    */
   export type RouteLookupNode = {
     handler: RouteHandlerNode,
+    methods: string[],
     pattern: string,
     domain: string,
     name?: string,

@@ -318,6 +318,7 @@ export class Router implements RouterContract {
        */
       this.lookupStore.push({
         handler: route.handler,
+        methods: route.methods,
         name: route.name,
         pattern: route.pattern,
         domain: route.domain || 'root',
