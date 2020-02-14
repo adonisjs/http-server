@@ -52,13 +52,13 @@ declare module '@ioc:Adonis/Core/Request' {
     url (includeQueryString?: boolean): string
     completeUrl (includeQueryString?: boolean): string
     is (types: string[]): string | null
-    accepts (types: string[]): string | null
+    accepts <T extends string> (types: T[]): T | null
     types (): string[]
-    language (languages: string[]): string | null
+    language <T extends string> (languages: T[]): T | null
     languages (): string[]
-    encoding (encodings: string[]): string | null
+    encoding <T extends string> (encodings: T[]): T | null
     encodings (): string[]
-    charset (charsets: string[]): string | null
+    charset <T extends string> (charsets: T[]): T | null
     charsets (): string[]
     hasBody (): boolean
     fresh (): boolean

@@ -620,7 +620,7 @@ export class Request extends Macroable implements RequestContract {
    * }
    * ```
    */
-  public accepts (types: string[]): string | null {
+  public accepts <T extends string> (types: T[]): T | null {
     this.initiateAccepts()
     return this.lazyAccepts.type(types) || null
   }
@@ -658,7 +658,7 @@ export class Request extends Macroable implements RequestContract {
    * }
    * ```
    */
-  public language (languages: string[]): string | null {
+  public language <T extends string> (languages: T[]): T | null {
     this.initiateAccepts()
     return this.lazyAccepts.language(languages) || null
   }
@@ -694,7 +694,7 @@ export class Request extends Macroable implements RequestContract {
    * }
    * ```
    */
-  public charset (charsets: string[]): string | null {
+  public charset <T extends string> (charsets: T[]): T | null {
     this.initiateAccepts()
     return this.lazyAccepts.charset(charsets) || null
   }
@@ -720,7 +720,7 @@ export class Request extends Macroable implements RequestContract {
    * Make sure to check [accepts](https://www.npmjs.com/package/accepts) package
    * docs too.
    */
-  public encoding (encodings: string[]): string | null {
+  public encoding <T extends string> (encodings: T[]): T | null {
     this.initiateAccepts()
     return this.lazyAccepts.encoding(encodings) || null
   }
