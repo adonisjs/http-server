@@ -475,7 +475,7 @@ test.group('Response', (group) => {
         readStream.emit('error', new Error('Missing file'))
       }
 
-      response.stream(readStream, ({ message }) => message)
+      response.stream(readStream, ({ message }) => [message])
       response.finish()
     })
 
@@ -526,6 +526,8 @@ test.group('Response', (group) => {
   })
 
   test('write errors as response when downloading folder', async (assert) => {
+    await fs.ensureRoot()
+
     const server = createServer((req, res) => {
       const config = fakeConfig()
       const response = new Response(req, res, config)
@@ -533,7 +535,7 @@ test.group('Response', (group) => {
       response.finish()
     })
 
-    const { text } = await supertest(server).get('/').expect(404)
+    const { text } = await supertest(server).get('/').expect(500)
     assert.equal(text, 'Cannot process file')
   })
 
@@ -546,20 +548,22 @@ test.group('Response', (group) => {
     })
 
     const { text } = await supertest(server).get('/').expect(404)
-    assert.equal(text, 'Cannot process file')
+    assert.equal(text, 'File not found')
   })
 
-  test('raise errors as response when file is missing', async (assert) => {
+  test('return custom message and status when file is missing', async (assert) => {
     const server = createServer(async (req, res) => {
       const config = fakeConfig()
       const response = new Response(req, res, config)
 
-      response.download(join(fs.basePath, 'hello.html'), false)
+      response.download(join(fs.basePath, 'hello.html'), false, () => {
+        return ['Missing file', 400]
+      })
       response.finish()
     })
 
-    const { text } = await supertest(server).get('/').expect(404)
-    assert.equal(text, 'Cannot process file')
+    const { text } = await supertest(server).get('/').expect(400)
+    assert.equal(text, 'Missing file')
   })
 
   test('do not stream file on HEAD calls', async (assert) => {

@@ -262,7 +262,10 @@ export class Response extends Macroable implements ResponseContract {
   /**
    * Stream the body to the response and handles cleaning up the stream
    */
-  private streamBody (body: ResponseStream, errorCallback?: ((error: NodeJS.ErrnoException) => any)) {
+  private streamBody (
+    body: ResponseStream,
+    errorCallback?: ((error: NodeJS.ErrnoException) => [string, number?]),
+  ) {
     return new Promise((resolve) => {
       let finished = false
 
@@ -280,7 +283,7 @@ export class Response extends Macroable implements ResponseContract {
         destroy(body)
 
         if (typeof (errorCallback) === 'function') {
-          this.endResponse(errorCallback(error))
+          this.endResponse(...errorCallback(error))
         } else {
           this.endResponse(
             error.code === 'ENOENT' ? 'File not found' : 'Cannot process file',
@@ -317,7 +320,7 @@ export class Response extends Macroable implements ResponseContract {
   private async streamFileForDownload (
     filePath: string,
     generateEtag: boolean,
-    errorCallback?: ((error: NodeJS.ErrnoException) => any),
+    errorCallback?: ((error: NodeJS.ErrnoException) => [string, number?]),
   ) {
     try {
       const stats = await statFn(filePath)
@@ -374,9 +377,12 @@ export class Response extends Macroable implements ResponseContract {
       return this.streamBody(createReadStream(filePath), errorCallback)
     } catch (error) {
       if (typeof (errorCallback) === 'function') {
-        this.endResponse(errorCallback(error))
+        this.endResponse(...errorCallback(error))
       } else {
-        this.endResponse('Cannot process file', 404)
+        this.endResponse(
+          error.code === 'ENOENT' ? 'File not found' : 'Cannot process file',
+          error.code === 'ENOENT' ? 404 : 500,
+        )
       }
     }
   }
@@ -726,7 +732,10 @@ export class Response extends Macroable implements ResponseContract {
    * }
    * ```
    */
-  public stream (body: ResponseStream, errorCallback?: ((error: NodeJS.ErrnoException) => any)): void {
+  public stream (
+    body: ResponseStream,
+    errorCallback?: ((error: NodeJS.ErrnoException) => [string, number?]),
+  ): void {
     if (typeof (body.pipe) !== 'function' || !body.readable || typeof (body.read) !== 'function') {
       throw new Error('response.stream accepts a readable stream only')
     }
@@ -765,7 +774,7 @@ export class Response extends Macroable implements ResponseContract {
   public download (
     filePath: string,
     generateEtag: boolean = this.config.etag,
-    errorCallback?: ((error: NodeJS.ErrnoException) => any),
+    errorCallback?: ((error: NodeJS.ErrnoException) => [string, number?]),
   ): void {
     this.lazyBody = {
       writer: this.streamFileForDownload,
@@ -784,7 +793,7 @@ export class Response extends Macroable implements ResponseContract {
     name?: string,
     disposition?: string,
     generateEtag?: boolean,
-    errorCallback?: ((error: NodeJS.ErrnoException) => any),
+    errorCallback?: ((error: NodeJS.ErrnoException) => [string, number?]),
   ) {
     name = name || filePath
     this.header('Content-Disposition', contentDisposition(name, { type: disposition }))
