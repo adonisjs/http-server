@@ -15,6 +15,7 @@ declare module '@ioc:Adonis/Core/Response' {
   import { CookieOptions } from '@poppinss/cookie'
   import { ServerResponse, IncomingMessage } from 'http'
   import { MacroableConstructorContract } from 'macroable'
+  import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
   /**
    * Types from which response header can be casted to a
@@ -57,6 +58,7 @@ declare module '@ioc:Adonis/Core/Response' {
     isPending: boolean
     request: IncomingMessage
     response: ServerResponse
+    ctx?: HttpContextContract
 
     getHeader (key: string): string | string[] | number | undefined
     header (key: string, value: CastableHeader): this

@@ -53,6 +53,14 @@ export class HttpContext extends Macroable implements HttpContextContract {
     public profiler: ProfilerRowContract,
   ) {
     super()
+    /**
+     * Creating the circular reference. We do this, since request and response
+     * are meant to be extended and at times people would want to access
+     * other ctx properties like `logger`, `profiler` inside those
+     * extended methods.
+     */
+    this.request.ctx = this
+    this.response.ctx = this
   }
 
   /**

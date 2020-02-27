@@ -33,6 +33,7 @@ import { parse as parseCookie } from '@poppinss/cookie'
 import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'http'
 
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { RequestContract, RequestConfigContract } from '@ioc:Adonis/Core/Request'
 
 import { trustProxy } from '../helpers'
@@ -47,13 +48,6 @@ import { trustProxy } from '../helpers'
  * using `request.request` property.
  */
 export class Request extends Macroable implements RequestContract {
-  /**
-   * Parses copy of the URL with query string as a string and not
-   * object. This is done to build URL's with query string without
-   * stringifying the object
-   */
-  public parsedUrl: UrlWithStringQuery = parse(this.request.url!, false)
-
   /**
    * Request body set using `setBody` method
    */
@@ -99,6 +93,19 @@ export class Request extends Macroable implements RequestContract {
    */
   protected static macros = {}
   protected static getters = {}
+
+  /**
+   * Parses copy of the URL with query string as a string and not
+   * object. This is done to build URL's with query string without
+   * stringifying the object
+   */
+  public parsedUrl: UrlWithStringQuery = parse(this.request.url!, false)
+
+  /**
+   * The ctx will be set by the context itself. It creates a circular
+   * reference
+   */
+  public ctx?: HttpContextContract
 
   constructor (
     public request: IncomingMessage,

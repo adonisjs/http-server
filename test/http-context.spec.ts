@@ -56,4 +56,13 @@ test.group('Http Context', () => {
     assert.equal(ctx.request.url(), '/1')
     assert.deepEqual(ctx.params, { id: '1' })
   })
+
+  test('pass ctx to request and response', async (assert) => {
+    const logger = new Logger({ enabled: true, name: 'adonis', level: 'trace' })
+    const profiler = new Profiler(__dirname, logger, {})
+
+    const ctx = HttpContext.create('/', {}, logger, profiler.create('ctx'), encryption)
+    assert.deepEqual(ctx.request.ctx, ctx)
+    assert.deepEqual(ctx.response.ctx, ctx)
+  })
 })

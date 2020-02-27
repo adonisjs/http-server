@@ -15,6 +15,7 @@ declare module '@ioc:Adonis/Core/Request' {
   import { UrlWithStringQuery } from 'url'
   import { MacroableConstructorContract } from 'macroable'
   import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
+  import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
   import { IncomingHttpHeaders, IncomingMessage, ServerResponse } from 'http'
 
   /**
@@ -24,7 +25,8 @@ declare module '@ioc:Adonis/Core/Request' {
     parsedUrl: UrlWithStringQuery
     request: IncomingMessage
     response: ServerResponse
-    id (): string | undefined,
+    ctx?: HttpContextContract
+    id (): string | undefined
     setInitialBody (body: any): void
     updateBody (body: any): void
     updateRawBody (body: string): void

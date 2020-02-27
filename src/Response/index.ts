@@ -110,6 +110,12 @@ class HttpException extends Exception {
  * 3. The call to `finish` method is a noop.
  */
 export class Response extends Macroable implements ResponseContract {
+  protected static macros = {}
+  protected static getters = {}
+
+  private headers: any = {}
+  private explicitStatus = false
+
   /**
    * Lazy body is used to set the response body. However, do not
    * write it on the socket immediately unless `response.finish`
@@ -119,11 +125,11 @@ export class Response extends Macroable implements ResponseContract {
    */
   public lazyBody: LazyBody | null = null
 
-  protected static macros = {}
-  protected static getters = {}
-
-  private headers: any = {}
-  private explicitStatus = false
+  /**
+   * The ctx will be set by the context itself. It creates a circular
+   * reference
+   */
+  public ctx?: HttpContextContract
 
   constructor (
     public request: IncomingMessage,
