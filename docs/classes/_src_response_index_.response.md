@@ -42,6 +42,7 @@ This is how `explicitEnd` mode works in nutshell.
 
 ### Properties
 
+* [ctx](_src_response_index_.response.md#optional-ctx)
 * [lazyBody](_src_response_index_.response.md#lazybody)
 * [request](_src_response_index_.response.md#request)
 * [response](_src_response_index_.response.md#response)
@@ -154,6 +155,15 @@ Name | Type |
 **Returns:** *[Response](_src_response_index_.response.md)*
 
 ## Properties
+
+### `Optional` ctx
+
+• **ctx**? : *HttpContextContract*
+
+The ctx will be set by the context itself. It creates a circular
+reference
+
+___
 
 ###  lazyBody
 

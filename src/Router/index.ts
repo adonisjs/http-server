@@ -15,7 +15,6 @@
 
 import ms from 'ms'
 import { stringify } from 'qs'
-import QuickLru from 'quick-lru'
 import { Exception } from '@poppinss/utils'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 
@@ -91,11 +90,6 @@ export class Router implements RouterContract {
    * A counter to create unique routes during tests
    */
   private testRoutePatternCounter = 0
-
-  /**
-   * Cache of routes matched for a given domain, url and method
-   */
-  private matchedRoutes = new QuickLru({ maxSize: 1000 })
 
   private getRecentGroup () {
     return this.openedGroups[this.openedGroups.length - 1]
@@ -348,12 +342,6 @@ export class Router implements RouterContract {
      *
      *    - Else we search within the routes of the mentioned domain.
      */
-
-    const cacheKey = `${url}-${method}-${domain}`
-    if (this.matchedRoutes.has(cacheKey)) {
-      return this.matchedRoutes.get(cacheKey) as null | MatchedRoute
-    }
-
     let response: null | MatchedRoute = null
     const matchingDomain = domain ? this.store.matchDomain(domain) : []
 
@@ -369,7 +357,6 @@ export class Router implements RouterContract {
       })
     }
 
-    this.matchedRoutes.set(cacheKey, response)
     return response
   }
 

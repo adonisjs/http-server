@@ -26,8 +26,8 @@ The benchmarking scheme is taken from the Fastify github repo.
 
 | Framework          | Version                    | Router?      |  Requests/sec |
 | :----------------- | :------------------------- | :----------: | ------------: |
-| **Fastify**        | **2.0.0**                  | **&#10003;** | **52709**    |
-| **AdonisJs**        | **1.5.4**                 | **&#10003;** | **47791**    |
+| **Fastify**        | **2.0.0**                  | **&#10003;** | **58,740**    |
+| **AdonisJS**        | **1.8.1**                 | **&#10003;** | **54,832**    |
 
 You can run the same benchmarks by cloning the repo and then running the following command.
 

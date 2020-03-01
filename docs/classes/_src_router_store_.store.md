@@ -30,15 +30,24 @@ store.match('posts/1', 'GET')
 
 ## Index
 
+### Properties
+
+* [matchDomain](_src_router_store_.store.md#matchdomain)
+
 ### Methods
 
 * [add](_src_router_store_.store.md#add)
 * [match](_src_router_store_.store.md#match)
-* [matchDomain](_src_router_store_.store.md#matchdomain)
 
 ### Object literals
 
 * [tree](_src_router_store_.store.md#tree)
+
+## Properties
+
+###  matchDomain
+
+• **matchDomain**: *any* = this.matchDomainNoop
 
 ## Methods
 
@@ -93,22 +102,6 @@ Name | Type |
 `domain?` | undefined &#124; object |
 
 **Returns:** *null | MatchedRoute*
-
-___
-
-###  matchDomain
-
-▸ **matchDomain**(`domain`: string): *RouteStoreMatch[]*
-
-Matches the domain pattern for a given string
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`domain` | string |
-
-**Returns:** *RouteStoreMatch[]*
 
 ## Object literals
 

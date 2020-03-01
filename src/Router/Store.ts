@@ -54,6 +54,25 @@ export class Store {
   public tree: RoutesTree = { tokens: [], domains: {} }
 
   /**
+   * The [[matchDomainReal]] and [[matchDomainNoop]] functions are two
+   * implementation of matching a domain. We use noop implementation
+   * by default and once an explicit domain is registered, we
+   * pivot to [[matchDomainReal]].
+   *
+   * This all is done for performance, since we have noticed around 8-10%
+   * improvement.
+   */
+  private matchDomainReal = function (domain: string): RouteStoreMatch[] {
+    return matchit.match(domain || 'root', this.tree.tokens)
+  }.bind(this)
+
+  private matchDomainNoop = function (_: string): RouteStoreMatch[] {
+    return []
+  }.bind(this)
+
+  public matchDomain = this.matchDomainNoop
+
+  /**
    * Returns the domain node for a given domain. If domain node is missing,
    * it will added to the routes object and tokens are also generated
    */
@@ -118,6 +137,13 @@ export class Store {
       'name',
     ])) as RouteNode
 
+    /**
+     * An explicit domain is defined
+     */
+    if (route.domain && route.domain !== 'root' && this.matchDomain !== this.matchDomainReal) {
+      this.matchDomain = this.matchDomainReal
+    }
+
     route.methods.forEach((method) => {
       const methodRoutes = this.getMethodRoutes(route.domain || 'root', method)
 
@@ -148,13 +174,6 @@ export class Store {
     })
 
     return this
-  }
-
-  /**
-   * Matches the domain pattern for a given string
-   */
-  public matchDomain (domain: string): RouteStoreMatch[] {
-    return matchit.match(domain || 'root', this.tree.tokens)
   }
 
   /**

@@ -28,6 +28,7 @@ using `request.request` property.
 
 ### Properties
 
+* [ctx](_poppinss_request.request.md#optional-ctx)
 * [parsedUrl](_poppinss_request.request.md#parsedurl)
 * [request](_poppinss_request.request.md#request)
 * [response](_poppinss_request.request.md#response)
@@ -110,6 +111,15 @@ Name | Type |
 
 ## Properties
 
+### `Optional` ctx
+
+• **ctx**? : *HttpContextContract*
+
+The ctx will be set by the context itself. It creates a circular
+reference
+
+___
+
 ###  parsedUrl
 
 • **parsedUrl**: *UrlWithStringQuery* = parse(this.request.url!, false)
@@ -156,7 +166,7 @@ Required by Macroable
 
 ###  accepts
 
-▸ **accepts**(`types`: string[]): *string | null*
+▸ **accepts**<**T**>(`types`: T[]): *T | null*
 
 Returns the best type using `Accept` header and
 by matching it against the given types.
@@ -178,13 +188,17 @@ switch (request.accepts(['json', 'html'])) {
 }
 ```
 
+**Type parameters:**
+
+▪ **T**: *string*
+
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`types` | string[] |
+`types` | T[] |
 
-**Returns:** *string | null*
+**Returns:** *T | null*
 
 ___
 
@@ -214,7 +228,7 @@ ___
 
 ###  charset
 
-▸ **charset**(`charsets`: string[]): *string | null*
+▸ **charset**<**T**>(`charsets`: T[]): *T | null*
 
 Returns the best charset using `Accept-charset` header
 and by matching it against the given charsets.
@@ -234,13 +248,17 @@ switch (request.charset(['utf-8', 'ISO-8859-1'])) {
 }
 ```
 
+**Type parameters:**
+
+▪ **T**: *string*
+
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`charsets` | string[] |
+`charsets` | T[] |
 
-**Returns:** *string | null*
+**Returns:** *T | null*
 
 ___
 
@@ -316,7 +334,7 @@ ___
 
 ###  encoding
 
-▸ **encoding**(`encodings`: string[]): *string | null*
+▸ **encoding**<**T**>(`encodings`: T[]): *T | null*
 
 Returns the best encoding using `Accept-encoding` header
 and by matching it against the given encodings.
@@ -326,13 +344,17 @@ If nothing is matched, then `null` will be returned
 Make sure to check [accepts](https://www.npmjs.com/package/accepts) package
 docs too.
 
+**Type parameters:**
+
+▪ **T**: *string*
+
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`encodings` | string[] |
+`encodings` | T[] |
 
-**Returns:** *string | null*
+**Returns:** *T | null*
 
 ___
 
@@ -650,7 +672,7 @@ ___
 
 ###  language
 
-▸ **language**(`languages`: string[]): *string | null*
+▸ **language**<**T**>(`languages`: T[]): *T | null*
 
 Returns the best language using `Accept-language` header
 and by matching it against the given languages.
@@ -672,13 +694,17 @@ switch (request.language(['fr', 'de'])) {
 }
 ```
 
+**Type parameters:**
+
+▪ **T**: *string*
+
 **Parameters:**
 
 Name | Type |
 ------ | ------ |
-`languages` | string[] |
+`languages` | T[] |
 
-**Returns:** *string | null*
+**Returns:** *T | null*
 
 ___
 
