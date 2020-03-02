@@ -225,7 +225,7 @@ declare module '@ioc:Adonis/Core/Route' {
     post (pattern: string, handler: RouteHandlerNode): RouteContract
     put (pattern: string, handler: RouteHandlerNode): RouteContract
     patch (pattern: string, handler: RouteHandlerNode): RouteContract
-    destroy (pattern: string, handler: RouteHandlerNode): RouteContract
+    delete (pattern: string, handler: RouteHandlerNode): RouteContract
     group (callback: () => void): RouteGroupContract
     resource (resource: string, controller: string): RouteResourceContract
     shallowResource (resource: string, controller: string): RouteResourceContract

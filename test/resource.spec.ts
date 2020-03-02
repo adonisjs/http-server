@@ -96,8 +96,8 @@ test.group('Route Resource', () => {
         methods: ['DELETE'],
         domain: 'root',
         middleware: [],
-        handler: 'PhotosController.destroy',
-        name: 'photos.destroy',
+        handler: 'PhotosController.delete',
+        name: 'photos.delete',
       },
     ])
   })
@@ -187,8 +187,8 @@ test.group('Route Resource', () => {
         },
         domain: 'root',
         middleware: [],
-        handler: 'AdsController.destroy',
-        name: 'magazines.ads.destroy',
+        handler: 'AdsController.delete',
+        name: 'magazines.ads.delete',
       },
     ])
   })
@@ -278,8 +278,8 @@ test.group('Route Resource', () => {
         methods: ['DELETE'],
         domain: 'root',
         middleware: [],
-        handler: 'AdsController.destroy',
-        name: 'magazines.ads.destroy',
+        handler: 'AdsController.delete',
+        name: 'magazines.ads.delete',
       },
     ])
   })
@@ -302,7 +302,7 @@ test.group('Route Resource', () => {
     assert.isFalse(resource.routes.find((route) => route.name === 'photos.show')!.deleted)
     assert.isTrue(resource.routes.find((route) => route.name === 'photos.edit')!.deleted)
     assert.isTrue(resource.routes.find((route) => route.name === 'photos.update')!.deleted)
-    assert.isTrue(resource.routes.find((route) => route.name === 'photos.destroy')!.deleted)
+    assert.isTrue(resource.routes.find((route) => route.name === 'photos.delete')!.deleted)
   })
 
   test('mark all defined as delete', (assert) => {
@@ -315,7 +315,7 @@ test.group('Route Resource', () => {
     assert.isTrue(resource.routes.find((route) => route.name === 'photos.show')!.deleted)
     assert.isFalse(resource.routes.find((route) => route.name === 'photos.edit')!.deleted)
     assert.isFalse(resource.routes.find((route) => route.name === 'photos.update')!.deleted)
-    assert.isFalse(resource.routes.find((route) => route.name === 'photos.destroy')!.deleted)
+    assert.isFalse(resource.routes.find((route) => route.name === 'photos.delete')!.deleted)
   })
 
   test('define middleware on routes', (assert) => {
@@ -356,7 +356,7 @@ test.group('Route Resource', () => {
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.destroy')!['routeMiddleware'],
+      resource.routes.find((route) => route.name === 'photos.delete')!['routeMiddleware'],
       [],
     )
   })
@@ -408,7 +408,7 @@ test.group('Route Resource', () => {
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.destroy')!['matchers'],
+      resource.routes.find((route) => route.name === 'photos.delete')!['matchers'],
       {
         id: /[a-z]/,
       },
@@ -515,8 +515,8 @@ test.group('Route Resource', () => {
         methods: ['DELETE'],
         domain: 'root',
         middleware: [],
-        handler: 'PhotosController.destroy',
-        name: 'photos.destroy',
+        handler: 'PhotosController.delete',
+        name: 'photos.delete',
       },
     ])
   })
@@ -606,8 +606,8 @@ test.group('Route Resource', () => {
         methods: ['DELETE'],
         domain: 'root',
         middleware: [],
-        handler: 'ProfileController.destroy',
-        name: 'user_profile.destroy',
+        handler: 'ProfileController.delete',
+        name: 'user_profile.delete',
       },
     ])
   })
@@ -697,8 +697,8 @@ test.group('Route Resource', () => {
         methods: ['DELETE'],
         domain: 'root',
         middleware: [],
-        handler: 'CommentsController.destroy',
-        name: 'user_profile.comments.destroy',
+        handler: 'CommentsController.delete',
+        name: 'user_profile.comments.delete',
       },
     ])
   })
@@ -719,7 +719,7 @@ test.group('Route Resource', () => {
       'photos.show': ['auth'],
       'photos.edit': ['auth'],
       'photos.update': ['auth'],
-      'photos.destroy': ['auth'],
+      'photos.delete': ['auth'],
     })
   })
 
@@ -739,7 +739,7 @@ test.group('Route Resource', () => {
       'photos.show': ['auth'],
       'photos.edit': ['auth'],
       'photos.update': ['auth', 'self'],
-      'photos.destroy': ['auth'],
+      'photos.delete': ['auth'],
     })
   })
 
@@ -754,7 +754,7 @@ test.group('Route Resource', () => {
       'public_photos.show',
       'public_photos.edit',
       'public_photos.update',
-      'public_photos.destroy',
+      'public_photos.delete',
     ])
   })
 
@@ -769,7 +769,7 @@ test.group('Route Resource', () => {
       'photos.show',
       'photos.edit',
       'photos.update',
-      'photos.destroy',
+      'photos.delete',
     ])
   })
 })

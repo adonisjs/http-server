@@ -162,7 +162,7 @@ export class Router implements RouterContract {
   /**
    * Define `DELETE` route
    */
-  public destroy (pattern: string, handler: RouteHandlerNode): Route {
+  public delete (pattern: string, handler: RouteHandlerNode): Route {
     return this.route(pattern, ['DELETE'], handler)
   }
 
