@@ -99,6 +99,7 @@
     "clone-deep": "^4.0.1",
     "co-compose": "^5.1.4",
     "content-disposition": "^0.5.3",
+    "cookie": "^0.4.0",
     "cuid": "^2.1.8",
     "destroy": "^1.0.4",
     "encodeurl": "^1.0.2",
