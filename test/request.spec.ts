@@ -13,9 +13,9 @@ import supertest from 'supertest'
 import proxyaddr from 'proxy-addr'
 import { createServer } from 'http'
 import { createCertificate } from 'pem'
-import { serialize } from '@poppinss/cookie'
-import { Encryption } from '@adonisjs/encryption/build/standalone'
 import { createServer as httpsServer } from 'https'
+import { CookieSerializer } from '../src/Cookie/Serializer'
+import { Encryption } from '@adonisjs/encryption/build/standalone'
 
 import { Request } from '../src/Request'
 import { RequestConfigContract } from '@ioc:Adonis/Core/Request'
@@ -30,7 +30,8 @@ const fakeConfig = (conf?: Partial<RequestConfigContract>) => {
   }, conf)
 }
 
-const encryption = new Encryption('averylongrandom32charslongsecret').create({ hmac: false })
+const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
+const serializer = new CookieSerializer(encryption)
 
 test.group('Request', () => {
   test('get http request query string', async (assert) => {
@@ -833,10 +834,13 @@ test.group('Request', () => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
-      res.end(JSON.stringify({ plainCookies: request.plainCookies(), cookies: request.cookies() }))
+      res.end(JSON.stringify({
+        plainCookies: { name: request.plainCookie('name') },
+        cookies: { name: request.cookie('name') },
+      }))
     })
 
-    const cookies = serialize('name', 'virk')!
+    const cookies = serializer.encode('name', 'virk')!
     const { body } = await supertest(server).get('/').set('cookie', cookies)
     assert.deepEqual(body, {
       plainCookies: {
@@ -846,16 +850,19 @@ test.group('Request', () => {
     })
   })
 
-  test('get all signed cookies when secret is defined', async (assert) => {
+  test('get all signed cookies', async (assert) => {
     const config = fakeConfig()
 
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, config)
       res.writeHead(200, { 'content-type': 'application/json' })
-      res.end(JSON.stringify({ plainCookies: request.plainCookies(), cookies: request.cookies() }))
+      res.end(JSON.stringify({
+        plainCookies: { name: request.plainCookie('name') },
+        cookies: { name: request.cookie('name') },
+      }))
     })
 
-    const cookies = serialize('name', 'virk', config.secret)!
+    const cookies = serializer.sign('name', 'virk')!
     const { body } = await supertest(server).get('/').set('cookie', cookies)
     assert.deepEqual(body, {
       plainCookies: {},
@@ -874,7 +881,7 @@ test.group('Request', () => {
       res.end(JSON.stringify({ name: request.cookie('name') }))
     })
 
-    const cookies = serialize('name', 'virk', config.secret)!
+    const cookies = serializer.sign('name', 'virk')!
     const { body } = await supertest(server).get('/').set('cookie', cookies)
     assert.deepEqual(body, {
       name: 'virk',
@@ -901,7 +908,7 @@ test.group('Request', () => {
       res.end(JSON.stringify({ name: request.plainCookie('name') }))
     })
 
-    const cookies = serialize('name', 'virk')!
+    const cookies = serializer.encode('name', 'virk')!
     const { body } = await supertest(server).get('/').set('cookie', cookies)
     assert.deepEqual(body, {
       name: 'virk',
@@ -913,6 +920,35 @@ test.group('Request', () => {
       const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.plainCookie('name', 'nikk') }))
+    })
+
+    const { body } = await supertest(server).get('/')
+    assert.deepEqual(body, {
+      name: 'nikk',
+    })
+  })
+
+  test('get value for a single encrypted', async (assert) => {
+    const config = fakeConfig()
+
+    const server = createServer((req, res) => {
+      const request = new Request(req, res, encryption, config)
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ name: request.encryptedCookie('name') }))
+    })
+
+    const cookies = serializer.encrypt('name', 'virk')!
+    const { body } = await supertest(server).get('/').set('cookie', cookies)
+    assert.deepEqual(body, {
+      name: 'virk',
+    })
+  })
+
+  test('use default value when actual value is missing', async (assert) => {
+    const server = createServer((req, res) => {
+      const request = new Request(req, res, encryption, fakeConfig())
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ name: request.encryptedCookie('name', 'nikk') }))
     })
 
     const { body } = await supertest(server).get('/')
@@ -1005,7 +1041,7 @@ test.group('Verify signed url', () => {
     })
 
     const url = '/?name=virk'
-    const signature = escape(encryption.encrypt(url))
+    const signature = escape(encryption.verifier.sign(url))
 
     const { body } = await supertest(server).get(`${url}&signature=${signature}`)
     assert.deepEqual(body, {
@@ -1021,7 +1057,7 @@ test.group('Verify signed url', () => {
     })
 
     const url = '/'
-    const signature = escape(encryption.encrypt(url))
+    const signature = escape(encryption.verifier.sign(url))
 
     const { body } = await supertest(server).get(`${url}?signature=${signature}`)
     assert.deepEqual(body, {
@@ -1036,8 +1072,8 @@ test.group('Verify signed url', () => {
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const url = `/?expires_at=${Date.now() - 10}`
-    const signature = escape(encryption.encrypt(url))
+    const url = '/'
+    const signature = escape(encryption.verifier.sign(url, -100))
 
     const { body } = await supertest(server).get(`${url}&signature=${signature}`)
     assert.deepEqual(body, {
@@ -1052,26 +1088,26 @@ test.group('Verify signed url', () => {
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const url = `/?expires_at=${Date.now() + (60 * 60)}`
-    const signature = escape(encryption.encrypt(url))
+    const url = '/'
+    const signature = escape(encryption.verifier.sign(url, '1 hour'))
 
-    const { body } = await supertest(server).get(`${url}&signature=${signature}`)
+    const { body } = await supertest(server).get(`${url}?signature=${signature}`)
     assert.deepEqual(body, {
       hasValidSignature: true,
     })
   })
 
-  test('return false when expiry was tampered', async (assert) => {
+  test('return false when purpose is different', async (assert) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, fakeConfig())
       res.writeHead(200, { 'content-type': 'application/json' })
-      res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
+      res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature('login') }))
     })
 
-    const url = `/?expires_at=${Date.now() - 10}`
-    const signature = escape(encryption.encrypt(url))
+    const url = '/'
+    const signature = escape(encryption.verifier.sign(url, 1000, 'register'))
 
-    const { body } = await supertest(server).get(`/?expires_at=${Date.now() + 3600}&signature=${signature}`)
+    const { body } = await supertest(server).get(`${url}?signature=${signature}`)
     assert.deepEqual(body, {
       hasValidSignature: false,
     })

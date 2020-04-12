@@ -24,11 +24,9 @@ import encodeurl from 'encodeurl'
 import onFinished from 'on-finished'
 import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
-import { DeepReadonly } from 'ts-essentials'
 import { createReadStream, stat, Stats } from 'fs'
 import contentDisposition from 'content-disposition'
 import { ServerResponse, IncomingMessage } from 'http'
-import { serialize, CookieOptions } from '@poppinss/cookie'
 
 import {
   ResponseContract,
@@ -39,7 +37,11 @@ import {
   ResponseConfigContract,
 } from '@ioc:Adonis/Core/Response'
 
+import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { CookieOptions } from '@ioc:Adonis/Core/Server'
+
+import { CookieSerializer } from '../Cookie/Serializer'
 
 /**
  * Wraps `fs.stat` to promise interface.
@@ -116,6 +118,8 @@ export class Response extends Macroable implements ResponseContract {
   private headers: any = {}
   private explicitStatus = false
 
+  private cookieSerializer = new CookieSerializer(this.encryption)
+
   /**
    * Lazy body is used to set the response body. However, do not
    * write it on the socket immediately unless `response.finish`
@@ -134,7 +138,8 @@ export class Response extends Macroable implements ResponseContract {
   constructor (
     public request: IncomingMessage,
     public response: ServerResponse,
-    private config: DeepReadonly<ResponseConfigContract>,
+    private encryption: EncryptionContract,
+    private config: ResponseConfigContract,
   ) {
     super()
   }
@@ -875,7 +880,7 @@ export class Response extends Macroable implements ResponseContract {
   public cookie (key: string, value: any, options?: Partial<CookieOptions>): this {
     options = Object.assign({}, this.config.cookie, options)
 
-    const serialized = serialize(key, value, this.config.secret, options)
+    const serialized = this.cookieSerializer.sign(key, value, options)
     if (!serialized) {
       return this
     }
@@ -891,7 +896,23 @@ export class Response extends Macroable implements ResponseContract {
   public plainCookie (key: string, value: any, options?: Partial<CookieOptions>): this {
     options = Object.assign({}, this.config.cookie, options)
 
-    const serialized = serialize(key, value, undefined, options)
+    const serialized = this.cookieSerializer.encode(key, value, options)
+    if (!serialized) {
+      return this
+    }
+
+    this.append('set-cookie', serialized)
+    return this
+  }
+
+  /**
+   * Set unsigned cookie as the response header. The inline options overrides
+   * all options from the config (means they are not merged)
+   */
+  public encryptedCookie (key: string, value: any, options?: Partial<CookieOptions>): this {
+    options = Object.assign({}, this.config.cookie, options)
+
+    const serialized = this.cookieSerializer.encrypt(key, value, options)
     if (!serialized) {
       return this
     }
@@ -908,7 +929,7 @@ export class Response extends Macroable implements ResponseContract {
     options.expires = new Date(1)
     options.maxAge = -1
 
-    const serialized = serialize(key, '', undefined, options)
+    const serialized = this.cookieSerializer.encode(key, '', options)
     if (!serialized) {
       return this
     }

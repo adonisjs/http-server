@@ -20,7 +20,7 @@ import { Profiler } from '@adonisjs/profiler/build/standalone'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
 import { Encryption } from '@adonisjs/encryption/build/standalone'
-import { ProfilerActionDataPacket, ProfilerRowDataPacket } from '@ioc:Adonis/Core/Profiler'
+import { ProfilerAction, ProfilerRow } from '@ioc:Adonis/Core/Profiler'
 
 import { Server } from '../src/Server'
 
@@ -42,7 +42,7 @@ const logger = new FakeLogger({
 })
 
 const profiler = new Profiler(__dirname, logger, { enabled: false })
-const encryption = new Encryption('averylongrandom32charslongsecret')
+const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
 
 test.group('Server | Response handling', () => {
   test('invoke router handler', async (assert) => {
@@ -290,8 +290,8 @@ test.group('Server | middleware', () => {
     const customProfiler = new Profiler(__dirname, logger, { enabled: true })
     const server = new Server(new Ioc(), logger, customProfiler, encryption, config)
 
-    let requestPacket: ProfilerRowDataPacket
-    let hookPacket: ProfilerActionDataPacket
+    let requestPacket: ProfilerRow
+    let hookPacket: ProfilerAction
 
     server.router.get('/', async () => {
       return 'done'
@@ -304,9 +304,9 @@ test.group('Server | middleware', () => {
 
     customProfiler.process((packet) => {
       if (packet.label === 'foo') {
-        hookPacket = packet as ProfilerActionDataPacket
+        hookPacket = packet as ProfilerAction
       } else {
-        requestPacket = packet as ProfilerRowDataPacket
+        requestPacket = packet as ProfilerRow
       }
     })
 
@@ -320,8 +320,8 @@ test.group('Server | middleware', () => {
     const customProfiler = new Profiler(__dirname, logger, { enabled: true })
     const server = new Server(new Ioc(), logger, customProfiler, encryption, config)
 
-    let requestPacket: ProfilerRowDataPacket
-    let hookPacket: ProfilerActionDataPacket
+    let requestPacket: ProfilerRow
+    let hookPacket: ProfilerAction
 
     server.router.get('/', async () => {
       return 'done'
@@ -334,9 +334,9 @@ test.group('Server | middleware', () => {
 
     customProfiler.process((packet) => {
       if (packet.label === 'foo') {
-        hookPacket = packet as ProfilerActionDataPacket
+        hookPacket = packet as ProfilerAction
       } else {
-        requestPacket = packet as ProfilerRowDataPacket
+        requestPacket = packet as ProfilerRow
       }
     })
 
@@ -636,8 +636,8 @@ test.group('Server | hooks', () => {
     const customProfiler = new Profiler(__dirname, logger, { enabled: true })
     const server = new Server(new Ioc(), logger, customProfiler, encryption, config)
 
-    let requestPacket: ProfilerRowDataPacket
-    let hookPacket: ProfilerActionDataPacket
+    let requestPacket: ProfilerRow
+    let hookPacket: ProfilerAction
 
     server.hooks.after(async (ctx) => {
       ctx.profiler.profile('foo').end()
@@ -651,9 +651,9 @@ test.group('Server | hooks', () => {
 
     customProfiler.process((packet) => {
       if (packet.label === 'foo') {
-        hookPacket = packet as ProfilerActionDataPacket
+        hookPacket = packet as ProfilerAction
       } else {
-        requestPacket = packet as ProfilerRowDataPacket
+        requestPacket = packet as ProfilerRow
       }
     })
 

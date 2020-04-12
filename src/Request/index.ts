@@ -13,12 +13,6 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
-/**
- * Once lodash fixes this issue https://github.com/lodash/lodash/issues/4459. We
- * can go back and use individual modules vs the full blown dependency
- */
-import { get, omit, pick } from 'lodash'
-
 import qs from 'qs'
 import cuid from 'cuid'
 import fresh from 'fresh'
@@ -27,9 +21,8 @@ import typeIs from 'type-is'
 import accepts from 'accepts'
 import proxyaddr from 'proxy-addr'
 import { Macroable } from 'macroable'
-import { DeepReadonly } from 'ts-essentials'
+import { lodash } from '@poppinss/utils'
 import { parse, UrlWithStringQuery } from 'url'
-import { parse as parseCookie } from '@poppinss/cookie'
 import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'http'
 
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
@@ -37,6 +30,7 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { RequestContract, RequestConfigContract } from '@ioc:Adonis/Core/Request'
 
 import { trustProxy } from '../helpers'
+import { CookieParser } from '../Cookie/Parser'
 
 /**
  * HTTP Request class exposes the interface to consistently read values
@@ -83,10 +77,7 @@ export class Request extends Macroable implements RequestContract {
   /**
    * Copy of lazily parsed signed and plain cookies.
    */
-  private parsedCookies: {
-    signedCookies: { [key: string]: any },
-    plainCookies: { [key: string]: any },
-  } | null = null
+  private cookieParser = new CookieParser(this.header('cookie')!, this.encryption)
 
   /**
    * Required by Macroable
@@ -111,7 +102,7 @@ export class Request extends Macroable implements RequestContract {
     public request: IncomingMessage,
     public response: ServerResponse,
     private encryption: EncryptionContract,
-    private config: DeepReadonly<RequestConfigContract>,
+    private config: RequestConfigContract,
   ) {
     super()
     this.parseQueryString()
@@ -124,16 +115,6 @@ export class Request extends Macroable implements RequestContract {
     if (this.parsedUrl.query) {
       this.updateQs(qs.parse(this.parsedUrl.query))
       this.originalRequestData = { ...this.requestData }
-    }
-  }
-
-  /**
-   * Parse cookies, if not already parsed cookies. Cookies are only
-   * parsed, when any of the cookie methods are used.
-   */
-  private parseCookies () {
-    if (!this.parsedCookies) {
-      this.parsedCookies = parseCookie(this.header('cookie')!, this.config.secret)
     }
   }
 
@@ -261,7 +242,7 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public input (key: string, defaultValue?: any): any {
-    return get(this.requestData, key, defaultValue)
+    return lodash.get(this.requestData, key, defaultValue)
   }
 
   /**
@@ -273,7 +254,7 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public except (keys: string[]): { [key: string]: any } {
-    return omit(this.requestData, keys)
+    return lodash.omit(this.requestData, keys)
   }
 
   /**
@@ -285,7 +266,7 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public only <T extends string, U = { [K in T]: any }> (keys: T[]): U {
-    return pick(this.requestData, keys)
+    return lodash.pick(this.requestData, keys)
   }
 
   /**
@@ -800,9 +781,8 @@ export class Request extends Macroable implements RequestContract {
    * Returns all parsed and signed cookies. Signed cookies ensures
    * that their value isn't tampered.
    */
-  public cookies () {
-    this.parseCookies()
-    return this.parsedCookies!.signedCookies
+  public cookiesList () {
+    return this.cookieParser.list()
   }
 
   /**
@@ -810,18 +790,15 @@ export class Request extends Macroable implements RequestContract {
    * defaultValue is returned when actual value is undefined.
    */
   public cookie (key: string, defaultValue?: string): any {
-    this.parseCookies()
-    return get(this.parsedCookies!.signedCookies, key, defaultValue)
+    return this.cookieParser.unsign(key) || defaultValue
   }
 
   /**
-   * Returns all parsed and unsigned cookies. Unsigned cookies gives
-   * no guarantee for cookie tampering. You only need `plainCookies`
-   * when cookie is set by the client and not the server
+   * Returns value for a given key from signed cookies. Optional
+   * defaultValue is returned when actual value is undefined.
    */
-  public plainCookies () {
-    this.parseCookies()
-    return this.parsedCookies!.plainCookies
+  public encryptedCookie (key: string, defaultValue?: string): any {
+    return this.cookieParser.decrypt(key) || defaultValue
   }
 
   /**
@@ -829,15 +806,14 @@ export class Request extends Macroable implements RequestContract {
    * defaultValue is returned when actual value is undefined.
    */
   public plainCookie (key: string, defaultValue?: string): any {
-    this.parseCookies()
-    return get(this.parsedCookies!.plainCookies, key, defaultValue)
+    return this.cookieParser.decode(key) || defaultValue
   }
 
   /**
    * Returns a boolean telling if a signed url as a valid signature
    * or not.
    */
-  public hasValidSignature () {
+  public hasValidSignature (purpose?: string) {
     const { signature, ...rest } = this.get()
     if (!signature) {
       return false
@@ -846,15 +822,8 @@ export class Request extends Macroable implements RequestContract {
     /**
      * Return false when signature fails
      */
-    const signedUrl = this.encryption.create({ hmac: false }).decrypt(signature)
+    const signedUrl = this.encryption.verifier.unsign(signature, purpose)
     if (!signedUrl) {
-      return false
-    }
-
-    /**
-     * Return false when is expired
-     */
-    if (rest.expires_at && Number(rest.expires_at) < Date.now()) {
       return false
     }
 

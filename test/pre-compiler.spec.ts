@@ -15,7 +15,9 @@ import { MiddlewareStore } from '../src/MiddlewareStore'
 import { PreCompiler } from '../src/Server/PreCompiler'
 import { Encryption } from '@adonisjs/encryption/build/standalone'
 
-const encryption = new Encryption('averylongrandom32charslongsecret')
+const encryption = new Encryption({
+  secret: 'averylongrandom32charslongsecret',
+})
 
 test.group('Route precompiler', () => {
   test('process route by resolving function based middleware', (assert) => {

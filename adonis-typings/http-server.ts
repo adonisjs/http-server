@@ -20,6 +20,16 @@ declare module '@ioc:Adonis/Core/Server' {
   import { RouteHandlerNode, RouterContract } from '@ioc:Adonis/Core/Route'
   import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
 
+  export type CookieOptions = {
+    domain: string,
+    expires: Date | (() => Date),
+    httpOnly: boolean,
+    maxAge: number | string,
+    path: string,
+    sameSite: boolean | 'lax' | 'none' | 'strict',
+    secure: boolean,
+  }
+
   /**
    * Before hooks are executed before finding the route or finding
    * middleware

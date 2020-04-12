@@ -15,7 +15,9 @@ import { Profiler } from '@adonisjs/profiler/build/standalone'
 import { Encryption } from '@adonisjs/encryption/build/standalone'
 
 const HttpContext = BaseHttpContext as any as HttpContextConstructorContract
-const encryption = new Encryption('averylongrandom32charslongsecret')
+const encryption = new Encryption({
+  secret: 'averylongrandom32charslongsecret',
+})
 
 test.group('Http Context', () => {
   test('create fake Http context instance', async (assert) => {

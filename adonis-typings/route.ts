@@ -245,7 +245,7 @@ declare module '@ioc:Adonis/Core/Route' {
 
     makeSignedUrl (
       routeIdentifier: string,
-      options?: MakeUrlOptions & { expiresIn?: string | number },
+      options?: MakeUrlOptions & { expiresIn?: string | number, purpose?: string },
       domain?: string,
     ): string | null
   }

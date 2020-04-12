@@ -13,19 +13,18 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
-import ms from 'ms'
 import { stringify } from 'qs'
 import { Exception } from '@poppinss/utils'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 
 import {
-  RouteMatchers,
   RouteNode,
-  RouterContract,
   MatchedRoute,
+  RouteMatchers,
+  RouterContract,
+  MakeUrlOptions,
   RouteLookupNode,
   RouteHandlerNode,
-  MakeUrlOptions,
 } from '@ioc:Adonis/Core/Route'
 
 import { Route } from './Route'
@@ -413,7 +412,7 @@ export class Router implements RouterContract {
    */
   public makeSignedUrl (
     routeIdentifier: string,
-    options?: MakeUrlOptions & { expiresIn?: string | number },
+    options?: MakeUrlOptions & { expiresIn?: string | number, purpose?: string },
     domain?: string,
   ): string | null {
     const route = this.lookup(routeIdentifier, domain)
@@ -422,28 +421,26 @@ export class Router implements RouterContract {
     }
 
     options = Object.assign({ qs: {}, params: {}, domainParams: {}, prefixDomain: true }, options)
-    const expiresIn = options['expiresIn']
-
-    /**
-     * Setting the expiry of the url, when `expiresIn` duration is defined. We consider `0`
-     * as no expiry
-     */
-    if (expiresIn) {
-      const milliseconds = typeof (expiresIn) === 'string' ? ms(expiresIn) : expiresIn
-      options.qs.expires_at = Date.now() + milliseconds
-    }
 
     /**
      * Making the signature from the qualified url. We do not prefix the domain when
-     * make url for the signature, since it just makes the signature big.
+     * making signature, since it just makes the signature big.
      *
      * There might be a case, when someone wants to generate signature for the same route
      * on their 2 different domains, but we ignore that case for now and can consider
      * it later (when someone asks for it)
      */
     const signature = this.encryption
-      .create({ hmac: false })
-      .encrypt(this.makeUrl(route.pattern, { qs: options.qs, params: options.params, prefixDomain: false }))
+      .verifier
+      .sign(
+        this.makeUrl(route.pattern, {
+          qs: options.qs,
+          params: options.params,
+          prefixDomain: false,
+        }),
+        options.expiresIn,
+        options.purpose,
+      )
 
     /**
      * Adding signature to the query string and re-making the url again

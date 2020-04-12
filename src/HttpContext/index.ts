@@ -120,7 +120,7 @@ export class HttpContext extends Macroable implements HttpContextContract {
     /**
      * Creating new response instance
      */
-    const response = new Response(req, res, {
+    const response = new Response(req, res, encryption, {
       secret: serverConfig.secret,
       etag: serverConfig.etag,
       cookie: serverConfig.cookie,

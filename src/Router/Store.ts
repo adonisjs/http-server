@@ -14,9 +14,8 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import matchit from 'matchit'
-import { pick } from 'lodash'
 import cloneDeep from 'clone-deep'
-import { Exception } from '@poppinss/utils'
+import { Exception, lodash } from '@poppinss/utils'
 import {
   RouteNode,
   DomainNode,
@@ -129,7 +128,7 @@ export class Store {
      * since we create sub-trees for each method to make the lookups
      * fast.
      */
-    const routeJSON = cloneDeep(pick(route, [
+    const routeJSON = cloneDeep(lodash.pick(route, [
       'pattern',
       'handler',
       'meta',

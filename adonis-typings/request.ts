@@ -65,11 +65,11 @@ declare module '@ioc:Adonis/Core/Request' {
     hasBody (): boolean
     fresh (): boolean
     stale (): boolean
-    cookies (): { [key: string]: any }
-    plainCookies (): { [key: string]: any }
+    cookiesList (): { [key: string]: any }
     cookie (key: string, defaultValue?: any): any
+    encryptedCookie (key: string, defaultValue?: any): any
     plainCookie (key: string, defaultValue?: any): any
-    hasValidSignature (): boolean
+    hasValidSignature (purpose?: string): boolean
     toJSON (): any
   }
 

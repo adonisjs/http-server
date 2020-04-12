@@ -12,9 +12,9 @@
 */
 
 declare module '@ioc:Adonis/Core/Response' {
-  import { CookieOptions } from '@poppinss/cookie'
   import { ServerResponse, IncomingMessage } from 'http'
   import { MacroableConstructorContract } from 'macroable'
+  import { CookieOptions } from '@ioc:Adonis/Core/Server'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
   /**
