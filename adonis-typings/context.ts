@@ -14,7 +14,7 @@ declare module '@ioc:Adonis/Core/HttpContext' {
   import { LoggerContract } from '@ioc:Adonis/Core/Logger'
   import { RequestContract } from '@ioc:Adonis/Core/Request'
   import { ResponseContract } from '@ioc:Adonis/Core/Response'
-  import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
+  import { ServerConfig } from '@ioc:Adonis/Core/Server'
   import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
   import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 
@@ -50,7 +50,7 @@ declare module '@ioc:Adonis/Core/HttpContext' {
       encryption: EncryptionContract,
       req?: IncomingMessage,
       res?: ServerResponse,
-      serverConfig?: ServerConfigContract,
+      serverConfig?: ServerConfig,
     ): HttpContextContract
 
     new (

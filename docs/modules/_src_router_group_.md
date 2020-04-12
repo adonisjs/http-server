@@ -1,6 +1,6 @@
 [@adonisjs/http-server](../README.md) › ["src/Router/Group"](_src_router_group_.md)
 
-# External module: "src/Router/Group"
+# Module: "src/Router/Group"
 
 ## Index
 

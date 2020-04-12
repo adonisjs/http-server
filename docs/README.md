@@ -4,7 +4,7 @@
 
 ## Index
 
-### External modules
+### Modules
 
 * ["adonis-typings/context"](modules/_adonis_typings_context_.md)
 * ["adonis-typings/http-server"](modules/_adonis_typings_http_server_.md)
@@ -17,9 +17,15 @@
 * ["benchmarks/fastify"](modules/_benchmarks_fastify_.md)
 * ["benchmarks/index"](modules/_benchmarks_index_.md)
 * ["providers/HttpServerProvider"](modules/_providers_httpserverprovider_.md)
+* ["src/Cookie/Drivers/Encrypted"](modules/_src_cookie_drivers_encrypted_.md)
+* ["src/Cookie/Drivers/Plain"](modules/_src_cookie_drivers_plain_.md)
+* ["src/Cookie/Drivers/Signed"](modules/_src_cookie_drivers_signed_.md)
+* ["src/Cookie/Parser/index"](modules/_src_cookie_parser_index_.md)
+* ["src/Cookie/Serializer/index"](modules/_src_cookie_serializer_index_.md)
 * ["src/ExceptionManager/index"](modules/_src_exceptionmanager_index_.md)
 * ["src/HttpContext/index"](modules/_src_httpcontext_index_.md)
 * ["src/MiddlewareStore/index"](modules/_src_middlewarestore_index_.md)
+* ["src/Request/index"](modules/_src_request_index_.md)
 * ["src/Response/index"](modules/_src_response_index_.md)
 * ["src/Router/BriskRoute"](modules/_src_router_briskroute_.md)
 * ["src/Router/Group"](modules/_src_router_group_.md)
@@ -33,4 +39,3 @@
 * ["src/Server/index"](modules/_src_server_index_.md)
 * ["src/helpers"](modules/_src_helpers_.md)
 * ["standalone"](modules/_standalone_.md)
-* [@poppinss/request](modules/_poppinss_request.md)

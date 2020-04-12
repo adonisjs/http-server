@@ -26,7 +26,7 @@ Exposes to API to register and execute before and after hooks
 
 ###  after
 
-▸ **after**(`cb`: HookNode): *this*
+▸ **after**(`cb`: HookHandler): *this*
 
 Register after hook
 
@@ -34,7 +34,7 @@ Register after hook
 
 Name | Type |
 ------ | ------ |
-`cb` | HookNode |
+`cb` | HookHandler |
 
 **Returns:** *this*
 
@@ -42,7 +42,7 @@ ___
 
 ###  before
 
-▸ **before**(`cb`: HookNode): *this*
+▸ **before**(`cb`: HookHandler): *this*
 
 Register before hook
 
@@ -50,7 +50,7 @@ Register before hook
 
 Name | Type |
 ------ | ------ |
-`cb` | HookNode |
+`cb` | HookHandler |
 
 **Returns:** *this*
 

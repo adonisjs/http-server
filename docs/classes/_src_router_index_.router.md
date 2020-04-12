@@ -40,7 +40,7 @@ router.get('/', async function () {
 
 * [any](_src_router_index_.router.md#any)
 * [commit](_src_router_index_.router.md#commit)
-* [destroy](_src_router_index_.router.md#destroy)
+* [delete](_src_router_index_.router.md#delete)
 * [forTesting](_src_router_index_.router.md#fortesting)
 * [get](_src_router_index_.router.md#get)
 * [group](_src_router_index_.router.md#group)
@@ -113,7 +113,7 @@ group. To get a flat list of routes, call `router.toJSON()`
 
 ###  any
 
-▸ **any**(`pattern`: string, `handler`: RouteHandlerNode): *[Route](_src_router_route_.route.md)*
+▸ **any**(`pattern`: string, `handler`: RouteHandler): *[Route](_src_router_route_.route.md)*
 
 Define a route that handles all common HTTP methods
 
@@ -122,7 +122,7 @@ Define a route that handles all common HTTP methods
 Name | Type |
 ------ | ------ |
 `pattern` | string |
-`handler` | RouteHandlerNode |
+`handler` | RouteHandler |
 
 **Returns:** *[Route](_src_router_route_.route.md)*
 
@@ -139,9 +139,9 @@ routes can be registered.
 
 ___
 
-###  destroy
+###  delete
 
-▸ **destroy**(`pattern`: string, `handler`: RouteHandlerNode): *[Route](_src_router_route_.route.md)*
+▸ **delete**(`pattern`: string, `handler`: RouteHandler): *[Route](_src_router_route_.route.md)*
 
 Define `DELETE` route
 
@@ -150,7 +150,7 @@ Define `DELETE` route
 Name | Type |
 ------ | ------ |
 `pattern` | string |
-`handler` | RouteHandlerNode |
+`handler` | RouteHandler |
 
 **Returns:** *[Route](_src_router_route_.route.md)*
 
@@ -158,7 +158,7 @@ ___
 
 ###  forTesting
 
-▸ **forTesting**(`pattern?`: undefined | string, `methods?`: string[], `handler?`: RouteHandlerNode): *[Route](_src_router_route_.route.md)*
+▸ **forTesting**(`pattern?`: undefined | string, `methods?`: string[], `handler?`: RouteHandler): *[Route](_src_router_route_.route.md)*
 
 Creates a route when writing tests and auto-commits it to the
 routes store. Do not use this method inside your routes file.
@@ -174,7 +174,7 @@ Name | Type |
 ------ | ------ |
 `pattern?` | undefined &#124; string |
 `methods?` | string[] |
-`handler?` | RouteHandlerNode |
+`handler?` | RouteHandler |
 
 **Returns:** *[Route](_src_router_route_.route.md)*
 
@@ -182,7 +182,7 @@ ___
 
 ###  get
 
-▸ **get**(`pattern`: string, `handler`: RouteHandlerNode): *[Route](_src_router_route_.route.md)*
+▸ **get**(`pattern`: string, `handler`: RouteHandler): *[Route](_src_router_route_.route.md)*
 
 Define `GET` route
 
@@ -191,7 +191,7 @@ Define `GET` route
 Name | Type |
 ------ | ------ |
 `pattern` | string |
-`handler` | RouteHandlerNode |
+`handler` | RouteHandler |
 
 **Returns:** *[Route](_src_router_route_.route.md)*
 
@@ -306,7 +306,7 @@ ___
 
 ###  patch
 
-▸ **patch**(`pattern`: string, `handler`: RouteHandlerNode): *[Route](_src_router_route_.route.md)*
+▸ **patch**(`pattern`: string, `handler`: RouteHandler): *[Route](_src_router_route_.route.md)*
 
 Define `PATCH` route
 
@@ -315,7 +315,7 @@ Define `PATCH` route
 Name | Type |
 ------ | ------ |
 `pattern` | string |
-`handler` | RouteHandlerNode |
+`handler` | RouteHandler |
 
 **Returns:** *[Route](_src_router_route_.route.md)*
 
@@ -323,7 +323,7 @@ ___
 
 ###  post
 
-▸ **post**(`pattern`: string, `handler`: RouteHandlerNode): *[Route](_src_router_route_.route.md)*
+▸ **post**(`pattern`: string, `handler`: RouteHandler): *[Route](_src_router_route_.route.md)*
 
 Define `POST` route
 
@@ -332,7 +332,7 @@ Define `POST` route
 Name | Type |
 ------ | ------ |
 `pattern` | string |
-`handler` | RouteHandlerNode |
+`handler` | RouteHandler |
 
 **Returns:** *[Route](_src_router_route_.route.md)*
 
@@ -340,7 +340,7 @@ ___
 
 ###  put
 
-▸ **put**(`pattern`: string, `handler`: RouteHandlerNode): *[Route](_src_router_route_.route.md)*
+▸ **put**(`pattern`: string, `handler`: RouteHandler): *[Route](_src_router_route_.route.md)*
 
 Define `PUT` route
 
@@ -349,7 +349,7 @@ Define `PUT` route
 Name | Type |
 ------ | ------ |
 `pattern` | string |
-`handler` | RouteHandlerNode |
+`handler` | RouteHandler |
 
 **Returns:** *[Route](_src_router_route_.route.md)*
 
@@ -374,7 +374,7 @@ ___
 
 ###  route
 
-▸ **route**(`pattern`: string, `methods`: string[], `handler`: RouteHandlerNode): *[Route](_src_router_route_.route.md)*
+▸ **route**(`pattern`: string, `methods`: string[], `handler`: RouteHandler): *[Route](_src_router_route_.route.md)*
 
 Add route for a given pattern and methods
 
@@ -384,7 +384,7 @@ Name | Type |
 ------ | ------ |
 `pattern` | string |
 `methods` | string[] |
-`handler` | RouteHandlerNode |
+`handler` | RouteHandler |
 
 **Returns:** *[Route](_src_router_route_.route.md)*
 

@@ -142,7 +142,7 @@ ___
 
 ### `Static` create
 
-▸ **create**(`routePattern`: string, `routeParams`: any, `logger`: LoggerContract, `profiler`: ProfilerRowContract, `encryption`: EncryptionContract, `req?`: IncomingMessage, `res?`: ServerResponse, `serverConfig?`: ServerConfigContract): *[HttpContext](_src_httpcontext_index_.httpcontext.md)‹›*
+▸ **create**(`routePattern`: string, `routeParams`: any, `logger`: LoggerContract, `profiler`: ProfilerRowContract, `encryption`: EncryptionContract, `req?`: IncomingMessage, `res?`: ServerResponse, `serverConfig?`: ServerConfig): *[HttpContext](_src_httpcontext_index_.httpcontext.md)‹›*
 
 Creates a new fake context instance for a given route.
 
@@ -157,7 +157,7 @@ Name | Type |
 `encryption` | EncryptionContract |
 `req?` | IncomingMessage |
 `res?` | ServerResponse |
-`serverConfig?` | ServerConfigContract |
+`serverConfig?` | ServerConfig |
 
 **Returns:** *[HttpContext](_src_httpcontext_index_.httpcontext.md)‹›*
 

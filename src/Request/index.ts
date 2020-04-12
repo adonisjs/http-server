@@ -73,7 +73,7 @@ export class Request extends Macroable implements RequestContract {
   /**
    * Copy of lazily parsed signed and plain cookies.
    */
-  private cookieParser = new CookieParser(this.header('cookie')!, this.encryption)
+  private cookieParser: CookieParser
 
   /**
    * Required by Macroable
@@ -111,6 +111,15 @@ export class Request extends Macroable implements RequestContract {
     if (this.parsedUrl.query) {
       this.updateQs(qs.parse(this.parsedUrl.query))
       this.originalRequestData = { ...this.requestData }
+    }
+  }
+
+  /**
+   * Initiates the cookie parser lazily
+   */
+  private initiateCookieParser () {
+    if (!this.cookieParser) {
+      this.cookieParser = new CookieParser(this.header('cookie')!, this.encryption)
     }
   }
 
@@ -778,6 +787,7 @@ export class Request extends Macroable implements RequestContract {
    * that their value isn't tampered.
    */
   public cookiesList () {
+    this.initiateCookieParser()
     return this.cookieParser.list()
   }
 
@@ -786,6 +796,7 @@ export class Request extends Macroable implements RequestContract {
    * defaultValue is returned when actual value is undefined.
    */
   public cookie (key: string, defaultValue?: string): any {
+    this.initiateCookieParser()
     return this.cookieParser.unsign(key) || defaultValue
   }
 
@@ -794,6 +805,7 @@ export class Request extends Macroable implements RequestContract {
    * defaultValue is returned when actual value is undefined.
    */
   public encryptedCookie (key: string, defaultValue?: string): any {
+    this.initiateCookieParser()
     return this.cookieParser.decrypt(key) || defaultValue
   }
 
@@ -802,6 +814,7 @@ export class Request extends Macroable implements RequestContract {
    * defaultValue is returned when actual value is undefined.
    */
   public plainCookie (key: string, defaultValue?: string): any {
+    this.initiateCookieParser()
     return this.cookieParser.decode(key) || defaultValue
   }
 

@@ -1,6 +1,6 @@
 [@adonisjs/http-server](../README.md) › ["src/Server/index"](_src_server_index_.md)
 
-# External module: "src/Server/index"
+# Module: "src/Server/index"
 
 ## Index
 

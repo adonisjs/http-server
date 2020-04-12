@@ -1,6 +1,6 @@
 [@adonisjs/http-server](../README.md) › ["src/HttpContext/index"](_src_httpcontext_index_.md)
 
-# External module: "src/HttpContext/index"
+# Module: "src/HttpContext/index"
 
 ## Index
 

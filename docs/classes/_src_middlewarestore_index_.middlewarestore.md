@@ -61,18 +61,18 @@ Name | Type |
 
 ###  get
 
-▸ **get**(): *ResolvedMiddlewareNode[]*
+▸ **get**(): *ResolvedMiddlewareHandler[]*
 
 Return all middleware registered using [MiddlewareStore.register](_src_middlewarestore_index_.middlewarestore.md#register)
 method
 
-**Returns:** *ResolvedMiddlewareNode[]*
+**Returns:** *ResolvedMiddlewareHandler[]*
 
 ___
 
 ###  getNamed
 
-▸ **getNamed**(`name`: string): *null | ResolvedMiddlewareNode*
+▸ **getNamed**(`name`: string): *null | ResolvedMiddlewareHandler*
 
 Returns a single middleware by it's name registered
 using [MiddlewareStore.registerNamed](_src_middlewarestore_index_.middlewarestore.md#registernamed) method.
@@ -83,13 +83,13 @@ Name | Type |
 ------ | ------ |
 `name` | string |
 
-**Returns:** *null | ResolvedMiddlewareNode*
+**Returns:** *null | ResolvedMiddlewareHandler*
 
 ___
 
 ###  invokeMiddleware
 
-▸ **invokeMiddleware**(`middleware`: ResolvedMiddlewareNode, `params`: [HttpContextContract, function]): *Promise‹any›*
+▸ **invokeMiddleware**(`middleware`: ResolvedMiddlewareHandler, `params`: [HttpContextContract, function]): *Promise‹any›*
 
 Invokes a resolved middleware.
 
@@ -97,7 +97,7 @@ Invokes a resolved middleware.
 
 Name | Type |
 ------ | ------ |
-`middleware` | ResolvedMiddlewareNode |
+`middleware` | ResolvedMiddlewareHandler |
 `params` | [HttpContextContract, function] |
 
 **Returns:** *Promise‹any›*
@@ -106,7 +106,7 @@ ___
 
 ###  register
 
-▸ **register**(`middleware`: MiddlewareNode[]): *this*
+▸ **register**(`middleware`: MiddlewareHandler[]): *this*
 
 Register an array of global middleware. These middleware are read
 by HTTP server and executed on every request
@@ -115,7 +115,7 @@ by HTTP server and executed on every request
 
 Name | Type |
 ------ | ------ |
-`middleware` | MiddlewareNode[] |
+`middleware` | MiddlewareHandler[] |
 
 **Returns:** *this*
 

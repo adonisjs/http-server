@@ -1,4 +1,4 @@
-[@adonisjs/http-server](../README.md) › [@poppinss/request](../modules/_poppinss_request.md) › [Request](_poppinss_request.request.md)
+[@adonisjs/http-server](../README.md) › ["src/Request/index"](../modules/_src_request_index_.md) › [Request](_src_request_index_.request.md)
 
 # Class: Request
 
@@ -24,77 +24,77 @@ using `request.request` property.
 
 ### Constructors
 
-* [constructor](_poppinss_request.request.md#constructor)
+* [constructor](_src_request_index_.request.md#constructor)
 
 ### Properties
 
-* [ctx](_poppinss_request.request.md#optional-ctx)
-* [parsedUrl](_poppinss_request.request.md#parsedurl)
-* [request](_poppinss_request.request.md#request)
-* [response](_poppinss_request.request.md#response)
-* [getters](_poppinss_request.request.md#static-protected-getters)
-* [macros](_poppinss_request.request.md#static-protected-macros)
+* [ctx](_src_request_index_.request.md#optional-ctx)
+* [parsedUrl](_src_request_index_.request.md#parsedurl)
+* [request](_src_request_index_.request.md#request)
+* [response](_src_request_index_.request.md#response)
+* [getters](_src_request_index_.request.md#static-protected-getters)
+* [macros](_src_request_index_.request.md#static-protected-macros)
 
 ### Methods
 
-* [accepts](_poppinss_request.request.md#accepts)
-* [ajax](_poppinss_request.request.md#ajax)
-* [all](_poppinss_request.request.md#all)
-* [charset](_poppinss_request.request.md#charset)
-* [charsets](_poppinss_request.request.md#charsets)
-* [completeUrl](_poppinss_request.request.md#completeurl)
-* [cookie](_poppinss_request.request.md#cookie)
-* [cookies](_poppinss_request.request.md#cookies)
-* [encoding](_poppinss_request.request.md#encoding)
-* [encodings](_poppinss_request.request.md#encodings)
-* [except](_poppinss_request.request.md#except)
-* [fresh](_poppinss_request.request.md#fresh)
-* [get](_poppinss_request.request.md#get)
-* [hasBody](_poppinss_request.request.md#hasbody)
-* [hasValidSignature](_poppinss_request.request.md#hasvalidsignature)
-* [header](_poppinss_request.request.md#header)
-* [headers](_poppinss_request.request.md#headers)
-* [hostname](_poppinss_request.request.md#hostname)
-* [id](_poppinss_request.request.md#id)
-* [input](_poppinss_request.request.md#input)
-* [intended](_poppinss_request.request.md#intended)
-* [ip](_poppinss_request.request.md#ip)
-* [ips](_poppinss_request.request.md#ips)
-* [is](_poppinss_request.request.md#is)
-* [language](_poppinss_request.request.md#language)
-* [languages](_poppinss_request.request.md#languages)
-* [method](_poppinss_request.request.md#method)
-* [only](_poppinss_request.request.md#only)
-* [original](_poppinss_request.request.md#original)
-* [pjax](_poppinss_request.request.md#pjax)
-* [plainCookie](_poppinss_request.request.md#plaincookie)
-* [plainCookies](_poppinss_request.request.md#plaincookies)
-* [post](_poppinss_request.request.md#post)
-* [protocol](_poppinss_request.request.md#protocol)
-* [raw](_poppinss_request.request.md#raw)
-* [secure](_poppinss_request.request.md#secure)
-* [setInitialBody](_poppinss_request.request.md#setinitialbody)
-* [stale](_poppinss_request.request.md#stale)
-* [subdomains](_poppinss_request.request.md#subdomains)
-* [toJSON](_poppinss_request.request.md#tojson)
-* [types](_poppinss_request.request.md#types)
-* [updateBody](_poppinss_request.request.md#updatebody)
-* [updateQs](_poppinss_request.request.md#updateqs)
-* [updateRawBody](_poppinss_request.request.md#updaterawbody)
-* [url](_poppinss_request.request.md#url)
-* [getGetter](_poppinss_request.request.md#static-getgetter)
-* [getMacro](_poppinss_request.request.md#static-getmacro)
-* [getter](_poppinss_request.request.md#static-getter)
-* [hasGetter](_poppinss_request.request.md#static-hasgetter)
-* [hasMacro](_poppinss_request.request.md#static-hasmacro)
-* [hydrate](_poppinss_request.request.md#static-hydrate)
-* [macro](_poppinss_request.request.md#static-macro)
+* [accepts](_src_request_index_.request.md#accepts)
+* [ajax](_src_request_index_.request.md#ajax)
+* [all](_src_request_index_.request.md#all)
+* [charset](_src_request_index_.request.md#charset)
+* [charsets](_src_request_index_.request.md#charsets)
+* [completeUrl](_src_request_index_.request.md#completeurl)
+* [cookie](_src_request_index_.request.md#cookie)
+* [cookiesList](_src_request_index_.request.md#cookieslist)
+* [encoding](_src_request_index_.request.md#encoding)
+* [encodings](_src_request_index_.request.md#encodings)
+* [encryptedCookie](_src_request_index_.request.md#encryptedcookie)
+* [except](_src_request_index_.request.md#except)
+* [fresh](_src_request_index_.request.md#fresh)
+* [get](_src_request_index_.request.md#get)
+* [hasBody](_src_request_index_.request.md#hasbody)
+* [hasValidSignature](_src_request_index_.request.md#hasvalidsignature)
+* [header](_src_request_index_.request.md#header)
+* [headers](_src_request_index_.request.md#headers)
+* [hostname](_src_request_index_.request.md#hostname)
+* [id](_src_request_index_.request.md#id)
+* [input](_src_request_index_.request.md#input)
+* [intended](_src_request_index_.request.md#intended)
+* [ip](_src_request_index_.request.md#ip)
+* [ips](_src_request_index_.request.md#ips)
+* [is](_src_request_index_.request.md#is)
+* [language](_src_request_index_.request.md#language)
+* [languages](_src_request_index_.request.md#languages)
+* [method](_src_request_index_.request.md#method)
+* [only](_src_request_index_.request.md#only)
+* [original](_src_request_index_.request.md#original)
+* [pjax](_src_request_index_.request.md#pjax)
+* [plainCookie](_src_request_index_.request.md#plaincookie)
+* [post](_src_request_index_.request.md#post)
+* [protocol](_src_request_index_.request.md#protocol)
+* [raw](_src_request_index_.request.md#raw)
+* [secure](_src_request_index_.request.md#secure)
+* [setInitialBody](_src_request_index_.request.md#setinitialbody)
+* [stale](_src_request_index_.request.md#stale)
+* [subdomains](_src_request_index_.request.md#subdomains)
+* [toJSON](_src_request_index_.request.md#tojson)
+* [types](_src_request_index_.request.md#types)
+* [updateBody](_src_request_index_.request.md#updatebody)
+* [updateQs](_src_request_index_.request.md#updateqs)
+* [updateRawBody](_src_request_index_.request.md#updaterawbody)
+* [url](_src_request_index_.request.md#url)
+* [getGetter](_src_request_index_.request.md#static-getgetter)
+* [getMacro](_src_request_index_.request.md#static-getmacro)
+* [getter](_src_request_index_.request.md#static-getter)
+* [hasGetter](_src_request_index_.request.md#static-hasgetter)
+* [hasMacro](_src_request_index_.request.md#static-hasmacro)
+* [hydrate](_src_request_index_.request.md#static-hydrate)
+* [macro](_src_request_index_.request.md#static-macro)
 
 ## Constructors
 
 ###  constructor
 
-\+ **new Request**(`request`: IncomingMessage, `response`: ServerResponse, `encryption`: EncryptionContract, `config`: DeepReadonly‹RequestConfigContract›): *[Request](_poppinss_request.request.md)*
+\+ **new Request**(`request`: IncomingMessage, `response`: ServerResponse, `encryption`: EncryptionContract, `config`: RequestConfig): *[Request](_src_request_index_.request.md)*
 
 *Overrides void*
 
@@ -105,9 +105,9 @@ Name | Type |
 `request` | IncomingMessage |
 `response` | ServerResponse |
 `encryption` | EncryptionContract |
-`config` | DeepReadonly‹RequestConfigContract› |
+`config` | RequestConfig |
 
-**Returns:** *[Request](_poppinss_request.request.md)*
+**Returns:** *[Request](_src_request_index_.request.md)*
 
 ## Properties
 
@@ -281,7 +281,7 @@ ___
 ▸ **completeUrl**(`includeQueryString?`: undefined | false | true): *string*
 
 Returns the complete HTTP url by combining
-[protocol](_poppinss_request.request.md#protocol)://[hostname](_poppinss_request.request.md#hostname)/[url](_poppinss_request.request.md#url)
+[protocol](_src_request_index_.request.md#protocol)://[hostname](_src_request_index_.request.md#hostname)/[url](_src_request_index_.request.md#url)
 
 **`example`** 
 ```js
@@ -319,9 +319,9 @@ Name | Type |
 
 ___
 
-###  cookies
+###  cookiesList
 
-▸ **cookies**(): *object*
+▸ **cookiesList**(): *object*
 
 Returns all parsed and signed cookies. Signed cookies ensures
 that their value isn't tampered.
@@ -369,6 +369,24 @@ Make sure to check [accepts](https://www.npmjs.com/package/accepts) package
 docs too.
 
 **Returns:** *string[]*
+
+___
+
+###  encryptedCookie
+
+▸ **encryptedCookie**(`key`: string, `defaultValue?`: undefined | string): *any*
+
+Returns value for a given key from signed cookies. Optional
+defaultValue is returned when actual value is undefined.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`key` | string |
+`defaultValue?` | undefined &#124; string |
+
+**Returns:** *any*
 
 ___
 
@@ -451,10 +469,16 @@ ___
 
 ###  hasValidSignature
 
-▸ **hasValidSignature**(): *boolean*
+▸ **hasValidSignature**(`purpose?`: undefined | string): *boolean*
 
 Returns a boolean telling if a signed url as a valid signature
 or not.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`purpose?` | undefined &#124; string |
 
 **Returns:** *boolean*
 
@@ -555,7 +579,7 @@ ___
 
 Returns the HTTP request method. This is the original
 request method. For spoofed request method, make
-use of [method](_poppinss_request.request.md#method).
+use of [method](_src_request_index_.request.md#method).
 
 **`example`** 
 ```js
@@ -732,7 +756,7 @@ Method spoofing works when all of the following are true.
 
 1. `app.http.allowMethodSpoofing` config value is true.
 2. request query string has `_method`.
-3. The [intended](_poppinss_request.request.md#intended) request method is `POST`.
+3. The [intended](_src_request_index_.request.md#intended) request method is `POST`.
 
 **`example`** 
 ```js
@@ -812,20 +836,6 @@ Name | Type |
 
 ___
 
-###  plainCookies
-
-▸ **plainCookies**(): *object*
-
-Returns all parsed and unsigned cookies. Unsigned cookies gives
-no guarantee for cookie tampering. You only need `plainCookies`
-when cookie is set by the client and not the server
-
-**Returns:** *object*
-
-* \[ **key**: *string*\]: any
-
-___
-
 ###  post
 
 ▸ **post**(): *object*
@@ -871,8 +881,8 @@ ___
 
 Returns the request raw body (if exists), or returns `null`.
 
-Ideally you must be dealing with the parsed body accessed using [input](_poppinss_request.request.md#input), [all](_poppinss_request.request.md#all) or
-[post](_poppinss_request.request.md#post) methods. The `raw` body is always a string.
+Ideally you must be dealing with the parsed body accessed using [input](_src_request_index_.request.md#input), [all](_src_request_index_.request.md#all) or
+[post](_src_request_index_.request.md#post) methods. The `raw` body is always a string.
 
 **Returns:** *string | null*
 
@@ -883,7 +893,7 @@ ___
 ▸ **secure**(): *boolean*
 
 Returns a boolean telling if request is served over `https`
-or not. Check [protocol](_poppinss_request.request.md#protocol) method to know how protocol is
+or not. Check [protocol](_src_request_index_.request.md#protocol) method to know how protocol is
 fetched.
 
 **Returns:** *boolean*
@@ -915,7 +925,7 @@ ___
 
 ▸ **stale**(): *boolean*
 
-Opposite of [fresh](_poppinss_request.request.md#fresh)
+Opposite of [fresh](_src_request_index_.request.md#fresh)
 
 **Returns:** *boolean*
 
@@ -926,7 +936,7 @@ ___
 ▸ **subdomains**(): *string[]*
 
 Returns an array of subdomains for the given host. An empty array is
-returned if [hostname](_poppinss_request.request.md#hostname) is `null` or is an IP address.
+returned if [hostname](_src_request_index_.request.md#hostname) is `null` or is an IP address.
 
 Also `www` is not considered as a subdomain
 
@@ -941,6 +951,8 @@ ___
 toJSON copy of the request
 
 **Returns:** *object*
+
+* **cookies**(): *object*
 
 * **headers**: *IncomingHttpHeaders* = this.headers()
 

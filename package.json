@@ -1,7 +1,7 @@
 {
   "name": "@adonisjs/http-server",
   "version": "1.8.2",
-  "description": "Extracted copy of AdonisJs HTTP server along with it's router",
+  "description": "AdonisJS HTTP server with support packed with Routing and Cookies",
   "main": "build/providers/HttpServerProvider.js",
   "files": [
     "build/src",

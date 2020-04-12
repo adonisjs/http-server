@@ -73,6 +73,7 @@ This is how `explicitEnd` mode works in nutshell.
 * [cookie](_src_response_index_.response.md#cookie)
 * [created](_src_response_index_.response.md#created)
 * [download](_src_response_index_.response.md#download)
+* [encryptedCookie](_src_response_index_.response.md#encryptedcookie)
 * [expectationFailed](_src_response_index_.response.md#expectationfailed)
 * [finish](_src_response_index_.response.md#finish)
 * [flushHeaders](_src_response_index_.response.md#flushheaders)
@@ -140,7 +141,7 @@ This is how `explicitEnd` mode works in nutshell.
 
 ###  constructor
 
-\+ **new Response**(`request`: IncomingMessage, `response`: ServerResponse, `config`: DeepReadonly‹ResponseConfigContract›): *[Response](_src_response_index_.response.md)*
+\+ **new Response**(`request`: IncomingMessage, `response`: ServerResponse, `encryption`: EncryptionContract, `config`: ResponseConfig): *[Response](_src_response_index_.response.md)*
 
 *Overrides void*
 
@@ -150,7 +151,8 @@ Name | Type |
 ------ | ------ |
 `request` | IncomingMessage |
 `response` | ServerResponse |
-`config` | DeepReadonly‹ResponseConfigContract› |
+`encryption` | EncryptionContract |
+`config` | ResponseConfig |
 
 **Returns:** *[Response](_src_response_index_.response.md)*
 
@@ -552,6 +554,25 @@ Name | Type | Default |
 `errorCallback?` | undefined &#124; function | - |
 
 **Returns:** *void*
+
+___
+
+###  encryptedCookie
+
+▸ **encryptedCookie**(`key`: string, `value`: any, `options?`: Partial‹CookieOptions›): *this*
+
+Set unsigned cookie as the response header. The inline options overrides
+all options from the config (means they are not merged)
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`key` | string |
+`value` | any |
+`options?` | Partial‹CookieOptions› |
+
+**Returns:** *this*
 
 ___
 

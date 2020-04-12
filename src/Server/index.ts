@@ -106,7 +106,7 @@ export class Server implements ServerContract {
   /**
    * Returns the profiler row
    */
-  private getProfileRow (request: Request) {
+  private getProfilerRow (request: Request) {
     return this.profiler.create('http:request', {
       request_id: request.id(),
       url: request.url(),
@@ -159,7 +159,7 @@ export class Server implements ServerContract {
     const request = new Request(req, res, this.encryption, this.httpConfig)
     const response = new Response(req, res, this.encryption, this.httpConfig)
 
-    const requestAction = this.getProfileRow(request)
+    const requestAction = this.getProfilerRow(request)
     const ctx = this.getContext(request, response, requestAction)
 
     /**

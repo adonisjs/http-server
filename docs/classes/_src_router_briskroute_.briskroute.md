@@ -91,7 +91,7 @@ ___
 
 ###  setHandler
 
-▸ **setHandler**(`handler`: RouteHandlerNode, `invokedBy`: string, `methods?`: string[]): *[Route](_src_router_route_.route.md)*
+▸ **setHandler**(`handler`: RouteHandler, `invokedBy`: string, `methods?`: string[]): *[Route](_src_router_route_.route.md)*
 
 Set handler for the brisk route. The `invokedBy` string is the reference
 to the method that calls this method. It is required to create human
@@ -102,7 +102,7 @@ times.
 
 Name | Type |
 ------ | ------ |
-`handler` | RouteHandlerNode |
+`handler` | RouteHandler |
 `invokedBy` | string |
 `methods?` | string[] |
 

@@ -1,6 +1,6 @@
 [@adonisjs/http-server](../README.md) › ["src/Router/BriskRoute"](_src_router_briskroute_.md)
 
-# External module: "src/Router/BriskRoute"
+# Module: "src/Router/BriskRoute"
 
 ## Index
 

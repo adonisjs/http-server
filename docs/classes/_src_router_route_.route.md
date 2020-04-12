@@ -61,7 +61,7 @@ route
 
 ###  constructor
 
-\+ **new Route**(`pattern`: string, `methods`: string[], `handler`: RouteHandlerNode, `globalMatchers`: RouteMatchers): *[Route](_src_router_route_.route.md)*
+\+ **new Route**(`pattern`: string, `methods`: string[], `handler`: RouteHandler, `globalMatchers`: RouteMatchers): *[Route](_src_router_route_.route.md)*
 
 *Overrides void*
 
@@ -71,7 +71,7 @@ Name | Type |
 ------ | ------ |
 `pattern` | string |
 `methods` | string[] |
-`handler` | RouteHandlerNode |
+`handler` | RouteHandler |
 `globalMatchers` | RouteMatchers |
 
 **Returns:** *[Route](_src_router_route_.route.md)*
@@ -160,7 +160,7 @@ ___
 
 ###  middleware
 
-▸ **middleware**(`middleware`: MiddlewareNode | MiddlewareNode[], `prepend`: boolean): *this*
+▸ **middleware**(`middleware`: MiddlewareHandler | MiddlewareHandler[], `prepend`: boolean): *this*
 
 Define an array of middleware to be executed on the route. If `prepend`
 is true, then middleware will be added to start of the existing
@@ -170,7 +170,7 @@ middleware. The option is exposed for [RouteGroup](_src_router_group_.routegroup
 
 Name | Type | Default |
 ------ | ------ | ------ |
-`middleware` | MiddlewareNode &#124; MiddlewareNode[] | - |
+`middleware` | MiddlewareHandler &#124; MiddlewareHandler[] | - |
 `prepend` | boolean | false |
 
 **Returns:** *this*
@@ -213,12 +213,12 @@ ___
 
 ###  toJSON
 
-▸ **toJSON**(): *RouteDefinition*
+▸ **toJSON**(): *RouteJSON*
 
 Returns [[RouteDefinition]] that can be passed to the [Store](_src_router_store_.store.md) for
 registering the route
 
-**Returns:** *RouteDefinition*
+**Returns:** *RouteJSON*
 
 ___
 

@@ -133,7 +133,7 @@ ___
 
 ###  middleware
 
-▸ **middleware**(`middleware`: MiddlewareNode | MiddlewareNode[]): *this*
+▸ **middleware**(`middleware`: MiddlewareHandler | MiddlewareHandler[]): *this*
 
 Prepend an array of middleware to all routes middleware.
 
@@ -147,7 +147,7 @@ Route.group(() => {
 
 Name | Type |
 ------ | ------ |
-`middleware` | MiddlewareNode &#124; MiddlewareNode[] |
+`middleware` | MiddlewareHandler &#124; MiddlewareHandler[] |
 
 **Returns:** *this*
 

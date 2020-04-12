@@ -35,7 +35,7 @@ Server class handles the HTTP requests by using all Adonis micro modules.
 
 ###  constructor
 
-\+ **new Server**(`container`: IocContract, `logger`: LoggerContract, `profiler`: ProfilerContract, `encryption`: EncryptionContract, `httpConfig`: ServerConfigContract): *[Server](_src_server_index_.server.md)*
+\+ **new Server**(`container`: IocContract, `logger`: LoggerContract, `profiler`: ProfilerContract, `encryption`: EncryptionContract, `httpConfig`: ServerConfig): *[Server](_src_server_index_.server.md)*
 
 **Parameters:**
 
@@ -45,7 +45,7 @@ Name | Type |
 `logger` | LoggerContract |
 `profiler` | ProfilerContract |
 `encryption` | EncryptionContract |
-`httpConfig` | ServerConfigContract |
+`httpConfig` | ServerConfig |
 
 **Returns:** *[Server](_src_server_index_.server.md)*
 
@@ -87,7 +87,7 @@ The route to register routes
 
 ###  errorHandler
 
-▸ **errorHandler**(`handler`: ErrorHandlerNode): *this*
+▸ **errorHandler**(`handler`: ErrorHandler): *this*
 
 Define custom error handler to handler all errors
 occurred during HTTP request
@@ -96,7 +96,7 @@ occurred during HTTP request
 
 Name | Type |
 ------ | ------ |
-`handler` | ErrorHandlerNode |
+`handler` | ErrorHandler |
 
 **Returns:** *this*
 

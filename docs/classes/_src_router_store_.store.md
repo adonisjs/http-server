@@ -49,11 +49,14 @@ store.match('posts/1', 'GET')
 
 • **matchDomain**: *any* = this.matchDomainNoop
 
+The implementation used for matching domain. Will pivot to `matchDomainReal`
+when one or more domains will be defined
+
 ## Methods
 
 ###  add
 
-▸ **add**(`route`: RouteDefinition): *this*
+▸ **add**(`route`: RouteJSON): *this*
 
 Adds a route to the store for all the given HTTP methods. Also an array
 of tokens is generated for the route pattern. The tokens are then
@@ -75,7 +78,7 @@ store.add({
 
 Name | Type |
 ------ | ------ |
-`route` | RouteDefinition |
+`route` | RouteJSON |
 
 **Returns:** *this*
 

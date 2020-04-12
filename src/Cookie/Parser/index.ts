@@ -14,7 +14,21 @@ import * as PlainCookie from '../Drivers/Plain'
 import * as SignedCookie from '../Drivers/Signed'
 import * as EncryptedCookie from '../Drivers/Encrypted'
 
+/**
+ * Cookie parser parses the HTTP `cookie` method and collects all cookies
+ * inside an object of `key-value` pair, but doesn't attempt to decrypt
+ * or unsign or decode the individual values.
+ *
+ * The cookie values are lazily decrypted, or unsigned to avoid unncessary
+ * processing, which infact can be used as a means to burden the server
+ * by sending too many cookies which even doesn't belongs to the
+ * server.
+ */
 export class CookieParser {
+  /**
+   * A copy of cached cookies, they are cached during a request after
+   * initial decoding, unsigning or decrypting.
+   */
   private cachedCookies: {
     encryptedCookies: { [key: string]: any },
     signedCookies: { [key: string]: any },
@@ -25,10 +39,17 @@ export class CookieParser {
     encryptedCookies: {},
   }
 
+  /**
+   * An object of key-value pair collected by parsing
+   * the request cookie header.
+   */
   private cookies: { [key: string]: any } = this.parse()
 
   constructor (private cookieHeader: string, private encryption: EncryptionContract) {}
 
+  /**
+   * Parses the request `cookie` header
+   */
   private parse () {
     /**
      * Set to empty object when cookie header is empty string
@@ -43,7 +64,12 @@ export class CookieParser {
     return cookie.parse(this.cookieHeader)
   }
 
-  public decode (key: string) {
+  /**
+   * Attempts to decode a cookie by the name. When calling this method,
+   * you are assuming that the cookie was just encoded at the first
+   * place and not signed or encrypted.
+   */
+  public decode (key: string): any | null {
     /**
      * Ignore when initial value is not defined or null
      */
@@ -53,10 +79,17 @@ export class CookieParser {
     }
 
     /**
+     * Reference to the cache object. Mainly done to avoid typos,
+     * since this object is referenced a handful of times inside
+     * this method.
+     */
+    const cacheObject = this.cachedCookies.plainCookies
+
+    /**
      * Return from cache, when already parsed
      */
-    if (this.cachedCookies.plainCookies[key] !== undefined) {
-      return this.cachedCookies.plainCookies[key]
+    if (cacheObject[key] !== undefined) {
+      return cacheObject[key]
     }
 
     /**
@@ -65,13 +98,17 @@ export class CookieParser {
      */
     const parsed = PlainCookie.canUnpack(value) ? PlainCookie.unpack(value) : null
     if (parsed !== null) {
-      this.cachedCookies.plainCookies[key] = parsed
+      cacheObject[key] = parsed
     }
 
     return parsed
   }
 
-  public unsign (key: string) {
+  /**
+   * Attempts to unsign a cookie by the name. When calling this method,
+   * you are assuming that the cookie was signed at the first place.
+   */
+  public unsign (key: string): null | any {
     /**
      * Ignore when initial value is not defined or null
      */
@@ -81,25 +118,39 @@ export class CookieParser {
     }
 
     /**
+     * Reference to the cache object. Mainly done to avoid typos,
+     * since this object is referenced a handful of times inside
+     * this method.
+     */
+    const cacheObject = this.cachedCookies.signedCookies
+
+    /**
      * Return from cache, when already parsed
      */
-    if (this.cachedCookies.signedCookies[key] !== undefined) {
-      return this.cachedCookies.signedCookies[key]
+    if (cacheObject[key] !== undefined) {
+      return cacheObject[key]
     }
 
     /**
      * Attempt to unpack and cache it for future. The value is only
      * when value it is not null.
      */
-    const parsed = SignedCookie.canUnpack(value) ? SignedCookie.unpack(key, value, this.encryption) : null
+    const parsed = SignedCookie.canUnpack(value)
+      ? SignedCookie.unpack(key, value, this.encryption)
+      : null
+
     if (parsed !== null) {
-      this.cachedCookies.signedCookies[key] = parsed
+      cacheObject[key] = parsed
     }
 
     return parsed
   }
 
-  public decrypt (key: string) {
+  /**
+   * Attempts to decrypt a cookie by the name. When calling this method,
+   * you are assuming that the cookie was encrypted at the first place.
+   */
+  public decrypt (key: string): null | any {
     /**
      * Ignore when initial value is not defined or null
      */
@@ -109,10 +160,17 @@ export class CookieParser {
     }
 
     /**
+     * Reference to the cache object. Mainly done to avoid typos,
+     * since this object is referenced a handful of times inside
+     * this method.
+     */
+    const cacheObject = this.cachedCookies.encryptedCookies
+
+    /**
      * Return from cache, when already parsed
      */
-    if (this.cachedCookies.encryptedCookies[key] !== undefined) {
-      return this.cachedCookies.encryptedCookies[key]
+    if (cacheObject[key] !== undefined) {
+      return cacheObject[key]
     }
 
     /**
@@ -124,12 +182,17 @@ export class CookieParser {
       : null
 
     if (parsed !== null) {
-      this.cachedCookies.encryptedCookies[key] = parsed
+      cacheObject[key] = parsed
     }
 
     return parsed
   }
 
+  /**
+   * Returns an object of cookies key-value pair. Do note, the
+   * cookies are not decoded, unsigned or decrypted inside this
+   * list.
+   */
   public list () {
     return this.cookies
   }

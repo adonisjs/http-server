@@ -56,7 +56,7 @@ ___
 
 ###  registerHandler
 
-▸ **registerHandler**(`handler`: ErrorHandlerNode): *void*
+▸ **registerHandler**(`handler`: ErrorHandler): *void*
 
 Register a custom error handler
 
@@ -64,6 +64,6 @@ Register a custom error handler
 
 Name | Type |
 ------ | ------ |
-`handler` | ErrorHandlerNode |
+`handler` | ErrorHandler |
 
 **Returns:** *void*
