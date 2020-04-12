@@ -2,6 +2,10 @@
 
 # Class: CookieSerializer
 
+Cookies serializer is used to serialize a value to be set on the `Set-Cookie`
+header. You can `encode`, `sign` on `encrypt` cookies using the serializer
+and then set them individually using the `set-cookie` header.
+
 ## Hierarchy
 
 * **CookieSerializer**
@@ -38,6 +42,14 @@ Name | Type |
 
 ▸ **encode**(`key`: string, `value`: any, `options?`: Partial‹CookieOptions›): *string | null*
 
+Encodes value as a plain cookie. Do note, the value is still JSON.stringified
+and converted to base64 encoded string to avoid encoding issues.
+
+**`example`** 
+```ts
+ serializer.encode('name', 'virk')
+```
+
 **Parameters:**
 
 Name | Type |
@@ -54,6 +66,8 @@ ___
 
 ▸ **encrypt**(`key`: string, `value`: any, `options?`: Partial‹CookieOptions›): *string | null*
 
+Encrypts the value and returns it back as a url safe string.
+
 **Parameters:**
 
 Name | Type |
@@ -69,6 +83,9 @@ ___
 ###  sign
 
 ▸ **sign**(`key`: string, `value`: any, `options?`: Partial‹CookieOptions›): *string | null*
+
+Signs the value and returns it back as a url safe string. The signed value
+has a verification hash attached to it to detect data tampering.
 
 **Parameters:**
 

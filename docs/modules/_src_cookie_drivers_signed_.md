@@ -16,6 +16,9 @@
 
 ▸ **canUnpack**(`signedValue`: string): *boolean*
 
+Returns a boolean, if the unpack method from this module can attempt
+to unpack the signed value.
+
 **Parameters:**
 
 Name | Type |
@@ -29,6 +32,9 @@ ___
 ###  pack
 
 ▸ **pack**(`key`: string, `value`: any, `encryption`: EncryptionContract): *null | string*
+
+Signs a value to be shared as a cookie. The signed output has a
+hash to verify tampering with the original value
 
 **Parameters:**
 
@@ -45,6 +51,9 @@ ___
 ###  unpack
 
 ▸ **unpack**(`key`: string, `signedValue`: string, `encryption`: EncryptionContract): *null | any*
+
+Attempts to unpack the signed value. Make sure to call `canUnpack` before
+calling this method.
 
 **Parameters:**
 

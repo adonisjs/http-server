@@ -16,6 +16,9 @@
 
 ▸ **canUnpack**(`encryptedValue`: string): *boolean*
 
+Returns a boolean, if the unpack method from this module can attempt
+to unpack encrypted value.
+
 **Parameters:**
 
 Name | Type |
@@ -29,6 +32,8 @@ ___
 ###  pack
 
 ▸ **pack**(`key`: string, `value`: any, `encryption`: EncryptionContract): *null | string*
+
+Encrypt a value to be set as cookie
 
 **Parameters:**
 
@@ -45,6 +50,10 @@ ___
 ###  unpack
 
 ▸ **unpack**(`key`: string, `encryptedValue`: string, `encryption`: EncryptionContract): *null | any*
+
+Attempts to unpack the encrypted cookie value. Returns null, when fails to do so.
+Only call this method, when `canUnpack` returns true, otherwise runtime
+exceptions can be raised.
 
 **Parameters:**
 

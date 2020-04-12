@@ -16,6 +16,9 @@
 
 ▸ **canUnpack**(`encodedValue`: string): *boolean*
 
+Returns true when this `unpack` method of this module can attempt
+to unpack the encode value.
+
 **Parameters:**
 
 Name | Type |
@@ -30,6 +33,9 @@ ___
 
 ▸ **pack**(`value`: any): *null | string*
 
+Encodes a value into a base64 url encoded string to
+be set as cookie
+
 **Parameters:**
 
 Name | Type |
@@ -43,6 +49,9 @@ ___
 ###  unpack
 
 ▸ **unpack**(`encodedValue`: string): *null | any*
+
+Attempts to unpack the value by decoding it. Make sure to call, `canUnpack`
+before calling this method
 
 **Parameters:**
 

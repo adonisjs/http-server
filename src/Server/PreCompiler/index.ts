@@ -88,10 +88,7 @@ export class PreCompiler {
    */
   private resolver: IocResolverContract
 
-  constructor (
-    container: IocContract,
-    private middlewareStore: MiddlewareStoreContract,
-  ) {
+  constructor (container: IocContract, private middlewareStore: MiddlewareStoreContract) {
     this.resolver = container.getResolver(undefined, 'httpControllers', 'App/Controllers/Http')
   }
 
