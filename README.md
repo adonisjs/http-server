@@ -68,7 +68,9 @@ import { Server } from '@adonisjs/http-server'
 
 const logger = new Logger({ enabled: true, level: 'trace', name: 'adonis' })
 const profiler = new Profiler({ enabled: true })
-const encryption = new Encryption('averylongrandom32charslongsecret')
+const encryption = new Encryption({
+  secret: 'averylongrandom32charslongsecret',
+})
 
 const server = new Server(new Ioc(), logger, profiler, encryption, {
   etag: false,
@@ -76,7 +78,6 @@ const server = new Server(new Ioc(), logger, profiler, encryption, {
   cookie: {},
   subdomainOffset: 2,
   generateRequestId: false,
-  secret: Math.random().toFixed(36).substring(2, 38),
   trustProxy: proxyaddr.compile('loopback'),
   allowMethodSpoofing: false,
 })
