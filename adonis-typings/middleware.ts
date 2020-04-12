@@ -1,7 +1,3 @@
-/**
- * @module @adonisjs/http-server
- */
-
 /*
 * @adonisjs/http-server
 *
@@ -20,7 +16,7 @@ declare module '@ioc:Adonis/Core/Middleware' {
    * Input middleware node must be function or a string pointing
    * to the IoC container
    */
-  export type MiddlewareNode = string | (
+  export type MiddlewareHandler = string | (
     (ctx: HttpContextContract, next: () => Promise<void>, args?: string[]) => Promise<void>
   )
 
@@ -28,9 +24,9 @@ declare module '@ioc:Adonis/Core/Middleware' {
    * Shape of resolved middleware. This information is
    * enough to execute the middleware
    */
-  export type ResolvedMiddlewareNode = {
+  export type ResolvedMiddlewareHandler = {
     type: 'function',
-    value: Exclude<MiddlewareNode, string>,
+    value: Exclude<MiddlewareHandler, string>,
     args: string[],
   } | {
     type: 'autoload' | 'binding',
@@ -44,12 +40,12 @@ declare module '@ioc:Adonis/Core/Middleware' {
    * at runtime
    */
   export interface MiddlewareStoreContract {
-    register (middleware: MiddlewareNode[]): this
-    registerNamed (middleware: { [alias: string]: MiddlewareNode }): this
-    get (): ResolvedMiddlewareNode[]
-    getNamed (name: string): null | ResolvedMiddlewareNode
+    register (middleware: MiddlewareHandler[]): this
+    registerNamed (middleware: { [alias: string]: MiddlewareHandler }): this
+    get (): ResolvedMiddlewareHandler[]
+    getNamed (name: string): null | ResolvedMiddlewareHandler
     invokeMiddleware (
-      middleware: ResolvedMiddlewareNode,
+      middleware: ResolvedMiddlewareHandler,
       params: [HttpContextContract, () => Promise<void>],
     ): Promise<void>
   }

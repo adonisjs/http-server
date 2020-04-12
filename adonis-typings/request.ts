@@ -1,9 +1,5 @@
-/**
- * @module @poppinss/request
- */
-
 /*
-* @poppinss/request
+* @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *
@@ -76,8 +72,7 @@ declare module '@ioc:Adonis/Core/Request' {
   /**
    * Shape of the request config
    */
-  export type RequestConfigContract = {
-    secret?: string,
+  export type RequestConfig = {
     forceContentNegotiationToJSON?: boolean,
     subdomainOffset: number,
     generateRequestId: boolean,
@@ -96,7 +91,7 @@ declare module '@ioc:Adonis/Core/Request' {
       request: IncomingMessage,
       response: ServerResponse,
       encryption: EncryptionContract,
-      config: RequestConfigContract,
+      config: RequestConfig,
     ): RequestContract
   }
 

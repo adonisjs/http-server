@@ -1,9 +1,5 @@
-/**
-* @module @poppinss/response
-*/
-
 /*
-* @poppinss/response
+* @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *
@@ -14,8 +10,21 @@
 declare module '@ioc:Adonis/Core/Response' {
   import { ServerResponse, IncomingMessage } from 'http'
   import { MacroableConstructorContract } from 'macroable'
-  import { CookieOptions } from '@ioc:Adonis/Core/Server'
+  import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+
+  /**
+   * Cookie options can that can be set on the response
+   */
+  export type CookieOptions = {
+    domain: string,
+    expires: Date | (() => Date),
+    httpOnly: boolean,
+    maxAge: number | string,
+    path: string,
+    sameSite: boolean | 'lax' | 'none' | 'strict',
+    secure: boolean,
+  }
 
   /**
    * Types from which response header can be casted to a
@@ -101,6 +110,7 @@ declare module '@ioc:Adonis/Core/Response' {
 
     cookie (key: string, value: any, options?: Partial<CookieOptions>): this
     plainCookie (key: string, value: any, options?: Partial<CookieOptions>): this
+    encryptedCookie (key: string, value: any, options?: Partial<CookieOptions>): this
     clearCookie (key: string): this
 
     abort (body: any, status?: number): never
@@ -159,8 +169,7 @@ declare module '@ioc:Adonis/Core/Response' {
   /**
    * Config accepted by response the class
    */
-  export type ResponseConfigContract = {
-    secret?: string,
+  export type ResponseConfig = {
     etag: boolean,
     jsonpCallbackName: string,
     cookie: Partial<CookieOptions>,
@@ -175,7 +184,8 @@ declare module '@ioc:Adonis/Core/Response' {
     new (
       request: IncomingMessage,
       response: ServerResponse,
-      config: ResponseConfigContract,
+      encryption: EncryptionContract,
+      config: ResponseConfig,
     ): ResponseContract
   }
 

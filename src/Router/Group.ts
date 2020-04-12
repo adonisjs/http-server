@@ -16,7 +16,7 @@
 import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
 import { RouteGroupContract } from '@ioc:Adonis/Core/Route'
-import { MiddlewareNode } from '@ioc:Adonis/Core/Middleware'
+import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 
 import { Route } from './Route'
 import { BriskRoute } from './BriskRoute'
@@ -153,7 +153,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * }).middleware(['auth'])
    * ```
    */
-  public middleware (middleware: MiddlewareNode | MiddlewareNode[]): this {
+  public middleware (middleware: MiddlewareHandler | MiddlewareHandler[]): this {
     this.routes.forEach((route) => this.invoke(route, 'middleware', [middleware, true]))
     return this
   }

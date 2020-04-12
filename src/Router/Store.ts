@@ -22,7 +22,7 @@ import {
   MethodNode,
   RoutesTree,
   MatchedRoute,
-  RouteDefinition,
+  RouteJSON,
   RouteStoreMatch,
 } from '@ioc:Adonis/Core/Route'
 
@@ -69,6 +69,10 @@ export class Store {
     return []
   }.bind(this)
 
+  /**
+   * The implementation used for matching domain. Will pivot to `matchDomainReal`
+   * when one or more domains will be defined
+   */
   public matchDomain = this.matchDomainNoop
 
   /**
@@ -117,7 +121,7 @@ export class Store {
    * })
    * ```
    */
-  public add (route: RouteDefinition): this {
+  public add (route: RouteJSON): this {
     /**
      * Create a copy of route properties by cherry picking
      * fields. We create the copy outside the forEach

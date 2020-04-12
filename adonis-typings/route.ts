@@ -1,7 +1,3 @@
-/**
- * @module @adonisjs/http-server
- */
-
 /*
 * @adonisjs/http-server
 *
@@ -14,36 +10,23 @@
 declare module '@ioc:Adonis/Core/Route' {
   import { MacroableConstructorContract } from 'macroable'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-  import { MiddlewareNode, ResolvedMiddlewareNode } from '@ioc:Adonis/Core/Middleware'
+  import { MiddlewareHandler, ResolvedMiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 
   /**
    * The shape of the route handler
    */
-  export type RouteHandlerNode = ((ctx: HttpContextContract) => Promise<any>) | string
+  export type RouteHandler = ((ctx: HttpContextContract) => Promise<any>) | string
 
   /**
-   * Node after resolving controller.method binding
-   * from the route
+   * Node after resolving controller.method binding from the route
    */
-  export type ResolveRouteHandlerNode = {
+  export type ResolvedRouteHandler = {
     type: 'function',
-    handler: Exclude<RouteHandlerNode, string>,
+    handler: Exclude<RouteHandler, string>,
   } | {
     type: 'autoload' | 'binding',
     namespace: string,
     method: string,
-  }
-
-  /**
-   * Route look node is used to find the routes using
-   * handler, pattern or name.
-   */
-  export type RouteLookupNode = {
-    handler: RouteHandlerNode,
-    methods: string[],
-    pattern: string,
-    domain: string,
-    name?: string,
   }
 
   /**
@@ -68,21 +51,21 @@ declare module '@ioc:Adonis/Core/Route' {
      * leaves the type to `any` for the consumer to decide the
      * shape of the handler
      */
-    handler: RouteHandlerNode,
+    handler: RouteHandler,
 
     /**
      * The router itself doesn't use the middleware for anything, it
      * leaves the type to `any` for the consumer to decide the
      * shape of the middleware
      */
-    middleware: MiddlewareNode[],
+    middleware: MiddlewareHandler[],
 
     /**
      * Any custom runtime properties to be added to the route
      */
     meta: {
-      resolvedHandler?: ResolveRouteHandlerNode,
-      resolvedMiddleware?: ResolvedMiddlewareNode[]
+      resolvedHandler?: ResolvedRouteHandler,
+      resolvedMiddleware?: ResolvedMiddlewareHandler[],
       namespace?: string,
     } & { [key: string]: any },
 
@@ -123,10 +106,22 @@ declare module '@ioc:Adonis/Core/Route' {
   /**
    * Route definition returned as a result of `route.toJSON` method
    */
-  export type RouteDefinition = RouteNode & {
+  export type RouteJSON = RouteNode & {
     methods: string[],
     domain?: string,
     matchers: RouteMatchers,
+  }
+
+  /**
+   * Route look node is used to find the routes using
+   * handler, pattern or name.
+   */
+  export type RouteLookupNode = {
+    handler: RouteHandler,
+    methods: string[],
+    pattern: string,
+    domain: string,
+    name?: string,
   }
 
   /**
@@ -148,10 +143,10 @@ declare module '@ioc:Adonis/Core/Route' {
     where (param: string, matcher: string | RegExp): this
     prefix (prefix: string): this
     domain (domain: string): this
-    middleware (middleware: MiddlewareNode | MiddlewareNode[], prepend?: boolean): this
+    middleware (middleware: MiddlewareHandler | MiddlewareHandler[], prepend?: boolean): this
     as (name: string, prepend?: boolean): this
     namespace (namespace: string): this
-    toJSON (): RouteDefinition
+    toJSON (): RouteJSON
   }
 
   /**
@@ -162,7 +157,7 @@ declare module '@ioc:Adonis/Core/Route' {
     only (names: string[]): this
     except (names: string[]): this
     apiOnly (): this
-    middleware (middleware: { [name: string]: MiddlewareNode | MiddlewareNode[] }): this
+    middleware (middleware: { [name: string]: MiddlewareHandler | MiddlewareHandler[] }): this
     where (key: string, matcher: string | RegExp): this
     namespace (namespace: string): this
     as (name: string): this
@@ -182,7 +177,7 @@ declare module '@ioc:Adonis/Core/Route' {
     prefix (prefix: string): this
     domain (domain: string): this
     as (name: string): this
-    middleware (middleware: MiddlewareNode | MiddlewareNode[]): this
+    middleware (middleware: MiddlewareHandler | MiddlewareHandler[]): this
     namespace (namespace: string): this
   }
 
@@ -219,13 +214,13 @@ declare module '@ioc:Adonis/Core/Route' {
       BriskRouteContract
     )[]
 
-    route (pattern: string, methods: string[], handler: RouteHandlerNode): RouteContract
-    any (pattern: string, handler: RouteHandlerNode): RouteContract
-    get (pattern: string, handler: RouteHandlerNode): RouteContract
-    post (pattern: string, handler: RouteHandlerNode): RouteContract
-    put (pattern: string, handler: RouteHandlerNode): RouteContract
-    patch (pattern: string, handler: RouteHandlerNode): RouteContract
-    delete (pattern: string, handler: RouteHandlerNode): RouteContract
+    route (pattern: string, methods: string[], handler: RouteHandler): RouteContract
+    any (pattern: string, handler: RouteHandler): RouteContract
+    get (pattern: string, handler: RouteHandler): RouteContract
+    post (pattern: string, handler: RouteHandler): RouteContract
+    put (pattern: string, handler: RouteHandler): RouteContract
+    patch (pattern: string, handler: RouteHandler): RouteContract
+    delete (pattern: string, handler: RouteHandler): RouteContract
     group (callback: () => void): RouteGroupContract
     resource (resource: string, controller: string): RouteResourceContract
     shallowResource (resource: string, controller: string): RouteResourceContract
@@ -235,8 +230,6 @@ declare module '@ioc:Adonis/Core/Route' {
     commit (): void
     match (url: string, method: string, domain?: string): null | MatchedRoute
     lookup (routeIdentifier: string, domain?: string): null | RouteLookupNode
-    forTesting (pattern?: string, methods?: string[], handler?: any): RouteContract
-
     makeUrl (
       routeIdentifier: string,
       options?: MakeUrlOptions,
@@ -248,6 +241,8 @@ declare module '@ioc:Adonis/Core/Route' {
       options?: MakeUrlOptions & { expiresIn?: string | number, purpose?: string },
       domain?: string,
     ): string | null
+
+    forTesting (pattern?: string, methods?: string[], handler?: any): RouteContract
   }
 
   const Route: RouterContract

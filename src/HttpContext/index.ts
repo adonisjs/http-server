@@ -18,18 +18,18 @@ import { inspect } from 'util'
 import proxyAddr from 'proxy-addr'
 import { Macroable } from 'macroable'
 import { RouteNode } from '@ioc:Adonis/Core/Route'
+import { ServerConfig } from '@ioc:Adonis/Core/Server'
 import { IncomingMessage, ServerResponse } from 'http'
 import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 import { RequestContract } from '@ioc:Adonis/Core/Request'
 import { ResponseContract } from '@ioc:Adonis/Core/Response'
-import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
 import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
-import { processPattern } from '../helpers'
 import { Request } from '../Request'
 import { Response } from '../Response'
+import { processPattern } from '../helpers'
 
 /**
  * Http context is passed to all route handlers, middleware,
@@ -81,7 +81,7 @@ export class HttpContext extends Macroable implements HttpContextContract {
     encryption: EncryptionContract,
     req?: IncomingMessage,
     res?: ServerResponse,
-    serverConfig?: ServerConfigContract,
+    serverConfig?: ServerConfig,
   ) {
     req = req || new IncomingMessage(new Socket())
     res = res || new ServerResponse(req)
@@ -110,7 +110,6 @@ export class HttpContext extends Macroable implements HttpContextContract {
      * Creating new request instance
      */
     const request = new Request(req, res, encryption, {
-      secret: serverConfig.secret,
       allowMethodSpoofing: serverConfig.allowMethodSpoofing,
       subdomainOffset: serverConfig.subdomainOffset,
       trustProxy: serverConfig.trustProxy,
@@ -121,7 +120,6 @@ export class HttpContext extends Macroable implements HttpContextContract {
      * Creating new response instance
      */
     const response = new Response(req, res, encryption, {
-      secret: serverConfig.secret,
       etag: serverConfig.etag,
       cookie: serverConfig.cookie,
       jsonpCallbackName: serverConfig.jsonpCallbackName,

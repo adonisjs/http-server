@@ -37,6 +37,7 @@
     "@adonisjs/mrm-preset": "^2.3.0",
     "@adonisjs/profiler": "^3.0.0",
     "@poppinss/dev-utils": "^1.0.5",
+    "@types/cookie": "^0.3.3",
     "@types/ms": "^0.7.31",
     "@types/node": "^13.11.1",
     "@types/pluralize": "0.0.29",
@@ -65,9 +66,9 @@
     "typescript": "^3.8.3"
   },
   "peerDependencies": {
-    "@adonisjs/encryption": "^1.x.x",
-    "@adonisjs/logger": "^1.x.x",
-    "@adonisjs/profiler": "^2.x.x"
+    "@adonisjs/encryption": "2.x.x",
+    "@adonisjs/logger": "2.x.x",
+    "@adonisjs/profiler": "3.x.x"
   },
   "nyc": {
     "exclude": [

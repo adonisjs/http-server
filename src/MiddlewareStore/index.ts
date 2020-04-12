@@ -17,9 +17,9 @@ import { IocContract, IocResolverContract } from '@adonisjs/fold'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import {
-  MiddlewareNode,
+  MiddlewareHandler,
   MiddlewareStoreContract,
-  ResolvedMiddlewareNode,
+  ResolvedMiddlewareHandler,
 } from '@ioc:Adonis/Core/Middleware'
 
 /**
@@ -46,13 +46,13 @@ export class MiddlewareStore implements MiddlewareStoreContract {
   /**
    * A list of global middleware
    */
-  private list: ResolvedMiddlewareNode[] = []
+  private list: ResolvedMiddlewareHandler[] = []
 
   /**
    * A map of named middleware. Named middleware are used as reference
    * on the routes
    */
-  private named: { [alias: string]: ResolvedMiddlewareNode } = {}
+  private named: { [alias: string]: ResolvedMiddlewareHandler } = {}
 
   /**
    * The resolver to resolve middleware from the IoC container
@@ -72,7 +72,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    * The annoying part is that one has to create the middleware before registering
    * it, otherwise an exception will be raised.
    */
-  private resolveMiddleware (middleware: MiddlewareNode): ResolvedMiddlewareNode {
+  private resolveMiddleware (middleware: MiddlewareHandler): ResolvedMiddlewareHandler {
     return typeof(middleware) === 'function' ? {
       type: 'function',
       value: middleware,
@@ -84,7 +84,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    * Register an array of global middleware. These middleware are read
    * by HTTP server and executed on every request
    */
-  public register (middleware: MiddlewareNode[]): this {
+  public register (middleware: MiddlewareHandler[]): this {
     this.list = middleware.map(this.resolveMiddleware.bind(this))
     return this
   }
@@ -92,7 +92,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
   /**
    * Register named middleware that can be referenced later on routes
    */
-  public registerNamed (middleware: { [alias: string]: MiddlewareNode }): this {
+  public registerNamed (middleware: { [alias: string]: MiddlewareHandler }): this {
     this.named = Object.keys(middleware).reduce((result, alias) => {
       result[alias] = this.resolveMiddleware(middleware[alias])
       return result
@@ -105,7 +105,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    * Return all middleware registered using [[MiddlewareStore.register]]
    * method
    */
-  public get (): ResolvedMiddlewareNode[] {
+  public get (): ResolvedMiddlewareHandler[] {
     return this.list
   }
 
@@ -113,7 +113,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    * Returns a single middleware by it's name registered
    * using [[MiddlewareStore.registerNamed]] method.
    */
-  public getNamed (name: string): null | ResolvedMiddlewareNode {
+  public getNamed (name: string): null | ResolvedMiddlewareHandler {
     return this.named[name] || null
   }
 
@@ -121,7 +121,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    * Invokes a resolved middleware.
    */
   public async invokeMiddleware (
-    middleware: ResolvedMiddlewareNode,
+    middleware: ResolvedMiddlewareHandler,
     params: [HttpContextContract, () => Promise<void>],
   ) {
     if (middleware.type === 'function') {

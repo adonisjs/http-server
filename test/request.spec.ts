@@ -18,9 +18,9 @@ import { CookieSerializer } from '../src/Cookie/Serializer'
 import { Encryption } from '@adonisjs/encryption/build/standalone'
 
 import { Request } from '../src/Request'
-import { RequestConfigContract } from '@ioc:Adonis/Core/Request'
+import { RequestConfig } from '@ioc:Adonis/Core/Request'
 
-const fakeConfig = (conf?: Partial<RequestConfigContract>) => {
+const fakeConfig = (conf?: Partial<RequestConfig>) => {
   return Object.assign({
     allowMethodSpoofing: false,
     trustProxy: proxyaddr.compile('loopback'),

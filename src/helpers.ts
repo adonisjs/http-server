@@ -20,7 +20,7 @@ import { Route } from './Router/Route'
 import { RouteGroup } from './Router/Group'
 import { BriskRoute } from './Router/BriskRoute'
 import { RouteResource } from './Router/Resource'
-import { RouteDefinition } from '@ioc:Adonis/Core/Route'
+import { RouteJSON } from '@ioc:Adonis/Core/Route'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 const proxyCache = new QuickLru({ maxSize: 100 })
@@ -43,8 +43,8 @@ export function dropSlash (input: string): string {
  */
 export function toRoutesJSON (
   routes: (RouteGroup | RouteResource | Route | BriskRoute)[],
-): RouteDefinition[] {
-  return routes.reduce((list: RouteDefinition[], route) => {
+): RouteJSON[] {
+  return routes.reduce((list: RouteJSON[], route) => {
     if (route instanceof RouteGroup) {
       list = list.concat(toRoutesJSON(route.routes))
       return list

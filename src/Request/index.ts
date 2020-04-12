@@ -1,9 +1,5 @@
-/**
- * @module @poppinss/request
- */
-
 /*
- * @poppinss/request
+ * @adonisjs/http-server
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
@@ -27,7 +23,7 @@ import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'http'
 
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { RequestContract, RequestConfigContract } from '@ioc:Adonis/Core/Request'
+import { RequestContract, RequestConfig } from '@ioc:Adonis/Core/Request'
 
 import { trustProxy } from '../helpers'
 import { CookieParser } from '../Cookie/Parser'
@@ -102,7 +98,7 @@ export class Request extends Macroable implements RequestContract {
     public request: IncomingMessage,
     public response: ServerResponse,
     private encryption: EncryptionContract,
-    private config: RequestConfigContract,
+    private config: RequestConfig,
   ) {
     super()
     this.parseQueryString()
@@ -842,6 +838,7 @@ export class Request extends Macroable implements RequestContract {
       headers: this.headers(),
       method: this.method(),
       protocol: this.protocol(),
+      cookies: this.cookiesList(),
     }
   }
 }

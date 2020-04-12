@@ -9,7 +9,7 @@
 
 import ms from 'ms'
 import cookie, { CookieSerializeOptions } from 'cookie'
-import { CookieOptions } from '@ioc:Adonis/Core/Server'
+import { CookieOptions } from '@ioc:Adonis/Core/Response'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 
 import * as PlainCookie from '../Drivers/Plain'

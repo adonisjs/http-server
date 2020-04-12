@@ -29,17 +29,17 @@ import contentDisposition from 'content-disposition'
 import { ServerResponse, IncomingMessage } from 'http'
 
 import {
-  ResponseContract,
-  CastableHeader,
   LazyBody,
-  ResponseContentType,
+  CookieOptions,
+  CastableHeader,
+  ResponseConfig,
   ResponseStream,
-  ResponseConfigContract,
+  ResponseContract,
+  ResponseContentType,
 } from '@ioc:Adonis/Core/Response'
 
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { CookieOptions } from '@ioc:Adonis/Core/Server'
 
 import { CookieSerializer } from '../Cookie/Serializer'
 
@@ -139,7 +139,7 @@ export class Response extends Macroable implements ResponseContract {
     public request: IncomingMessage,
     public response: ServerResponse,
     private encryption: EncryptionContract,
-    private config: ResponseConfigContract,
+    private config: ResponseConfig,
   ) {
     super()
   }

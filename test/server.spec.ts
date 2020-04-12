@@ -15,22 +15,21 @@ import supertest from 'supertest'
 import proxyaddr from 'proxy-addr'
 import { createServer } from 'http'
 import { Ioc, inject } from '@adonisjs/fold'
+import { ServerConfig } from '@ioc:Adonis/Core/Server'
 import { FakeLogger } from '@adonisjs/logger/build/standalone'
 import { Profiler } from '@adonisjs/profiler/build/standalone'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { ServerConfigContract } from '@ioc:Adonis/Core/Server'
 import { Encryption } from '@adonisjs/encryption/build/standalone'
 import { ProfilerAction, ProfilerRow } from '@ioc:Adonis/Core/Profiler'
 
 import { Server } from '../src/Server'
 
-const config: ServerConfigContract = {
+const config: ServerConfig = {
   etag: false,
   jsonpCallbackName: 'callback',
   cookie: {},
   subdomainOffset: 2,
   generateRequestId: false,
-  secret: Math.random().toFixed(36).substring(2, 38),
   trustProxy: proxyaddr.compile('loopback'),
   allowMethodSpoofing: false,
 }

@@ -13,7 +13,7 @@
 
 /// <reference path="../../../adonis-typings/index.ts" />
 
-import { HookNode, HooksContract } from '@ioc:Adonis/Core/Server'
+import { HookHandler, HooksContract } from '@ioc:Adonis/Core/Server'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 /**
@@ -24,8 +24,8 @@ export class Hooks implements HooksContract {
    * Registered before and after hooks
    */
   private hooks: {
-    before: HookNode[],
-    after: HookNode[],
+    before: HookHandler[],
+    after: HookHandler[],
   } = {
     before: [],
     after: [],
@@ -34,7 +34,7 @@ export class Hooks implements HooksContract {
   /**
    * Register before hook
    */
-  public before (cb: HookNode): this {
+  public before (cb: HookHandler): this {
     this.hooks.before.push(cb)
     return this
   }
@@ -42,7 +42,7 @@ export class Hooks implements HooksContract {
   /**
    * Register after hook
    */
-  public after (cb: HookNode): this {
+  public after (cb: HookHandler): this {
     this.hooks.after.push(cb)
     return this
   }

@@ -26,8 +26,5 @@ export function unpack (key: string, encryptedValue: string, encryption: Encrypt
     return null
   }
 
-  /**
-   * Decrypt
-   */
   return encryption.decrypt(value, key)
 }

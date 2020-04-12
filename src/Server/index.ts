@@ -21,7 +21,7 @@ import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
 import { ProfilerContract, ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
-import { ServerContract, ServerConfigContract, ErrorHandlerNode } from '@ioc:Adonis/Core/Server'
+import { ServerContract, ServerConfig, ErrorHandler } from '@ioc:Adonis/Core/Server'
 
 import { Hooks } from './Hooks'
 import { Router } from '../Router'
@@ -79,7 +79,7 @@ export class Server implements ServerContract {
     private logger: LoggerContract,
     private profiler: ProfilerContract,
     private encryption: EncryptionContract,
-    private httpConfig: ServerConfigContract,
+    private httpConfig: ServerConfig,
   ) {
     /**
      * Pre process config to convert max age string to seconds.
@@ -128,7 +128,7 @@ export class Server implements ServerContract {
    * Define custom error handler to handler all errors
    * occurred during HTTP request
    */
-  public errorHandler (handler: ErrorHandlerNode): this {
+  public errorHandler (handler: ErrorHandler): this {
     this.exception.registerHandler(handler)
     return this
   }

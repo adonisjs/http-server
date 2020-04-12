@@ -14,8 +14,8 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import { Macroable } from 'macroable'
-import { RouteDefinition, RouteMatchers, RouteContract, RouteHandlerNode } from '@ioc:Adonis/Core/Route'
-import { MiddlewareNode } from '@ioc:Adonis/Core/Middleware'
+import { RouteJSON, RouteMatchers, RouteContract, RouteHandler } from '@ioc:Adonis/Core/Route'
+import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 
 import { dropSlash } from '../helpers'
 
@@ -61,7 +61,7 @@ export class Route extends Macroable implements RouteContract {
   /**
    * An array of middleware. Added using `middleware` function
    */
-  private routeMiddleware: MiddlewareNode[] = []
+  private routeMiddleware: MiddlewareHandler[] = []
 
   /**
    * Storing the namespace explicitly set using `route.namespace` method
@@ -84,7 +84,7 @@ export class Route extends Macroable implements RouteContract {
   constructor (
     private pattern: string,
     private methods: string[],
-    private handler: RouteHandlerNode,
+    private handler: RouteHandler,
     private globalMatchers: RouteMatchers,
   ) {
     super()
@@ -157,7 +157,7 @@ export class Route extends Macroable implements RouteContract {
    * is true, then middleware will be added to start of the existing
    * middleware. The option is exposed for [[RouteGroup]]
    */
-  public middleware (middleware: MiddlewareNode | MiddlewareNode[], prepend = false): this {
+  public middleware (middleware: MiddlewareHandler | MiddlewareHandler[], prepend = false): this {
     middleware = Array.isArray(middleware) ? middleware : [middleware]
     this.routeMiddleware = prepend ? middleware.concat(this.routeMiddleware) : this.routeMiddleware.concat(middleware)
     return this
@@ -189,7 +189,7 @@ export class Route extends Macroable implements RouteContract {
    * Returns [[RouteDefinition]] that can be passed to the [[Store]] for
    * registering the route
    */
-  public toJSON (): RouteDefinition {
+  public toJSON (): RouteJSON {
     return {
       domain: this.routeDomain,
       pattern: this.getPattern(),

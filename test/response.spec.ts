@@ -19,12 +19,12 @@ import { Encryption } from '@adonisjs/encryption/build/standalone'
 
 import { Response } from '../src/Response'
 import { CookieParser } from '../src/Cookie/Parser'
-import { ResponseConfigContract } from '@ioc:Adonis/Core/Response'
+import { ResponseConfig } from '@ioc:Adonis/Core/Response'
 
 const SECRET = Math.random().toFixed(36).substring(2, 38)
 const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
 
-const fakeConfig = (conf?: Partial<ResponseConfigContract>) => {
+const fakeConfig = (conf?: Partial<ResponseConfig>) => {
   return Object.assign({
     etag: false,
     secret: SECRET,
@@ -1027,7 +1027,6 @@ test.group('Response', (group) => {
     })
 
     const { header } = await supertest(server).get('/').expect(200)
-    console.log(header['set-cookie'])
 
     const cookies = header['set-cookie'].map((cookie: string) => {
       const [value, ...options] = cookie.split(';')

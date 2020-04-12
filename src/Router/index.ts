@@ -24,7 +24,7 @@ import {
   RouterContract,
   MakeUrlOptions,
   RouteLookupNode,
-  RouteHandlerNode,
+  RouteHandler,
 } from '@ioc:Adonis/Core/Route'
 
 import { Route } from './Route'
@@ -97,7 +97,7 @@ export class Router implements RouterContract {
   /**
    * A handler to handle routes created for testing
    */
-  private testsHandler: RouteHandlerNode = async () => {
+  private testsHandler: RouteHandler = async () => {
     return 'handled by tests handler'
   }
 
@@ -110,7 +110,7 @@ export class Router implements RouterContract {
   /**
    * Add route for a given pattern and methods
    */
-  public route (pattern: string, methods: string[], handler: RouteHandlerNode): Route {
+  public route (pattern: string, methods: string[], handler: RouteHandler): Route {
     const route = new Route(pattern, methods, handler, this.matchers)
     const openedGroup = this.getRecentGroup()
 
@@ -126,42 +126,42 @@ export class Router implements RouterContract {
   /**
    * Define a route that handles all common HTTP methods
    */
-  public any (pattern: string, handler: RouteHandlerNode): Route {
+  public any (pattern: string, handler: RouteHandler): Route {
     return this.route(pattern, ['HEAD', 'OPTIONS','GET', 'POST', 'PUT', 'PATCH', 'DELETE'], handler)
   }
 
   /**
    * Define `GET` route
    */
-  public get (pattern: string, handler: RouteHandlerNode): Route {
+  public get (pattern: string, handler: RouteHandler): Route {
     return this.route(pattern, ['GET'], handler)
   }
 
   /**
    * Define `POST` route
    */
-  public post (pattern: string, handler: RouteHandlerNode): Route {
+  public post (pattern: string, handler: RouteHandler): Route {
     return this.route(pattern, ['POST'], handler)
   }
 
   /**
    * Define `PUT` route
    */
-  public put (pattern: string, handler: RouteHandlerNode): Route {
+  public put (pattern: string, handler: RouteHandler): Route {
     return this.route(pattern, ['PUT'], handler)
   }
 
   /**
    * Define `PATCH` route
    */
-  public patch (pattern: string, handler: RouteHandlerNode): Route {
+  public patch (pattern: string, handler: RouteHandler): Route {
     return this.route(pattern, ['PATCH'], handler)
   }
 
   /**
    * Define `DELETE` route
    */
-  public delete (pattern: string, handler: RouteHandlerNode): Route {
+  public delete (pattern: string, handler: RouteHandler): Route {
     return this.route(pattern, ['DELETE'], handler)
   }
 
@@ -461,7 +461,7 @@ export class Router implements RouterContract {
   public forTesting (
     pattern?: string,
     methods?: string[],
-    handler?: RouteHandlerNode,
+    handler?: RouteHandler,
   ): Route {
     pattern = pattern || `_test_${this.testRoutePatternCounter++}`
     methods = methods || ['GET']

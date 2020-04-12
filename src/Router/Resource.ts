@@ -17,7 +17,7 @@ import { singular } from 'pluralize'
 import { Macroable } from 'macroable'
 import { lodash } from '@poppinss/utils'
 
-import { MiddlewareNode } from '@ioc:Adonis/Core/Middleware'
+import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 import { RouteMatchers, RouteResourceContract } from '@ioc:Adonis/Core/Route'
 
 import { Route } from './Route'
@@ -132,7 +132,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
   /**
    * Add middleware to routes inside the resource
    */
-  public middleware (middleware: { [name: string]: MiddlewareNode | MiddlewareNode[] }): this {
+  public middleware (middleware: { [name: string]: MiddlewareHandler | MiddlewareHandler[] }): this {
     for (let name in middleware) {
       if (name === '*') {
         this.routes.forEach((one) => one.middleware(middleware[name]))

@@ -57,7 +57,7 @@ test.group('Cookie | serialize', () => {
     assert.equal(serialized, `username=${expectedValue}; HttpOnly`)
   })
 
-  test.skip('invoke expires callback when defined as a function', (assert, done) => {
+  test('invoke expires callback when defined as a function', (assert, done) => {
     const config = { expires: () => new Date() }
     const serializer = new CookieSerializer(encryption)
     const serialized = serializer.encode('username', 'virk', config)

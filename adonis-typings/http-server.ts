@@ -1,7 +1,3 @@
-/**
- * @module @adonisjs/http-server
- */
-
 /*
 * @adonisjs/http-server
 *
@@ -13,40 +9,30 @@
 
 declare module '@ioc:Adonis/Core/Server' {
   import { Server as HttpsServer } from 'https'
-  import { RequestConfigContract } from '@ioc:Adonis/Core/Request'
-  import { ResponseConfigContract } from '@ioc:Adonis/Core/Response'
+  import { RouterContract } from '@ioc:Adonis/Core/Route'
+  import { RequestConfig } from '@ioc:Adonis/Core/Request'
+  import { ResponseConfig } from '@ioc:Adonis/Core/Response'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
   import { MiddlewareStoreContract } from '@ioc:Adonis/Core/Middleware'
-  import { RouteHandlerNode, RouterContract } from '@ioc:Adonis/Core/Route'
   import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
-
-  export type CookieOptions = {
-    domain: string,
-    expires: Date | (() => Date),
-    httpOnly: boolean,
-    maxAge: number | string,
-    path: string,
-    sameSite: boolean | 'lax' | 'none' | 'strict',
-    secure: boolean,
-  }
 
   /**
    * Before hooks are executed before finding the route or finding
    * middleware
    */
-  export type HookNode = (ctx: HttpContextContract) => Promise<void>
+  export type HookHandler = (ctx: HttpContextContract) => Promise<void>
 
   /**
    * Error handler node
    */
-  export type ErrorHandlerNode = string | ((error: any, ctx: HttpContextContract) => Promise<any>)
+  export type ErrorHandler = string | ((error: any, ctx: HttpContextContract) => Promise<any>)
 
   /**
    * Shape of resolved error handler node
    */
-  export type ResolvedErrorHandlerNode = {
+  export type ResolvedErrorHandler = {
     type: 'function',
-    value: Exclude<ErrorHandlerNode, string>,
+    value: Exclude<ErrorHandler, string>,
   } | {
     type: 'class',
     value: any,
@@ -57,8 +43,8 @@ declare module '@ioc:Adonis/Core/Server' {
    * the one we want to expose to the end user
    */
   export interface HooksContract {
-    before (cb: HookNode): this
-    after (cb: HookNode): this
+    before (cb: HookHandler): this
+    after (cb: HookHandler): this
   }
 
   /**
@@ -69,7 +55,7 @@ declare module '@ioc:Adonis/Core/Server' {
     router: RouterContract
     hooks: HooksContract
     middleware: MiddlewareStoreContract
-    errorHandler (handler: ErrorHandlerNode): this
+    errorHandler (handler: ErrorHandler): this
     handle (req: IncomingMessage, res: ServerResponse): Promise<void>
     optimize (): void
   }
@@ -77,7 +63,7 @@ declare module '@ioc:Adonis/Core/Server' {
   /**
    * Config requried by request and response
    */
-  export type ServerConfigContract = RequestConfigContract & ResponseConfigContract
+  export type ServerConfig = RequestConfig & ResponseConfig
   const Server: ServerContract
   export default Server
 }

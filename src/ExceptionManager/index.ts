@@ -15,7 +15,7 @@
 
 import { IocContract, IocResolverContract } from '@adonisjs/fold'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { ErrorHandlerNode, ResolvedErrorHandlerNode } from '@ioc:Adonis/Core/Server'
+import { ErrorHandler, ResolvedErrorHandler } from '@ioc:Adonis/Core/Server'
 
 import { useReturnValue } from '../helpers'
 
@@ -28,7 +28,7 @@ export class ExceptionManager {
   /**
    * Resolved copy of error handler
    */
-  private resolvedErrorHandler?: ResolvedErrorHandlerNode
+  private resolvedErrorHandler?: ResolvedErrorHandler
 
   /**
    * A reference to ioc resolver to resolve the error handler from
@@ -43,7 +43,7 @@ export class ExceptionManager {
   /**
    * Register a custom error handler
    */
-  public registerHandler (handler: ErrorHandlerNode) {
+  public registerHandler (handler: ErrorHandler) {
     if (typeof (handler) === 'string') {
       this.resolvedErrorHandler = {
         type: 'class',
