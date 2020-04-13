@@ -63,9 +63,9 @@
     "typescript": "^3.8.3"
   },
   "peerDependencies": {
-    "@adonisjs/encryption": "2.x.x",
-    "@adonisjs/logger": "2.x.x",
-    "@adonisjs/profiler": "3.x.x"
+    "@adonisjs/encryption": "^2.0.0",
+    "@adonisjs/logger": "^2.0.0",
+    "@adonisjs/profiler": "^3.0.0"
   },
   "nyc": {
     "exclude": [
