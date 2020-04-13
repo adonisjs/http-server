@@ -1,9 +1,5 @@
-/**
-* @module @poppinss/response
-*/
-
 /*
-* @poppinss/response
+ * @adonisjs/http-server
 *
 * (c) Harminder Virk <virk@adonisjs.com>
 *

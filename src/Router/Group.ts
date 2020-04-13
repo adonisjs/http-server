@@ -1,7 +1,3 @@
-/**
- * @module @adonisjs/http-server
- */
-
 /*
 * @adonisjs/http-server
 *

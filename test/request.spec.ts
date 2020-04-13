@@ -1,5 +1,5 @@
 /**
- * @poppinss/request
+ * @adonisjs/http-server
  *
  * (c) Harminder Virk <virk@adonisjs.com>
  *
