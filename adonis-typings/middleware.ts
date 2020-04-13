@@ -9,7 +9,6 @@
 
 declare module '@ioc:Adonis/Core/Middleware' {
   import { IocContract } from '@adonisjs/fold'
-  import { RouteNode } from '@ioc:Adonis/Core/Route'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
   /**

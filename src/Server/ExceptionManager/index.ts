@@ -11,13 +11,13 @@
 * file that was distributed with this source code.
 */
 
-/// <reference path="../../adonis-typings/index.ts" />
+/// <reference path="../../../adonis-typings/index.ts" />
 
 import { IocContract, IocResolverContract } from '@adonisjs/fold'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { ErrorHandler, ResolvedErrorHandler } from '@ioc:Adonis/Core/Server'
 
-import { useReturnValue } from '../helpers'
+import { useReturnValue } from '../../helpers'
 
 /**
  * Exception manager exposes the API to register custom error handler

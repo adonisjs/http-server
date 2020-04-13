@@ -31,7 +31,7 @@ import { PreCompiler } from './PreCompiler'
 import { HttpContext } from '../HttpContext'
 import { RequestHandler } from './RequestHandler'
 import { MiddlewareStore } from '../MiddlewareStore'
-import { ExceptionManager } from '../ExceptionManager'
+import { ExceptionManager } from './ExceptionManager'
 
 /**
  * Server class handles the HTTP requests by using all Adonis micro modules.
