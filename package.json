@@ -17,7 +17,7 @@
     "lint": "eslint . --ext=.ts",
     "clean": "del build",
     "compile": "npm run lint && npm run clean && tsc",
-    "build": "npm run compile && typedoc --theme markdown --excludePrivate --HideSources && git add docs",
+    "build": "npm run compile",
     "benchmark": "node build/benchmarks/index.js",
     "build:tmp": "npm run compile",
     "commit": "git-cz",
@@ -60,9 +60,6 @@
     "reflect-metadata": "^0.1.13",
     "supertest": "^4.0.2",
     "ts-node": "^8.8.2",
-    "typedoc": "^0.17.4",
-    "typedoc-plugin-external-module-name": "^3.0.0",
-    "typedoc-plugin-markdown": "^2.2.17",
     "typescript": "^3.8.3"
   },
   "peerDependencies": {
