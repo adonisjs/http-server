@@ -104,6 +104,7 @@
     "haye": "^2.0.2",
     "macroable": "^4.0.4",
     "matchit": "git+https://github.com/thetutlage/matchit.git",
+    "mime-types": "^2.1.26",
     "ms": "^2.1.2",
     "on-finished": "^2.3.0",
     "pluralize": "^8.0.0",
