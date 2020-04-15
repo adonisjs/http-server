@@ -1723,6 +1723,7 @@ test.group('Router | match', () => {
         name: 'photos.index',
         handler: 'PhotosController.index',
       },
+      routeKey: 'GET-/photos',
       subdomains: {},
     })
 
@@ -1737,6 +1738,7 @@ test.group('Router | match', () => {
         name: 'photos.create',
         handler: 'PhotosController.create',
       },
+      routeKey: 'GET-/photos/create',
       subdomains: {},
     })
 
@@ -1751,6 +1753,7 @@ test.group('Router | match', () => {
         name: 'photos.store',
         handler: 'PhotosController.store',
       },
+      routeKey: 'POST-/photos',
       subdomains: {},
     })
 
@@ -1767,6 +1770,7 @@ test.group('Router | match', () => {
         name: 'photos.show',
         handler: 'PhotosController.show',
       },
+      routeKey: 'GET-/photos/:id',
       subdomains: {},
     })
 
@@ -1783,6 +1787,7 @@ test.group('Router | match', () => {
         name: 'photos.edit',
         handler: 'PhotosController.edit',
       },
+      routeKey: 'GET-/photos/:id/edit',
       subdomains: {},
     })
 
@@ -1799,6 +1804,7 @@ test.group('Router | match', () => {
         name: 'photos.update',
         handler: 'PhotosController.update',
       },
+      routeKey: 'PUT-/photos/:id',
       subdomains: {},
     })
 
@@ -1815,6 +1821,7 @@ test.group('Router | match', () => {
         name: 'photos.delete',
         handler: 'PhotosController.delete',
       },
+      routeKey: 'DELETE-/photos/:id',
       subdomains: {},
     })
   })

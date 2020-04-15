@@ -46,6 +46,7 @@ declare module '@ioc:Adonis/Core/Route' {
    */
   export type RouteNode = {
     pattern: string,
+
     /**
      * The router itself doesn't use the handler for anything, it
      * leaves the type to `any` for the consumer to decide the
@@ -130,6 +131,11 @@ declare module '@ioc:Adonis/Core/Route' {
    */
   export type MatchedRoute = {
     route: RouteNode,
+
+    /**
+     * A unique key for the looked up route
+     */
+    routeKey: string,
     params: any,
     subdomains: any,
   }

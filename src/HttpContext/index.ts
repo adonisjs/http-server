@@ -32,6 +32,7 @@ import { processPattern } from '../helpers'
  * error handler and server hooks.
  */
 export class HttpContext extends Macroable implements HttpContextContract {
+  public routeKey: string
   public params: any = {}
   public subdomains: any = {}
   public route?: RouteNode
@@ -135,6 +136,11 @@ export class HttpContext extends Macroable implements HttpContextContract {
       handler: async () => 'handled',
       meta: {},
     }
+
+    /**
+     * Defining route key
+     */
+    ctx.routeKey = `${request.method()}-${ctx.route.pattern}`
 
     /**
      * Attaching params to the ctx

@@ -275,6 +275,7 @@ test.group('Store | match', () => {
       },
       params: {},
       subdomains: {},
+      routeKey: 'GET-/',
     })
   })
 
@@ -302,6 +303,7 @@ test.group('Store | match', () => {
         username: 'virk',
       },
       subdomains: {},
+      routeKey: 'GET-/:username',
     })
   })
 
@@ -329,6 +331,7 @@ test.group('Store | match', () => {
         username: 'virk',
       },
       subdomains: {},
+      routeKey: 'GET-/:username?',
     })
 
     assert.deepEqual(store.match('/', 'GET'), {
@@ -340,6 +343,7 @@ test.group('Store | match', () => {
       },
       params: {},
       subdomains: {},
+      routeKey: 'GET-/:username?',
     })
   })
 
@@ -376,6 +380,7 @@ test.group('Store | match', () => {
         username: 'virk',
       },
       subdomains: {},
+      routeKey: 'GET-/:username',
     })
   })
 
@@ -416,6 +421,7 @@ test.group('Store | match', () => {
         id: '1',
       },
       subdomains: {},
+      routeKey: 'GET-/:id',
     })
   })
 
@@ -457,6 +463,7 @@ test.group('Store | match', () => {
         id: '1',
       },
       subdomains: {},
+      routeKey: 'foo.com-GET-/:id',
     })
   })
 
@@ -491,6 +498,7 @@ test.group('Store | match', () => {
       subdomains: {
         subdomain: 'blog',
       },
+      routeKey: ':subdomain.adonisjs.com-GET-/:id',
     })
   })
 
@@ -568,6 +576,7 @@ test.group('Store | match', () => {
       params: {
       },
       subdomains: {},
+      routeKey: 'GET-/users/:id?',
     })
   })
 
@@ -597,6 +606,7 @@ test.group('Store | match', () => {
         id: '1',
       },
       subdomains: {},
+      routeKey: 'GET-/users/:id?',
     })
   })
 })

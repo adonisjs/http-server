@@ -67,6 +67,7 @@ export class RequestHandler {
     ctx.params = route!.params
     ctx.subdomains = route!.subdomains
     ctx.route = route!.route
+    ctx.routeKey = route!.routeKey
   }
 
   /**

@@ -32,6 +32,7 @@ declare module '@ioc:Adonis/Core/HttpContext' {
     logger: LoggerContract
     profiler: ProfilerRowContract
     route?: RouteNode
+    routeKey: string,
     params: any
     subdomains: any
   }

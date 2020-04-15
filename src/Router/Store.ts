@@ -189,7 +189,10 @@ export class Store {
     method: string,
     domain?: { storeMatch: RouteStoreMatch[], value: string },
   ): null | MatchedRoute {
-    const matchedDomain = this.tree.domains[domain?.storeMatch[0]?.old || 'root']
+    const matchingDomain = domain && domain.storeMatch[0] && domain.storeMatch[0].old
+    const domainName = matchingDomain || 'root'
+
+    const matchedDomain = this.tree.domains[domainName]
     if (!matchedDomain) {
       return null
     }
@@ -199,7 +202,7 @@ export class Store {
      * method node is missing, means no routes ever got registered for that
      * method
      */
-    const matchedMethod = this.tree.domains[domain?.storeMatch[0].old || 'root'][method]
+    const matchedMethod = this.tree.domains[domainName][method]
     if (!matchedMethod) {
       return null
     }
@@ -213,11 +216,15 @@ export class Store {
       return null
     }
 
+    const route = matchedMethod.routes[matchedRoute[0].old]
     return {
-      route: matchedMethod.routes[matchedRoute[0].old],
+      route: route,
+      routeKey: matchingDomain
+        ? `${matchingDomain}-${method}-${route.pattern}`
+        : `${method}-${route.pattern}`,
       params: matchit.exec(url, matchedRoute),
       subdomains: domain?.value
-        ? matchit.exec(domain.value || 'root', domain.storeMatch)
+        ? matchit.exec(domain.value, domain.storeMatch)
         : {},
     }
   }
