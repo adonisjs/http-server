@@ -33,7 +33,7 @@
   "devDependencies": {
     "@adonisjs/encryption": "^2.0.2",
     "@adonisjs/fold": "^6.3.5",
-    "@adonisjs/logger": "^2.0.1",
+    "@adonisjs/logger": "^2.0.2",
     "@adonisjs/mrm-preset": "^2.3.0",
     "@adonisjs/profiler": "^3.0.1",
     "@poppinss/dev-utils": "^1.0.6",
