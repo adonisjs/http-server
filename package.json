@@ -39,7 +39,7 @@
     "@poppinss/dev-utils": "^1.0.6",
     "@types/cookie": "^0.3.3",
     "@types/ms": "^0.7.31",
-    "@types/node": "^13.11.1",
+    "@types/node": "^13.13.0",
     "@types/pluralize": "0.0.29",
     "@types/proxy-addr": "^2.0.0",
     "@types/supertest": "^2.0.8",
