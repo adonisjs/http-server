@@ -220,8 +220,8 @@ test.group('Route Group', () => {
         methods: ['DELETE'],
         domain: 'root',
         middleware: [],
-        handler: 'PhotosController.delete',
-        name: 'photos.delete',
+        handler: 'PhotosController.destroy',
+        name: 'photos.destroy',
       },
     ])
   })
@@ -313,8 +313,8 @@ test.group('Route Group', () => {
         methods: ['DELETE'],
         domain: 'root',
         middleware: [],
-        handler: 'PhotosController.delete',
-        name: 'v1.photos.delete',
+        handler: 'PhotosController.destroy',
+        name: 'v1.photos.destroy',
       },
     ])
   })
