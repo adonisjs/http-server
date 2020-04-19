@@ -38,7 +38,7 @@ test.group('Router | add', () => {
     const postRoute = router.post('/', 'HomeController.store')
     const putRoute = router.put('/', 'HomeController.update')
     const patchRoute = router.patch('/', 'HomeController.updatePatch')
-    const deleteRoute = router.delete('/', 'HomeController.delete')
+    const deleteRoute = router.delete('/', 'HomeController.destroy')
     const anyRoute = router.any('/', 'HomeController.handle')
 
     assert.deepEqual(getRoute.toJSON(), {
@@ -101,7 +101,7 @@ test.group('Router | add', () => {
       },
       matchers: {},
       domain: 'root',
-      handler: 'HomeController.delete',
+      handler: 'HomeController.destroy',
       middleware: [],
       name: undefined,
     })
@@ -829,12 +829,12 @@ test.group('Router | commit', () => {
             routes: {
               '/api/posts/:id': {
                 pattern: '/api/posts/:id',
-                handler: 'PostController.delete',
+                handler: 'PostController.destroy',
                 meta: {
                   namespace: undefined,
                 },
                 middleware: [],
-                name: 'posts.delete',
+                name: 'posts.destroy',
               },
             },
           },
@@ -1163,12 +1163,12 @@ test.group('Router | commit', () => {
             routes: {
               '/api/v1/posts/:id': {
                 pattern: '/api/v1/posts/:id',
-                handler: 'PostController.delete',
+                handler: 'PostController.destroy',
                 meta: {
                   namespace: undefined,
                 },
                 middleware: [],
-                name: 'posts.delete',
+                name: 'posts.destroy',
               },
             },
           },
@@ -1435,12 +1435,12 @@ test.group('Router | commit', () => {
             routes: {
               '/comments/:id': {
                 pattern: '/comments/:id',
-                handler: 'CommentsController.delete',
+                handler: 'CommentsController.destroy',
                 meta: {
                   namespace: undefined,
                 },
                 middleware: [],
-                name: 'posts.comments.delete',
+                name: 'posts.comments.destroy',
               },
             },
           },
@@ -1818,8 +1818,8 @@ test.group('Router | match', () => {
         },
         middleware: [],
         pattern: '/photos/:id',
-        name: 'photos.delete',
-        handler: 'PhotosController.delete',
+        name: 'photos.destroy',
+        handler: 'PhotosController.destroy',
       },
       routeKey: 'DELETE-/photos/:id',
       subdomains: {},
