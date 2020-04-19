@@ -2004,13 +2004,13 @@ test.group('Brisk route', () => {
   })
 })
 
-test.group('Make url', () => {
+test.group('Router | Make url', () => {
   test('make url to a given route', (assert) => {
     const router = new Router(encryption)
     router.get('posts/:id', async function handler () {})
     router.commit()
 
-    const url = router.makeUrl('/posts/:id', { params: { id: 1 } })!
+    const url = router.makeUrl('/posts/:id', { id: 1 })!
     assert.equal(url, '/posts/1')
   })
 
@@ -2019,7 +2019,7 @@ test.group('Make url', () => {
     router.get('posts/:id', async function handler () {}).as('showPost')
     router.commit()
 
-    const url = router.makeUrl('showPost', { params: { id: 1 } })!
+    const url = router.makeUrl('showPost', { id: 1 })!
     assert.equal(url, '/posts/1')
   })
 
@@ -2028,7 +2028,7 @@ test.group('Make url', () => {
     router.get('posts/:id', 'PostsController.index').as('showPost')
     router.commit()
 
-    const url = router.makeUrl('PostsController.index', { params: { id: 1 } })!
+    const url = router.makeUrl('PostsController.index', { id: 1 })!
     assert.equal(url, '/posts/1')
   })
 
@@ -2037,7 +2037,7 @@ test.group('Make url', () => {
     router.get('posts/:id', 'PostsController.index').domain('blog.adonisjs.com')
     router.commit()
 
-    const url = router.makeUrl('PostsController.index', { params: { id: 1 } })
+    const url = router.makeUrl('PostsController.index', { id: 1 })
     assert.equal(url, '//blog.adonisjs.com/posts/1')
   })
 })
@@ -2048,7 +2048,7 @@ test.group('Make signed url', () => {
     router.get('posts/:id', async function handler () {})
     router.commit()
 
-    const url = router.makeSignedUrl('/posts/:id', { params: { id: 1 } })!
+    const url = router.makeSignedUrl('/posts/:id', { id: 1 })!
     const qs = parse(url.split('?')[1])
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
   })
@@ -2059,7 +2059,7 @@ test.group('Make signed url', () => {
     router.get('posts/:id', async function handler () {}).as('showPost')
     router.commit()
 
-    const url = router.makeSignedUrl('showPost', { params: { id: 1 } })!
+    const url = router.makeSignedUrl('showPost', { id: 1 })!
     const qs = parse(url.split('?')[1])
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
   })
@@ -2070,7 +2070,7 @@ test.group('Make signed url', () => {
     router.get('posts/:id', 'PostsController.index').as('showPost')
     router.commit()
 
-    const url = router.makeSignedUrl('PostsController.index', { params: { id: 1 } })!
+    const url = router.makeSignedUrl('PostsController.index', { id: 1 })!
     const qs = parse(url.split('?')[1])
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
   })
@@ -2081,7 +2081,7 @@ test.group('Make signed url', () => {
     router.get('posts/:id', 'PostsController.index').domain('blog.adonisjs.com')
     router.commit()
 
-    const url = router.makeSignedUrl('PostsController.index', { params: { id: 1 } })!
+    const url = router.makeSignedUrl('PostsController.index', { id: 1 })!
     const qs = parse(url.split('?')[1])
 
     assert.isTrue(url.startsWith('//blog.adonisjs.com/posts/1?signature='))
@@ -2094,7 +2094,7 @@ test.group('Make signed url', () => {
     router.get('posts/:id', 'PostsController.index')
     router.commit()
 
-    const url = router.makeSignedUrl('PostsController.index', { params: { id: 1 }, expiresIn: '1m' })!
+    const url = router.makeSignedUrl('PostsController.index', { id: 1, expiresIn: '1m' })!
     const qs = parse(url.split('?')[1])
 
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
@@ -2107,7 +2107,7 @@ test.group('Make signed url', () => {
     router.commit()
 
     const url = router.makeSignedUrl('PostsController.index', {
-      params: { id: 1 },
+      id: 1,
       qs: { page: 1 },
     })!
     const qs = parse(url.split('?')[1])
@@ -2126,7 +2126,7 @@ test.group('Make signed url', () => {
     router.commit()
 
     const url = router.makeSignedUrl('PostsController.index', {
-      params: { id: 1 },
+      id: 1,
       qs: { page: 1 },
     })!
     const qs = parse(url.split('?')[1])

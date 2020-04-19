@@ -16,7 +16,7 @@ import { Route } from './Router/Route'
 import { RouteGroup } from './Router/Group'
 import { BriskRoute } from './Router/BriskRoute'
 import { RouteResource } from './Router/Resource'
-import { RouteJSON } from '@ioc:Adonis/Core/Route'
+import { RouteJSON, MakeUrlOptions, MakeSignedUrlOptions } from '@ioc:Adonis/Core/Route'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 const proxyCache = new QuickLru({ maxSize: 100 })
@@ -135,4 +135,40 @@ export function trustProxy (
   const result = proxyFn(remoteAddress, 0)
   proxyCache.set(remoteAddress, result)
   return result
+}
+
+/**
+ * Normalizes the make url options by allowing params to appear on
+ * top level object with option to nest inside `params` property.
+ */
+export function normalizeMakeUrlOptions (options?: MakeUrlOptions): Required<MakeUrlOptions> {
+  const params = options ? (options.params ? options.params : options) : {}
+  const qs = options && options.qs ? options.qs : {}
+  const domainParams = options && options.domainParams ? options.domainParams : {}
+  const prefixDomain = options && options.prefixDomain !== undefined ? options.prefixDomain : true
+  return { params, qs, domainParams, prefixDomain }
+}
+
+/**
+ * Normalizes the make signed url options by allowing params to appear on
+ * top level object with option to nest inside `params` property.
+ */
+export function normalizeMakeSignedUrlOptions (
+  options?: MakeSignedUrlOptions,
+): Required<MakeUrlOptions> & { purpose?: string, expiresIn?: string | number } {
+  const params = options ? (options.params ? options.params : options) : {}
+  const qs = options && options.qs ? options.qs : {}
+  const domainParams = options && options.domainParams ? options.domainParams : {}
+  const prefixDomain = options && options.prefixDomain !== undefined ? options.prefixDomain : true
+  const expiresIn = options && options.expiresIn !== undefined ? options.expiresIn : undefined
+  const purpose = options && options.purpose ? options.purpose : undefined
+
+  return {
+    params,
+    qs,
+    domainParams,
+    prefixDomain,
+    expiresIn,
+    purpose,
+  }
 }

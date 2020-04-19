@@ -15,12 +15,13 @@ import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 
 import {
   RouteNode,
+  RouteHandler,
   MatchedRoute,
   RouteMatchers,
   RouterContract,
   MakeUrlOptions,
   RouteLookupNode,
-  RouteHandler,
+  MakeSignedUrlOptions,
 } from '@ioc:Adonis/Core/Route'
 
 import { Route } from './Route'
@@ -28,7 +29,12 @@ import { Store } from './Store'
 import { RouteGroup } from './Group'
 import { BriskRoute } from './BriskRoute'
 import { RouteResource } from './Resource'
-import { toRoutesJSON, processPattern } from '../helpers'
+import {
+  toRoutesJSON,
+  processPattern,
+  normalizeMakeUrlOptions,
+  normalizeMakeSignedUrlOptions,
+} from '../helpers'
 
 /**
  * Router class exposes unified API to create new routes, group them or
@@ -382,7 +388,7 @@ export class Router implements RouterContract {
     /**
      * Normalizing options
      */
-    options = Object.assign({ qs: {}, params: {}, domainParams: {}, prefixDomain: true }, options)
+    options = normalizeMakeUrlOptions(options)
 
     /**
      * Processing the route pattern with dynamic segments
@@ -408,7 +414,7 @@ export class Router implements RouterContract {
    */
   public makeSignedUrl (
     routeIdentifier: string,
-    options?: MakeUrlOptions & { expiresIn?: string | number, purpose?: string },
+    options?: MakeSignedUrlOptions,
     domain?: string,
   ): string | null {
     const route = this.lookup(routeIdentifier, domain)
@@ -416,7 +422,7 @@ export class Router implements RouterContract {
       return null
     }
 
-    options = Object.assign({ qs: {}, params: {}, domainParams: {}, prefixDomain: true }, options)
+    options = normalizeMakeSignedUrlOptions(options)
 
     /**
      * Making the signature from the qualified url. We do not prefix the domain when

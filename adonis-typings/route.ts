@@ -203,6 +203,14 @@ declare module '@ioc:Adonis/Core/Route' {
     params?: any,
     domainParams?: any,
     prefixDomain?: boolean,
+  } & { [key: string]: any }
+
+  /**
+   * Options for making a signed url
+   */
+  export type MakeSignedUrlOptions = MakeUrlOptions & {
+    expiresIn?: string | number,
+    purpose?: string,
   }
 
   /**
@@ -244,7 +252,7 @@ declare module '@ioc:Adonis/Core/Route' {
 
     makeSignedUrl (
       routeIdentifier: string,
-      options?: MakeUrlOptions & { expiresIn?: string | number, purpose?: string },
+      options?: MakeSignedUrlOptions,
       domain?: string,
     ): string | null
 
