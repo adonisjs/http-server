@@ -8,6 +8,7 @@
  */
 
 import test from 'japa'
+import { Macroable } from 'macroable'
 import { parse } from 'querystring'
 import { Router } from '../src/Router'
 import { BriskRoute } from '../src/Router/BriskRoute'
@@ -27,6 +28,11 @@ test.group('Router', () => {
     assert.deepEqual(router.RouteResource, RouteResource)
     assert.deepEqual(router.RouteGroup, RouteGroup)
     assert.deepEqual(router.Route, Route)
+  })
+
+  test('enure router is macroable', (assert) => {
+    const router = new Router(encryption)
+    assert.instanceOf(router, Macroable)
   })
 })
 

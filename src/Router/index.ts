@@ -9,6 +9,7 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
+import { Macroable } from 'macroable'
 import { stringify } from 'qs'
 import { Exception } from '@poppinss/utils'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
@@ -49,7 +50,10 @@ import {
  * })
  * ```
  */
-export class Router implements RouterContract {
+export class Router extends Macroable implements RouterContract {
+  protected static macros = {}
+  protected static getters = {}
+
   /**
    * Collection of routes, including route resource and route
    * group. To get a flat list of routes, call `router.toJSON()`
@@ -107,6 +111,7 @@ export class Router implements RouterContract {
     private encryption: EncryptionContract,
     private routeProcessor?: (route: RouteNode) => void,
   ) {
+    super()
   }
 
   /**
