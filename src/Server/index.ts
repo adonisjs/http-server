@@ -153,7 +153,7 @@ export class Server implements ServerContract {
     }
 
     const request = new Request(req, res, this.encryption, this.httpConfig)
-    const response = new Response(req, res, this.encryption, this.httpConfig)
+    const response = new Response(req, res, this.encryption, this.httpConfig, this.router)
 
     const requestAction = this.getProfilerRow(request)
     const ctx = this.getContext(request, response, requestAction)

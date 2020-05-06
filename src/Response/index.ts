@@ -34,6 +34,7 @@ import {
   ResponseContentType,
 } from '@ioc:Adonis/Core/Response'
 
+import { RouterContract, MakeUrlOptions } from '@ioc:Adonis/Core/Route'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
@@ -136,6 +137,7 @@ export class Response extends Macroable implements ResponseContract {
     public response: ServerResponse,
     private encryption: EncryptionContract,
     private config: ResponseConfig,
+    private router: RouterContract
   ) {
     super()
   }
@@ -821,10 +823,32 @@ export class Response extends Macroable implements ResponseContract {
   }
 
   /**
+   * Redirect request to a different Route from its identifier or URL.
+   */
+  public redirect (routeIdentifier: string, urlOptions?: MakeUrlOptions, statusCode?: number, domain?: string): void
+  public redirect (url: string, reflectQueryParams?: boolean, statusCode?: number): void
+  public redirect (
+    routerIdentifierOrUrl: string,
+    reflectQueryParams?: MakeUrlOptions | boolean,
+    statusCode: number = 302,
+    domain?: string,
+  ): void {
+    const route = this.router.lookup(routerIdentifierOrUrl, domain)
+
+    if (route) {
+      const url = this.router.makeUrl(routerIdentifierOrUrl, reflectQueryParams as MakeUrlOptions, domain) as string
+
+      return this.redirectToPath(url, false, statusCode)
+    }
+
+    this.redirectToPath(routerIdentifierOrUrl, reflectQueryParams as boolean, statusCode)
+  }
+
+  /**
    * Redirect request to a different URL. Current request `query string` can be forwared
    * by setting 2nd param to `true`.
    */
-  public redirect (
+  public redirectToPath (
     url: string,
     sendQueryParams?: boolean,
     statusCode: number = 302,
