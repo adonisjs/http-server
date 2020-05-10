@@ -60,6 +60,18 @@ test.group('Redirect', () => {
     assert.equal(header.location, '/foo?username=romain')
   })
 
+  test('redirect to given url with query string using new API', async (assert) => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response = new Response(req, res, encryption, config, router)
+      response.redirect().withQs().toPath('/foo')
+      response.finish()
+    })
+
+    const { header } = await supertest(server).get('/?username=romain').redirects(1)
+    assert.equal(header.location, '/foo?username=romain')
+  })
+
   test('redirect to given url with custom query string', async (assert) => {
     const server = createServer((req, res) => {
       const config = fakeConfig()
@@ -72,7 +84,7 @@ test.group('Redirect', () => {
     assert.equal(header.location, '/foo?username=romain')
   })
 
-  test('redirect to given url with custom query string overwriting the forward', async (assert) => {
+  test('redirect to given url with custom query string overwriting the forward rules', async (assert) => {
     const server = createServer((req, res) => {
       const config = fakeConfig()
       const response = new Response(req, res, encryption, config, router)
@@ -116,6 +128,17 @@ test.group('Redirect', () => {
       const config = fakeConfig()
       const response = new Response(req, res, encryption, config, router)
       response.redirect('/foo', false, 301)
+      response.finish()
+    })
+
+    await supertest(server).get('/').redirects(1).expect(301)
+  })
+
+  test('redirect to given url and set custom statusCode using new API', async () => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response = new Response(req, res, encryption, config, router)
+      response.redirect().status(301).toPath('/foo')
       response.finish()
     })
 
