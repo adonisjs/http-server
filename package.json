@@ -42,6 +42,7 @@
     "@types/node": "^13.13.0",
     "@types/pluralize": "0.0.29",
     "@types/proxy-addr": "^2.0.0",
+    "@types/qs": "^6.9.2",
     "@types/supertest": "^2.0.8",
     "autocannon": "^4.6.0",
     "commitizen": "^4.0.4",
@@ -109,7 +110,7 @@
     "on-finished": "^2.3.0",
     "pluralize": "^8.0.0",
     "proxy-addr": "^2.0.6",
-    "qs": "^6.9.3",
+    "qs": "^6.9.4",
     "quick-lru": "^5.1.0",
     "type-is": "^1.6.18",
     "vary": "^1.1.2"
