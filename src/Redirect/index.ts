@@ -18,9 +18,9 @@ import { RedirectContract } from '@ioc:Adonis/Core/Redirect'
 import { RouterContract, MakeUrlOptions } from '@ioc:Adonis/Core/Route'
 
 export class Redirect implements RedirectContract {
-  private $forwardQueryString = false
-  private $statusCode = 302
-  private $queryString = new Map<string, any>()
+  private forwardQueryString = false
+  private statusCode = 302
+  private queryString = new Map<string, any>()
 
   constructor (
     private request: IncomingMessage,
@@ -30,7 +30,7 @@ export class Redirect implements RedirectContract {
   }
 
   private computeQueryString (): string {
-    return Array.from(this.$queryString.entries())
+    return Array.from(this.queryString.entries())
       .map(([k, v]) => `${k}=${v}`)
       .join('&')
   }
@@ -39,7 +39,7 @@ export class Redirect implements RedirectContract {
    * Set a custom status code.
    */
   public status (statusCode: number): this {
-    this.$statusCode = statusCode
+    this.statusCode = statusCode
     return this
   }
 
@@ -51,17 +51,17 @@ export class Redirect implements RedirectContract {
   public withQs (name: string, value: any): this
   public withQs (name?: { [key: string]: any } | string, value?: any): this {
     if (typeof name === 'undefined') {
-      this.$forwardQueryString = true
+      this.forwardQueryString = true
       return this
     }
 
     if (typeof name === 'string') {
-      this.$queryString.set(name, value)
+      this.queryString.set(name, value)
       return this
     }
 
     Object.keys(name).forEach(key => {
-      this.$queryString.set(key, name[key])
+      this.queryString.set(key, name[key])
     })
 
     return this
@@ -83,7 +83,7 @@ export class Redirect implements RedirectContract {
     const route = this.router.lookup(routeIdentifier, domain)
 
     if (!route) {
-      throw new Error()
+      throw new Error(`Unable to lookup route for "${routeIdentifier}" identifier`)
     }
 
     const url = this.router.makeUrl(routeIdentifier, urlOptions, domain) as string
@@ -97,19 +97,19 @@ export class Redirect implements RedirectContract {
     let query
 
     // Extract the current QueryString if we want to forward it.
-    if (this.$forwardQueryString) {
+    if (this.forwardQueryString) {
       const { query: extractedQuery } = parse(this.request.url!, false)
       query = extractedQuery
     }
 
     // If we define our own QueryString, use it instead of the one forwarded.
-    if (this.$queryString.size > 0) {
+    if (this.queryString.size > 0) {
       query = this.computeQueryString()
     }
 
     url = query ? `${url}?${query}` : url
     this.response.location(encodeurl(url))
-    this.response.safeStatus(this.$statusCode)
+    this.response.safeStatus(this.statusCode)
     this.response.type('text/plain; charset=utf-8')
     this.response.send(`Redirecting to ${url}`)
   }

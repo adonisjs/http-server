@@ -202,4 +202,19 @@ test.group('Redirect', () => {
     const { header } = await supertest(server).get('/').redirects(1)
     assert.equal(header.location, 'domain.example.com/posts/create')
   })
+
+  test('throw when given route is not found', async (assert) => {
+    const server = createServer((req, res) => {
+      const config = fakeConfig()
+      const response = new Response(req, res, encryption, config, router)
+
+      assert.throw(() => {
+        response.redirect().toRoute('should.throw')
+      }, 'Unable to lookup route for "should.throw" identifier')
+
+      response.finish()
+    })
+
+    await supertest(server).get('/').redirects(1)
+  })
 })

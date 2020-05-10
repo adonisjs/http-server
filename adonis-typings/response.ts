@@ -109,7 +109,7 @@ declare module '@ioc:Adonis/Core/Response' {
     location (url: string): this
 
     redirect (): RedirectContract
-    redirect (path: string, qs?: boolean, statusCode?: number): void
+    redirect (path: string, forwardQueryString?: boolean, statusCode?: number): void
 
     cookie (key: string, value: any, options?: Partial<CookieOptions>): this
     plainCookie (key: string, value: any, options?: Partial<CookieOptions>): this
