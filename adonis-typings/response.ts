@@ -10,7 +10,7 @@
 declare module '@ioc:Adonis/Core/Response' {
   import { ServerResponse, IncomingMessage } from 'http'
   import { MacroableConstructorContract } from 'macroable'
-  import { MakeUrlOptions } from '@ioc:Adonis/Core/Route'
+  import { RedirectContract } from '@ioc:Adonis/Core/Redirect'
   import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
@@ -108,9 +108,8 @@ declare module '@ioc:Adonis/Core/Response' {
 
     location (url: string): this
 
-    redirect (routeIdentifier: string, urlOptions?: MakeUrlOptions, statusCode?: number, domain?: string): void
-    redirect (url: string, reflectQueryParams?: boolean, statusCode?: number): void
-    redirectToPath (url: string, reflectQueryParams?: boolean, statusCode?: number): void
+    redirect (): RedirectContract
+    redirect (path: string, qs?: boolean, statusCode?: number): void
 
     cookie (key: string, value: any, options?: Partial<CookieOptions>): this
     plainCookie (key: string, value: any, options?: Partial<CookieOptions>): this
