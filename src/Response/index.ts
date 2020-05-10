@@ -857,11 +857,6 @@ export class Response extends Macroable implements ResponseContract {
   }
 
   /**
-   * Redirect request to a different URL. Current request `query string` can be forwared
-   * by setting 2nd param to `true`.
-   */
-
-  /**
    * Abort the request with custom body and a status code. 400 is
    * used when status is not defined
    */
