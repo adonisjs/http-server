@@ -13,4 +13,3 @@
 /// <reference path="./route.ts" />
 /// <reference path="./request.ts" />
 /// <reference path="./response.ts" />
-/// <reference path="./redirect.ts" />

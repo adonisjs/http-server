@@ -10,29 +10,23 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import { parse } from 'url'
+import { stringify } from 'qs'
 import encodeurl from 'encodeurl'
 import { IncomingMessage } from 'http'
 
-import { ResponseContract } from '@ioc:Adonis/Core/Response'
-import { RedirectContract } from '@ioc:Adonis/Core/Redirect'
+import { RedirectContract, ResponseContract } from '@ioc:Adonis/Core/Response'
 import { RouterContract, MakeUrlOptions } from '@ioc:Adonis/Core/Route'
 
 export class Redirect implements RedirectContract {
   private forwardQueryString = false
   private statusCode = 302
-  private queryString = new Map<string, any>()
+  private queryString: { [key: string]: any } = {}
 
   constructor (
     private request: IncomingMessage,
     private response: ResponseContract,
     private router: RouterContract
   ) {
-  }
-
-  private computeQueryString (): string {
-    return Array.from(this.queryString.entries())
-      .map(([k, v]) => `${k}=${v}`)
-      .join('&')
   }
 
   /**
@@ -56,14 +50,11 @@ export class Redirect implements RedirectContract {
     }
 
     if (typeof name === 'string') {
-      this.queryString.set(name, value)
+      this.queryString[name] = value
       return this
     }
 
-    Object.keys(name).forEach(key => {
-      this.queryString.set(key, name[key])
-    })
-
+    this.queryString = name
     return this
   }
 
@@ -103,8 +94,8 @@ export class Redirect implements RedirectContract {
     }
 
     // If we define our own QueryString, use it instead of the one forwarded.
-    if (this.queryString.size > 0) {
-      query = this.computeQueryString()
+    if (Object.keys(this.queryString).length > 0) {
+      query = stringify(this.queryString)
     }
 
     url = query ? `${url}?${query}` : url

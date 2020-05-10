@@ -29,11 +29,11 @@ import {
   ResponseConfig,
   ResponseStream,
   ResponseContract,
+  RedirectContract,
   ResponseContentType,
 } from '@ioc:Adonis/Core/Response'
 
 import { RouterContract } from '@ioc:Adonis/Core/Route'
-import { RedirectContract } from '@ioc:Adonis/Core/Redirect'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
