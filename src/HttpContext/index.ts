@@ -13,7 +13,7 @@ import { Socket } from 'net'
 import { inspect } from 'util'
 import proxyAddr from 'proxy-addr'
 import { Macroable } from 'macroable'
-import { RouteNode } from '@ioc:Adonis/Core/Route'
+import { RouteNode, RouterContract } from '@ioc:Adonis/Core/Route'
 import { ServerConfig } from '@ioc:Adonis/Core/Server'
 import { IncomingMessage, ServerResponse } from 'http'
 import { LoggerContract } from '@ioc:Adonis/Core/Logger'
@@ -76,6 +76,7 @@ export class HttpContext extends Macroable implements HttpContextContract {
     logger: LoggerContract,
     profiler: ProfilerRowContract,
     encryption: EncryptionContract,
+    router: RouterContract,
     req?: IncomingMessage,
     res?: ServerResponse,
     serverConfig?: ServerConfig,
@@ -120,7 +121,7 @@ export class HttpContext extends Macroable implements HttpContextContract {
       etag: serverConfig.etag,
       cookie: serverConfig.cookie,
       jsonpCallbackName: serverConfig.jsonpCallbackName,
-    })
+    }, router)
 
     /**
      * Creating new ctx instance

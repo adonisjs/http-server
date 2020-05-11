@@ -10,6 +10,7 @@
 declare module '@ioc:Adonis/Core/Response' {
   import { ServerResponse, IncomingMessage } from 'http'
   import { MacroableConstructorContract } from 'macroable'
+  import { MakeUrlOptions } from '@ioc:Adonis/Core/Route'
   import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
@@ -106,7 +107,9 @@ declare module '@ioc:Adonis/Core/Response' {
     ): void
 
     location (url: string): this
-    redirect (url: string, reflectQueryParams?: boolean, statusCode?: number): void
+
+    redirect (): RedirectContract
+    redirect (path: string, forwardQueryString?: boolean, statusCode?: number): void
 
     cookie (key: string, value: any, options?: Partial<CookieOptions>): this
     plainCookie (key: string, value: any, options?: Partial<CookieOptions>): this
@@ -164,6 +167,20 @@ declare module '@ioc:Adonis/Core/Response' {
     serviceUnavailable (body: any, generateEtag?: boolean): void
     gatewayTimeout (body: any, generateEtag?: boolean): void
     httpVersionNotSupported (body: any, generateEtag?: boolean): void
+  }
+
+  /**
+   * Redirect interface
+   */
+  export interface RedirectContract {
+    status (statusCode: number): this
+    withQs (): this
+    withQs (values: { [key: string]: any }): this
+    withQs (name: string, value: any): this
+
+    back (): void
+    toRoute (routeIdentifier: string, urlOptions?: MakeUrlOptions, domain?: string): void
+    toPath (url: string): void
   }
 
   /**
