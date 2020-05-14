@@ -119,7 +119,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
   public async invokeMiddleware (
     middleware: ResolvedMiddlewareHandler,
     params: [HttpContextContract, () => Promise<void>],
-  ) {
+  ): Promise<void> {
     if (middleware.type === 'function') {
       return middleware.value(params[0], params[1], middleware.args)
     }
