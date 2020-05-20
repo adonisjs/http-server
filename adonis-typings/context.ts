@@ -43,6 +43,9 @@ declare module '@ioc:Adonis/Core/HttpContext' {
    * lifecycle
    */
   export interface HttpContextConstructorContract extends MacroableConstructorContract<HttpContextContract> {
+    /**
+     * Creates a new fake context instance for a given route.
+     */
     create (
       routePattern: string,
       routeParams: any,

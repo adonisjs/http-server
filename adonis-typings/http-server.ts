@@ -43,7 +43,14 @@ declare module '@ioc:Adonis/Core/Server' {
    * the one we want to expose to the end user
    */
   export interface HooksContract {
+    /**
+     * Register before hook
+     */
     before (cb: HookHandler): this
+
+    /**
+     * Register after hook
+     */
     after (cb: HookHandler): this
   }
 
@@ -51,12 +58,45 @@ declare module '@ioc:Adonis/Core/Server' {
    * HTTP server
    */
   export interface ServerContract {
+    /**
+     * The server itself doesn't create the http server instance. However, the consumer
+     * of this class can create one and set the instance for further reference. This
+     * is what ignitor does.
+     */
     instance?: HttpServer | HttpsServer
+
+    /**
+     * The route to register routes
+     */
     router: RouterContract
+
+    /**
+     * Server before/after hooks
+     */
     hooks: HooksContract
+
+    /**
+     * The middleware store to register global and named middleware
+     */
     middleware: MiddlewareStoreContract
+
+    /**
+     * Define custom error handler to handler all errors
+     * occurred during HTTP request
+     */
     errorHandler (handler: ErrorHandler): this
+
+    /**
+     * Handles a given HTTP request. This method can be attached to any HTTP
+     * server
+     */
     handle (req: IncomingMessage, res: ServerResponse): Promise<void>
+
+    /**
+     * Optimizes internal handlers, based upon the existence of
+     * before handlers and global middleware. This helps in
+     * increasing throughput by 10%
+     */
     optimize (): void
   }
 

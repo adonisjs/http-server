@@ -39,10 +39,32 @@ declare module '@ioc:Adonis/Core/Middleware' {
    * at runtime
    */
   export interface MiddlewareStoreContract {
+    /**
+     * Register an array of global middleware. These middleware are read
+     * by HTTP server and executed on every request
+     */
     register (middleware: MiddlewareHandler[]): this
+
+    /**
+     * Register named middleware that can be referenced later on routes
+     */
     registerNamed (middleware: { [alias: string]: MiddlewareHandler }): this
+
+    /**
+     * Return all middleware registered using [[MiddlewareStore.register]]
+     * method
+     */
     get (): ResolvedMiddlewareHandler[]
+
+    /**
+     * Returns a single middleware by it's name registered
+     * using [[MiddlewareStore.registerNamed]] method.
+     */
     getNamed (name: string): null | ResolvedMiddlewareHandler
+
+    /**
+     * Invokes a resolved middleware.
+     */
     invokeMiddleware (
       middleware: ResolvedMiddlewareHandler,
       params: [HttpContextContract, () => Promise<void>],
