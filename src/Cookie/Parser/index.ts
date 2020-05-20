@@ -1,4 +1,4 @@
-/*
+/**
  * @adonisjs/http-server
  *
  * (c) Harminder Virk <virk@adonisjs.com>
@@ -51,14 +51,14 @@ export class CookieParser {
    * Parses the request `cookie` header
    */
   private parse () {
-    /**
+    /*
      * Set to empty object when cookie header is empty string
      */
     if (!this.cookieHeader) {
       return {}
     }
 
-    /**
+    /*
      * Parse and store reference
      */
     return cookie.parse(this.cookieHeader)
@@ -70,7 +70,7 @@ export class CookieParser {
    * place and not signed or encrypted.
    */
   public decode (key: string): any | null {
-    /**
+    /*
      * Ignore when initial value is not defined or null
      */
     const value = this.cookies![key]
@@ -78,21 +78,21 @@ export class CookieParser {
       return null
     }
 
-    /**
+    /*
      * Reference to the cache object. Mainly done to avoid typos,
      * since this object is referenced a handful of times inside
      * this method.
      */
     const cacheObject = this.cachedCookies.plainCookies
 
-    /**
+    /*
      * Return from cache, when already parsed
      */
     if (cacheObject[key] !== undefined) {
       return cacheObject[key]
     }
 
-    /**
+    /*
      * Attempt to unpack and cache it for future. The value is only
      * when value it is not null.
      */
@@ -109,7 +109,7 @@ export class CookieParser {
    * you are assuming that the cookie was signed at the first place.
    */
   public unsign (key: string): null | any {
-    /**
+    /*
      * Ignore when initial value is not defined or null
      */
     const value = this.cookies![key]
@@ -117,21 +117,21 @@ export class CookieParser {
       return null
     }
 
-    /**
+    /*
      * Reference to the cache object. Mainly done to avoid typos,
      * since this object is referenced a handful of times inside
      * this method.
      */
     const cacheObject = this.cachedCookies.signedCookies
 
-    /**
+    /*
      * Return from cache, when already parsed
      */
     if (cacheObject[key] !== undefined) {
       return cacheObject[key]
     }
 
-    /**
+    /*
      * Attempt to unpack and cache it for future. The value is only
      * when value it is not null.
      */
@@ -151,7 +151,7 @@ export class CookieParser {
    * you are assuming that the cookie was encrypted at the first place.
    */
   public decrypt (key: string): null | any {
-    /**
+    /*
      * Ignore when initial value is not defined or null
      */
     const value = this.cookies![key]
@@ -159,21 +159,21 @@ export class CookieParser {
       return null
     }
 
-    /**
+    /*
      * Reference to the cache object. Mainly done to avoid typos,
      * since this object is referenced a handful of times inside
      * this method.
      */
     const cacheObject = this.cachedCookies.encryptedCookies
 
-    /**
+    /*
      * Return from cache, when already parsed
      */
     if (cacheObject[key] !== undefined) {
       return cacheObject[key]
     }
 
-    /**
+    /*
      * Attempt to unpack and cache it for future. The value is only
      * when value it is not null.
      */

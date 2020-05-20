@@ -1,11 +1,11 @@
-/*
-* @adonisjs/http-server
-*
-* (c) Harminder Virk <virk@adonisjs.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+/**
+ * @adonisjs/http-server
+ *
+ * (c) Harminder Virk <virk@adonisjs.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /// <reference path="../../../adonis-typings/index.ts" />
 
@@ -36,7 +36,7 @@ export class PreCompiler {
 
     let requestProfiler = ctx.profiler
 
-    /**
+    /*
      * Passing a child to the route handler, so that all internal
      * actions can have their own child row
      */
@@ -108,12 +108,12 @@ export class PreCompiler {
         return { type: 'function', value: item, args: [] }
       }
 
-      /**
+      /*
        * Extract middleware name and args from the string
        */
       const [ { name, args } ] = haye.fromPipe(item).toArray()
 
-      /**
+      /*
        * Get resolved node for the given name and raise exception when that
        * name is missing
        */

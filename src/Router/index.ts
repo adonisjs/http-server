@@ -1,11 +1,11 @@
-/*
-* @adonisjs/http-server
-*
-* (c) Harminder Virk <virk@adonisjs.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+/**
+ * @adonisjs/http-server
+ *
+ * (c) Harminder Virk <virk@adonisjs.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /// <reference path="../../adonis-typings/index.ts" />
 
@@ -172,12 +172,12 @@ export class Router implements RouterContract {
    * to routes in bulk
    */
   public group (callback: () => void): RouteGroup {
-    /**
+    /*
      * Create a new group with empty set of routes
      */
     const group = new RouteGroup([])
 
-    /**
+    /*
      * See if there is any opened existing route groups. If yes, then we
      * push this new group to the old group, otherwise we push it to
      * the list of routes.
@@ -189,19 +189,19 @@ export class Router implements RouterContract {
       this.routes.push(group)
     }
 
-    /**
+    /*
      * Track the group, so that the upcoming calls inside the callback
      * can use this group
      */
     this.openedGroups.push(group)
 
-    /**
+    /*
      * Execute the callback. Now all registered routes will be
      * collected seperately from the `routes` array
      */
     callback()
 
-    /**
+    /*
      * Now the callback is over, get rid of the opened group
      */
     this.openedGroups.pop()
@@ -280,7 +280,7 @@ export class Router implements RouterContract {
     const names: string[] = []
 
     this.toJSON().forEach((route) => {
-      /**
+      /*
        * Raise error when route name is already in use. Route names have to be unique
        * to ensure that only one route is returned during lookup.
        */
@@ -292,14 +292,14 @@ export class Router implements RouterContract {
         )
       }
 
-      /**
+      /*
        * If route has a unique, then track the name for checking duplicates
        */
       if (route.name) {
         names.push(route.name)
       }
 
-      /**
+      /*
        * If a pre-processor is defined then pass the [[RouteNode]]
        * to it.
        */
@@ -307,7 +307,7 @@ export class Router implements RouterContract {
         this.routeProcessor(route)
       }
 
-      /**
+      /*
        * Maintain an array of values, using which a route can be lookedup. The `handler` lookup
        * only works, when Handler is defined as a string
        */
@@ -330,7 +330,7 @@ export class Router implements RouterContract {
    * Find route for a given URL, method and optionally domain
    */
   public match (url: string, method: string, domain?: string): null | MatchedRoute {
-    /**
+    /*
      * 1. If domain is not mentioned, then we lookup for root level defined
      *    routes.
      *
@@ -349,7 +349,7 @@ export class Router implements RouterContract {
     if (!matchingDomain.length) {
       response = this.store.match(url, method)
     } else {
-      /**
+      /*
        * Search within the domain
        */
       response = this.store.match(url, method, {
@@ -385,17 +385,17 @@ export class Router implements RouterContract {
       return null
     }
 
-    /**
+    /*
      * Normalizing options
      */
     options = normalizeMakeUrlOptions(options)
 
-    /**
+    /*
      * Processing the route pattern with dynamic segments
      */
     let url = processPattern(route.pattern, options.params)
 
-    /**
+    /*
      * Append query string to the url when it is defined
      */
     const qs = stringify(options.qs)
@@ -424,7 +424,7 @@ export class Router implements RouterContract {
 
     options = normalizeMakeSignedUrlOptions(options)
 
-    /**
+    /*
      * Making the signature from the qualified url. We do not prefix the domain when
      * making signature, since it just makes the signature big.
      *
@@ -444,7 +444,7 @@ export class Router implements RouterContract {
         options.purpose,
       )
 
-    /**
+    /*
      * Adding signature to the query string and re-making the url again
      */
     options.qs.signature = signature

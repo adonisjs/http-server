@@ -1,11 +1,11 @@
-/*
-* @adonisjs/http-server
-*
-* (c) Harminder Virk <virk@adonisjs.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+/**
+ * @adonisjs/http-server
+ *
+ * (c) Harminder Virk <virk@adonisjs.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /// <reference path="../../adonis-typings/index.ts" />
 
@@ -77,7 +77,7 @@ export class Server implements ServerContract {
     private encryption: EncryptionContract,
     private httpConfig: ServerConfig,
   ) {
-    /**
+    /*
      * Pre process config to convert max age string to seconds.
      */
     if (httpConfig.cookie.maxAge && typeof (httpConfig.cookie.maxAge) === 'string') {
@@ -89,7 +89,7 @@ export class Server implements ServerContract {
    * Handles HTTP request
    */
   private async handleRequest (ctx: HttpContextContract) {
-    /**
+    /*
      * Start with before hooks upfront. If they raise error
      * then execute error handler.
      */
@@ -145,7 +145,7 @@ export class Server implements ServerContract {
    * server
    */
   public async handle (req: IncomingMessage, res: ServerResponse): Promise<void> {
-    /**
+    /*
      * Reset accept header when `forceContentNegotiationToJSON = true`
      */
     if (this.httpConfig.forceContentNegotiationToJSON) {
@@ -158,7 +158,7 @@ export class Server implements ServerContract {
     const requestAction = this.getProfilerRow(request)
     const ctx = this.getContext(request, response, requestAction)
 
-    /**
+    /*
      * Handle request by executing hooks, request middleware stack
      * and route handler
      */
@@ -168,7 +168,7 @@ export class Server implements ServerContract {
       await this.exception.handle(error, ctx)
     }
 
-    /**
+    /*
      * Excute hooks when there are one or more hooks
      */
     try {

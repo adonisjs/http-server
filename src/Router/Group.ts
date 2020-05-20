@@ -1,11 +1,11 @@
-/*
-* @adonisjs/http-server
-*
-* (c) Harminder Virk <virk@adonisjs.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+/**
+ * @adonisjs/http-server
+ *
+ * (c) Harminder Virk <virk@adonisjs.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /// <reference path="../../adonis-typings/index.ts" />
 
@@ -60,7 +60,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
     if (route instanceof BriskRoute) {
       /* istanbul ignore else */
       if (route.route) {
-        /**
+        /*
          * Raise error when trying to prefix route name but route doesn't have
          * a name
          */
@@ -73,7 +73,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
       return
     }
 
-    /**
+    /*
      * Raise error when trying to prefix route name but route doesn't have
      * a name
      */

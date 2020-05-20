@@ -1,11 +1,11 @@
-/*
-* @adonisjs/http-server
-*
-* (c) Harminder Virk <virk@adonisjs.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+/**
+ * @adonisjs/http-server
+ *
+ * (c) Harminder Virk <virk@adonisjs.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /// <reference path="../../../adonis-typings/index.ts" />
 
@@ -46,21 +46,21 @@ export class RequestHandler {
     const method = ctx.request.method()
     const hostname = ctx.request.hostname()
 
-    /**
+    /*
      * Profiling `route.match` method
      */
     const matchRoute = ctx.profiler.profile('http:route:match')
     const route = this.router.match(url, method, hostname || undefined)
     matchRoute.end()
 
-    /**
+    /*
      * Raise error when route is missing
      */
     if (!route) {
       throw new Exception(`Cannot ${method}:${url}`, 404, 'E_ROUTE_NOT_FOUND')
     }
 
-    /**
+    /*
      * Attach `params`, `subdomains` and `route` when route is found. This
      * information only exists on a given route
      */

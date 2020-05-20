@@ -1,11 +1,11 @@
-/*
-* @adonisjs/http-server
-*
-* (c) Harminder Virk <virk@adonisjs.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+/**
+ * @adonisjs/http-server
+ *
+ * (c) Harminder Virk <virk@adonisjs.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /// <reference path="../../../adonis-typings/index.ts" />
 
@@ -59,7 +59,7 @@ export class ExceptionManager {
   private async handleError (error: any, ctx: HttpContextContract) {
     ctx.response.safeStatus(error.status || 500)
 
-    /**
+    /*
      * Make response when no error handler has been registered
      */
     if (!this.resolvedErrorHandler) {
@@ -67,7 +67,7 @@ export class ExceptionManager {
       return
     }
 
-    /**
+    /*
      * Invoke the error handler and catch any errors raised by the error
      * handler itself. We don't expect error handlers to raise exceptions.
      * However, during development a broken error handler may raise
@@ -86,7 +86,7 @@ export class ExceptionManager {
         ctx.response.send(value)
       }
     } catch (finalError) {
-      /**
+      /*
        * Unexpected block
        */
       ctx.response.status(error.status || 500).send(error.message)

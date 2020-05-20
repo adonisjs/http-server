@@ -1,11 +1,11 @@
-/*
-* @adonisjs/http-server
-*
-* (c) Harminder Virk <virk@adonisjs.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+/**
+ * @adonisjs/http-server
+ *
+ * (c) Harminder Virk <virk@adonisjs.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /// <reference path="../../adonis-typings/index.ts" />
 
@@ -117,7 +117,7 @@ export class Store {
    * ```
    */
   public add (route: RouteJSON): this {
-    /**
+    /*
      * Create a copy of route properties by cherry picking
      * fields. We create the copy outside the forEach
      * loop, so that the same object is shared across
@@ -136,7 +136,7 @@ export class Store {
       'name',
     ]))
 
-    /**
+    /*
      * An explicit domain is defined
      */
     if (route.domain && route.domain !== 'root' && this.matchDomain !== this.matchDomainReal) {
@@ -146,7 +146,7 @@ export class Store {
     route.methods.forEach((method) => {
       const methodRoutes = this.getMethodRoutes(route.domain || 'root', method)
 
-      /**
+      /*
        * Ensure that route doesn't pre-exists. In that case, we need to throw
        * the exception, since it's a programmer error to create multiple
        * routes with the same pattern on the same method.
@@ -159,13 +159,13 @@ export class Store {
         )
       }
 
-      /**
+      /*
        * Generate tokens for the given route and push to the list
        * of tokens
        */
       methodRoutes.tokens.push(matchit.parse(route.pattern, route.matchers))
 
-      /**
+      /*
        * Store reference to the route, so that we can return it to the user, when
        * they call `match`.
        */
@@ -197,7 +197,7 @@ export class Store {
       return null
     }
 
-    /**
+    /*
      * Next get the method node for the given method inside the domain. If
      * method node is missing, means no routes ever got registered for that
      * method
@@ -207,7 +207,7 @@ export class Store {
       return null
     }
 
-    /**
+    /*
      * Next, match route for the given url inside the tokens list for the
      * matchedMethod
      */

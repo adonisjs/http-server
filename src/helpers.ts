@@ -1,11 +1,11 @@
-/*
-* @adonisjs/http-server
-*
-* (c) Harminder Virk <virk@adonisjs.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+/**
+ * @adonisjs/http-server
+ *
+ * (c) Harminder Virk <virk@adonisjs.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /// <reference path="../adonis-typings/index.ts" />
 
@@ -73,12 +73,12 @@ export function processPattern (pattern: string, data: any): string {
   let url = pattern
 
   if (url.indexOf(':') > -1) {
-    /**
+    /*
      * Split pattern when route has dynamic segments
      */
     const tokens = url.split('/')
 
-    /**
+    /*
      * Lookup over the route tokens and replace them the params values
      */
     url = tokens.map((token) => {
@@ -90,7 +90,7 @@ export function processPattern (pattern: string, data: any): string {
       const paramName = token.replace(/^:/, '').replace(/\?$/, '')
       const param = data[paramName]
 
-      /**
+      /*
        * A required param is always required to make the complete URL
        */
       if (!param && !isOptional) {

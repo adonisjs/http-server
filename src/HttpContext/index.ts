@@ -1,11 +1,11 @@
-/*
-* @adonisjs/http-server
-*
-* (c) Harminder Virk <virk@adonisjs.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+/**
+ * @adonisjs/http-server
+ *
+ * (c) Harminder Virk <virk@adonisjs.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /// <reference path="../../adonis-typings/index.ts" />
 
@@ -50,7 +50,7 @@ export class HttpContext extends Macroable implements HttpContextContract {
     public profiler: ProfilerRowContract,
   ) {
     super()
-    /**
+    /*
      * Creating the circular reference. We do this, since request and response
      * are meant to be extended and at times people would want to access
      * other ctx properties like `logger`, `profiler` inside those
@@ -84,7 +84,7 @@ export class HttpContext extends Macroable implements HttpContextContract {
     req = req || new IncomingMessage(new Socket())
     res = res || new ServerResponse(req)
 
-    /**
+    /*
      * Composing server config
      */
     serverConfig = Object.assign({
@@ -98,13 +98,13 @@ export class HttpContext extends Macroable implements HttpContextContract {
       trustProxy: proxyAddr.compile('loopback'),
     }, serverConfig || {})
 
-    /**
+    /*
      * Creating the url from the router pattern and params. Only
      * when actual URL isn't defined.
      */
     req.url = req.url || processPattern(routePattern, routeParams)
 
-    /**
+    /*
      * Creating new request instance
      */
     const request = new Request(req, res, encryption, {
@@ -114,7 +114,7 @@ export class HttpContext extends Macroable implements HttpContextContract {
       generateRequestId: serverConfig.generateRequestId,
     })
 
-    /**
+    /*
      * Creating new response instance
      */
     const response = new Response(req, res, encryption, {
@@ -123,12 +123,12 @@ export class HttpContext extends Macroable implements HttpContextContract {
       jsonpCallbackName: serverConfig.jsonpCallbackName,
     }, router)
 
-    /**
+    /*
      * Creating new ctx instance
      */
     const ctx = new HttpContext(request, response, logger, profiler)
 
-    /**
+    /*
      * Attaching route to the ctx
      */
     ctx.route = {
@@ -138,12 +138,12 @@ export class HttpContext extends Macroable implements HttpContextContract {
       meta: {},
     }
 
-    /**
+    /*
      * Defining route key
      */
     ctx.routeKey = `${request.method()}-${ctx.route.pattern}`
 
-    /**
+    /*
      * Attaching params to the ctx
      */
     ctx.params = routeParams

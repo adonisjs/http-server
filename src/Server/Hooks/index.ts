@@ -1,11 +1,11 @@
-/*
-* @adonisjs/http-server
-*
-* (c) Harminder Virk <virk@adonisjs.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+/**
+ * @adonisjs/http-server
+ *
+ * (c) Harminder Virk <virk@adonisjs.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /// <reference path="../../../adonis-typings/index.ts" />
 
@@ -52,7 +52,7 @@ export class Hooks implements HooksContract {
     for (let hook of this.hooks.before) {
       await hook(ctx)
 
-      /**
+      /*
        * We must break the loop when one of the hooks set the response
        */
       if (ctx.response.hasLazyBody || !ctx.response.isPending) {

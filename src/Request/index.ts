@@ -1,4 +1,4 @@
-/*
+/**
  * @adonisjs/http-server
  *
  * (c) Harminder Virk <virk@adonisjs.com>
@@ -161,7 +161,7 @@ export class Request extends Macroable implements RequestContract {
 
     this.updateBody(body)
 
-    /**
+    /*
      * Freeze the original object
      */
     this.originalRequestData = Object.freeze({ ...this.requestData })
@@ -457,7 +457,7 @@ export class Request extends Macroable implements RequestContract {
   public hostname (): string | null {
     let host = this.header('host')
 
-    /**
+    /*
      * Use X-Fowarded-Host when we trust the proxy header and it
      * exists
      */
@@ -469,7 +469,7 @@ export class Request extends Macroable implements RequestContract {
       return null
     }
 
-    /**
+    /*
      * Support for IPv6
      */
     const offset = host[0] === '[' ? host.indexOf(']') + 1 : 0
@@ -486,7 +486,7 @@ export class Request extends Macroable implements RequestContract {
   public subdomains (): string[] {
     const hostname = this.hostname()
 
-    /**
+    /*
      * Return empty array when hostname is missing or it's
      * an IP address
      */
@@ -497,7 +497,7 @@ export class Request extends Macroable implements RequestContract {
     const offset = this.config.subdomainOffset
     const subdomains = hostname.split('.').reverse().slice(offset)
 
-    /**
+    /*
      * Remove www from the subdomains list
      */
     if (subdomains[subdomains.length - 1] === 'www') {
@@ -828,7 +828,7 @@ export class Request extends Macroable implements RequestContract {
       return false
     }
 
-    /**
+    /*
      * Return false when signature fails
      */
     const signedUrl = this.encryption.verifier.unsign(signature, purpose)

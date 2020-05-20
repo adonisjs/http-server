@@ -1,11 +1,11 @@
-/*
+/**
  * @adonisjs/http-server
-*
-* (c) Harminder Virk <virk@adonisjs.com>
-*
-* For the full copyright and license information, please view the LICENSE
-* file that was distributed with this source code.
-*/
+ *
+ * (c) Harminder Virk <virk@adonisjs.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /// <reference path="../../adonis-typings/index.ts" />
 
@@ -192,7 +192,7 @@ export class Response extends Macroable implements ResponseContract {
   private writeBody (content: any, generateEtag: boolean, jsonpCallbackName?: string): void {
     let { type, body, originalType } = this.buildResponseBody(content)
 
-    /**
+    /*
      * Send 204 and remove content headers when body
      * is null
      */
@@ -205,14 +205,14 @@ export class Response extends Macroable implements ResponseContract {
       return
     }
 
-    /**
+    /*
      * Unknown types are not serializable
      */
     if (type === 'unknown') {
       throw new Error(`Cannot send ${originalType} as HTTP response`)
     }
 
-    /**
+    /*
      * In case of 204 and 304, remove unwanted headers
      */
     if ([204, 304].indexOf(this.response.statusCode) > -1) {
@@ -223,7 +223,7 @@ export class Response extends Macroable implements ResponseContract {
       return
     }
 
-    /**
+    /*
      * Decide correct content-type header based upon the existence of
      * JSONP callback.
      */
@@ -234,7 +234,7 @@ export class Response extends Macroable implements ResponseContract {
       this.safeHeader('Content-Type', `${type}; charset=utf-8`)
     }
 
-    /**
+    /*
      * Generate etag if instructed. This is send using the request
      * body, which adds little delay to the response but ensures
      * unique etag based on body
@@ -243,12 +243,12 @@ export class Response extends Macroable implements ResponseContract {
       this.setEtag(body)
     }
 
-    /**
+    /*
      * If JSONP callback exists, then update the body to be a
      * valid JSONP response
      */
     if (jsonpCallbackName) {
-      /**
+      /*
        * replace chars not allowed in JavaScript that are in JSON
        * https://github.com/rack/rack-contrib/pull/37
        */
@@ -261,7 +261,7 @@ export class Response extends Macroable implements ResponseContract {
       body = `/**/ typeof ${jsonpCallbackName} === 'function' && ${jsonpCallbackName}(${body});`
     }
 
-    /**
+    /*
      * Compute content length
      */
     this.header('Content-Length', Buffer.byteLength(body))
@@ -278,7 +278,7 @@ export class Response extends Macroable implements ResponseContract {
     return new Promise((resolve) => {
       let finished = false
 
-      /**
+      /*
        * Listen for errors on the stream and properly destroy
        * stream
        */
@@ -302,12 +302,12 @@ export class Response extends Macroable implements ResponseContract {
         }
       })
 
-      /**
+      /*
        * Listen for end and resolve the promise
        */
       body.on('end', resolve)
 
-      /**
+      /*
        * Cleanup stream when finishing response
        */
       onFinished(this.response, () => {
@@ -315,7 +315,7 @@ export class Response extends Macroable implements ResponseContract {
         destroy(body)
       })
 
-      /**
+      /*
        * Pipe stream
        */
       this.flushHeaders()
@@ -337,20 +337,20 @@ export class Response extends Macroable implements ResponseContract {
         throw new Error('response.download only accepts path to a file')
       }
 
-      /**
+      /*
        * Set appropriate headers
        */
       this.header('Last-Modified', stats.mtime.toUTCString())
       this.type(extname(filePath))
 
-      /**
+      /*
        * Set the etag when instructed.
        */
       if (generateEtag) {
         this.setEtag(stats, true)
       }
 
-      /**
+      /*
        * Do not stream files for HEAD request, but set the appropriate
        * status code.
        *
@@ -364,7 +364,7 @@ export class Response extends Macroable implements ResponseContract {
         return
       }
 
-      /**
+      /*
        * Regardless of request method, if we are using etags and
        * cache is fresh, then we must respond with 304
        */
@@ -373,14 +373,14 @@ export class Response extends Macroable implements ResponseContract {
         return
       }
 
-      /**
+      /*
        * Fix for https://tools.ietf.org/html/rfc7232#section-4.1. It is
        * recommended to ignore headers other than Cache-Control,
        * Content-Location, Date, ETag, Expires, and Vary.
        */
       this.header('Content-length', stats.size)
 
-      /**
+      /*
        * Finally stream the file
        */
       return this.streamBody(createReadStream(filePath), errorCallback)
@@ -617,7 +617,7 @@ export class Response extends Macroable implements ResponseContract {
       }
     }
 
-    /**
+    /*
      * Set type to `text/html` or `text/plain` when body is a
      * plain string
      */
@@ -633,7 +633,7 @@ export class Response extends Macroable implements ResponseContract {
         }
     }
 
-    /**
+    /*
      * Buffer sets the body as `application/octet-stream`
      */
     if (Buffer.isBuffer(body)) {
@@ -643,7 +643,7 @@ export class Response extends Macroable implements ResponseContract {
       }
     }
 
-    /**
+    /*
      * Cast boolean and numbers to string.
      */
     if (typeof (body) === 'number' || typeof (body) === 'boolean') {
@@ -653,7 +653,7 @@ export class Response extends Macroable implements ResponseContract {
       }
     }
 
-    /**
+    /*
      * Cast objects as string by `JSON.stringify`.
      */
     if (typeof (body) === 'object') {
@@ -663,7 +663,7 @@ export class Response extends Macroable implements ResponseContract {
       }
     }
 
-    /**
+    /*
      * Unknown body type.
      */
     return {
