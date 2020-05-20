@@ -1137,7 +1137,8 @@ test.group('Response', (group) => {
       response[method]('')
       let statusText = method.replace(/[A-Z]/g, (g) => `_${g.toLowerCase()}`).toUpperCase()
       statusText = statusText === 'REQUEST_ENTITY_TOO_LARGE' ? 'REQUEST_TOO_LONG' : statusText
-      assert.equal(res.statusCode, status[statusText])
+      const statusCode = (status as unknown as { [key: string]: number })[statusText]
+      assert.equal(res.statusCode, statusCode)
     })
   })
 })

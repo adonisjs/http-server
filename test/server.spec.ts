@@ -16,6 +16,7 @@ import proxyaddr from 'proxy-addr'
 import { createServer } from 'http'
 import { Ioc, inject } from '@adonisjs/fold'
 import { ServerConfig } from '@ioc:Adonis/Core/Server'
+import { ResponseContract } from '@ioc:Adonis/Core/Response'
 import { FakeLogger } from '@adonisjs/logger/build/standalone'
 import { Profiler } from '@adonisjs/profiler/build/standalone'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
@@ -767,7 +768,7 @@ test.group('Server | error handler', () => {
 
     class ErrorHandler {
       @inject()
-      public async handle (_error: any, { response }, reporter: Reporter) {
+      public async handle (_error: any, { response }: { response: ResponseContract }, reporter: Reporter) {
         response.status(200).send(reporter.getMessage())
       }
     }
@@ -795,7 +796,7 @@ test.group('Server | error handler', () => {
 
     class ErrorHandler {
       @inject()
-      public async handle (_error: any, { response }) {
+      public async handle (_error: any, { response }: { response: ResponseContract }) {
         response.status(200).send('handled by error handler')
       }
 
@@ -847,8 +848,13 @@ test.group('Server | error handler', () => {
 
 test.group('Server | all', (group) => {
   group.afterEach(() => {
+    // @ts-expect-error
     delete global[Symbol.for('ioc.use')]
+
+    // @ts-expect-error
     delete global[Symbol.for('ioc.call')]
+
+    // @ts-expect-error
     delete global[Symbol.for('ioc.make')]
   })
 
@@ -895,6 +901,7 @@ test.group('Server | all', (group) => {
     class AuthMiddleware {
       @inject()
       public async handle (ctx: HttpContextContract, next: any, _args: any, user: User) {
+        // @ts-expect-error
         ctx['user'] = user
         await next()
       }
@@ -909,6 +916,7 @@ test.group('Server | all', (group) => {
     })
 
     server.router.get('/', (ctx: HttpContextContract) => {
+      // @ts-expect-error
       return ctx['user'].username
     }).middleware('auth')
 

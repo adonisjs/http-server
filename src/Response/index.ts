@@ -109,6 +109,8 @@ class HttpException extends Exception {
  * 3. The call to `finish` method is a noop.
  */
 export class Response extends Macroable implements ResponseContract {
+  [key: string]: any
+
   protected static macros = {}
   protected static getters = {}
 

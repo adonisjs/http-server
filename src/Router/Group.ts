@@ -31,6 +31,8 @@ function missingRouteName () {
  * The group routes must be pre-defined using the constructor.
  */
 export class RouteGroup extends Macroable implements RouteGroupContract {
+  [key: string]: any
+
   protected static macros = {}
   protected static getters = {}
 

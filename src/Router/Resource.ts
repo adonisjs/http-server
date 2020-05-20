@@ -96,7 +96,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
    */
   private filter (names: string[], inverse: boolean) {
     return this.routes.filter((route) => {
-      const match = names.find((name) => route.name.endsWith(name))
+      const match = names.find((name) => route.name!.endsWith(name))
       return inverse ? !match : match
     })
   }
@@ -133,7 +133,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
       if (name === '*') {
         this.routes.forEach((one) => one.middleware(middleware[name]))
       } else {
-        const route = this.routes.find((one) => one.name.endsWith(name))
+        const route = this.routes.find((one) => one.name!.endsWith(name))
         /* istanbul ignore else */
         if (route) {
           route.middleware(middleware[name])
@@ -172,7 +172,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
   public as (name: string): this {
     name = lodash.snakeCase(name)
     this.routes.forEach((route) => {
-      route.as(route.name.replace(this.resourceName, name), false)
+      route.as(route.name!.replace(this.resourceName, name), false)
     })
 
     this.resourceName = name

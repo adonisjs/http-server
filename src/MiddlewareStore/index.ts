@@ -89,7 +89,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    * Register named middleware that can be referenced later on routes
    */
   public registerNamed (middleware: { [alias: string]: MiddlewareHandler }): this {
-    this.named = Object.keys(middleware).reduce((result, alias) => {
+    this.named = Object.keys(middleware).reduce((result: { [key: string]: ResolvedMiddlewareHandler }, alias) => {
       result[alias] = this.resolveMiddleware(middleware[alias])
       return result
     }, {})

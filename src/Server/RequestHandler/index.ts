@@ -20,7 +20,7 @@ import { RouterContract } from '@ioc:Adonis/Core/Route'
  * route finalHandler
  */
 export class RequestHandler {
-  private globalMiddleware: Middleware
+  private globalMiddleware!: Middleware
   constructor (
     private middlewareStore: MiddlewareStoreContract,
     private router: RouterContract,

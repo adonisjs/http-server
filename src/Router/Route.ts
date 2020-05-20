@@ -32,6 +32,8 @@ import { dropSlash } from '../helpers'
  * ```
  */
 export class Route extends Macroable implements RouteContract {
+  [key: string]: any
+
   protected static macros = {}
   protected static getters = {}
 
@@ -62,7 +64,7 @@ export class Route extends Macroable implements RouteContract {
   /**
    * Storing the namespace explicitly set using `route.namespace` method
    */
-  private routeNamespace: string
+  private routeNamespace?: string
 
   /**
    * A boolean to prevent route from getting registered within
@@ -75,7 +77,7 @@ export class Route extends Macroable implements RouteContract {
   /**
    * A unique name to lookup the route
    */
-  public name: string
+  public name?: string
 
   constructor (
     private pattern: string,

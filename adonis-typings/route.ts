@@ -155,7 +155,7 @@ declare module '@ioc:Adonis/Core/Route' {
     /**
      * A unique name to lookup the route
      */
-    name: string
+    name?: string
 
     /**
      * Define Regex matcher for a given param. If a matcher exists, then we do not

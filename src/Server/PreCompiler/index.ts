@@ -31,7 +31,7 @@ export class PreCompiler {
   /**
    * This function is used by reference to execute the route handler
    */
-  private finalRouteHandler = async function finalRouteHandler (ctx: HttpContextContract) {
+  private finalRouteHandler = async function finalRouteHandler (this: PreCompiler, ctx: HttpContextContract) {
     let data: any = {}
 
     let requestProfiler = ctx.profiler
@@ -70,7 +70,7 @@ export class PreCompiler {
   /**
    * This function is used by reference to execute the route middleware + route handler
    */
-  private routeMiddlewareHandler = async function routeMiddlewareHandler (ctx: HttpContextContract) {
+  private routeMiddlewareHandler = async function routeMiddlewareHandler (this: PreCompiler, ctx: HttpContextContract) {
     await new Middleware()
       .register(ctx.route!.meta.resolvedMiddleware!)
       .runner()

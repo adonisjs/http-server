@@ -56,13 +56,13 @@ export class Store {
    * This all is done for performance, since we have noticed around 8-10%
    * improvement.
    */
-  private matchDomainReal = function (domain: string): RouteStoreMatch[] {
+  private matchDomainReal = function (this: Store, domain: string): RouteStoreMatch[] {
     return matchit.match(domain || 'root', this.tree.tokens)
   }.bind(this)
 
   private matchDomainNoop = function (_: string): RouteStoreMatch[] {
     return []
-  }.bind(this)
+  }
 
   /**
    * The implementation used for matching domain. Will pivot to `matchDomainReal`

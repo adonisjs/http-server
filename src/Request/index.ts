@@ -73,7 +73,7 @@ export class Request extends Macroable implements RequestContract {
   /**
    * Copy of lazily parsed signed and plain cookies.
    */
-  private cookieParser: CookieParser
+  private cookieParser!: CookieParser
 
   /**
    * Required by Macroable
@@ -416,11 +416,12 @@ export class Request extends Macroable implements RequestContract {
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
    */
   public protocol (): string {
-    if (this.request.connection['encrypted']) {
+    // @ts-expect-error
+    if (this.request.socket['encrypted']) {
       return 'https'
     }
 
-    if (!trustProxy(this.request.connection.remoteAddress!, this.config.trustProxy)) {
+    if (!trustProxy(this.request.socket.remoteAddress!, this.config.trustProxy)) {
       return this.parsedUrl.protocol || 'http'
     }
 

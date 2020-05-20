@@ -32,7 +32,7 @@ import { processPattern } from '../helpers'
  * error handler and server hooks.
  */
 export class HttpContext extends Macroable implements HttpContextContract {
-  public routeKey: string
+  public routeKey!: string
   public params: any = {}
   public subdomains: any = {}
   public route?: RouteNode

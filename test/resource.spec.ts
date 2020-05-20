@@ -9,6 +9,7 @@
 
 import test from 'japa'
 import { RouteResource } from '../src/Router/Resource'
+import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 
 test.group('Route Resource', () => {
   test('add base resource routes', (assert) => {
@@ -707,8 +708,8 @@ test.group('Route Resource', () => {
     const resource = new RouteResource('photos', 'PhotosController', {})
     resource.middleware({ '*': ['auth'] })
 
-    const registeredMiddleware = resource.routes.reduce((result, route) => {
-      result[route.name] = route['routeMiddleware']
+    const registeredMiddleware = resource.routes.reduce((result: { [key: string]: MiddlewareHandler[] }, route) => {
+      result[route.name!] = route['routeMiddleware']
       return result
     }, {})
 
@@ -727,8 +728,8 @@ test.group('Route Resource', () => {
     const resource = new RouteResource('photos', 'PhotosController', {})
     resource.middleware({ '*': ['auth'], 'update': ['self'] })
 
-    const registeredMiddleware = resource.routes.reduce((result, route) => {
-      result[route.name] = route['routeMiddleware']
+    const registeredMiddleware = resource.routes.reduce((result: { [key: string]: MiddlewareHandler[] }, route) => {
+      result[route.name!] = route['routeMiddleware']
       return result
     }, {})
 
