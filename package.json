@@ -38,6 +38,7 @@
     "@adonisjs/profiler": "^3.0.3",
     "@poppinss/dev-utils": "^1.0.6",
     "@types/accepts": "^1.3.5",
+    "@types/autocannon": "^4.1.0",
     "@types/content-disposition": "^0.5.3",
     "@types/cookie": "^0.4.0",
     "@types/destroy": "^1.0.0",
