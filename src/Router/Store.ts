@@ -143,6 +143,32 @@ export class Store {
       this.matchDomain = this.matchDomainReal
     }
 
+    /*
+     * Generate tokens for the given route and push to the list
+     * of tokens
+     */
+    const tokens = matchit.parse(route.pattern, route.matchers)
+    const collectedParams: Set<string> = new Set()
+
+    /**
+     * Avoiding duplicate route params
+     */
+    for (let token of tokens) {
+      if ([1, 3].includes(token.type)) {
+        if (collectedParams.has(token.val)) {
+          throw new Exception(
+            `Duplicate route param "${token.val}" in route ${route.pattern}`,
+            500,
+            'E_DUPLICATE_ROUTE',
+          )
+        } else {
+          collectedParams.add(token.val)
+        }
+      }
+    }
+
+    collectedParams.clear()
+
     route.methods.forEach((method) => {
       const methodRoutes = this.getMethodRoutes(route.domain || 'root', method)
 
@@ -159,11 +185,7 @@ export class Store {
         )
       }
 
-      /*
-       * Generate tokens for the given route and push to the list
-       * of tokens
-       */
-      methodRoutes.tokens.push(matchit.parse(route.pattern, route.matchers))
+      methodRoutes.tokens.push(tokens)
 
       /*
        * Store reference to the route, so that we can return it to the user, when

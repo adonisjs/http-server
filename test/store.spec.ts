@@ -117,6 +117,40 @@ test.group('Store | add', () => {
     assert.throw(fn, 'Duplicate route `GET:/`')
   })
 
+  test('raise error when two params have the same name', (assert) => {
+    async function handler () {}
+    const route = {
+      pattern: '/:id/:id',
+      methods: ['GET'],
+      handler: handler,
+      matchers: {},
+      meta: {},
+      domain: 'foo.com',
+      middleware: [],
+    }
+
+    const store = new Store()
+    const fn = () => store.add(route)
+    assert.throw(fn, 'E_DUPLICATE_ROUTE: Duplicate route param "id" in route /:id/:id')
+  })
+
+  test('allow static path name same as the param name', (assert) => {
+    async function handler () {}
+    const route = {
+      pattern: '/id/:id',
+      methods: ['GET'],
+      handler: handler,
+      matchers: {},
+      meta: {},
+      domain: 'foo.com',
+      middleware: [],
+    }
+
+    const store = new Store()
+    const fn = () => store.add(route)
+    assert.doesNotThrow(fn)
+  })
+
   test('work fine when pattern is same but method is different', (assert) => {
     async function handler () {}
     const route = {
@@ -240,6 +274,71 @@ test.group('Store | add', () => {
             routes: {
               '/': {
                 pattern: '/',
+                meta: {},
+                handler,
+                middleware: [],
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+
+  test('add route for multiple methods', (assert) => {
+    async function handler () {}
+
+    const store = new Store()
+    store.add({
+      pattern: '/:id',
+      methods: ['GET', 'POST'],
+      handler: handler,
+      matchers: {},
+      meta: {},
+      middleware: [],
+    })
+
+    assert.deepEqual(store.tree, {
+      tokens: [[{
+        old: 'root',
+        type: 0,
+        val: 'root',
+        end: '',
+      }]],
+      domains: {
+        'root': {
+          'GET': {
+            tokens: [[
+              {
+                old: '/:id',
+                type: 1,
+                val: 'id',
+                end: '',
+                matcher: undefined,
+              },
+            ]],
+            routes: {
+              '/:id': {
+                pattern: '/:id',
+                meta: {},
+                handler,
+                middleware: [],
+              },
+            },
+          },
+          'POST': {
+            tokens: [[
+              {
+                old: '/:id',
+                type: 1,
+                val: 'id',
+                end: '',
+                matcher: undefined,
+              },
+            ]],
+            routes: {
+              '/:id': {
+                pattern: '/:id',
                 meta: {},
                 handler,
                 middleware: [],
