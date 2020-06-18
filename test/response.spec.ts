@@ -551,8 +551,9 @@ test.group('Response', (group) => {
       response.finish()
     })
 
-    const { text } = await supertest(server).get('/').expect(404)
+    const { text, header } = await supertest(server).get('/').expect(404)
     assert.equal(text, 'File not found')
+    assert.equal(header['content-type'], 'text/plain; charset=utf-8')
   })
 
   test('return custom message and status when file is missing', async (assert) => {

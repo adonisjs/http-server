@@ -291,6 +291,7 @@ export class Response extends Macroable implements ResponseContract {
         finished = true
         destroy(body)
 
+        this.type('text')
         if (typeof (errorCallback) === 'function') {
           this.endResponse(...errorCallback(error))
         } else {
@@ -385,6 +386,8 @@ export class Response extends Macroable implements ResponseContract {
        */
       return this.streamBody(createReadStream(filePath), errorCallback)
     } catch (error) {
+      this.type('text')
+
       if (typeof (errorCallback) === 'function') {
         this.endResponse(...errorCallback(error))
       } else {
