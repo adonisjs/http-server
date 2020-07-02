@@ -404,48 +404,48 @@ declare module '@ioc:Adonis/Core/Response' {
      */
     finish (): void
 
-    continue (body: any, generateEtag?: boolean): void
-    switchingProtocols (body: any, generateEtag?: boolean): void
+    continue (generateEtag?: boolean): void
+    switchingProtocols (generateEtag?: boolean): void
     ok (body: any, generateEtag?: boolean): void
-    created (body: any, generateEtag?: boolean): void
+    created (generateEtag?: boolean): void
     accepted (body: any, generateEtag?: boolean): void
     nonAuthoritativeInformation (body: any, generateEtag?: boolean): void
-    noContent (body: any, generateEtag?: boolean): void
-    resetContent (body: any, generateEtag?: boolean): void
+    noContent (generateEtag?: boolean): void
+    resetContent (generateEtag?: boolean): void
     partialContent (body: any, generateEtag?: boolean): void
-    multipleChoices (body: any, generateEtag?: boolean): void
-    movedPermanently (body: any, generateEtag?: boolean): void
-    movedTemporarily (body: any, generateEtag?: boolean): void
-    seeOther (body: any, generateEtag?: boolean): void
-    notModified (body: any, generateEtag?: boolean): void
-    useProxy (body: any, generateEtag?: boolean): void
-    temporaryRedirect (body: any, generateEtag?: boolean): void
-    badRequest (body: any, generateEtag?: boolean): void
-    unauthorized (body: any, generateEtag?: boolean): void
-    paymentRequired (body: any, generateEtag?: boolean): void
-    forbidden (body: any, generateEtag?: boolean): void
-    notFound (body: any, generateEtag?: boolean): void
-    methodNotAllowed (body: any, generateEtag?: boolean): void
-    notAcceptable (body: any, generateEtag?: boolean): void
-    proxyAuthenticationRequired (body: any, generateEtag?: boolean): void
-    requestTimeout (body: any, generateEtag?: boolean): void
-    conflict (body: any, generateEtag?: boolean): void
-    gone (body: any, generateEtag?: boolean): void
-    lengthRequired (body: any, generateEtag?: boolean): void
-    preconditionFailed (body: any, generateEtag?: boolean): void
-    requestEntityTooLarge (body: any, generateEtag?: boolean): void
-    requestUriTooLong (body: any, generateEtag?: boolean): void
-    unsupportedMediaType (body: any, generateEtag?: boolean): void
-    requestedRangeNotSatisfiable (body: any, generateEtag?: boolean): void
-    expectationFailed (body: any, generateEtag?: boolean): void
-    unprocessableEntity (body: any, generateEtag?: boolean): void
-    tooManyRequests (body: any, generateEtag?: boolean): void
-    internalServerError (body: any, generateEtag?: boolean): void
-    notImplemented (body: any, generateEtag?: boolean): void
-    badGateway (body: any, generateEtag?: boolean): void
-    serviceUnavailable (body: any, generateEtag?: boolean): void
-    gatewayTimeout (body: any, generateEtag?: boolean): void
-    httpVersionNotSupported (body: any, generateEtag?: boolean): void
+    multipleChoices (body?: any, generateEtag?: boolean): void
+    movedPermanently (body?: any, generateEtag?: boolean): void
+    movedTemporarily (body?: any, generateEtag?: boolean): void
+    seeOther (body?: any, generateEtag?: boolean): void
+    notModified (body?: any, generateEtag?: boolean): void
+    useProxy (body?: any, generateEtag?: boolean): void
+    temporaryRedirect (body?: any, generateEtag?: boolean): void
+    badRequest (body?: any, generateEtag?: boolean): void
+    unauthorized (body?: any, generateEtag?: boolean): void
+    paymentRequired (body?: any, generateEtag?: boolean): void
+    forbidden (body?: any, generateEtag?: boolean): void
+    notFound (body?: any, generateEtag?: boolean): void
+    methodNotAllowed (body?: any, generateEtag?: boolean): void
+    notAcceptable (body?: any, generateEtag?: boolean): void
+    proxyAuthenticationRequired (body?: any, generateEtag?: boolean): void
+    requestTimeout (body?: any, generateEtag?: boolean): void
+    conflict (body?: any, generateEtag?: boolean): void
+    gone (body?: any, generateEtag?: boolean): void
+    lengthRequired (body?: any, generateEtag?: boolean): void
+    preconditionFailed (body?: any, generateEtag?: boolean): void
+    requestEntityTooLarge (body?: any, generateEtag?: boolean): void
+    requestUriTooLong (body?: any, generateEtag?: boolean): void
+    unsupportedMediaType (body?: any, generateEtag?: boolean): void
+    requestedRangeNotSatisfiable (body?: any, generateEtag?: boolean): void
+    expectationFailed (body?: any, generateEtag?: boolean): void
+    unprocessableEntity (body?: any, generateEtag?: boolean): void
+    tooManyRequests (body?: any, generateEtag?: boolean): void
+    internalServerError (body?: any, generateEtag?: boolean): void
+    notImplemented (body?: any, generateEtag?: boolean): void
+    badGateway (body?: any, generateEtag?: boolean): void
+    serviceUnavailable (body?: any, generateEtag?: boolean): void
+    gatewayTimeout (body?: any, generateEtag?: boolean): void
+    httpVersionNotSupported (body?: any, generateEtag?: boolean): void
   }
 
   /**
