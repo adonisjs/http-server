@@ -967,14 +967,14 @@ export class Response extends Macroable implements ResponseContract {
     }
   }
 
-  public continue (generateEtag?: boolean): void {
+  public continue (): void {
     this.status(100)
-    return this.send(null, generateEtag)
+    return this.send(null, false)
   }
 
-  public switchingProtocols (generateEtag?: boolean): void {
+  public switchingProtocols (): void {
     this.status(101)
-    return this.send(null, generateEtag)
+    return this.send(null, false)
   }
 
   public ok (body: any, generateEtag?: boolean): void {
@@ -982,9 +982,9 @@ export class Response extends Macroable implements ResponseContract {
     return this.send(body, generateEtag)
   }
 
-  public created (generateEtag?: boolean): void {
+  public created (): void {
     this.status(201)
-    return this.send(null, generateEtag)
+    return this.send(null, false)
   }
 
   public accepted (body: any, generateEtag?: boolean): void {
@@ -997,14 +997,14 @@ export class Response extends Macroable implements ResponseContract {
     return this.send(body, generateEtag)
   }
 
-  public noContent (generateEtag?: boolean): void {
+  public noContent (): void {
     this.status(204)
-    return this.send(null, generateEtag)
+    return this.send(null, false)
   }
 
-  public resetContent (generateEtag?: boolean): void {
+  public resetContent (): void {
     this.status(205)
-    return this.send(null, generateEtag)
+    return this.send(null, false)
   }
 
   public partialContent (body: any, generateEtag?: boolean): void {

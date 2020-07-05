@@ -404,14 +404,14 @@ declare module '@ioc:Adonis/Core/Response' {
      */
     finish (): void
 
-    continue (generateEtag?: boolean): void
-    switchingProtocols (generateEtag?: boolean): void
+    continue (): void
+    switchingProtocols (): void
     ok (body: any, generateEtag?: boolean): void
-    created (generateEtag?: boolean): void
+    created (): void
     accepted (body: any, generateEtag?: boolean): void
     nonAuthoritativeInformation (body: any, generateEtag?: boolean): void
-    noContent (generateEtag?: boolean): void
-    resetContent (generateEtag?: boolean): void
+    noContent (): void
+    resetContent (): void
     partialContent (body: any, generateEtag?: boolean): void
     multipleChoices (body?: any, generateEtag?: boolean): void
     movedPermanently (body?: any, generateEtag?: boolean): void
