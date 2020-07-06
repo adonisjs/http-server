@@ -967,14 +967,14 @@ export class Response extends Macroable implements ResponseContract {
     }
   }
 
-  public continue (body: any, generateEtag?: boolean): void {
+  public continue (): void {
     this.status(100)
-    return this.send(body, generateEtag)
+    return this.send(null, false)
   }
 
-  public switchingProtocols (body: any, generateEtag?: boolean): void {
+  public switchingProtocols (): void {
     this.status(101)
-    return this.send(body, generateEtag)
+    return this.send(null, false)
   }
 
   public ok (body: any, generateEtag?: boolean): void {
@@ -982,9 +982,9 @@ export class Response extends Macroable implements ResponseContract {
     return this.send(body, generateEtag)
   }
 
-  public created (body: any, generateEtag?: boolean): void {
+  public created (): void {
     this.status(201)
-    return this.send(body, generateEtag)
+    return this.send(null, false)
   }
 
   public accepted (body: any, generateEtag?: boolean): void {
@@ -997,14 +997,14 @@ export class Response extends Macroable implements ResponseContract {
     return this.send(body, generateEtag)
   }
 
-  public noContent (body: any, generateEtag?: boolean): void {
+  public noContent (): void {
     this.status(204)
-    return this.send(body, generateEtag)
+    return this.send(null, false)
   }
 
-  public resetContent (body: any, generateEtag?: boolean): void {
+  public resetContent (): void {
     this.status(205)
-    return this.send(body, generateEtag)
+    return this.send(null, false)
   }
 
   public partialContent (body: any, generateEtag?: boolean): void {
@@ -1012,167 +1012,167 @@ export class Response extends Macroable implements ResponseContract {
     return this.send(body, generateEtag)
   }
 
-  public multipleChoices (body: any, generateEtag?: boolean): void {
+  public multipleChoices (body?: any, generateEtag?: boolean): void {
     this.status(300)
     return this.send(body, generateEtag)
   }
 
-  public movedPermanently (body: any, generateEtag?: boolean): void {
+  public movedPermanently (body?: any, generateEtag?: boolean): void {
     this.status(301)
     return this.send(body, generateEtag)
   }
 
-  public movedTemporarily (body: any, generateEtag?: boolean): void {
+  public movedTemporarily (body?: any, generateEtag?: boolean): void {
     this.status(302)
     return this.send(body, generateEtag)
   }
 
-  public seeOther (body: any, generateEtag?: boolean): void {
+  public seeOther (body?: any, generateEtag?: boolean): void {
     this.status(303)
     return this.send(body, generateEtag)
   }
 
-  public notModified (body: any, generateEtag?: boolean): void {
+  public notModified (body?: any, generateEtag?: boolean): void {
     this.status(304)
     return this.send(body, generateEtag)
   }
 
-  public useProxy (body: any, generateEtag?: boolean): void {
+  public useProxy (body?: any, generateEtag?: boolean): void {
     this.status(305)
     return this.send(body, generateEtag)
   }
 
-  public temporaryRedirect (body: any, generateEtag?: boolean): void {
+  public temporaryRedirect (body?: any, generateEtag?: boolean): void {
     this.status(307)
     return this.send(body, generateEtag)
   }
 
-  public badRequest (body: any, generateEtag?: boolean): void {
+  public badRequest (body?: any, generateEtag?: boolean): void {
     this.status(400)
     return this.send(body, generateEtag)
   }
 
-  public unauthorized (body: any, generateEtag?: boolean): void {
+  public unauthorized (body?: any, generateEtag?: boolean): void {
     this.status(401)
     return this.send(body, generateEtag)
   }
 
-  public paymentRequired (body: any, generateEtag?: boolean): void {
+  public paymentRequired (body?: any, generateEtag?: boolean): void {
     this.status(402)
     return this.send(body, generateEtag)
   }
 
-  public forbidden (body: any, generateEtag?: boolean): void {
+  public forbidden (body?: any, generateEtag?: boolean): void {
     this.status(403)
     return this.send(body, generateEtag)
   }
 
-  public notFound (body: any, generateEtag?: boolean): void {
+  public notFound (body?: any, generateEtag?: boolean): void {
     this.status(404)
     return this.send(body, generateEtag)
   }
 
-  public methodNotAllowed (body: any, generateEtag?: boolean): void {
+  public methodNotAllowed (body?: any, generateEtag?: boolean): void {
     this.status(405)
     return this.send(body, generateEtag)
   }
 
-  public notAcceptable (body: any, generateEtag?: boolean): void {
+  public notAcceptable (body?: any, generateEtag?: boolean): void {
     this.status(406)
     return this.send(body, generateEtag)
   }
 
-  public proxyAuthenticationRequired (body: any, generateEtag?: boolean): void {
+  public proxyAuthenticationRequired (body?: any, generateEtag?: boolean): void {
     this.status(407)
     return this.send(body, generateEtag)
   }
 
-  public requestTimeout (body: any, generateEtag?: boolean): void {
+  public requestTimeout (body?: any, generateEtag?: boolean): void {
     this.status(408)
     return this.send(body, generateEtag)
   }
 
-  public conflict (body: any, generateEtag?: boolean): void {
+  public conflict (body?: any, generateEtag?: boolean): void {
     this.status(409)
     return this.send(body, generateEtag)
   }
 
-  public gone (body: any, generateEtag?: boolean): void {
+  public gone (body?: any, generateEtag?: boolean): void {
     this.status(410)
     return this.send(body, generateEtag)
   }
 
-  public lengthRequired (body: any, generateEtag?: boolean): void {
+  public lengthRequired (body?: any, generateEtag?: boolean): void {
     this.status(411)
     return this.send(body, generateEtag)
   }
 
-  public preconditionFailed (body: any, generateEtag?: boolean): void {
+  public preconditionFailed (body?: any, generateEtag?: boolean): void {
     this.status(412)
     return this.send(body, generateEtag)
   }
 
-  public requestEntityTooLarge (body: any, generateEtag?: boolean): void {
+  public requestEntityTooLarge (body?: any, generateEtag?: boolean): void {
     this.status(413)
     return this.send(body, generateEtag)
   }
 
-  public requestUriTooLong (body: any, generateEtag?: boolean): void {
+  public requestUriTooLong (body?: any, generateEtag?: boolean): void {
     this.status(414)
     return this.send(body, generateEtag)
   }
 
-  public unsupportedMediaType (body: any, generateEtag?: boolean): void {
+  public unsupportedMediaType (body?: any, generateEtag?: boolean): void {
     this.status(415)
     return this.send(body, generateEtag)
   }
 
-  public requestedRangeNotSatisfiable (body: any, generateEtag?: boolean): void {
+  public requestedRangeNotSatisfiable (body?: any, generateEtag?: boolean): void {
     this.status(416)
     return this.send(body, generateEtag)
   }
 
-  public expectationFailed (body: any, generateEtag?: boolean): void {
+  public expectationFailed (body?: any, generateEtag?: boolean): void {
     this.status(417)
     return this.send(body, generateEtag)
   }
 
-  public unprocessableEntity (body: any, generateEtag?: boolean): void {
+  public unprocessableEntity (body?: any, generateEtag?: boolean): void {
     this.status(422)
     return this.send(body, generateEtag)
   }
 
-  public tooManyRequests (body: any, generateEtag?: boolean): void {
+  public tooManyRequests (body?: any, generateEtag?: boolean): void {
     this.status(429)
     return this.send(body, generateEtag)
   }
 
-  public internalServerError (body: any, generateEtag?: boolean): void {
+  public internalServerError (body?: any, generateEtag?: boolean): void {
     this.status(500)
     return this.send(body, generateEtag)
   }
 
-  public notImplemented (body: any, generateEtag?: boolean): void {
+  public notImplemented (body?: any, generateEtag?: boolean): void {
     this.status(501)
     return this.send(body, generateEtag)
   }
 
-  public badGateway (body: any, generateEtag?: boolean): void {
+  public badGateway (body?: any, generateEtag?: boolean): void {
     this.status(502)
     return this.send(body, generateEtag)
   }
 
-  public serviceUnavailable (body: any, generateEtag?: boolean): void {
+  public serviceUnavailable (body?: any, generateEtag?: boolean): void {
     this.status(503)
     return this.send(body, generateEtag)
   }
 
-  public gatewayTimeout (body: any, generateEtag?: boolean): void {
+  public gatewayTimeout (body?: any, generateEtag?: boolean): void {
     this.status(504)
     return this.send(body, generateEtag)
   }
 
-  public httpVersionNotSupported (body: any, generateEtag?: boolean): void {
+  public httpVersionNotSupported (body?: any, generateEtag?: boolean): void {
     this.status(505)
     return this.send(body, generateEtag)
   }
