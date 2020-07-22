@@ -8,63 +8,64 @@
  */
 
 declare module '@ioc:Adonis/Core/HttpContext' {
-  import { RouteNode } from '@ioc:Adonis/Core/Route'
-  import { IncomingMessage, ServerResponse } from 'http'
-  import { MacroableConstructorContract } from 'macroable'
-  import { LoggerContract } from '@ioc:Adonis/Core/Logger'
-  import { RequestContract } from '@ioc:Adonis/Core/Request'
-  import { ResponseContract } from '@ioc:Adonis/Core/Response'
-  import { ServerConfig } from '@ioc:Adonis/Core/Server'
-  import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
-  import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
+	import { RouteNode } from '@ioc:Adonis/Core/Route'
+	import { IncomingMessage, ServerResponse } from 'http'
+	import { MacroableConstructorContract } from 'macroable'
+	import { LoggerContract } from '@ioc:Adonis/Core/Logger'
+	import { RequestContract } from '@ioc:Adonis/Core/Request'
+	import { ResponseContract } from '@ioc:Adonis/Core/Response'
+	import { ServerConfig } from '@ioc:Adonis/Core/Server'
+	import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
+	import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 
-  /**
-   * Http request context passed to all middleware
-   * and route handler
-   */
-  export interface HttpContextContract {
-    /**
-     * A helper to see top level properties on the context object
-     */
-    inspect (): any,
-    request: RequestContract
-    response: ResponseContract
-    logger: LoggerContract
-    profiler: ProfilerRowContract
-    route?: RouteNode
-    routeKey: string,
-    params: any
-    subdomains: any
-  }
+	/**
+	 * Http request context passed to all middleware
+	 * and route handler
+	 */
+	export interface HttpContextContract {
+		/**
+		 * A helper to see top level properties on the context object
+		 */
+		inspect(): any
+		request: RequestContract
+		response: ResponseContract
+		logger: LoggerContract
+		profiler: ProfilerRowContract
+		route?: RouteNode
+		routeKey: string
+		params: any
+		subdomains: any
+	}
 
-  /**
-   * Shape of the constructor. We export the constructor and not
-   * the context instance, since that is passed to the HTTP
-   * lifecycle
-   */
-  export interface HttpContextConstructorContract extends MacroableConstructorContract<HttpContextContract> {
-    /**
-     * Creates a new fake context instance for a given route.
-     */
-    create (
-      routePattern: string,
-      routeParams: any,
-      logger: LoggerContract,
-      profiler: ProfilerRowContract,
-      encryption: EncryptionContract,
-      req?: IncomingMessage,
-      res?: ServerResponse,
-      serverConfig?: ServerConfig,
-    ): HttpContextContract
+	/**
+	 * Shape of the constructor. We export the constructor and not
+	 * the context instance, since that is passed to the HTTP
+	 * lifecycle
+	 */
+	export interface HttpContextConstructorContract
+		extends MacroableConstructorContract<HttpContextContract> {
+		/**
+		 * Creates a new fake context instance for a given route.
+		 */
+		create(
+			routePattern: string,
+			routeParams: any,
+			logger: LoggerContract,
+			profiler: ProfilerRowContract,
+			encryption: EncryptionContract,
+			req?: IncomingMessage,
+			res?: ServerResponse,
+			serverConfig?: ServerConfig
+		): HttpContextContract
 
-    new (
-      request: RequestContract,
-      response: ResponseContract,
-      logger: LoggerContract,
-      profiler: ProfilerRowContract,
-    ): HttpContextContract
-  }
+		new (
+			request: RequestContract,
+			response: ResponseContract,
+			logger: LoggerContract,
+			profiler: ProfilerRowContract
+		): HttpContextContract
+	}
 
-  const HttpContext: HttpContextConstructorContract
-  export default HttpContext
+	const HttpContext: HttpContextConstructorContract
+	export default HttpContext
 }

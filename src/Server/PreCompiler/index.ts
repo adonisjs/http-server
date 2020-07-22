@@ -28,126 +28,130 @@ import { useReturnValue } from '../../helpers'
  * route middleware and the route actual handler
  */
 export class PreCompiler {
-  /**
-   * This function is used by reference to execute the route handler
-   */
-  private finalRouteHandler = async function finalRouteHandler (ctx: HttpContextContract) {
-    let data: any = {}
+	/**
+	 * This function is used by reference to execute the route handler
+	 */
+	private finalRouteHandler = async function finalRouteHandler(ctx: HttpContextContract) {
+		let data: any = {}
 
-    let requestProfiler = ctx.profiler
+		let requestProfiler = ctx.profiler
 
-    /*
-     * Passing a child to the route handler, so that all internal
-     * actions can have their own child row
-     */
-    ctx.profiler = ctx.profiler.create('http:route:handler', data)
+		/*
+		 * Passing a child to the route handler, so that all internal
+		 * actions can have their own child row
+		 */
+		ctx.profiler = ctx.profiler.create('http:route:handler', data)
 
-    const routeHandler = ctx.route!.meta.resolvedHandler!
-    let returnValue: any
+		const routeHandler = ctx.route!.meta.resolvedHandler!
+		let returnValue: any
 
-    try {
-      if (routeHandler.type === 'function') {
-        returnValue = await routeHandler.handler(ctx)
-      } else {
-        data.controller = routeHandler.namespace
-        data.method = routeHandler.method
-        returnValue = await this.resolver.call(routeHandler, ctx.route!.meta.namespace, [ctx])
-      }
+		try {
+			if (routeHandler.type === 'function') {
+				returnValue = await routeHandler.handler(ctx)
+			} else {
+				data.controller = routeHandler.namespace
+				data.method = routeHandler.method
+				returnValue = await this.resolver.call(routeHandler, ctx.route!.meta.namespace, [ctx])
+			}
 
-      if (useReturnValue(returnValue, ctx)) {
-        ctx.response.send(returnValue)
-      }
+			if (useReturnValue(returnValue, ctx)) {
+				ctx.response.send(returnValue)
+			}
 
-      ctx.profiler.end()
-      ctx.profiler = requestProfiler
-    } catch (error) {
-      ctx.profiler.end()
-      ctx.profiler = requestProfiler
-      throw error
-    }
-  }.bind(this)
+			ctx.profiler.end()
+			ctx.profiler = requestProfiler
+		} catch (error) {
+			ctx.profiler.end()
+			ctx.profiler = requestProfiler
+			throw error
+		}
+	}.bind(this)
 
-  /**
-   * This function is used by reference to execute the route middleware + route handler
-   */
-  private routeMiddlewareHandler = async function routeMiddlewareHandler (ctx: HttpContextContract) {
-    await new Middleware()
-      .register(ctx.route!.meta.resolvedMiddleware!)
-      .runner()
-      .resolve(this.middlewareStore.invokeMiddleware.bind(this.middlewareStore))
-      .finalHandler(this.finalRouteHandler, [ctx])
-      .run([ctx])
-  }.bind(this)
+	/**
+	 * This function is used by reference to execute the route middleware + route handler
+	 */
+	private routeMiddlewareHandler = async function routeMiddlewareHandler(ctx: HttpContextContract) {
+		await new Middleware()
+			.register(ctx.route!.meta.resolvedMiddleware!)
+			.runner()
+			.executor(this.middlewareStore.invokeMiddleware.bind(this.middlewareStore))
+			.finalHandler(this.finalRouteHandler, [ctx])
+			.run([ctx])
+	}.bind(this)
 
-  /**
-   * The resolver used to resolve the controllers from IoC container
-   */
-  private resolver: IocResolverContract
+	/**
+	 * The resolver used to resolve the controllers from IoC container
+	 */
+	private resolver: IocResolverContract
 
-  constructor (container: IocContract, private middlewareStore: MiddlewareStoreContract) {
-    this.resolver = container.getResolver(undefined, 'httpControllers', 'App/Controllers/Http')
-  }
+	constructor(container: IocContract, private middlewareStore: MiddlewareStoreContract) {
+		this.resolver = container.getResolver(undefined, 'httpControllers', 'App/Controllers/Http')
+	}
 
-  /**
-   * Pre-compiling the handler to boost the runtime performance
-   */
-  private compileHandler (route: RouteNode) {
-    if (typeof (route.handler) === 'string') {
-      route.meta.resolvedHandler = this.resolver.resolve(route.handler, route.meta.namespace)
-    } else {
-      route.meta.resolvedHandler = { type: 'function', handler: route.handler }
-    }
-  }
+	/**
+	 * Pre-compiling the handler to boost the runtime performance
+	 */
+	private compileHandler(route: RouteNode) {
+		if (typeof route.handler === 'string') {
+			route.meta.resolvedHandler = this.resolver.resolve(route.handler, route.meta.namespace)
+		} else {
+			route.meta.resolvedHandler = { type: 'function', handler: route.handler }
+		}
+	}
 
-  /**
-   * Pre-compile the route middleware to boost runtime performance
-   */
-  private compileMiddleware (route: RouteNode) {
-    route.meta.resolvedMiddleware = route.middleware.map((item) => {
-      if (typeof (item) === 'function') {
-        return { type: 'function', value: item, args: [] }
-      }
+	/**
+	 * Pre-compile the route middleware to boost runtime performance
+	 */
+	private compileMiddleware(route: RouteNode) {
+		route.meta.resolvedMiddleware = route.middleware.map((item) => {
+			if (typeof item === 'function') {
+				return { type: 'function', value: item, args: [] }
+			}
 
-      /*
-       * Extract middleware name and args from the string
-       */
-      const [ { name, args } ] = haye.fromPipe(item).toArray()
+			/*
+			 * Extract middleware name and args from the string
+			 */
+			const [{ name, args }] = haye.fromPipe(item).toArray()
 
-      /*
-       * Get resolved node for the given name and raise exception when that
-       * name is missing
-       */
-      const resolvedMiddleware = this.middlewareStore.getNamed(name)
-      if (!resolvedMiddleware) {
-        throw new Exception(`Cannot find named middleware ${name}`, 500, 'E_MISSING_NAMED_MIDDLEWARE')
-      }
+			/*
+			 * Get resolved node for the given name and raise exception when that
+			 * name is missing
+			 */
+			const resolvedMiddleware = this.middlewareStore.getNamed(name)
+			if (!resolvedMiddleware) {
+				throw new Exception(
+					`Cannot find named middleware ${name}`,
+					500,
+					'E_MISSING_NAMED_MIDDLEWARE'
+				)
+			}
 
-      resolvedMiddleware.args = args
-      return resolvedMiddleware
-    })
-  }
+			resolvedMiddleware.args = args
+			return resolvedMiddleware
+		})
+	}
 
-  /**
-   * Sets `finalHandler` property on the `route.meta`. This method
-   * can be invoked to execute route middleware stack + route
-   * controller/closure.
-   */
-  private setFinalHandler (route: RouteNode) {
-    if (route.meta.resolvedMiddleware && route.meta.resolvedMiddleware.length) {
-      route.meta.finalHandler = this.routeMiddlewareHandler
-    } else {
-      route.meta.finalHandler = this.finalRouteHandler
-    }
-  }
+	/**
+	 * Sets `finalHandler` property on the `route.meta`. This method
+	 * can be invoked to execute route middleware stack + route
+	 * controller/closure.
+	 */
+	private setFinalHandler(route: RouteNode) {
+		if (route.meta.resolvedMiddleware && route.meta.resolvedMiddleware.length) {
+			route.meta.finalHandler = this.routeMiddlewareHandler
+		} else {
+			route.meta.finalHandler = this.finalRouteHandler
+		}
+	}
 
-  /**
-   * Pre-compile route handler and it's middleware to boost runtime performance. Since
-   * most of this work is repetitive, we pre-compile and avoid doing it on every
-   * request
-   */
-  public compileRoute (route: RouteNode) {
-    this.compileHandler(route)
-    this.compileMiddleware(route)
-    this.setFinalHandler(route)
-  }
+	/**
+	 * Pre-compile route handler and it's middleware to boost runtime performance. Since
+	 * most of this work is repetitive, we pre-compile and avoid doing it on every
+	 * request
+	 */
+	public compileRoute(route: RouteNode) {
+		this.compileHandler(route)
+		this.compileMiddleware(route)
+		this.setFinalHandler(route)
+	}
 }

@@ -1,12 +1,12 @@
 {
-  "extends": "./node_modules/@adonisjs/mrm-preset/_tsconfig",
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-  },
-  "files": [
-    "./node_modules/@adonisjs/profiler/build/adonis-typings/profiler.d.ts",
-    "./node_modules/@adonisjs/logger/build/adonis-typings/logger.d.ts",
-    "./node_modules/@adonisjs/encryption/build/adonis-typings/encryption.d.ts"
-  ]
+	"extends": "./node_modules/@adonisjs/mrm-preset/_tsconfig",
+	"compilerOptions": {
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true
+	},
+	"files": [
+		"./node_modules/@adonisjs/profiler/build/adonis-typings/profiler.d.ts",
+		"./node_modules/@adonisjs/logger/build/adonis-typings/logger.d.ts",
+		"./node_modules/@adonisjs/encryption/build/adonis-typings/encryption.d.ts"
+	]
 }

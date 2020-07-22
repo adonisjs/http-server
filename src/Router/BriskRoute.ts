@@ -24,46 +24,42 @@ import { BriskRouteContract, RouteMatchers, RouteHandler } from '@ioc:Adonis/Cor
  * closure.
  */
 export class BriskRoute extends Macroable implements BriskRouteContract {
-  protected static macros = {}
-  protected static getters = {}
+	protected static macros = {}
+	protected static getters = {}
 
-  /**
-   * Invoked by is reference to the parent method that calls `setHandler` on
-   * this class. We keep a reference to the parent method name for raising
-   * meaningful exception
-   */
-  private invokedBy: string = ''
+	/**
+	 * Invoked by is reference to the parent method that calls `setHandler` on
+	 * this class. We keep a reference to the parent method name for raising
+	 * meaningful exception
+	 */
+	private invokedBy: string = ''
 
-  /**
-   * Reference to route instance. Set after `setHandler` is called
-   */
-  public route: null | Route = null
+	/**
+	 * Reference to route instance. Set after `setHandler` is called
+	 */
+	public route: null | Route = null
 
-  constructor (private pattern: string, private globalMatchers: RouteMatchers) {
-    super()
-  }
+	constructor(private pattern: string, private globalMatchers: RouteMatchers) {
+		super()
+	}
 
-  /**
-   * Set handler for the brisk route. The `invokedBy` string is the reference
-   * to the method that calls this method. It is required to create human
-   * readable error message when `setHandler` is called for multiple
-   * times.
-   */
-  public setHandler (
-    handler: RouteHandler,
-    invokedBy: string,
-    methods?: string[],
-  ): Route {
-    if (this.route) {
-      throw new Exception(
-        `\`Route.${invokedBy}\` and \`${this.invokedBy}\` cannot be called together`,
-        500,
-        'E_MULTIPLE_BRISK_HANDLERS',
-      )
-    }
+	/**
+	 * Set handler for the brisk route. The `invokedBy` string is the reference
+	 * to the method that calls this method. It is required to create human
+	 * readable error message when `setHandler` is called for multiple
+	 * times.
+	 */
+	public setHandler(handler: RouteHandler, invokedBy: string, methods?: string[]): Route {
+		if (this.route) {
+			throw new Exception(
+				`\`Route.${invokedBy}\` and \`${this.invokedBy}\` cannot be called together`,
+				500,
+				'E_MULTIPLE_BRISK_HANDLERS'
+			)
+		}
 
-    this.route = new Route(this.pattern, methods || ['GET'], handler, this.globalMatchers)
-    this.invokedBy = invokedBy
-    return this.route
-  }
+		this.route = new Route(this.pattern, methods || ['GET'], handler, this.globalMatchers)
+		this.invokedBy = invokedBy
+		return this.route
+	}
 }

@@ -16,72 +16,72 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
  * Exposes to API to register and execute before and after hooks
  */
 export class Hooks implements HooksContract {
-  /**
-   * Registered before and after hooks
-   */
-  private hooks: {
-    before: HookHandler[],
-    after: HookHandler[],
-  } = {
-    before: [],
-    after: [],
-  }
+	/**
+	 * Registered before and after hooks
+	 */
+	private hooks: {
+		before: HookHandler[]
+		after: HookHandler[]
+	} = {
+		before: [],
+		after: [],
+	}
 
-  /**
-   * Register before hook
-   */
-  public before (cb: HookHandler): this {
-    this.hooks.before.push(cb)
-    return this
-  }
+	/**
+	 * Register before hook
+	 */
+	public before(cb: HookHandler): this {
+		this.hooks.before.push(cb)
+		return this
+	}
 
-  /**
-   * Register after hook
-   */
-  public after (cb: HookHandler): this {
-    this.hooks.after.push(cb)
-    return this
-  }
+	/**
+	 * Register after hook
+	 */
+	public after(cb: HookHandler): this {
+		this.hooks.after.push(cb)
+		return this
+	}
 
-  /**
-   * Executing before hooks in series. If this method returns `true`,
-   * it means that one of the before hooks wants to end the request
-   * without further processing it.
-   */
-  public async executeBefore (ctx: HttpContextContract): Promise<boolean> {
-    for (let hook of this.hooks.before) {
-      await hook(ctx)
+	/**
+	 * Executing before hooks in series. If this method returns `true`,
+	 * it means that one of the before hooks wants to end the request
+	 * without further processing it.
+	 */
+	public async executeBefore(ctx: HttpContextContract): Promise<boolean> {
+		for (let hook of this.hooks.before) {
+			await hook(ctx)
 
-      /*
-       * We must break the loop when one of the hooks set the response
-       */
-      if (ctx.response.hasLazyBody || !ctx.response.isPending) {
-        return true
-      }
-    }
-    return false
-  }
+			/*
+			 * We must break the loop when one of the hooks set the response
+			 */
+			if (ctx.response.hasLazyBody || !ctx.response.isPending) {
+				return true
+			}
+		}
+		return false
+	}
 
-  /**
-   * Executes after hooks in series.
-   */
-  public async executeAfter (ctx: HttpContextContract) {
-    for (let hook of this.hooks.after) {
-      await hook(ctx)
-    }
-  }
+	/**
+	 * Executes after hooks in series.
+	 */
+	public async executeAfter(ctx: HttpContextContract) {
+		for (let hook of this.hooks.after) {
+			await hook(ctx)
+		}
+	}
 
-  /**
-   * The commit action enables us to optimize the hook handlers
-   * for runtime peformance
-   */
-  public commit () {
-    if (this.hooks.before.length === 0) {
-      this.executeBefore = async () => false
-    }
+	/**
+	 * The commit action enables us to optimize the hook handlers
+	 * for runtime peformance
+	 */
+	public commit() {
+		if (this.hooks.before.length === 0) {
+			this.executeBefore = async () => false
+		}
 
-    if (this.hooks.after.length === 0) {
-      this.executeAfter = async () => {}
-    }
-  }
+		if (this.hooks.after.length === 0) {
+			this.executeAfter = async () => {}
+		}
+	}
 }
