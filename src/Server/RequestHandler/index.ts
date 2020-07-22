@@ -9,11 +9,11 @@
 
 /// <reference path="../../../adonis-typings/index.ts" />
 
-import { Exception } from '@poppinss/utils'
 import { Middleware } from 'co-compose'
-import { MiddlewareStoreContract } from '@ioc:Adonis/Core/Middleware'
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { Exception } from '@poppinss/utils'
 import { RouterContract } from '@ioc:Adonis/Core/Route'
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MiddlewareStoreContract, ResolvedMiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 
 /**
  * Handles the request by invoking it's middleware chain, along with the
@@ -21,17 +21,18 @@ import { RouterContract } from '@ioc:Adonis/Core/Route'
  */
 export class RequestHandler {
 	private globalMiddleware: Middleware
+	private handleRequest: (ctx: HttpContextContract) => Promise<void>
+
 	constructor(private middlewareStore: MiddlewareStoreContract, private router: RouterContract) {}
 
 	/**
-	 * Executes the middleware chain, followed by the route handler.
+	 * Function to invoke global middleware
 	 */
-	private async invokeHandler(ctx: HttpContextContract) {
-		await this.globalMiddleware
-			.runner()
-			.executor(this.middlewareStore.invokeMiddleware.bind(this.middlewareStore))
-			.finalHandler(ctx.route!.meta.finalHandler, [ctx])
-			.run([ctx])
+	private executeMiddleware = (
+		middleware: ResolvedMiddlewareHandler,
+		params: [HttpContextContract, () => Promise<void>]
+	) => {
+		return this.middlewareStore.invokeMiddleware(middleware, params)
 	}
 
 	/**
@@ -71,7 +72,7 @@ export class RequestHandler {
 	 */
 	public async handle(ctx: HttpContextContract) {
 		this.findRoute(ctx)
-		await this.invokeHandler(ctx)
+		return this.handleRequest(ctx)
 	}
 
 	/**
@@ -79,10 +80,19 @@ export class RequestHandler {
 	 */
 	public commit() {
 		const middleware = this.middlewareStore.get()
-		if (middleware.length) {
-			this.globalMiddleware = new Middleware().register(middleware)
-		} else {
-			this.invokeHandler = async (ctx) => ctx.route!.meta.finalHandler(ctx)
+
+		if (!middleware.length) {
+			this.handleRequest = (ctx) => ctx.route!.meta.finalHandler(ctx)
+			return
+		}
+
+		this.globalMiddleware = new Middleware().register(middleware)
+		this.handleRequest = (ctx) => {
+			return this.globalMiddleware
+				.runner()
+				.executor(this.executeMiddleware)
+				.finalHandler(ctx.route!.meta.finalHandler, [ctx])
+				.run([ctx])
 		}
 	}
 }

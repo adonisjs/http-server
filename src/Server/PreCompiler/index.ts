@@ -13,9 +13,9 @@ import haye from 'haye'
 import { Middleware } from 'co-compose'
 import { Exception } from '@poppinss/utils'
 import { RouteNode } from '@ioc:Adonis/Core/Route'
-import { MiddlewareStoreContract } from '@ioc:Adonis/Core/Middleware'
 import { IocContract, IocResolverContract } from '@adonisjs/fold'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { MiddlewareStoreContract, ResolvedMiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 
 import { useReturnValue } from '../../helpers'
 
@@ -31,53 +31,51 @@ export class PreCompiler {
 	/**
 	 * This function is used by reference to execute the route handler
 	 */
-	private finalRouteHandler = async function finalRouteHandler(ctx: HttpContextContract) {
-		let data: any = {}
-
-		let requestProfiler = ctx.profiler
+	private runRouteHandler = async (ctx: HttpContextContract) => {
+		const routeHandler = ctx.route!.meta.resolvedHandler!
 
 		/*
 		 * Passing a child to the route handler, so that all internal
 		 * actions can have their own child row
 		 */
-		ctx.profiler = ctx.profiler.create('http:route:handler', data)
-
-		const routeHandler = ctx.route!.meta.resolvedHandler!
 		let returnValue: any
 
 		try {
 			if (routeHandler.type === 'function') {
 				returnValue = await routeHandler.handler(ctx)
 			} else {
-				data.controller = routeHandler.namespace
-				data.method = routeHandler.method
 				returnValue = await this.resolver.call(routeHandler, ctx.route!.meta.namespace, [ctx])
 			}
 
 			if (useReturnValue(returnValue, ctx)) {
 				ctx.response.send(returnValue)
 			}
-
-			ctx.profiler.end()
-			ctx.profiler = requestProfiler
 		} catch (error) {
-			ctx.profiler.end()
-			ctx.profiler = requestProfiler
 			throw error
 		}
-	}.bind(this)
+	}
+
+	/**
+	 * Method to execute middleware using the middleware store
+	 */
+	private executeMiddleware = (
+		middleware: ResolvedMiddlewareHandler,
+		params: [HttpContextContract, () => Promise<void>]
+	) => {
+		return this.middlewareStore.invokeMiddleware(middleware, params)
+	}
 
 	/**
 	 * This function is used by reference to execute the route middleware + route handler
 	 */
-	private routeMiddlewareHandler = async function routeMiddlewareHandler(ctx: HttpContextContract) {
-		await new Middleware()
+	private runRouteMiddleware = (ctx: HttpContextContract) => {
+		return new Middleware()
 			.register(ctx.route!.meta.resolvedMiddleware!)
 			.runner()
-			.executor(this.middlewareStore.invokeMiddleware.bind(this.middlewareStore))
-			.finalHandler(this.finalRouteHandler, [ctx])
+			.executor(this.executeMiddleware)
+			.finalHandler(this.runRouteHandler, [ctx])
 			.run([ctx])
-	}.bind(this)
+	}
 
 	/**
 	 * The resolver used to resolve the controllers from IoC container
@@ -138,9 +136,9 @@ export class PreCompiler {
 	 */
 	private setFinalHandler(route: RouteNode) {
 		if (route.meta.resolvedMiddleware && route.meta.resolvedMiddleware.length) {
-			route.meta.finalHandler = this.routeMiddlewareHandler
+			route.meta.finalHandler = this.runRouteMiddleware
 		} else {
-			route.meta.finalHandler = this.finalRouteHandler
+			route.meta.finalHandler = this.runRouteHandler
 		}
 	}
 

@@ -93,10 +93,11 @@ export class Server implements ServerContract {
 		 * Start with before hooks upfront. If they raise error
 		 * then execute error handler.
 		 */
-		const shortcircuit = await this.hooks.executeBefore(ctx)
-		if (!shortcircuit) {
-			return this.requestHandler.handle(ctx)
-		}
+		return this.hooks.executeBefore(ctx).then((shortcircuit) => {
+			if (!shortcircuit) {
+				return this.requestHandler.handle(ctx)
+			}
+		})
 	}
 
 	/**
