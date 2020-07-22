@@ -34,28 +34,9 @@ declare module '@ioc:Adonis/Core/Response' {
 	export type CastableHeader = string | number | boolean | string[] | number[] | boolean[]
 
 	/**
-	 * Content types after processing response body
-	 */
-	export type ResponseContentType =
-		| 'text/html'
-		| 'text/plain'
-		| 'application/octet-stream'
-		| 'application/json'
-		| 'unknown'
-		| 'null'
-
-	/**
 	 * Types of readable stream allowed for HTTP response
 	 */
 	export type ResponseStream = NodeJS.ReadStream | NodeJS.ReadWriteStream | NodeJS.ReadableStream
-
-	/**
-	 * Lazy body packet
-	 */
-	export type LazyBody = {
-		writer: any
-		args: any[]
-	}
 
 	/**
 	 * Main response interface
@@ -73,7 +54,7 @@ declare module '@ioc:Adonis/Core/Response' {
 		 *
 		 * Only works with `explicitEnd=true`, which is set to `false` by default
 		 */
-		lazyBody: LazyBody | null
+		lazyBody: any[]
 
 		/**
 		 * Returns a boolean telling if response is finished or not.
@@ -216,19 +197,6 @@ declare module '@ioc:Adonis/Core/Response' {
 		 * ```
 		 */
 		fresh(): boolean
-
-		/**
-		 * Builds the response body and returns it's appropriate type
-		 * to be set as the content-type header.
-		 *
-		 * Ideally, you should use [[send]] vs using this method. This method will
-		 * not set any headers and must be used when you want more control over the
-		 * response sending process.
-		 *
-		 * Make sure to appropriately handle the case of `unknown` type, which is returned
-		 * when unable to parse the body type.
-		 */
-		buildResponseBody(body: any): { body: any; type: ResponseContentType; originalType?: string }
 
 		/**
 		 * Send the body as response and optionally generate etag. The default value

@@ -23,14 +23,12 @@ import contentDisposition from 'content-disposition'
 import { ServerResponse, IncomingMessage } from 'http'
 
 import {
-	LazyBody,
 	CookieOptions,
 	CastableHeader,
 	ResponseConfig,
 	ResponseStream,
 	ResponseContract,
 	RedirectContract,
-	ResponseContentType,
 } from '@ioc:Adonis/Core/Response'
 
 import { RouterContract } from '@ioc:Adonis/Core/Route'
@@ -88,25 +86,6 @@ class HttpException extends Exception {
 /**
  * The response is a wrapper over [ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse)
  * streamlining the process of writing response body and automatically setting up appropriate headers.
- *
- * The response class has support for `explicitEnd` mode, which is set to true by default.
- *
- * When implicit end is set to true, the response class will not write content to the HTTP response
- * directly and instead waits for an explicit call to the `finish` method. This is done to
- * allow `return` statements from controllers.
- *
- * This is how `explicitEnd` mode works in nutshell.
- *
- * **When set to true**
- * 1. Calls to `send`, `json` and `jsonp` will be buffered until `finish` is called.
- * 2. `response.hasLazyBody` returns `true` after calling `send`, `json` or `jsonp`.
- * 3. If `response.hasLazyBody` return `false`, then server will use the `return value` of the controller
- *    and set it as body before calling `finish`.
- *
- * **When set to false**
- * 1. Calls to `send`, `json` and `jsonp` will write the response writeaway.
- * 2. The `return value` of the controller will be discarded.
- * 3. The call to `finish` method is a noop.
  */
 export class Response extends Macroable implements ResponseContract {
 	protected static macros = {}
@@ -114,17 +93,21 @@ export class Response extends Macroable implements ResponseContract {
 
 	private headers: any = {}
 	private explicitStatus = false
+	private writerMethod: string = 'endResponse'
 
 	private cookieSerializer = new CookieSerializer(this.encryption)
+
+	/**
+	 * Returns a boolean telling if lazy body is already set or not
+	 */
+	public hasLazyBody: boolean = false
 
 	/**
 	 * Lazy body is used to set the response body. However, do not
 	 * write it on the socket immediately unless `response.finish`
 	 * is called.
-	 *
-	 * Only works with `explicitEnd=true`, which is set to `false` by default
 	 */
-	public lazyBody: LazyBody | null = null
+	public lazyBody: any[] = []
 
 	/**
 	 * The ctx will be set by the context itself. It creates a circular
@@ -140,13 +123,6 @@ export class Response extends Macroable implements ResponseContract {
 		private router: RouterContract
 	) {
 		super()
-	}
-
-	/**
-	 * Returns a boolean telling if lazy body is already set or not
-	 */
-	public get hasLazyBody(): boolean {
-		return !!(this.lazyBody && this.lazyBody.writer)
 	}
 
 	/**
@@ -184,66 +160,104 @@ export class Response extends Macroable implements ResponseContract {
 	}
 
 	/**
+	 * Ends the response by flushing headers and writing body
+	 */
+	private endResponse(body?: any, statusCode?: number) {
+		this.flushHeaders(statusCode)
+
+		// avoid ArgumentsAdaptorTrampoline from V8 (inspired by fastify)
+		const res = this.response as any
+		res.end(body, null, null)
+	}
+
+	/**
+	 * Returns type for the content body. Only following types are allowed
+	 *
+	 * - Dates
+	 * - Arrays
+	 * - Booleans
+	 * - Objects
+	 * - Strings
+	 * - Buffer
+	 */
+	private getDataType(content: any) {
+		const dataType = typeof content
+		if (Buffer.isBuffer(content)) {
+			return 'buffer'
+		}
+
+		if (dataType === 'number' || dataType === 'boolean' || dataType === 'string') {
+			return dataType
+		}
+
+		if (content instanceof Date) {
+			return 'date'
+		}
+
+		if (dataType === 'object' && content instanceof RegExp === false) {
+			return 'object'
+		}
+
+		throw new Error(`Unable to send HTTP response. Cannot serialize "${dataType}" to a string`)
+	}
+
+	/**
 	 * Writes the body with appropriate response headers. Etag header is set
 	 * when `generateEtag` is set to `true`.
 	 *
 	 * Empty body results in `204`.
 	 */
-	private writeBody(content: any, generateEtag: boolean, jsonpCallbackName?: string): void {
-		let { type, body, originalType } = this.buildResponseBody(content)
-
-		/*
-		 * Send 204 and remove content headers when body
-		 * is null
-		 */
-		if (body === null) {
+	protected writeBody(content: any, generateEtag: boolean, jsonpCallbackName?: string): void {
+		if (content === null || content === undefined || content === '') {
 			this.safeStatus(204)
+		}
+
+		const isEmptyBody = this.response.statusCode === 204
+		const isNotModified = this.response.statusCode === 304
+
+		/**
+		 * Do not process body when status code is less than 200 or is 204 or 304. As per
+		 * https://tools.ietf.org/html/rfc7230#section-3.3.2
+		 */
+		if (
+			isEmptyBody ||
+			isNotModified ||
+			(this.response.statusCode && this.response.statusCode < 200)
+		) {
 			this.removeHeader('Content-Type')
 			this.removeHeader('Content-Length')
 			this.removeHeader('Transfer-Encoding')
-			this.endResponse()
+			isNotModified ? this.endResponse(content) : this.endResponse()
 			return
 		}
 
-		/*
-		 * Unknown types are not serializable
+		/**
+		 * Javascript data type for the content. We only handle a subset
+		 * of data types. Check [[this.getDataType]] method for more
+		 * info
 		 */
-		if (type === 'unknown') {
-			throw new Error(`Cannot send ${originalType} as HTTP response`)
+		const dataType = this.getDataType(content)
+
+		/**
+		 * ----------------------------------------
+		 * SERIALIZE CONTENT TO A STRING
+		 * ----------------------------------------
+		 *
+		 * Transforming date, number, boolean and object to a string
+		 */
+		if (dataType === 'number' || dataType === 'boolean') {
+			content = String(content)
+		} else if (dataType === 'date') {
+			content = content.toISOString()
+		} else if (dataType === 'object') {
+			content = JSON.stringify(content)
 		}
 
 		/*
-		 * In case of 204 and 304, remove unwanted headers
-		 */
-		if ([204, 304].indexOf(this.response.statusCode) > -1) {
-			this.removeHeader('Content-Type')
-			this.removeHeader('Content-Length')
-			this.removeHeader('Transfer-Encoding')
-			this.endResponse(body)
-			return
-		}
-
-		/*
-		 * Decide correct content-type header based upon the existence of
-		 * JSONP callback.
-		 */
-		if (jsonpCallbackName) {
-			this.header('X-Content-Type-Options', 'nosniff')
-			this.safeHeader('Content-Type', 'text/javascript; charset=utf-8')
-		} else {
-			this.safeHeader('Content-Type', `${type}; charset=utf-8`)
-		}
-
-		/*
-		 * Generate etag if instructed. This is send using the request
-		 * body, which adds little delay to the response but ensures
-		 * unique etag based on body
-		 */
-		if (generateEtag) {
-			this.setEtag(body)
-		}
-
-		/*
+		 * ----------------------------------------
+		 * MORE MODIFICATIONS FOR JSONP BODY
+		 * ----------------------------------------
+		 *
 		 * If JSONP callback exists, then update the body to be a
 		 * valid JSONP response
 		 */
@@ -252,26 +266,80 @@ export class Response extends Macroable implements ResponseContract {
 			 * replace chars not allowed in JavaScript that are in JSON
 			 * https://github.com/rack/rack-contrib/pull/37
 			 */
-			body = body.replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029')
+			content = content.replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029')
 
 			// the /**/ is a specific security mitigation for "Rosetta Flash JSONP abuse"
 			// https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-4671
 			// http://miki.it/blog/2014/7/8/abusing-jsonp-with-rosetta-flash/
 			// http://drops.wooyun.org/tips/2554
-			body = `/**/ typeof ${jsonpCallbackName} === 'function' && ${jsonpCallbackName}(${body});`
+			content = `/**/ typeof ${jsonpCallbackName} === 'function' && ${jsonpCallbackName}(${content});`
 		}
 
 		/*
-		 * Compute content length
+		 * ----------------------------------------
+		 * FINALY GENERATE AN ETAG
+		 * ----------------------------------------
+		 *
+		 * Generate etag if instructed.
 		 */
-		this.header('Content-Length', Buffer.byteLength(body))
-		this.endResponse(body)
+		if (generateEtag) {
+			this.setEtag(content)
+		}
+
+		/*
+		 * ----------------------------------------
+		 * SET CONTENT-LENGTH HEADER
+		 * ----------------------------------------
+		 */
+		this.header('Content-Length', Buffer.byteLength(content))
+
+		/**
+		 * ----------------------------------------
+		 * SET CONTENT-TYPE HEADER
+		 * ----------------------------------------
+		 *
+		 * - If it is a JSONP response, then we always set the content type
+		 * 	 to "text/javascript"
+		 *
+		 * - String are checked for HTML and "text/plain" or "text/html" is set
+		 * 	 accordingly.
+		 *
+		 * - "text/plain"  is set for "numbers" and "booleans" and "dates"
+		 *
+		 * - "application/octet-stream" is set for buffers
+		 *
+		 * - "application/json" is set for objects and arrays
+		 */
+		if (jsonpCallbackName) {
+			this.header('X-Content-Type-Options', 'nosniff')
+			this.safeHeader('Content-Type', 'text/javascript; charset=utf-8')
+		} else {
+			switch (dataType) {
+				case 'string':
+					const type = /^\s*</.test(content) ? 'text/html' : 'text/plain'
+					this.safeHeader('Content-Type', `${type}; charset=utf-8`)
+					break
+				case 'number':
+				case 'boolean':
+				case 'date':
+					this.safeHeader('Content-Type', 'text/plain; charset=utf-8')
+					break
+				case 'buffer':
+					this.safeHeader('Content-Type', 'application/octet-stream; charset=utf-8')
+					break
+				case 'object':
+					this.safeHeader('Content-Type', 'application/json; charset=utf-8')
+					break
+			}
+		}
+
+		this.endResponse(content)
 	}
 
 	/**
 	 * Stream the body to the response and handles cleaning up the stream
 	 */
-	private streamBody(
+	protected streamBody(
 		body: ResponseStream,
 		errorCallback?: (error: NodeJS.ErrnoException) => [string, number?]
 	) {
@@ -327,7 +395,7 @@ export class Response extends Macroable implements ResponseContract {
 	/**
 	 * Downloads a file by streaming it to the response
 	 */
-	private async streamFileForDownload(
+	protected async streamFileForDownload(
 		filePath: string,
 		generateEtag: boolean,
 		errorCallback?: (error: NodeJS.ErrnoException) => [string, number?]
@@ -400,23 +468,10 @@ export class Response extends Macroable implements ResponseContract {
 	}
 
 	/**
-	 * Ends the response by flushing headers and writing body
-	 */
-	private endResponse(body?: any, statusCode?: number) {
-		this.flushHeaders(statusCode)
-
-		// avoid ArgumentsAdaptorTrampoline from V8 (inspired by fastify)
-		const res = this.response as any
-		res.end(body, null, null)
-	}
-
-	/**
 	 * Writes headers to the response.
 	 */
 	public flushHeaders(statusCode?: number): this {
 		this.response.writeHead(statusCode || this.response.statusCode, this.headers)
-		this.headers = {}
-
 		return this
 	}
 
@@ -501,7 +556,10 @@ export class Response extends Macroable implements ResponseContract {
 	 * Removes the existing response header from being sent.
 	 */
 	public removeHeader(key: string): this {
-		delete this.headers[key.toLowerCase()]
+		key = key.toLowerCase()
+		if (this.headers[key]) {
+			delete this.headers[key.toLowerCase()]
+		}
 		return this
 	}
 
@@ -604,6 +662,7 @@ export class Response extends Macroable implements ResponseContract {
 	}
 
 	/**
+<<<<<<< HEAD
 	 * Builds the response body and returns it's appropriate type
 	 * to be set as the content-type header.
 	 *
@@ -681,6 +740,8 @@ export class Response extends Macroable implements ResponseContract {
 	}
 
 	/**
+=======
+>>>>>>> refactor(Response): performance improvements
 	 * Send the body as response and optionally generate etag. The default value
 	 * is read from `config/app.js` file, using `http.etag` property.
 	 *
@@ -688,10 +749,9 @@ export class Response extends Macroable implements ResponseContract {
 	 * behavior and do not change, unless you know what you are doing.
 	 */
 	public send(body: any, generateEtag: boolean = this.config.etag): void {
-		this.lazyBody = {
-			writer: this.writeBody,
-			args: [body, generateEtag],
-		}
+		this.writerMethod = 'writeBody'
+		this.hasLazyBody = true
+		this.lazyBody = [body, generateEtag]
 	}
 
 	/**
@@ -718,10 +778,9 @@ export class Response extends Macroable implements ResponseContract {
 		callbackName: string = this.config.jsonpCallbackName,
 		generateEtag: boolean = this.config.etag
 	) {
-		this.lazyBody = {
-			writer: this.writeBody,
-			args: [body, generateEtag, callbackName],
-		}
+		this.writerMethod = 'writeBody'
+		this.hasLazyBody = true
+		this.lazyBody = [body, generateEtag, callbackName]
 	}
 
 	/**
@@ -756,10 +815,9 @@ export class Response extends Macroable implements ResponseContract {
 			throw new Error('response.stream accepts a readable stream only')
 		}
 
-		this.lazyBody = {
-			writer: this.streamBody,
-			args: [body, errorCallback],
-		}
+		this.writerMethod = 'streamBody'
+		this.hasLazyBody = true
+		this.lazyBody = [body, errorCallback]
 	}
 
 	/**
@@ -792,10 +850,9 @@ export class Response extends Macroable implements ResponseContract {
 		generateEtag: boolean = this.config.etag,
 		errorCallback?: (error: NodeJS.ErrnoException) => [string, number?]
 	): void {
-		this.lazyBody = {
-			writer: this.streamFileForDownload,
-			args: [filePath, generateEtag, errorCallback],
-		}
+		this.writerMethod = 'streamFileForDownload'
+		this.hasLazyBody = true
+		this.lazyBody = [filePath, generateEtag, errorCallback]
 	}
 
 	/**
@@ -963,12 +1020,11 @@ export class Response extends Macroable implements ResponseContract {
 	 * Calling this method twice or when `explicitEnd = false` is noop.
 	 */
 	public finish() {
-		if (this.lazyBody && this.isPending) {
-			this.lazyBody.writer.bind(this)(...this.lazyBody.args)
-			this.lazyBody = null
-		} else if (this.isPending) {
-			this.endResponse()
+		if (!this.isPending) {
+			return
 		}
+
+		this[this.writerMethod](...this.lazyBody)
 	}
 
 	public continue (): void {

@@ -95,7 +95,7 @@ export class Server implements ServerContract {
 		 */
 		const shortcircuit = await this.hooks.executeBefore(ctx)
 		if (!shortcircuit) {
-			await this.requestHandler.handle(ctx)
+			return this.requestHandler.handle(ctx)
 		}
 	}
 
@@ -174,7 +174,13 @@ export class Server implements ServerContract {
 		}
 
 		/*
-		 * Excute hooks when there are one or more hooks
+		 * Excute hooks when there are one or more hooks. The `ctx.response.finish`
+		 * is intentionally inside both the `try` and `catch` blocks as a defensive
+		 * measure.
+		 *
+		 * When we call `response.finish`, it will serialize the response body and may
+		 * encouter errors while doing so and hence will be catched by the catch
+		 * block.
 		 */
 		try {
 			await this.hooks.executeAfter(ctx)

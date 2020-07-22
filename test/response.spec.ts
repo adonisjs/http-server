@@ -188,34 +188,31 @@ test.group('Response', (group) => {
 		await supertest(server).get('/').expect(201)
 	})
 
-	test('parse buffer and return correct response header', async () => {
+	test('parse buffer and set correct response header', async () => {
 		const server = createServer((req, res) => {
 			const config = fakeConfig()
 			const response = new Response(req, res, encryption, config, router)
-			const { type, body } = response.buildResponseBody(Buffer.from('hello'))
 
-			response.header('content-type', type)
-			response.flushHeaders()
-			res.write(body)
-			res.end()
+			response.send(Buffer.from('hello'))
+			response.finish()
 		})
 
-		await supertest(server).get('/').expect('content-type', 'application/octet-stream')
+		await supertest(server)
+			.get('/')
+			.expect('content-type', 'application/octet-stream; charset=utf-8')
 	})
 
-	test('parse string and return correct response header', async (assert) => {
+	test('parse string and set correct response header', async (assert) => {
 		const server = createServer((req, res) => {
 			const config = fakeConfig()
 			const response = new Response(req, res, encryption, config, router)
-			const { type, body } = response.buildResponseBody('hello')
-
-			response.header('content-type', type)
-			response.flushHeaders()
-			res.write(body)
-			res.end()
+			response.send('hello')
+			response.finish()
 		})
 
-		const { text } = await supertest(server).get('/').expect('content-type', 'text/plain')
+		const { text } = await supertest(server)
+			.get('/')
+			.expect('content-type', 'text/plain; charset=utf-8')
 		assert.equal(text, 'hello')
 	})
 
@@ -223,14 +220,14 @@ test.group('Response', (group) => {
 		const server = createServer((req, res) => {
 			const config = fakeConfig()
 			const response = new Response(req, res, encryption, config, router)
-			const { type, body } = response.buildResponseBody('<p> hello </p>')
-			response.header('content-type', type)
-			response.flushHeaders()
-			res.write(body)
-			res.end()
+
+			response.send('<p> hello </p>')
+			response.finish()
 		})
 
-		const { text } = await supertest(server).get('/').expect('content-type', 'text/html')
+		const { text } = await supertest(server)
+			.get('/')
+			.expect('content-type', 'text/html; charset=utf-8')
 		assert.equal(text, '<p> hello </p>')
 	})
 
@@ -238,14 +235,13 @@ test.group('Response', (group) => {
 		const server = createServer((req, res) => {
 			const config = fakeConfig()
 			const response = new Response(req, res, encryption, config, router)
-			const { type, body } = response.buildResponseBody([1, 2])
-			response.header('content-type', type)
-			response.flushHeaders()
-			res.write(body)
-			res.end()
+			response.send([1, 2])
+			response.finish()
 		})
 
-		const { body } = await supertest(server).get('/').expect('content-type', 'application/json')
+		const { body } = await supertest(server)
+			.get('/')
+			.expect('content-type', 'application/json; charset=utf-8')
 		assert.deepEqual(body, [1, 2])
 	})
 
@@ -253,41 +249,38 @@ test.group('Response', (group) => {
 		const server = createServer((req, res) => {
 			const config = fakeConfig()
 			const response = new Response(req, res, encryption, config, router)
-			const { type, body } = response.buildResponseBody({ username: 'virk' })
-			response.header('content-type', type)
-			response.flushHeaders()
-			res.write(body)
-			res.end()
+			response.send({ username: 'virk' })
+			response.finish()
 		})
 
-		const { body } = await supertest(server).get('/').expect('content-type', 'application/json')
+		const { body } = await supertest(server)
+			.get('/')
+			.expect('content-type', 'application/json; charset=utf-8')
 		assert.deepEqual(body, { username: 'virk' })
 	})
 
-	test('set content type as null for empty string', async (assert) => {
+	test('do not set content type for empty strings', async (assert) => {
 		const server = createServer((req, res) => {
 			const config = fakeConfig()
 			const response = new Response(req, res, encryption, config, router)
-			const { type } = response.buildResponseBody('')
-			res.write(type)
-			res.end()
+			response.send('')
+			response.finish()
 		})
 
-		const { text } = await supertest(server).get('/')
-		assert.deepEqual(text, 'null')
+		const { text } = await supertest(server).get('/').expect(204)
+		assert.deepEqual(text, '')
 	})
 
-	test('return content type as null for null', async (assert) => {
+	test('do not set content-type for null', async (assert) => {
 		const server = createServer((req, res) => {
 			const config = fakeConfig()
 			const response = new Response(req, res, encryption, config, router)
-			const { type } = response.buildResponseBody(null)
-			res.write(type)
-			res.end()
+			response.send(null)
+			response.finish()
 		})
 
-		const { text } = await supertest(server).get('/')
-		assert.deepEqual(text, 'null')
+		const { text } = await supertest(server).get('/').expect(204)
+		assert.deepEqual(text, '')
 	})
 
 	test('do not write send body and headers unless finish is called explicitly', async (assert) => {
@@ -776,6 +769,19 @@ test.group('Response', (group) => {
 		assert.equal(text, 'false')
 	})
 
+	test('convert date to string when sending as response', async (assert) => {
+		const date = new Date()
+		const server = createServer((req, res) => {
+			const config = fakeConfig()
+			const response = new Response(req, res, encryption, config, router)
+			response.send(date)
+			response.finish()
+		})
+
+		const { text } = await supertest(server).get('/')
+		assert.equal(text, date.toISOString())
+	})
+
 	test('raise error when return type is not valid', async (assert) => {
 		const server = createServer((req, res) => {
 			const config = fakeConfig()
@@ -791,7 +797,7 @@ test.group('Response', (group) => {
 		})
 
 		const { text } = await supertest(server).get('/')
-		assert.equal(text, 'Cannot send function as HTTP response')
+		assert.equal(text, 'Unable to send HTTP response. Cannot serialize "function" to a string')
 	})
 
 	test('convert serializable objects to JSON representation', async (assert) => {
