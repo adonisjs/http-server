@@ -132,15 +132,19 @@ test.group('Redirect', () => {
 		assert.equal(header.location, '/foo')
 	})
 
-	test('redirect back to referer', async (assert) => {
+	test('redirect back to referrer when query string', async (assert) => {
 		const server = createServer((req, res) => {
 			const response = new Response(req, res, encryption, responseConfig, router)
-			response.redirect('back')
+			response.redirect().withQs({ name: 'virk' }).back()
 			response.finish()
 		})
 
-		const { header } = await supertest(server).get('/').set('referer', '/foo').redirects(1)
-		assert.equal(header.location, '/foo')
+		const { header } = await supertest(server)
+			.get('/')
+			.set('referer', '/foo?name=virk')
+			.redirects(1)
+
+		assert.equal(header.location, '/foo?name=virk')
 	})
 
 	test('redirect back to root (/) when referrer header is not set', async (assert) => {

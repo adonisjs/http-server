@@ -17,9 +17,23 @@ import { IncomingMessage } from 'http'
 import { RedirectContract, ResponseContract } from '@ioc:Adonis/Core/Response'
 import { RouterContract, MakeUrlOptions } from '@ioc:Adonis/Core/Route'
 
+/**
+ * Exposes the API to construct redirect routes
+ */
 export class Redirect implements RedirectContract {
+	/**
+	 * A boolean to forward the existing query string
+	 */
 	private forwardQueryString = false
+
+	/**
+	 * The status code for the redirect
+	 */
 	private statusCode = 302
+
+	/**
+	 * A custom query string to forward
+	 */
 	private queryString: { [key: string]: any } = {}
 
 	constructor(
@@ -61,24 +75,26 @@ export class Redirect implements RedirectContract {
 	 * Redirect to the previous path.
 	 */
 	public back() {
-		const url = (this.request.headers['referer'] ||
-			this.request.headers['referrer'] ||
-			'/') as string
+		let url = this.request.headers['referer'] || this.request.headers['referrer'] || '/'
+		url = Array.isArray(url) ? url[0] : url
 
-		return this.toPath(url)
+		/**
+		 * Remove query string from the referrer
+		 */
+		return this.toPath(url.split('?')[0])
 	}
 
 	/**
 	 * Redirect the request using a route identifier.
 	 */
 	public toRoute(routeIdentifier: string, urlOptions?: MakeUrlOptions, domain?: string) {
-		const route = this.router.lookup(routeIdentifier, domain)
+		// const route = this.router.lookup(routeIdentifier, domain)
 
-		if (!route) {
+		const url = this.router.makeUrl(routeIdentifier, urlOptions, domain)
+		if (!url) {
 			throw new Error(`Unable to lookup route for "${routeIdentifier}" identifier`)
 		}
 
-		const url = this.router.makeUrl(routeIdentifier, urlOptions, domain) as string
 		return this.toPath(url)
 	}
 
@@ -86,7 +102,7 @@ export class Redirect implements RedirectContract {
 	 * Redirect the request using a path.
 	 */
 	public toPath(url: string) {
-		let query
+		let query: any
 
 		// Extract the current QueryString if we want to forward it.
 		if (this.forwardQueryString) {
