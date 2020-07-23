@@ -216,6 +216,15 @@ declare module '@ioc:Adonis/Core/Route' {
 		toJSON(): RouteJSON
 	}
 
+	export type ResourceRouteNames =
+		| 'create'
+		| 'index'
+		| 'store'
+		| 'show'
+		| 'edit'
+		| 'update'
+		| 'destroy'
+
 	/**
 	 * Shape of route resource class
 	 */
@@ -228,12 +237,12 @@ declare module '@ioc:Adonis/Core/Route' {
 		/**
 		 * Register only given routes and remove others
 		 */
-		only(names: string[]): this
+		only(names: ResourceRouteNames[]): this
 
 		/**
 		 * Register all routes, except the one's defined
 		 */
-		except(names: string[]): this
+		except(names: ResourceRouteNames[]): this
 
 		/**
 		 * Register api only routes. The `create` and `edit` routes, which
@@ -244,7 +253,13 @@ declare module '@ioc:Adonis/Core/Route' {
 		/**
 		 * Add middleware to routes inside the resource
 		 */
-		middleware(middleware: { [name: string]: MiddlewareHandler | MiddlewareHandler[] }): this
+		middleware(
+			middleware: {
+				[P in ResourceRouteNames]?: MiddlewareHandler | MiddlewareHandler[]
+			} & {
+				'*'?: MiddlewareHandler | MiddlewareHandler[]
+			}
+		): this
 
 		/**
 		 * Define matcher for params inside the resource

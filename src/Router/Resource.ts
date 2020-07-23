@@ -14,7 +14,7 @@ import { Macroable } from 'macroable'
 import { lodash } from '@poppinss/utils'
 
 import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
-import { RouteMatchers, RouteResourceContract } from '@ioc:Adonis/Core/Route'
+import { RouteMatchers, RouteResourceContract, ResourceRouteNames } from '@ioc:Adonis/Core/Route'
 
 import { Route } from './Route'
 
@@ -58,7 +58,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
 	/**
 	 * Add a new route for the given pattern, methods and controller action
 	 */
-	private makeRoute(pattern: string, methods: string[], action: string) {
+	private makeRoute(pattern: string, methods: string[], action: ResourceRouteNames) {
 		const route = new Route(pattern, methods, `${this.controller}.${action}`, this.globalMatchers)
 
 		route.as(`${this.resourceName}.${action}`)
@@ -90,7 +90,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
 	/**
 	 * Filter the routes based on their partial names
 	 */
-	private filter(names: string[], inverse: boolean) {
+	private filter(names: ResourceRouteNames[], inverse: boolean) {
 		return this.routes.filter((route) => {
 			const match = names.find((name) => route.name.endsWith(name))
 			return inverse ? !match : match
@@ -100,7 +100,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
 	/**
 	 * Register only given routes and remove others
 	 */
-	public only(names: string[]): this {
+	public only(names: ResourceRouteNames[]): this {
 		this.filter(names, true).forEach((route) => (route.deleted = true))
 		return this
 	}
@@ -108,7 +108,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
 	/**
 	 * Register all routes, except the one's defined
 	 */
-	public except(names: string[]): this {
+	public except(names: ResourceRouteNames[]): this {
 		this.filter(names, false).forEach((route) => (route.deleted = true))
 		return this
 	}
@@ -118,13 +118,19 @@ export class RouteResource extends Macroable implements RouteResourceContract {
 	 * are meant to show forms will not be registered
 	 */
 	public apiOnly(): this {
-		return this.except(['.create', '.edit'])
+		return this.except(['create', 'edit'])
 	}
 
 	/**
 	 * Add middleware to routes inside the resource
 	 */
-	public middleware(middleware: { [name: string]: MiddlewareHandler | MiddlewareHandler[] }): this {
+	public middleware(
+		middleware: {
+			[P in ResourceRouteNames]?: MiddlewareHandler | MiddlewareHandler[]
+		} & {
+			'*'?: MiddlewareHandler | MiddlewareHandler[]
+		}
+	): this {
 		for (let name in middleware) {
 			if (name === '*') {
 				this.routes.forEach((one) => one.middleware(middleware[name]))
