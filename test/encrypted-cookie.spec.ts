@@ -8,11 +8,9 @@
  */
 
 import test from 'japa'
-import { Encryption } from '@adonisjs/encryption/build/standalone'
-import { pack, unpack, canUnpack } from '../src/Cookie/Drivers/Encrypted'
 
-const SECRET = 'averylongradom32charactersstring'
-const encryption = new Encryption({ secret: SECRET })
+import { encryption } from '../test-helpers'
+import { pack, unpack, canUnpack } from '../src/Cookie/Drivers/Encrypted'
 
 test.group('EncryptedCookie | Pack', () => {
 	test('pack cookie as encrypted cookie', (assert) => {

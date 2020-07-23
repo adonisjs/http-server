@@ -9,13 +9,11 @@
 
 import test from 'japa'
 import { base64 } from '@poppinss/utils'
-import { Encryption } from '@adonisjs/encryption/build/standalone'
 
 import { pack, unpack, canUnpack } from '../src/Cookie/Drivers/Plain'
 import { pack as encryptedPack } from '../src/Cookie/Drivers/Encrypted'
 
-const SECRET = 'averylongradom32charactersstring'
-const encryption = new Encryption({ secret: SECRET })
+import { encryption } from '../test-helpers'
 
 test.group('PlainCookie | Pack', () => {
 	test('pack cookie as base64', (assert) => {

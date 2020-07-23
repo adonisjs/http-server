@@ -9,12 +9,9 @@
 
 import test from 'japa'
 import { base64, MessageBuilder } from '@poppinss/utils'
-import { Encryption } from '@adonisjs/encryption/build/standalone'
 
+import { encryption } from '../test-helpers'
 import { CookieSerializer } from '../src/Cookie/Serializer'
-
-const SECRET = Math.random().toFixed(36).substring(2, 38)
-const encryption = new Encryption({ secret: SECRET })
 
 test.group('Cookie | serialize', () => {
 	test('serialize and sign cookie', (assert) => {

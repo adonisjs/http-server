@@ -15,35 +15,14 @@ import { createServer } from 'http'
 import status from 'http-status-codes'
 import { Filesystem } from '@poppinss/dev-utils'
 import { createWriteStream, createReadStream } from 'fs'
-import { Encryption } from '@adonisjs/encryption/build/standalone'
 
 import { Router } from '../src/Router'
 import { Response } from '../src/Response'
 import { CookieParser } from '../src/Cookie/Parser'
-import { ResponseConfig } from '@ioc:Adonis/Core/Response'
 
-const SECRET = Math.random().toFixed(36).substring(2, 38)
-const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
+import { encryption, responseConfig } from '../test-helpers'
+
 const router = new Router(encryption)
-
-const fakeConfig = (conf?: Partial<ResponseConfig>) => {
-	return Object.assign(
-		{
-			etag: false,
-			secret: SECRET,
-			jsonpCallbackName: 'callback',
-			cookie: {
-				maxAge: 90,
-				path: '/',
-				httpOnly: true,
-				sameSite: false,
-				secure: false,
-			},
-		},
-		conf
-	)
-}
-
 const fs = new Filesystem()
 
 test.group('Response', (group) => {
@@ -53,8 +32,7 @@ test.group('Response', (group) => {
 
 	test('set http response headers', async () => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.header('status', 200)
 			response.header('content-type', 'application/json')
@@ -67,8 +45,7 @@ test.group('Response', (group) => {
 
 	test('get recently set headers', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.header('status', 200)
 			response.header('content-type', 'application/json')
@@ -90,8 +67,7 @@ test.group('Response', (group) => {
 
 	test('append header to existing header', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.header('set-cookie', 'username=virk')
 			response.append('set-cookie', 'age=22')
@@ -105,8 +81,7 @@ test.group('Response', (group) => {
 
 	test("add header via append when header doesn't exists already", async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.append('set-cookie', 'age=22')
 			response.flushHeaders()
@@ -119,8 +94,7 @@ test.group('Response', (group) => {
 
 	test("append to the header value when it's an array", async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.append('set-cookie', ['username=virk'])
 			response.append('set-cookie', ['age=22'])
@@ -134,8 +108,7 @@ test.group('Response', (group) => {
 
 	test('do not set header when value is non-existy', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.header('set-cookie', '')
 			response.flushHeaders()
@@ -148,8 +121,7 @@ test.group('Response', (group) => {
 
 	test('do not set header when already exists', async () => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.header('content-type', 'application/json')
 			response.safeHeader('content-type', 'text/html')
@@ -162,8 +134,7 @@ test.group('Response', (group) => {
 
 	test('remove existing response header', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.header('content-type', 'application/json')
 			response.removeHeader('content-type')
@@ -177,8 +148,7 @@ test.group('Response', (group) => {
 
 	test('set HTTP status', async () => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.status(201)
 			response.flushHeaders()
@@ -190,8 +160,7 @@ test.group('Response', (group) => {
 
 	test('parse buffer and set correct response header', async () => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.send(Buffer.from('hello'))
 			response.finish()
@@ -204,8 +173,7 @@ test.group('Response', (group) => {
 
 	test('parse string and set correct response header', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.send('hello')
 			response.finish()
 		})
@@ -218,8 +186,7 @@ test.group('Response', (group) => {
 
 	test('parse HTML string and return correct response header', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.send('<p> hello </p>')
 			response.finish()
@@ -233,8 +200,7 @@ test.group('Response', (group) => {
 
 	test('parse array and set correct response type', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.send([1, 2])
 			response.finish()
 		})
@@ -247,8 +213,7 @@ test.group('Response', (group) => {
 
 	test('parse object and set correct response type', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.send({ username: 'virk' })
 			response.finish()
 		})
@@ -261,8 +226,7 @@ test.group('Response', (group) => {
 
 	test('do not set content type for empty strings', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.send('')
 			response.finish()
 		})
@@ -273,8 +237,7 @@ test.group('Response', (group) => {
 
 	test('do not set content-type for null', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.send(null)
 			response.finish()
 		})
@@ -285,8 +248,7 @@ test.group('Response', (group) => {
 
 	test('do not write send body and headers unless finish is called explicitly', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.send({ username: 'virk' })
 			res.write('hello')
@@ -299,8 +261,7 @@ test.group('Response', (group) => {
 
 	test('write send body and headers when finish is called explicitly', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.send({ username: 'virk' })
 			response.finish()
 		})
@@ -315,8 +276,7 @@ test.group('Response', (group) => {
 
 	test('do not write response twice if finish is called twice', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.json({ username: 'virk' })
 			response.finish()
@@ -333,8 +293,7 @@ test.group('Response', (group) => {
 
 	test('hasLazyBody must return true after send has been called', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.json({ username: 'virk' })
 			res.end(String(response.hasLazyBody))
@@ -346,8 +305,7 @@ test.group('Response', (group) => {
 
 	test('write jsonp response', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.jsonp({ username: 'virk' })
 			response.finish()
 		})
@@ -360,8 +318,7 @@ test.group('Response', (group) => {
 
 	test('use explicit value for callback name', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.jsonp({ username: 'virk' }, 'fn')
 			response.finish()
 		})
@@ -374,7 +331,7 @@ test.group('Response', (group) => {
 
 	test('use config value when explicit value is not defined and their is no query string', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig({ jsonpCallbackName: 'cb' })
+			const config = Object.assign({}, responseConfig, { jsonpCallbackName: 'cb' })
 			const response = new Response(req, res, encryption, config, router)
 			response.jsonp({ username: 'virk' })
 			response.finish()
@@ -390,8 +347,7 @@ test.group('Response', (group) => {
 		await fs.add('hello.txt', 'hello world')
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.stream(createReadStream(join(fs.basePath, 'hello.txt')))
 			response.finish()
 		})
@@ -402,8 +358,7 @@ test.group('Response', (group) => {
 
 	test('raise error when we try to stream a non-existing file', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.stream(createReadStream(join(fs.basePath, 'i-dont-exist.txt')))
 			response.finish()
 		})
@@ -417,8 +372,7 @@ test.group('Response', (group) => {
 		assert.plan(1)
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			const stream = response.stream as any
 			const fn = () => stream('hello')
@@ -434,8 +388,7 @@ test.group('Response', (group) => {
 		await fs.ensureRoot()
 
 		const server = createServer(async (req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			const writeStream = createWriteStream(join(fs.basePath, 'hello.txt'))
 
 			const stream = response.stream as any
@@ -452,8 +405,7 @@ test.group('Response', (group) => {
 		await fs.add('hello.txt', 'hello world')
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.stream(createReadStream(join(fs.basePath, 'hello.txt')))
 			response.finish()
 		})
@@ -468,8 +420,7 @@ test.group('Response', (group) => {
 		await fs.add('hello.txt', 'hello world')
 
 		const server = createServer(async (req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			const readStream = createReadStream(join(fs.basePath, 'hello.txt'))
 
@@ -492,8 +443,7 @@ test.group('Response', (group) => {
 		await fs.add('hello.txt', 'hello world')
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			const readStream = createReadStream(join(fs.basePath, 'hello.txt'))
 
@@ -516,8 +466,7 @@ test.group('Response', (group) => {
 		await fs.add('hello.html', '<p> hello world </p>')
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.download(join(fs.basePath, 'hello.html'))
 			response.finish()
 		})
@@ -534,8 +483,7 @@ test.group('Response', (group) => {
 		await fs.ensureRoot()
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.download(join(fs.basePath))
 			response.finish()
 		})
@@ -546,8 +494,7 @@ test.group('Response', (group) => {
 
 	test('write errors as response when file is missing', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.download(join(fs.basePath, 'hello.html'))
 			response.finish()
 		})
@@ -559,8 +506,7 @@ test.group('Response', (group) => {
 
 	test('return custom message and status when file is missing', async (assert) => {
 		const server = createServer(async (req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			response.download(join(fs.basePath, 'hello.html'), false, () => {
 				return ['Missing file', 400]
@@ -576,8 +522,7 @@ test.group('Response', (group) => {
 		await fs.add('hello.html', '<p> hello world </p>')
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.download(join(fs.basePath, 'hello.html'))
 			response.finish()
 		})
@@ -590,8 +535,7 @@ test.group('Response', (group) => {
 		await fs.add('hello.html', '<p> hello world </p>')
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.download(join(fs.basePath, 'hello.html'), true)
 			response.finish()
 		})
@@ -610,8 +554,7 @@ test.group('Response', (group) => {
 		await fs.add('hello.html', '<p> hello world </p>')
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.download(join(fs.basePath, 'hello.html'), true)
 			response.finish()
 		})
@@ -630,8 +573,7 @@ test.group('Response', (group) => {
 		await fs.add('hello.html', '<p> hello world </p>')
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.attachment(join(fs.basePath, 'hello.html'))
 			response.finish()
 		})
@@ -649,8 +591,7 @@ test.group('Response', (group) => {
 		await fs.add('hello.html', '<p> hello world </p>')
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.attachment(join(fs.basePath, 'hello.html'), 'ooo.html')
 			response.finish()
 		})
@@ -668,8 +609,7 @@ test.group('Response', (group) => {
 		await fs.add('hello.html', '<p> hello world </p>')
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.attachment(join(fs.basePath, 'hello.html'), 'ooo.html', 'inline')
 			response.finish()
 		})
@@ -685,8 +625,7 @@ test.group('Response', (group) => {
 
 	test('add multiple vary fields', async () => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.vary('Origin')
 			response.vary('Set-Cookie')
 			response.finish()
@@ -697,8 +636,7 @@ test.group('Response', (group) => {
 
 	test('set status code to 204 when body is empty', async () => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.send('')
 			response.finish()
 		})
@@ -708,8 +646,7 @@ test.group('Response', (group) => {
 
 	test('do not override explicit status even when body is empty', async () => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.status(200).send('')
 			response.finish()
 		})
@@ -719,8 +656,7 @@ test.group('Response', (group) => {
 
 	test('remove previously set content headers when status code is 304', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.header('Content-type', 'application/json')
 			response.status(204)
 			response.send({ username: 'virk' })
@@ -733,9 +669,7 @@ test.group('Response', (group) => {
 
 	test('generate etag when set to true', async () => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig({
-				etag: true,
-			})
+			const config = Object.assign({}, responseConfig, { etag: true })
 			const response = new Response(req, res, encryption, config, router)
 			response.send({ username: 'virk' })
 			response.finish()
@@ -747,8 +681,7 @@ test.group('Response', (group) => {
 
 	test('convert number to string when sending as response', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.send(22)
 			response.finish()
 		})
@@ -759,8 +692,7 @@ test.group('Response', (group) => {
 
 	test('convert boolean to string when sending as response', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.send(false)
 			response.finish()
 		})
@@ -772,8 +704,7 @@ test.group('Response', (group) => {
 	test('convert date to string when sending as response', async (assert) => {
 		const date = new Date()
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.send(date)
 			response.finish()
 		})
@@ -784,8 +715,7 @@ test.group('Response', (group) => {
 
 	test('raise error when return type is not valid', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			try {
 				response.send(function foo() {})
@@ -810,8 +740,7 @@ test.group('Response', (group) => {
 		}
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.send(new User())
 			response.finish()
 		})
@@ -824,8 +753,7 @@ test.group('Response', (group) => {
 		await fs.add('hello.html', '<p> hello world </p>')
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.download(join(fs.basePath, 'hello.html'), true)
 			response.finish()
 		})
@@ -839,8 +767,7 @@ test.group('Response', (group) => {
 		await fs.add('hello.html', '<p> hello world </p>')
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.download(join(fs.basePath, 'hello.html'), true)
 			response.finish()
 		})
@@ -852,8 +779,7 @@ test.group('Response', (group) => {
 
 	test('set response type with custom charset', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.type('plain/text', 'ascii').send('done')
 			response.finish()
 		})
@@ -868,8 +794,7 @@ test.group('Response', (group) => {
 
 	test('set signed cookie', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.cookie('name', 'virk').send('done')
 			response.finish()
 		})
@@ -895,8 +820,7 @@ test.group('Response', (group) => {
 
 	test('set plain cookie', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.plainCookie('name', 'virk').send('done')
 			response.finish()
 		})
@@ -921,8 +845,7 @@ test.group('Response', (group) => {
 
 	test('set cookie with custom domain', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.cookie('name', 'virk', { domain: 'foo.com' }).send('done')
 			response.finish()
 		})
@@ -948,8 +871,7 @@ test.group('Response', (group) => {
 
 	test('clear cookie by setting expiry and maxAge in past', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.clearCookie('name').send('done')
 			response.finish()
 		})
@@ -975,8 +897,7 @@ test.group('Response', (group) => {
 
 	test('abort request by raising exception', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			try {
 				response.abort('Bad request')
 			} catch (error) {
@@ -992,8 +913,7 @@ test.group('Response', (group) => {
 
 	test('abort request with json body', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			try {
 				response.abort({ message: 'Bad request' })
 			} catch (error) {
@@ -1009,8 +929,7 @@ test.group('Response', (group) => {
 
 	test('abort request with custom status code', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			try {
 				response.abort({ message: 'Not allowed' }, 401)
 			} catch (error) {
@@ -1026,8 +945,7 @@ test.group('Response', (group) => {
 
 	test('abortIf: abort request when condition is truthy', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			try {
 				response.abortIf(true, { message: 'Not allowed' }, 401)
 			} catch (error) {
@@ -1043,8 +961,7 @@ test.group('Response', (group) => {
 
 	test('abortIf: do not abort request when condition is falsy', async () => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			try {
 				response.abortIf(false, { message: 'Not allowed' }, 401)
 			} catch (error) {
@@ -1059,8 +976,7 @@ test.group('Response', (group) => {
 
 	test('abortUnless: abort request when condition is falsy', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response: Response = new Response(req, res, encryption, config, router)
+			const response: Response = new Response(req, res, encryption, responseConfig, router)
 			try {
 				response.abortUnless(false, { message: 'Not allowed' }, 401)
 			} catch (error) {
@@ -1076,8 +992,7 @@ test.group('Response', (group) => {
 
 	test('abortUnless: do not abort request when condition is truthy', async () => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response: Response = new Response(req, res, encryption, config, router)
+			const response: Response = new Response(req, res, encryption, responseConfig, router)
 			try {
 				response.abortUnless(true, { message: 'Not allowed' }, 401)
 			} catch (error) {
@@ -1096,7 +1011,7 @@ test.group('Response', (group) => {
 			statusCode: null,
 		}
 
-		const response: Response = new Response(req, res, encryption, fakeConfig(), router)
+		const response: Response = new Response(req, res, encryption, responseConfig, router)
 
 		const methods = [
 			'switchingProtocols',

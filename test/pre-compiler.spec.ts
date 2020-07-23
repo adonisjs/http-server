@@ -13,11 +13,8 @@ import { Ioc } from '@adonisjs/fold'
 
 import { MiddlewareStore } from '../src/MiddlewareStore'
 import { PreCompiler } from '../src/Server/PreCompiler'
-import { Encryption } from '@adonisjs/encryption/build/standalone'
 
-const encryption = new Encryption({
-	secret: 'averylongrandom32charslongsecret',
-})
+import { encryption } from '../test-helpers'
 
 test.group('Route precompiler', () => {
 	test('process route by resolving function based middleware', (assert) => {

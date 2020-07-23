@@ -8,16 +8,14 @@
  */
 
 import test from 'japa'
-import { HttpContext as BaseHttpContext } from '../src/HttpContext'
-import { HttpContextConstructorContract } from '@ioc:Adonis/Core/HttpContext'
 import { Logger } from '@adonisjs/logger/build/standalone'
 import { Profiler } from '@adonisjs/profiler/build/standalone'
-import { Encryption } from '@adonisjs/encryption/build/standalone'
+import { HttpContextConstructorContract } from '@ioc:Adonis/Core/HttpContext'
+
+import { encryption } from '../test-helpers'
+import { HttpContext as BaseHttpContext } from '../src/HttpContext'
 
 const HttpContext = (BaseHttpContext as any) as HttpContextConstructorContract
-const encryption = new Encryption({
-	secret: 'averylongrandom32charslongsecret',
-})
 
 test.group('Http Context', () => {
 	test('create fake Http context instance', async (assert) => {

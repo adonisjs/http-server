@@ -34,6 +34,8 @@
   "author": "virk,adonisjs",
   "license": "MIT",
   "devDependencies": {
+    "@adonisjs/application": "^2.0.0",
+    "@adonisjs/config": "^1.1.0",
     "@adonisjs/encryption": "^2.0.6",
     "@adonisjs/fold": "^6.3.5",
     "@adonisjs/logger": "^2.1.0",

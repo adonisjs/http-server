@@ -8,13 +8,11 @@
  */
 
 import test from 'japa'
-import { Encryption } from '@adonisjs/encryption/build/standalone'
 
+import { encryption } from '../test-helpers'
 import { CookieParser } from '../src/Cookie/Parser'
 import { CookieSerializer } from '../src/Cookie/Serializer'
 
-const SECRET = Math.random().toFixed(36).substring(2, 38)
-const encryption = new Encryption({ secret: SECRET })
 const serializer = new CookieSerializer(encryption)
 
 test.group('Cookie | parse', () => {

@@ -10,39 +10,17 @@
 import test from 'japa'
 import supertest from 'supertest'
 import { createServer } from 'http'
-import { Encryption } from '@adonisjs/encryption/build/standalone'
 
 import { Router } from '../src/Router'
 import { Response } from '../src/Response'
-import { ResponseConfig } from '@ioc:Adonis/Core/Response'
+import { encryption, responseConfig } from '../test-helpers'
 
-const SECRET = Math.random().toFixed(36).substring(2, 38)
-const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
 const router = new Router(encryption)
-
-const fakeConfig = (conf?: Partial<ResponseConfig>) => {
-	return Object.assign(
-		{
-			etag: false,
-			secret: SECRET,
-			jsonpCallbackName: 'callback',
-			cookie: {
-				maxAge: 90,
-				path: '/',
-				httpOnly: true,
-				sameSite: false,
-				secure: false,
-			},
-		},
-		conf
-	)
-}
 
 test.group('Redirect', () => {
 	test('redirect to given url', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect('/foo')
 			response.finish()
 		})
@@ -53,8 +31,7 @@ test.group('Redirect', () => {
 
 	test('redirect to given url with query string', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect('/foo', true)
 			response.finish()
 		})
@@ -65,8 +42,7 @@ test.group('Redirect', () => {
 
 	test('redirect to given url with query string using new API', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect().withQs().toPath('/foo')
 			response.finish()
 		})
@@ -77,8 +53,7 @@ test.group('Redirect', () => {
 
 	test('redirect to given url with custom query string', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect().withQs('username', 'romain').toPath('/foo')
 			response.finish()
 		})
@@ -89,8 +64,7 @@ test.group('Redirect', () => {
 
 	test('redirect to given url with custom query string overwriting the forward rules', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect().withQs().withQs('username', 'romain').toPath('/foo')
 			response.finish()
 		})
@@ -101,8 +75,7 @@ test.group('Redirect', () => {
 
 	test('redirect to given url with custom query given as object', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response
 				.redirect()
 				.withQs({
@@ -119,8 +92,7 @@ test.group('Redirect', () => {
 
 	test('do not set query string when originally there was no query string', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect('/foo', true)
 			response.finish()
 		})
@@ -131,8 +103,7 @@ test.group('Redirect', () => {
 
 	test('redirect to given url and set custom statusCode', async () => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect('/foo', false, 301)
 			response.finish()
 		})
@@ -142,8 +113,7 @@ test.group('Redirect', () => {
 
 	test('redirect to given url and set custom statusCode using new API', async () => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect().status(301).toPath('/foo')
 			response.finish()
 		})
@@ -153,8 +123,7 @@ test.group('Redirect', () => {
 
 	test('redirect back to referrer', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect('back')
 			response.finish()
 		})
@@ -165,8 +134,7 @@ test.group('Redirect', () => {
 
 	test('redirect back to referer', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect('back')
 			response.finish()
 		})
@@ -177,8 +145,7 @@ test.group('Redirect', () => {
 
 	test('redirect back to root (/) when referrer header is not set', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect('back')
 			response.finish()
 		})
@@ -192,8 +159,7 @@ test.group('Redirect', () => {
 		router.commit()
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect().toRoute('posts.index')
 			response.finish()
 		})
@@ -207,8 +173,7 @@ test.group('Redirect', () => {
 		router.commit()
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect().toRoute('post.show', { params: { id: 1 } })
 			response.finish()
 		})
@@ -225,8 +190,7 @@ test.group('Redirect', () => {
 		router.commit()
 
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect().toRoute('post.create', {}, 'domain.example.com')
 			response.finish()
 		})
@@ -237,8 +201,7 @@ test.group('Redirect', () => {
 
 	test('throw when given route is not found', async (assert) => {
 		const server = createServer((req, res) => {
-			const config = fakeConfig()
-			const response = new Response(req, res, encryption, config, router)
+			const response = new Response(req, res, encryption, responseConfig, router)
 
 			assert.throw(() => {
 				response.redirect().toRoute('should.throw')
