@@ -1,6 +1,6 @@
 {
 	"E_CANNOT_LOOKUP_ROUTE": {
-		"message": "Cannot find route for \"{identifier}\" identifier",
+		"message": "Cannot find route for \"{{ identifier }}\" identifier",
 		"code": "E_CANNOT_FIND_ROUTE",
 		"status": 500,
 		"help": [
@@ -10,7 +10,7 @@
 		]
 	},
 	"E_CANNOT_SERIALIZE_RESPONSE_BODY": {
-		"message": "Unable to send HTTP response. Cannot serialize \"{dataType}\" to a string",
+		"message": "Unable to send HTTP response. Cannot serialize \"{{ dataType }}\" to a string",
 		"code": "E_CANNOT_SERIALIZE_RESPONSE_BODY",
 		"status": 500,
 		"help": [
@@ -21,7 +21,7 @@
 		]
 	},
 	"E_HTTP_EXCEPTION": {
-		"message": "Request aborted with status code {status}",
+		"message": "Request aborted with status code {{ status }}",
 		"code": "E_HTTP_EXCEPTION",
 		"help": ["A generic exception usually raised using \"response.abort\""]
 	},
@@ -35,7 +35,7 @@
 		]
 	},
 	"E_DUPLICATE_ROUTE_NAME": {
-		"message": "Duplicate route name \"{name}\"",
+		"message": "Duplicate route name \"{{ name }}\"",
 		"code": "E_DUPLICATE_ROUTE_NAME",
 		"status": 500,
 		"help": [
@@ -44,7 +44,7 @@
 		]
 	},
 	"E_DUPLICATE_ROUTE": {
-		"message": "Duplicate route \"{method}:{pattern}\"",
+		"message": "Duplicate route \"{{ method }}:{{ pattern }}\"",
 		"code": "E_DUPLICATE_ROUTE",
 		"status": 500,
 		"help": [
@@ -53,17 +53,17 @@
 		]
 	},
 	"E_DUPLICATE_ROUTE_PARAM": {
-		"message": "The \"{param}\" param is mentioned twice in the route pattern \"{pattern}\"",
+		"message": "The \"{{ param }}\" param is mentioned twice in the route pattern \"{{ pattern }}\"",
 		"code": "E_DUPLICATE_ROUTE_PARAM",
 		"status": 500
 	},
 	"E_ROUTE_NOT_FOUND": {
-		"message": "Cannot {method}:{url}",
+		"message": "Cannot {{ method }}:{{ url }}",
 		"code": "E_ROUTE_NOT_FOUND",
 		"status": 404
 	},
 	"E_MISSING_NAMED_MIDDLEWARE": {
-		"message": "Cannot find a middleware named \"{name}\"",
+		"message": "Cannot find a middleware named \"{{ name }}\"",
 		"code": "E_MISSING_NAMED_MIDDLEWARE",
 		"status": 500,
 		"help": [
@@ -72,7 +72,7 @@
 		]
 	},
 	"E_CANNOT_MAKE_ROUTE_URL": {
-		"message": "\"{param}\" param is required to make URL for \"{pattern}\" route",
+		"message": "\"{{ param }}\" param is required to make URL for \"{{ pattern }}\" route",
 		"code": "E_CANNOT_MAKE_ROUTE_URL",
 		"status": 500,
 		"help": [
