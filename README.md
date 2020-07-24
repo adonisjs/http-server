@@ -6,7 +6,7 @@
 
 <div align="center">
   <h3>AdonisJS HTTP Server</h3>
-  <p>A fully feature HTTP server with first class support for <strong>Route groups</strong>, <strong>Sub-domain routing</strong>, <strong>Middleware</strong> and <strong>Cookies</strong>.</p>
+  <p>A fully featured HTTP server with first class support for <strong>Route groups</strong>, <strong>Sub-domain routing</strong>, <strong>Middleware</strong> and <strong>Cookies</strong>.</p>
 </div>
 
 <br />
