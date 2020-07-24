@@ -1,6 +1,6 @@
 {
   "name": "@adonisjs/http-server",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "AdonisJS HTTP server with support packed with Routing and Cookies",
   "main": "build/providers/HttpServerProvider.js",
   "files": [
@@ -139,6 +139,6 @@
   },
   "homepage": "https://github.com/adonisjs/http-server#readme",
   "adonisjs": {
-  	"exceptions": "./build/exceptions.json"
+    "exceptions": "./build/exceptions.json"
   }
 }
