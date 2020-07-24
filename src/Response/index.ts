@@ -17,10 +17,10 @@ import destroy from 'destroy'
 import { extname } from 'path'
 import onFinished from 'on-finished'
 import { Macroable } from 'macroable'
-import { Exception } from '@poppinss/utils'
-import { createReadStream, stat, Stats } from 'fs'
+import { createReadStream } from 'fs'
 import contentDisposition from 'content-disposition'
 import { ServerResponse, IncomingMessage } from 'http'
+import { Exception, interpolate } from '@poppinss/utils'
 
 import {
 	CookieOptions,
@@ -35,53 +35,11 @@ import { RouterContract } from '@ioc:Adonis/Core/Route'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
+import { statFn } from '../helpers'
 import { Redirect } from '../Redirect'
 import { CookieSerializer } from '../Cookie/Serializer'
-
-/**
- * Wraps `fs.stat` to promise interface.
- */
-function statFn(filePath: string): Promise<Stats> {
-	return new Promise((resolve, reject) => {
-		stat(filePath, (error, stats) => {
-			if (error) {
-				reject(error)
-				return
-			}
-			resolve(stats)
-		})
-	})
-}
-
-/**
- * Custom exception to abort requests as one liners
- */
-class HttpException extends Exception {
-	public body: any
-
-	/**
-	 * This method returns an instance of the exception class
-	 */
-	public static invoke(body: any, status: number) {
-		if (body !== null && typeof body === 'object') {
-			const error = new this(body.message || `Request aborted with status code${status}`, status)
-			error.body = body
-			return error
-		}
-
-		const error = new this(body || `Request aborted with status code${status}`, status)
-		error.body = error.message
-		return error
-	}
-
-	/**
-	 * Handle itself by making the response. This only works when using the
-	 * base exception handler shipped by AdonisJs
-	 */
-	public handle(error: HttpException, ctx: HttpContextContract) {
-		ctx.response.status(error.status).send(error.body)
-	}
-}
+import { HttpException } from '../Exceptions/HttpException'
+import { E_CANNOT_SERIALIZE_RESPONSE_BODY } from '../../exceptions.json'
 
 /**
  * The response is a wrapper over [ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse)
@@ -198,7 +156,13 @@ export class Response extends Macroable implements ResponseContract {
 			return 'object'
 		}
 
-		throw new Error(`Unable to send HTTP response. Cannot serialize "${dataType}" to a string`)
+		const error = new Exception(
+			interpolate(E_CANNOT_SERIALIZE_RESPONSE_BODY.message, { dataType }),
+			E_CANNOT_SERIALIZE_RESPONSE_BODY.status,
+			E_CANNOT_SERIALIZE_RESPONSE_BODY.code
+		)
+		error.help = E_CANNOT_SERIALIZE_RESPONSE_BODY.help.join('\n')
+		throw error
 	}
 
 	/**
@@ -403,7 +367,7 @@ export class Response extends Macroable implements ResponseContract {
 		try {
 			const stats = await statFn(filePath)
 			if (!stats || !stats.isFile()) {
-				throw new Error('response.download only accepts path to a file')
+				throw new Exception('response.download only accepts path to a file')
 			}
 
 			/*
@@ -812,7 +776,7 @@ export class Response extends Macroable implements ResponseContract {
 		errorCallback?: (error: NodeJS.ErrnoException) => [string, number?]
 	): void {
 		if (typeof body.pipe !== 'function' || !body.readable || typeof body.read !== 'function') {
-			throw new Error('response.stream accepts a readable stream only')
+			throw new Exception('response.stream accepts a readable stream only')
 		}
 
 		this.writerMethod = 'streamBody'

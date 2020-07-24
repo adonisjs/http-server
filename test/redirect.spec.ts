@@ -8,8 +8,9 @@
  */
 
 import test from 'japa'
+import { Socket } from 'net'
 import supertest from 'supertest'
-import { createServer } from 'http'
+import { createServer, IncomingMessage, ServerResponse } from 'http'
 
 import { Router } from '../src/Router'
 import { Response } from '../src/Response'
@@ -186,21 +187,24 @@ test.group('Redirect', () => {
 		assert.equal(header.location, '/posts/1')
 	})
 
-	test.skip('redirect to given route with domain', async (assert) => {
+	test.failing('redirect to given route with domain', async (assert) => {
 		router
 			.get('posts/create', 'PostsController.create')
 			.as('post.create')
 			.domain('domain.example.com')
+
 		router.commit()
 
-		const server = createServer((req, res) => {
-			const response = new Response(req, res, encryption, responseConfig, router)
-			response.redirect().toRoute('post.create', {}, 'domain.example.com')
-			response.finish()
-		})
+		const req = new IncomingMessage(new Socket())
+		const res = new ServerResponse(req)
+		const response = new Response(req, res, encryption, responseConfig, router)
+		response.redirect().toRoute('post.create', {}, 'domain.example.com')
 
-		const { header } = await supertest(server).get('/').redirects(1)
-		assert.equal(header.location, 'domain.example.com/posts/create')
+		/**
+		 * Header location cannot be protocol agnostic. We need to add support for
+		 * defining domain protocols in the router and then this test should pass
+		 */
+		assert.equal(response.getHeader('location'), 'http://domain.example.com/posts/create')
 	})
 
 	test('throw when given route is not found', async (assert) => {
@@ -208,8 +212,8 @@ test.group('Redirect', () => {
 			const response = new Response(req, res, encryption, responseConfig, router)
 
 			assert.throw(() => {
-				response.redirect().toRoute('should.throw')
-			}, 'Unable to lookup route for "should.throw" identifier')
+				response.redirect().toRoute('posts')
+			}, 'E_CANNOT_FIND_ROUTE: Cannot find route for "posts" identifier')
 
 			response.finish()
 		})

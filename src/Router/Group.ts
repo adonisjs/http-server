@@ -10,21 +10,13 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import { Macroable } from 'macroable'
-import { Exception } from '@poppinss/utils'
 import { RouteGroupContract } from '@ioc:Adonis/Core/Route'
 import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 
 import { Route } from './Route'
 import { BriskRoute } from './BriskRoute'
 import { RouteResource } from './Resource'
-
-function missingRouteName() {
-	return new Exception(
-		'All routes inside a group must have names before calling Route.group.as',
-		500,
-		'E_MISSING_ROUTE_NAME'
-	)
-}
+import { RouterException } from '../Exceptions/RouterException'
 
 /**
  * Group class exposes the API to take action on a group of routes.
@@ -65,7 +57,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
 				 * a name
 				 */
 				if (method === 'as' && !route.route.name) {
-					throw missingRouteName()
+					throw RouterException.cannotDefineGroupName()
 				}
 
 				route.route[method](...params)
@@ -78,7 +70,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
 		 * a name
 		 */
 		if (method === 'as' && !route.name) {
-			throw missingRouteName()
+			throw RouterException.cannotDefineGroupName()
 		}
 
 		route[method](...params)

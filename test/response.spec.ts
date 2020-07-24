@@ -727,7 +727,10 @@ test.group('Response', (group) => {
 		})
 
 		const { text } = await supertest(server).get('/')
-		assert.equal(text, 'Unable to send HTTP response. Cannot serialize "function" to a string')
+		assert.equal(
+			text,
+			'E_CANNOT_SERIALIZE_RESPONSE_BODY: Unable to send HTTP response. Cannot serialize "function" to a string'
+		)
 	})
 
 	test('convert serializable objects to JSON representation', async (assert) => {
@@ -908,7 +911,7 @@ test.group('Response', (group) => {
 		})
 
 		const { text } = await supertest(server).get('/').expect(400)
-		assert.equal(text, 'Bad request')
+		assert.equal(text, 'E_HTTP_EXCEPTION: Bad request')
 	})
 
 	test('abort request with json body', async (assert) => {

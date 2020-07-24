@@ -2,7 +2,8 @@
 	"extends": "./node_modules/@adonisjs/mrm-preset/_tsconfig",
 	"compilerOptions": {
 		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true
+		"emitDecoratorMetadata": true,
+		"resolveJsonModule": true
 	},
 	"files": [
 		"./node_modules/@adonisjs/profiler/build/adonis-typings/profiler.d.ts",

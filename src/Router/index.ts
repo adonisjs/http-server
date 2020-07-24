@@ -10,7 +10,6 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import { stringify } from 'qs'
-import { Exception } from '@poppinss/utils'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 
 import {
@@ -29,6 +28,8 @@ import { Store } from './Store'
 import { RouteGroup } from './Group'
 import { BriskRoute } from './BriskRoute'
 import { RouteResource } from './Resource'
+import { RouterException } from '../Exceptions/RouterException'
+
 import {
 	toRoutesJSON,
 	processPattern,
@@ -288,7 +289,7 @@ export class Router implements RouterContract {
 			 * to ensure that only one route is returned during lookup.
 			 */
 			if (route.name && names.indexOf(route.name) > -1) {
-				throw new Exception(`Duplicate route name \`${route.name}\``, 500, 'E_DUPLICATE_ROUTE_NAME')
+				throw RouterException.duplicateRouteName(route.name)
 			}
 
 			/*

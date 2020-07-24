@@ -11,13 +11,14 @@
 
 import haye from 'haye'
 import { Middleware } from 'co-compose'
-import { Exception } from '@poppinss/utils'
 import { RouteNode } from '@ioc:Adonis/Core/Route'
+import { Exception, interpolate } from '@poppinss/utils'
 import { IocContract, IocResolverContract } from '@adonisjs/fold'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { MiddlewareStoreContract, ResolvedMiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 
 import { useReturnValue } from '../../helpers'
+import { E_MISSING_NAMED_MIDDLEWARE } from '../../../exceptions.json'
 
 /**
  * Precompiler is used to pre compiler the route handler and middleware. We
@@ -40,18 +41,14 @@ export class PreCompiler {
 		 */
 		let returnValue: any
 
-		try {
-			if (routeHandler.type === 'function') {
-				returnValue = await routeHandler.handler(ctx)
-			} else {
-				returnValue = await this.resolver.call(routeHandler, ctx.route!.meta.namespace, [ctx])
-			}
+		if (routeHandler.type === 'function') {
+			returnValue = await routeHandler.handler(ctx)
+		} else {
+			returnValue = await this.resolver.call(routeHandler, ctx.route!.meta.namespace, [ctx])
+		}
 
-			if (useReturnValue(returnValue, ctx)) {
-				ctx.response.send(returnValue)
-			}
-		} catch (error) {
-			throw error
+		if (useReturnValue(returnValue, ctx)) {
+			ctx.response.send(returnValue)
 		}
 	}
 
@@ -117,11 +114,13 @@ export class PreCompiler {
 			 */
 			const resolvedMiddleware = this.middlewareStore.getNamed(name)
 			if (!resolvedMiddleware) {
-				throw new Exception(
-					`Cannot find named middleware ${name}`,
-					500,
-					'E_MISSING_NAMED_MIDDLEWARE'
+				const error = new Exception(
+					interpolate(E_MISSING_NAMED_MIDDLEWARE.message, { name }),
+					E_MISSING_NAMED_MIDDLEWARE.status,
+					E_MISSING_NAMED_MIDDLEWARE.code
 				)
+				error.help = E_MISSING_NAMED_MIDDLEWARE.help.join('\n')
+				throw error
 			}
 
 			resolvedMiddleware.args = args

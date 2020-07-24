@@ -10,14 +10,15 @@
 /// <reference path="../adonis-typings/index.ts" />
 
 import QuickLru from 'quick-lru'
-import { Exception } from '@poppinss/utils'
+import { stat, Stats } from 'fs'
 
 import { Route } from './Router/Route'
 import { RouteGroup } from './Router/Group'
 import { BriskRoute } from './Router/BriskRoute'
 import { RouteResource } from './Router/Resource'
-import { RouteJSON, MakeUrlOptions, MakeSignedUrlOptions } from '@ioc:Adonis/Core/Route'
+import { RouterException } from './Exceptions/RouterException'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { RouteJSON, MakeUrlOptions, MakeSignedUrlOptions } from '@ioc:Adonis/Core/Route'
 
 const proxyCache = new QuickLru({ maxSize: 100 })
 
@@ -95,11 +96,7 @@ export function processPattern(pattern: string, data: any): string {
 				 * A required param is always required to make the complete URL
 				 */
 				if (!param && !isOptional) {
-					throw new Exception(
-						`\`${paramName}\` param is required to make URL for \`${pattern}\` route`,
-						500,
-						'E_MISSING_ROUTE_PARAM_VALUE'
-					)
+					throw RouterException.cannotMakeRoute(paramName, pattern)
 				}
 
 				return param
@@ -173,4 +170,19 @@ export function normalizeMakeSignedUrlOptions(
 		expiresIn,
 		purpose,
 	}
+}
+
+/**
+ * Wraps `fs.stat` to promise interface.
+ */
+export function statFn(filePath: string): Promise<Stats> {
+	return new Promise((resolve, reject) => {
+		stat(filePath, (error, stats) => {
+			if (error) {
+				reject(error)
+				return
+			}
+			resolve(stats)
+		})
+	})
 }

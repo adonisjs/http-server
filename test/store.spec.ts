@@ -114,7 +114,7 @@ test.group('Store | add', () => {
 		})
 	})
 
-	test('raise error when route with duplicate pattern', (assert) => {
+	test('raise error when route has duplicate pattern', (assert) => {
 		async function handler() {}
 		const route = {
 			pattern: '/',
@@ -130,7 +130,7 @@ test.group('Store | add', () => {
 		store.add(route)
 
 		const fn = () => store.add(route)
-		assert.throw(fn, 'Duplicate route `GET:/`')
+		assert.throw(fn, 'E_DUPLICATE_ROUTE: Duplicate route "GET:/"')
 	})
 
 	test('raise error when two params have the same name', (assert) => {
@@ -147,7 +147,10 @@ test.group('Store | add', () => {
 
 		const store = new Store()
 		const fn = () => store.add(route)
-		assert.throw(fn, 'E_DUPLICATE_ROUTE: Duplicate route param "id" in route /:id/:id')
+		assert.throw(
+			fn,
+			'E_DUPLICATE_ROUTE_PARAM: The "id" param is mentioned twice in the route pattern "/:id/:id"'
+		)
 	})
 
 	test('allow static path name same as the param name', (assert) => {

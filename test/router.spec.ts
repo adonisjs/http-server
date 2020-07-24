@@ -125,7 +125,7 @@ test.group('Router | add', () => {
 		router.get('home', async function handler() {}).as('home')
 
 		const fn = () => router.commit()
-		assert.throw(fn, 'Duplicate route name `home`')
+		assert.throw(fn, 'E_DUPLICATE_ROUTE_NAME: Duplicate route name "home"')
 	})
 
 	test('raise error when prefixing route name of route with undefined name', (assert) => {
@@ -144,7 +144,7 @@ test.group('Router | add', () => {
 		} catch (error) {
 			assert.equal(
 				error.message,
-				'E_MISSING_ROUTE_NAME: All routes inside a group must have names before calling Route.group.as'
+				'E_CANNOT_DEFINE_GROUP_NAME: All the routes inside a group must have names before calling "Route.group.as"'
 			)
 		}
 	})
@@ -165,7 +165,7 @@ test.group('Router | add', () => {
 		} catch (error) {
 			assert.equal(
 				error.message,
-				'E_MISSING_ROUTE_NAME: All routes inside a group must have names before calling Route.group.as'
+				'E_CANNOT_DEFINE_GROUP_NAME: All the routes inside a group must have names before calling "Route.group.as"'
 			)
 		}
 	})

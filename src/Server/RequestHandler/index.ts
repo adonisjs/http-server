@@ -10,10 +10,13 @@
 /// <reference path="../../../adonis-typings/index.ts" />
 
 import { Middleware } from 'co-compose'
-import { Exception } from '@poppinss/utils'
+import { interpolate } from '@poppinss/utils'
 import { RouterContract } from '@ioc:Adonis/Core/Route'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { MiddlewareStoreContract, ResolvedMiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
+
+import { HttpException } from '../../Exceptions/HttpException'
+import { E_ROUTE_NOT_FOUND } from '../../../exceptions.json'
 
 /**
  * Handles the request by invoking it's middleware chain, along with the
@@ -54,7 +57,11 @@ export class RequestHandler {
 		 * Raise error when route is missing
 		 */
 		if (!route) {
-			throw new Exception(`Cannot ${method}:${url}`, 404, 'E_ROUTE_NOT_FOUND')
+			throw HttpException.invoke(
+				interpolate(E_ROUTE_NOT_FOUND.message, { method, url }),
+				E_ROUTE_NOT_FOUND.status,
+				E_ROUTE_NOT_FOUND.code
+			)
 		}
 
 		/*

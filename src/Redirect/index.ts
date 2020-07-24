@@ -13,9 +13,10 @@ import { parse } from 'url'
 import { stringify } from 'qs'
 import encodeurl from 'encodeurl'
 import { IncomingMessage } from 'http'
-
-import { RedirectContract, ResponseContract } from '@ioc:Adonis/Core/Response'
 import { RouterContract, MakeUrlOptions } from '@ioc:Adonis/Core/Route'
+import { RedirectContract, ResponseContract } from '@ioc:Adonis/Core/Response'
+
+import { RouterException } from '../Exceptions/RouterException'
 
 /**
  * Exposes the API to construct redirect routes
@@ -88,11 +89,9 @@ export class Redirect implements RedirectContract {
 	 * Redirect the request using a route identifier.
 	 */
 	public toRoute(routeIdentifier: string, urlOptions?: MakeUrlOptions, domain?: string) {
-		// const route = this.router.lookup(routeIdentifier, domain)
-
 		const url = this.router.makeUrl(routeIdentifier, urlOptions, domain)
 		if (!url) {
-			throw new Error(`Unable to lookup route for "${routeIdentifier}" identifier`)
+			throw RouterException.cannotLookupRoute(routeIdentifier)
 		}
 
 		return this.toPath(url)

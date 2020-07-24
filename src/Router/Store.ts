@@ -10,7 +10,7 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import matchit from 'matchit'
-import { Exception, lodash } from '@poppinss/utils'
+import { lodash } from '@poppinss/utils'
 import {
 	RouteNode,
 	DomainNode,
@@ -20,6 +20,8 @@ import {
 	RouteJSON,
 	RouteStoreMatch,
 } from '@ioc:Adonis/Core/Route'
+
+import { RouterException } from '../Exceptions/RouterException'
 
 /**
  * Store class is used to store a list of routes, along side with their tokens
@@ -153,11 +155,7 @@ export class Store {
 		for (let token of tokens) {
 			if ([1, 3].includes(token.type)) {
 				if (collectedParams.has(token.val)) {
-					throw new Exception(
-						`Duplicate route param "${token.val}" in route ${route.pattern}`,
-						500,
-						'E_DUPLICATE_ROUTE'
-					)
+					throw RouterException.duplicateRouteParam(token.val, route.pattern)
 				} else {
 					collectedParams.add(token.val)
 				}
@@ -175,11 +173,7 @@ export class Store {
 			 * routes with the same pattern on the same method.
 			 */
 			if (methodRoutes.routes[route.pattern]) {
-				throw new Exception(
-					`Duplicate route \`${method}:${route.pattern}\``,
-					500,
-					'E_DUPLICATE_ROUTE'
-				)
+				throw RouterException.duplicateRoute(method, route.pattern)
 			}
 
 			methodRoutes.tokens.push(tokens)
