@@ -372,7 +372,7 @@ declare module '@ioc:Adonis/Core/Response' {
 		continue(): void
 		switchingProtocols(): void
 		ok(body: any, generateEtag?: boolean): void
-		created(): void
+		created(body?: any, generateEtag?: boolean): void
 		accepted(body: any, generateEtag?: boolean): void
 		nonAuthoritativeInformation(body: any, generateEtag?: boolean): void
 		noContent(): void

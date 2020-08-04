@@ -926,9 +926,9 @@ export class Response extends Macroable implements ResponseContract {
 		return this.send(body, generateEtag)
 	}
 
-	public created(): void {
+	public created(body?: any, generateEtag?: boolean): void {
 		this.status(201)
-		return this.send(null, false)
+		return this.send(body, generateEtag)
 	}
 
 	public accepted(body: any, generateEtag?: boolean): void {
