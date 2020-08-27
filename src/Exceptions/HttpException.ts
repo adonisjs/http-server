@@ -10,7 +10,6 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import { Exception, interpolate } from '@poppinss/utils'
-import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import { E_HTTP_EXCEPTION } from '../../exceptions.json'
 
@@ -36,13 +35,5 @@ export class HttpException extends Exception {
 		const error = new this(body || interpolate(message, { status }), status, code)
 		error.body = error.message
 		return error
-	}
-
-	/**
-	 * Handle itself by making the response. This only works when using the
-	 * base exception handler shipped by AdonisJs
-	 */
-	public handle(error: HttpException, ctx: HttpContextContract) {
-		ctx.response.status(error.status).send(error.body)
 	}
 }

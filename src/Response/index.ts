@@ -41,6 +41,16 @@ import { CookieSerializer } from '../Cookie/Serializer'
 import { HttpException } from '../Exceptions/HttpException'
 import { E_CANNOT_SERIALIZE_RESPONSE_BODY } from '../../exceptions.json'
 
+class AbortException extends HttpException {
+	/**
+	 * Handle itself by making the response. This only works when using the
+	 * base exception handler shipped by AdonisJs
+	 */
+	public handle(error: HttpException, ctx: HttpContextContract) {
+		ctx.response.status(error.status).send(error.body)
+	}
+}
+
 /**
  * The response is a wrapper over [ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse)
  * streamlining the process of writing response body and automatically setting up appropriate headers.
@@ -809,7 +819,7 @@ export class Response extends Macroable implements ResponseContract {
 	 * used when status is not defined
 	 */
 	public abort(body: any, status?: number): never {
-		throw HttpException.invoke(body, status || 400)
+		throw AbortException.invoke(body, status || 400)
 	}
 
 	/**
