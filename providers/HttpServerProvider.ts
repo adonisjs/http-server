@@ -39,7 +39,9 @@ export default class HttpServerProvider {
 	 */
 	protected registerHTTPContext() {
 		this.container.bind('Adonis/Core/HttpContext', () => {
-			return require('../src/HttpContext').HttpContext
+			const { HttpContext } = require('../src/HttpContext')
+			HttpContext.app = this.container.use('Adonis/Core/Application')
+			return HttpContext
 		})
 	}
 

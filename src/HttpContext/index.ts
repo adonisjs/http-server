@@ -11,16 +11,14 @@
 
 import { Socket } from 'net'
 import { inspect } from 'util'
-import proxyAddr from 'proxy-addr'
 import { Macroable } from 'macroable'
-import { RouteNode, RouterContract } from '@ioc:Adonis/Core/Route'
-import { ServerConfig } from '@ioc:Adonis/Core/Server'
+import { RouteNode } from '@ioc:Adonis/Core/Route'
 import { IncomingMessage, ServerResponse } from 'http'
 import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 import { RequestContract } from '@ioc:Adonis/Core/Request'
 import { ResponseContract } from '@ioc:Adonis/Core/Response'
 import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
-import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
+import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
 import { Request } from '../Request'
@@ -32,9 +30,30 @@ import { processPattern } from '../helpers'
  * error handler and server hooks.
  */
 export class HttpContext extends Macroable implements HttpContextContract {
+	/**
+	 * Set inside the provider
+	 */
+	public static app: ApplicationContract
+
+	/**
+	 * A unique key for the current route
+	 */
 	public routeKey: string
+
+	/**
+	 * Route params
+	 */
 	public params: any = {}
+
+	/**
+	 * Route subdomains
+	 */
 	public subdomains: any = {}
+
+	/**
+	 * Reference to the current route. Not available inside
+	 * server hooks
+	 */
 	public route?: RouteNode
 
 	/**
@@ -68,38 +87,24 @@ export class HttpContext extends Macroable implements HttpContextContract {
 	}
 
 	/**
-	 * Creates a new fake context instance for a given route.
+	 * Creates a new fake context instance for a given route. The method is
+	 * meant to be used inside an AdonisJS application since it relies
+	 * directly on the IoC container.
 	 */
 	public static create(
 		routePattern: string,
 		routeParams: any,
-		logger: LoggerContract,
-		profiler: ProfilerRowContract,
-		encryption: EncryptionContract,
-		router: RouterContract,
 		req?: IncomingMessage,
-		res?: ServerResponse,
-		serverConfig?: ServerConfig
+		res?: ServerResponse
 	) {
+		const Logger = HttpContext.app.container.use('Adonis/Core/Logger')
+		const Router = HttpContext.app.container.use('Adonis/Core/Route')
+		const Profiler = HttpContext.app.container.use('Adonis/Core/Profiler')
+		const Encryption = HttpContext.app.container.use('Adonis/Core/Encryption')
+		const serverConfig = HttpContext.app.container.use('Adonis/Core/Config').get('app.http', {})
+
 		req = req || new IncomingMessage(new Socket())
 		res = res || new ServerResponse(req)
-
-		/*
-		 * Composing server config
-		 */
-		serverConfig = Object.assign(
-			{
-				secret: Math.random().toFixed(36).substring(2, 38),
-				subdomainOffset: 2,
-				allowMethodSpoofing: true,
-				etag: false,
-				generateRequestId: false,
-				cookie: {},
-				jsonpCallbackName: 'callback',
-				trustProxy: proxyAddr.compile('loopback'),
-			},
-			serverConfig || {}
-		)
 
 		/*
 		 * Creating the url from the router pattern and params. Only
@@ -110,7 +115,7 @@ export class HttpContext extends Macroable implements HttpContextContract {
 		/*
 		 * Creating new request instance
 		 */
-		const request = new Request(req, res, encryption, {
+		const request = new Request(req, res, Encryption, {
 			allowMethodSpoofing: serverConfig.allowMethodSpoofing,
 			subdomainOffset: serverConfig.subdomainOffset,
 			trustProxy: serverConfig.trustProxy,
@@ -123,19 +128,19 @@ export class HttpContext extends Macroable implements HttpContextContract {
 		const response = new Response(
 			req,
 			res,
-			encryption,
+			Encryption,
 			{
 				etag: serverConfig.etag,
 				cookie: serverConfig.cookie,
 				jsonpCallbackName: serverConfig.jsonpCallbackName,
 			},
-			router
+			Router
 		)
 
 		/*
 		 * Creating new ctx instance
 		 */
-		const ctx = new HttpContext(request, response, logger, profiler)
+		const ctx = new HttpContext(request, response, Logger, Profiler)
 
 		/*
 		 * Attaching route to the ctx

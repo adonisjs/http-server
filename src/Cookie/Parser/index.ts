@@ -15,7 +15,7 @@ import * as SignedCookie from '../Drivers/Signed'
 import * as EncryptedCookie from '../Drivers/Encrypted'
 
 /**
- * Cookie parser parses the HTTP `cookie` method and collects all cookies
+ * Cookie parser parses the HTTP `cookie` header and collects all cookies
  * inside an object of `key-value` pair, but doesn't attempt to decrypt
  * or unsign or decode the individual values.
  *

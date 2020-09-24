@@ -14,9 +14,8 @@ declare module '@ioc:Adonis/Core/HttpContext' {
 	import { LoggerContract } from '@ioc:Adonis/Core/Logger'
 	import { RequestContract } from '@ioc:Adonis/Core/Request'
 	import { ResponseContract } from '@ioc:Adonis/Core/Response'
-	import { ServerConfig } from '@ioc:Adonis/Core/Server'
 	import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
-	import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
+	import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
 	/**
 	 * Http request context passed to all middleware
@@ -44,18 +43,16 @@ declare module '@ioc:Adonis/Core/HttpContext' {
 	 */
 	export interface HttpContextConstructorContract
 		extends MacroableConstructorContract<HttpContextContract> {
+		app?: ApplicationContract
+
 		/**
 		 * Creates a new fake context instance for a given route.
 		 */
 		create(
 			routePattern: string,
 			routeParams: any,
-			logger: LoggerContract,
-			profiler: ProfilerRowContract,
-			encryption: EncryptionContract,
 			req?: IncomingMessage,
-			res?: ServerResponse,
-			serverConfig?: ServerConfig
+			res?: ServerResponse
 		): HttpContextContract
 
 		new (
