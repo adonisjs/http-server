@@ -9,9 +9,8 @@
 
 import test from 'japa'
 import { join } from 'path'
-import { Registrar, Ioc } from '@adonisjs/fold'
-import { Config } from '@adonisjs/config/build/standalone'
-import { Application } from '@adonisjs/application/build/standalone'
+import { Filesystem } from '@poppinss/dev-utils'
+import { Application } from '@adonisjs/application'
 
 import { Router } from '../src/Router'
 import { Server } from '../src/Server'
@@ -19,45 +18,38 @@ import { Request } from '../src/Request'
 import { Response } from '../src/Response'
 import { HttpContext } from '../src/HttpContext'
 import { MiddlewareStore } from '../src/MiddlewareStore'
-import { appSecret, serverConfig } from '../test-helpers'
+import { serverConfig, appSecret } from '../test-helpers'
 
-test.group('Http Server Provider', () => {
+const fs = new Filesystem(join(__dirname, './app'))
+
+test.group('Http Server Provider', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('register http server provider', async (assert) => {
-		const ioc = new Ioc()
-		ioc.bind('Adonis/Core/Config', () => {
-			return new Config({
-				app: {
-					http: serverConfig,
-					appKey: appSecret,
-					logger: {
-						name: 'adonisjs',
-						level: 'info',
-						enabled: false,
-					},
-				},
-			})
+		await fs.add('.env', '')
+		await fs.add(
+			'config/app.ts',
+			`
+			export const appKey = '${appSecret}'
+			export const http = ${JSON.stringify(serverConfig)}
+		`
+		)
+
+		const app = new Application(fs.basePath, 'web', {
+			providers: ['@adonisjs/encryption', '../../providers/HttpServerProvider'],
 		})
 
-		ioc.bind('Adonis/Core/Application', () => {
-			return new Application(__dirname, ioc, {}, {})
-		})
+		app.setup()
+		app.registerProviders()
+		await app.bootProviders()
 
-		const registrar = new Registrar(ioc, join(__dirname, '..'))
-
-		await registrar
-			.useProviders([
-				'@adonisjs/logger',
-				'@adonisjs/profiler',
-				'@adonisjs/encryption',
-				'./providers/HttpServerProvider',
-			])
-			.registerAndBoot()
-
-		assert.instanceOf(ioc.use('Adonis/Core/Route'), Router)
-		assert.deepEqual(ioc.use('Adonis/Core/Request'), Request)
-		assert.deepEqual(ioc.use('Adonis/Core/Response'), Response)
-		assert.instanceOf(ioc.use('Adonis/Core/Server'), Server)
-		assert.deepEqual(ioc.use('Adonis/Core/MiddlewareStore'), MiddlewareStore)
-		assert.deepEqual(ioc.use('Adonis/Core/HttpContext'), HttpContext)
+		assert.instanceOf(app.container.use('Adonis/Core/Route'), Router)
+		assert.deepEqual(app.container.use('Adonis/Core/Request'), Request)
+		assert.deepEqual(app.container.use('Adonis/Core/Response'), Response)
+		assert.instanceOf(app.container.use('Adonis/Core/Server'), Server)
+		assert.deepEqual(app.container.use('Adonis/Core/MiddlewareStore'), MiddlewareStore)
+		assert.deepEqual(app.container.use('Adonis/Core/HttpContext'), HttpContext)
 	})
 })

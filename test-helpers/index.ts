@@ -8,11 +8,11 @@
  */
 
 import proxyaddr from 'proxy-addr'
+import { Profiler } from '@adonisjs/profiler'
+import { FakeLogger } from '@adonisjs/logger'
 import { ServerConfig } from '@ioc:Adonis/Core/Server'
 import { RequestConfig } from '@ioc:Adonis/Core/Request'
 import { ResponseConfig } from '@ioc:Adonis/Core/Response'
-import { FakeLogger } from '@adonisjs/logger/build/standalone'
-import { Profiler } from '@adonisjs/profiler/build/standalone'
 import { Encryption } from '@adonisjs/encryption/build/standalone'
 
 export const appSecret = 'averylongrandom32charslongsecret'

@@ -8,8 +8,8 @@
  */
 
 import test from 'japa'
-import { Logger } from '@adonisjs/logger/build/standalone'
-import { Profiler } from '@adonisjs/profiler/build/standalone'
+import { Logger } from '@adonisjs/logger'
+import { Profiler } from '@adonisjs/profiler'
 import { HttpContextConstructorContract } from '@ioc:Adonis/Core/HttpContext'
 
 import { encryption } from '../test-helpers'
