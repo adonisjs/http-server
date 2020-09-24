@@ -20,7 +20,7 @@ import { Macroable } from 'macroable'
 import { createReadStream } from 'fs'
 import contentDisposition from 'content-disposition'
 import { ServerResponse, IncomingMessage } from 'http'
-import { Exception, interpolate } from '@poppinss/utils'
+import { Exception, interpolate, safeStringify } from '@poppinss/utils'
 
 import {
 	CookieOptions,
@@ -224,7 +224,7 @@ export class Response extends Macroable implements ResponseContract {
 		} else if (dataType === 'date') {
 			content = content.toISOString()
 		} else if (dataType === 'object') {
-			content = JSON.stringify(content)
+			content = safeStringify(content)
 		}
 
 		/*
