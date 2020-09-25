@@ -1,6 +1,6 @@
 {
   "name": "@adonisjs/http-server",
-  "version": "3.0.3",
+  "version": "4.0.0",
   "description": "AdonisJS HTTP server with support packed with Routing and Cookies",
   "main": "build/providers/HttpServerProvider.js",
   "files": [
@@ -141,9 +141,9 @@
   "homepage": "https://github.com/adonisjs/http-server#readme",
   "adonisjs": {
     "exceptions": "./build/exceptions.json"
-	},
-	"publishConfig": {
-		"access": "public",
-		"tag": "next"
-	}
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "next"
+  }
 }
