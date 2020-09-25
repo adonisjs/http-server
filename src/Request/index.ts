@@ -44,6 +44,11 @@ export class Request extends Macroable implements RequestContract {
 	private requestBody: object = {}
 
 	/**
+	 * Route params
+	 */
+	private routeParams: object = {}
+
+	/**
 	 * A merged copy of `request body` and `querystring`
 	 */
 	private requestData: object = {}
@@ -195,6 +200,20 @@ export class Request extends Macroable implements RequestContract {
 	}
 
 	/**
+	 * Update route params
+	 */
+	public updateParams(data: object) {
+		this.routeParams = data
+	}
+
+	/**
+	 * Returns route params
+	 */
+	public params(): { [key: string]: any } {
+		return this.routeParams
+	}
+
+	/**
 	 * Returns reference to the query string object
 	 */
 	public get(): { [key: string]: any } {
@@ -248,6 +267,21 @@ export class Request extends Macroable implements RequestContract {
 	 */
 	public input(key: string, defaultValue?: any): any {
 		return lodash.get(this.requestData, key, defaultValue)
+	}
+
+	/**
+	 * Returns value for a given key from route params
+	 *
+	 * @example
+	 * ```js
+	 * request.param('id')
+	 *
+	 * // with default value
+	 * request.param('id', 1)
+	 * ```
+	 */
+	public param(key: string, defaultValue?: any): any {
+		return lodash.get(this.routeParams, key, defaultValue)
 	}
 
 	/**

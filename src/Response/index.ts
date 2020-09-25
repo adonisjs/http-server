@@ -63,6 +63,9 @@ export class Response extends Macroable implements ResponseContract {
 	private explicitStatus = false
 	private writerMethod: string = 'endResponse'
 
+	/**
+	 * Cookies serializer
+	 */
 	private cookieSerializer = new CookieSerializer(this.encryption)
 
 	/**
@@ -99,7 +102,7 @@ export class Response extends Macroable implements ResponseContract {
 	 * in raised exceptions.
 	 */
 	public get finished(): boolean {
-		return this.response.finished
+		return this.response.writableFinished
 	}
 
 	/**
@@ -149,17 +152,17 @@ export class Response extends Macroable implements ResponseContract {
 	 * - Buffer
 	 */
 	private getDataType(content: any) {
-		const dataType = typeof content
 		if (Buffer.isBuffer(content)) {
 			return 'buffer'
 		}
 
-		if (dataType === 'number' || dataType === 'boolean' || dataType === 'string') {
-			return dataType
-		}
-
 		if (content instanceof Date) {
 			return 'date'
+		}
+
+		const dataType = typeof content
+		if (dataType === 'number' || dataType === 'boolean' || dataType === 'string') {
+			return dataType
 		}
 
 		if (dataType === 'object' && content instanceof RegExp === false) {
@@ -219,12 +222,12 @@ export class Response extends Macroable implements ResponseContract {
 		 *
 		 * Transforming date, number, boolean and object to a string
 		 */
-		if (dataType === 'number' || dataType === 'boolean') {
+		if (dataType === 'object') {
+			content = safeStringify(content)
+		} else if (dataType === 'number' || dataType === 'boolean') {
 			content = String(content)
 		} else if (dataType === 'date') {
 			content = content.toISOString()
-		} else if (dataType === 'object') {
-			content = safeStringify(content)
 		}
 
 		/*

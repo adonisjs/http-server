@@ -10,8 +10,8 @@
 import { createServer } from 'http'
 import proxyaddr from 'proxy-addr'
 import { Ioc } from '@adonisjs/fold'
-import { Logger } from '@adonisjs/logger/build/standalone'
-import { Profiler } from '@adonisjs/profiler/build/standalone'
+import { Logger } from '@adonisjs/logger'
+import { Profiler } from '@adonisjs/profiler'
 import { Encryption } from '@adonisjs/encryption/build/standalone'
 
 import { Server } from '../standalone'

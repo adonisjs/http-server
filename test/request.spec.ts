@@ -252,6 +252,42 @@ test.group('Request', () => {
 		})
 	})
 
+	test('update request params', async (assert) => {
+		const server = createServer((req, res) => {
+			const request = new Request(req, res, encryption, requestConfig)
+			request.updateParams({ id: 1 })
+			res.writeHead(200, { 'content-type': 'application/json' })
+			res.end(
+				JSON.stringify({
+					params: request.params(),
+				})
+			)
+		})
+
+		const { body } = await supertest(server).get('/')
+		assert.deepEqual(body, {
+			params: { id: 1 },
+		})
+	})
+
+	test('get value for a given param', async (assert) => {
+		const server = createServer((req, res) => {
+			const request = new Request(req, res, encryption, requestConfig)
+			request.updateParams({ id: 1 })
+			res.writeHead(200, { 'content-type': 'application/json' })
+			res.end(
+				JSON.stringify({
+					id: request.param('id'),
+				})
+			)
+		})
+
+		const { body } = await supertest(server).get('/')
+		assert.deepEqual(body, {
+			id: 1,
+		})
+	})
+
 	test('get only few keys from nested object', async (assert) => {
 		const server = createServer((req, res) => {
 			const request = new Request(req, res, encryption, requestConfig)

@@ -64,6 +64,11 @@ declare module '@ioc:Adonis/Core/Request' {
 		updateRawBody(body: string): void
 
 		/**
+		 * Update route params
+		 */
+		updateParams(body: any): void
+
+		/**
 		 * Update the query string with the new data object. The `all` property
 		 * will be re-computed by merging the query and the request body.
 		 */
