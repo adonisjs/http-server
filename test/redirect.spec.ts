@@ -41,7 +41,7 @@ test.group('Redirect', () => {
 		assert.equal(header.location, '/foo?username=romain')
 	})
 
-	test('redirect to given url with query string using new API', async (assert) => {
+	test('redirect to given url and forward current query string', async (assert) => {
 		const server = createServer((req, res) => {
 			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect().withQs().toPath('/foo')
@@ -112,7 +112,7 @@ test.group('Redirect', () => {
 		await supertest(server).get('/').redirects(1).expect(301)
 	})
 
-	test('redirect to given url and set custom statusCode using new API', async () => {
+	test('redirect to given url and set custom statusCode using fluent API', async () => {
 		const server = createServer((req, res) => {
 			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect().status(301).toPath('/foo')
@@ -133,7 +133,7 @@ test.group('Redirect', () => {
 		assert.equal(header.location, '/foo')
 	})
 
-	test('redirect back to referrer when query string', async (assert) => {
+	test('redirect back to referrer with query string', async (assert) => {
 		const server = createServer((req, res) => {
 			const response = new Response(req, res, encryption, responseConfig, router)
 			response.redirect().withQs({ name: 'virk' }).back()
@@ -179,7 +179,7 @@ test.group('Redirect', () => {
 
 		const server = createServer((req, res) => {
 			const response = new Response(req, res, encryption, responseConfig, router)
-			response.redirect().toRoute('post.show', { params: { id: 1 } })
+			response.redirect().toRoute('post.show', { id: 1 })
 			response.finish()
 		})
 
@@ -219,5 +219,49 @@ test.group('Redirect', () => {
 		})
 
 		await supertest(server).get('/').redirects(1)
+	})
+
+	test('merge query string values when withQs is called multiple times', async (assert) => {
+		const server = createServer((req, res) => {
+			const response = new Response(req, res, encryption, responseConfig, router)
+			response.redirect().withQs('username', 'romain').withQs('age', 28).toPath('/foo')
+			response.finish()
+		})
+
+		const { header } = await supertest(server).get('/').redirects(1)
+		assert.equal(header.location, '/foo?username=romain&age=28')
+	})
+
+	test('merge query string with current url qs values', async (assert) => {
+		const server = createServer((req, res) => {
+			const response = new Response(req, res, encryption, responseConfig, router)
+			response.redirect().withQs().withQs('age', 28).toPath('/foo')
+			response.finish()
+		})
+
+		const { header } = await supertest(server).get('/?username=virk').redirects(1)
+		assert.equal(header.location, '/foo?username=virk&age=28')
+	})
+
+	test('do not set query string original url has no qs', async (assert) => {
+		const server = createServer((req, res) => {
+			const response = new Response(req, res, encryption, responseConfig, router)
+			response.redirect().withQs().toPath('/foo')
+			response.finish()
+		})
+
+		const { header } = await supertest(server).get('/').redirects(1)
+		assert.equal(header.location, '/foo')
+	})
+
+	test('clear existing qs', async (assert) => {
+		const server = createServer((req, res) => {
+			const response = new Response(req, res, encryption, responseConfig, router)
+			response.redirect().withQs('name', 'virk').clearQs().toPath('/foo')
+			response.finish()
+		})
+
+		const { header } = await supertest(server).get('/').redirects(1)
+		assert.equal(header.location, '/foo')
 	})
 })

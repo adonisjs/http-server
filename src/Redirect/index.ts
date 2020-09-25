@@ -9,8 +9,8 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
+import qs from 'qs'
 import { parse } from 'url'
-import { stringify } from 'qs'
 import encodeurl from 'encodeurl'
 import { IncomingMessage } from 'http'
 import { RouterContract, MakeUrlOptions } from '@ioc:Adonis/Core/Route'
@@ -52,7 +52,19 @@ export class Redirect implements RedirectContract {
 	}
 
 	/**
-	 * Forward the current QueryString or define one.
+	 * Clearing query string values added using the
+	 * "withQs" method
+	 */
+	public clearQs(): this {
+		this.forwardQueryString = false
+		this.queryString = {}
+		return this
+	}
+
+	/**
+	 * Define query string for the redirect. Not passing
+	 * any value will forward the current request query
+	 * string.
 	 */
 	public withQs(): this
 	public withQs(values: { [key: string]: any }): this
@@ -68,7 +80,7 @@ export class Redirect implements RedirectContract {
 			return this
 		}
 
-		this.queryString = name
+		Object.assign(this.queryString, name)
 		return this
 	}
 
@@ -101,20 +113,26 @@ export class Redirect implements RedirectContract {
 	 * Redirect the request using a path.
 	 */
 	public toPath(url: string) {
-		let query: any
+		let query: any = {}
 
-		// Extract the current QueryString if we want to forward it.
+		/**
+		 * Extract the current query string
+		 */
 		if (this.forwardQueryString) {
-			const { query: extractedQuery } = parse(this.request.url!, false)
-			query = extractedQuery
+			query = qs.parse(parse(this.request.url!, false).query || '')
 		}
 
-		// If we define our own QueryString, use it instead of the one forwarded.
-		if (Object.keys(this.queryString).length > 0) {
-			query = stringify(this.queryString)
-		}
+		/**
+		 * Assign custom query string
+		 */
+		Object.assign(query, this.queryString)
 
-		url = query ? `${url}?${query}` : url
+		/**
+		 * Convert string
+		 */
+		const stringified = qs.stringify(query)
+
+		url = stringified ? `${url}?${stringified}` : url
 		this.response.location(encodeurl(url))
 		this.response.safeStatus(this.statusCode)
 		this.response.type('text/plain; charset=utf-8')

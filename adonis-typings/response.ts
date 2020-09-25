@@ -423,6 +423,12 @@ declare module '@ioc:Adonis/Core/Response' {
 		status(statusCode: number): this
 
 		/**
+		 * Clear existing query string values added using
+		 * "withQs"
+		 */
+		clearQs(): this
+
+		/**
 		 * Forward the current QueryString or define one.
 		 */
 		withQs(): this
