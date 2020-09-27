@@ -13,11 +13,11 @@ import matchit from 'matchit'
 import { lodash } from '@poppinss/utils'
 import {
 	RouteNode,
+	RouteJSON,
 	DomainNode,
 	MethodNode,
 	RoutesTree,
 	MatchedRoute,
-	RouteJSON,
 	RouteStoreMatch,
 } from '@ioc:Adonis/Core/Route'
 

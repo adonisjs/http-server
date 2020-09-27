@@ -273,7 +273,7 @@ export class Router implements RouterContract {
 	 * Returns a flat list of routes JSON
 	 */
 	public toJSON() {
-		return toRoutesJSON(this.routes)
+		return this.lookupStore
 	}
 
 	/**
@@ -283,7 +283,7 @@ export class Router implements RouterContract {
 	public commit() {
 		const names: string[] = []
 
-		this.toJSON().forEach((route) => {
+		toRoutesJSON(this.routes).forEach((route) => {
 			/*
 			 * Raise error when route name is already in use. Route names have to be unique
 			 * to ensure that only one route is returned during lookup.

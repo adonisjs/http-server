@@ -2047,18 +2047,15 @@ test.group('Brisk route', () => {
 		async function handler() {}
 
 		router.on('/').setHandler(handler, 'render')
+		router.commit()
+
 		assert.deepEqual(router.toJSON(), [
 			{
 				name: undefined,
 				pattern: '/',
 				handler,
 				methods: ['GET'],
-				matchers: {},
-				meta: {
-					namespace: undefined,
-				},
 				domain: 'root',
-				middleware: [],
 			},
 		])
 	})
@@ -2074,18 +2071,14 @@ test.group('Brisk route', () => {
 			.prefix('api/v1')
 			.as('v1')
 
+		router.commit()
 		assert.deepEqual(router.toJSON(), [
 			{
 				name: 'v1.root',
 				pattern: '/api/v1',
 				handler,
 				methods: ['GET'],
-				matchers: {},
-				meta: {
-					namespace: undefined,
-				},
 				domain: 'root',
-				middleware: [],
 			},
 		])
 	})

@@ -7,20 +7,20 @@
  * file that was distributed with this source code.
  */
 
-import { IocContract } from '@adonisjs/fold'
+import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
 export default class HttpServerProvider {
-	constructor(protected container: IocContract) {}
+	constructor(protected application: ApplicationContract) {}
 
 	/**
 	 * Register request and response bindings to the container
 	 */
 	protected registerRequestResponse() {
-		this.container.singleton('Adonis/Core/Request', () => {
+		this.application.container.singleton('Adonis/Core/Request', () => {
 			return require('../src/Request').Request
 		})
 
-		this.container.singleton('Adonis/Core/Response', () => {
+		this.application.container.singleton('Adonis/Core/Response', () => {
 			return require('../src/Response').Response
 		})
 	}
@@ -29,7 +29,7 @@ export default class HttpServerProvider {
 	 * Registering middleware store to the container
 	 */
 	protected registerMiddlewareStore() {
-		this.container.bind('Adonis/Core/MiddlewareStore', () => {
+		this.application.container.bind('Adonis/Core/MiddlewareStore', () => {
 			return require('../src/MiddlewareStore').MiddlewareStore
 		})
 	}
@@ -38,9 +38,9 @@ export default class HttpServerProvider {
 	 * Registering the HTTP context
 	 */
 	protected registerHTTPContext() {
-		this.container.bind('Adonis/Core/HttpContext', () => {
+		this.application.container.bind('Adonis/Core/HttpContext', () => {
 			const { HttpContext } = require('../src/HttpContext')
-			HttpContext.app = this.container.use('Adonis/Core/Application')
+			HttpContext.app = this.application.container.use('Adonis/Core/Application')
 			return HttpContext
 		})
 	}
@@ -49,14 +49,12 @@ export default class HttpServerProvider {
 	 * Register the HTTP server
 	 */
 	protected registerHttpServer() {
-		this.container.singleton('Adonis/Core/Server', () => {
+		this.application.container.singleton('Adonis/Core/Server', () => {
 			const { Server } = require('../src/Server')
 
-			const Logger = this.container.use('Adonis/Core/Logger')
-			const Profiler = this.container.use('Adonis/Core/Profiler')
-			const Config = this.container.use('Adonis/Core/Config')
-			const Encryption = this.container.use('Adonis/Core/Encryption')
-			return new Server(this.container, Logger, Profiler, Encryption, Config.get('app.http', {}))
+			const Config = this.application.container.use('Adonis/Core/Config')
+			const Encryption = this.application.container.use('Adonis/Core/Encryption')
+			return new Server(this.application, Encryption, Config.get('app.http', {}))
 		})
 	}
 
@@ -65,8 +63,8 @@ export default class HttpServerProvider {
 	 * by the middleware
 	 */
 	protected registerRouter() {
-		this.container.singleton('Adonis/Core/Route', () => {
-			return this.container.use('Adonis/Core/Server').router
+		this.application.container.singleton('Adonis/Core/Route', () => {
+			return this.application.container.use('Adonis/Core/Server').router
 		})
 	}
 

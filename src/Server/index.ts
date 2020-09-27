@@ -10,13 +10,12 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import ms from 'ms'
-import { IocContract } from '@adonisjs/fold'
 import { Server as HttpsServer } from 'https'
-import { LoggerContract } from '@ioc:Adonis/Core/Logger'
+import { ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 import { IncomingMessage, ServerResponse, Server as HttpServer } from 'http'
-import { ProfilerContract, ProfilerRowContract } from '@ioc:Adonis/Core/Profiler'
 import { ServerContract, ServerConfig, ErrorHandler } from '@ioc:Adonis/Core/Server'
 
 import { Hooks } from './Hooks'
@@ -43,7 +42,7 @@ export class Server implements ServerContract {
 	/**
 	 * The middleware store to register global and named middleware
 	 */
-	public middleware = new MiddlewareStore(this.container)
+	public middleware = new MiddlewareStore(this.application.container)
 
 	/**
 	 * The route to register routes
@@ -58,12 +57,12 @@ export class Server implements ServerContract {
 	/**
 	 * Precompiler to set the finalHandler for the route
 	 */
-	private precompiler = new PreCompiler(this.container, this.middleware)
+	private precompiler = new PreCompiler(this.application.container, this.middleware)
 
 	/**
 	 * Exception manager to handle exceptions
 	 */
-	private exception = new ExceptionManager(this.container)
+	private exception = new ExceptionManager(this.application.container)
 
 	/**
 	 * Request handler to handle request after route is found
@@ -71,9 +70,7 @@ export class Server implements ServerContract {
 	private requestHandler = new RequestHandler(this.middleware, this.router)
 
 	constructor(
-		private container: IocContract,
-		private logger: LoggerContract,
-		private profiler: ProfilerContract,
+		private application: ApplicationContract,
 		private encryption: EncryptionContract,
 		private httpConfig: ServerConfig
 	) {
@@ -104,7 +101,7 @@ export class Server implements ServerContract {
 	 * Returns the profiler row
 	 */
 	private getProfilerRow(request: Request) {
-		return this.profiler.create('http:request', {
+		return this.application.profiler.create('http:request', {
 			request_id: request.id(),
 			url: request.url(),
 			method: request.method(),
@@ -118,7 +115,7 @@ export class Server implements ServerContract {
 		return new HttpContext(
 			request,
 			response,
-			this.logger.child({
+			this.application.logger.child({
 				request_id: request.id(),
 				serializers: {},
 			}),

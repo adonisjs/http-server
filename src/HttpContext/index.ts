@@ -97,9 +97,7 @@ export class HttpContext extends Macroable implements HttpContextContract {
 		req?: IncomingMessage,
 		res?: ServerResponse
 	) {
-		const Logger = HttpContext.app.container.use('Adonis/Core/Logger')
 		const Router = HttpContext.app.container.use('Adonis/Core/Route')
-		const Profiler = HttpContext.app.container.use('Adonis/Core/Profiler')
 		const Encryption = HttpContext.app.container.use('Adonis/Core/Encryption')
 		const serverConfig = HttpContext.app.container.use('Adonis/Core/Config').get('app.http', {})
 
@@ -140,7 +138,12 @@ export class HttpContext extends Macroable implements HttpContextContract {
 		/*
 		 * Creating new ctx instance
 		 */
-		const ctx = new HttpContext(request, response, Logger, Profiler)
+		const ctx = new HttpContext(
+			request,
+			response,
+			this.app.logger.child({}),
+			this.app.profiler.create('http:context')
+		)
 
 		/*
 		 * Attaching route to the ctx
@@ -161,6 +164,11 @@ export class HttpContext extends Macroable implements HttpContextContract {
 		 * Attaching params to the ctx
 		 */
 		ctx.params = routeParams
+
+		/**
+		 * Set params on the request
+		 */
+		ctx.request.updateParams(routeParams)
 
 		return ctx
 	}

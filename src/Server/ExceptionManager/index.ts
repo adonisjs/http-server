@@ -30,7 +30,7 @@ export class ExceptionManager {
 	 * A reference to ioc resolver to resolve the error handler from
 	 * the IoC container
 	 */
-	private resolver: IocResolverContract
+	private resolver: IocResolverContract<any>
 
 	constructor(private container: IocContract) {
 		this.resolver = container.getResolver()

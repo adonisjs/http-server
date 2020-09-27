@@ -53,7 +53,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
 	/**
 	 * The resolver to resolve middleware from the IoC container
 	 */
-	private resolver: IocResolverContract
+	private resolver: IocResolverContract<any>
 
 	constructor(container: IocContract) {
 		this.resolver = container.getResolver()

@@ -9,21 +9,25 @@
 
 /// <reference path="../adonis-typings/index.ts" />
 
-import 'reflect-metadata'
 import test from 'japa'
+import 'reflect-metadata'
 import supertest from 'supertest'
 import { createServer } from 'http'
-import { Ioc, inject } from '@adonisjs/fold'
-import { Profiler } from '@adonisjs/profiler'
+import { inject } from '@adonisjs/fold'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { ProfilerAction, ProfilerRow } from '@ioc:Adonis/Core/Profiler'
 
 import { Server } from '../src/Server'
-import { serverConfig, logger, encryption, profiler } from '../test-helpers'
+import { serverConfig, fs, setupApp, encryption } from '../test-helpers'
 
-test.group('Server | Response handling', () => {
+test.group('Server | Response handling', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('invoke router handler', async (assert) => {
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 		const httpServer = createServer(server.handle.bind(server))
 
 		server.router.get('/', async ({ response }) => response.send('handled'))
@@ -34,7 +38,9 @@ test.group('Server | Response handling', () => {
 	})
 
 	test('use route handler return value when response.send is not called', async (assert) => {
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
+
 		const httpServer = createServer(server.handle.bind(server))
 
 		server.router.get('/', async () => 'handled')
@@ -45,7 +51,9 @@ test.group('Server | Response handling', () => {
 	})
 
 	test('do not use return value when response.send is called', async (assert) => {
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
+
 		const httpServer = createServer(server.handle.bind(server))
 
 		server.router.get('/', async ({ response }) => {
@@ -59,10 +67,9 @@ test.group('Server | Response handling', () => {
 	})
 
 	test('pre process cookie max age', async (assert) => {
+		const app = await setupApp()
 		const server = new Server(
-			new Ioc(),
-			logger,
-			profiler,
+			app,
 			encryption,
 			Object.assign({}, serverConfig, {
 				cookie: {
@@ -70,6 +77,7 @@ test.group('Server | Response handling', () => {
 				},
 			})
 		)
+
 		const httpServer = createServer(server.handle.bind(server))
 
 		server.router.get('/', async ({ response }) => {
@@ -82,11 +90,17 @@ test.group('Server | Response handling', () => {
 	})
 })
 
-test.group('Server | middleware', () => {
+test.group('Server | middleware', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('execute global middleware before route handler', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
+
 		const httpServer = createServer(server.handle.bind(server))
 
 		server.router.get('/', async () => {
@@ -114,7 +128,9 @@ test.group('Server | middleware', () => {
 	test('execute global and route middleware before route handler', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
+
 		const httpServer = createServer(server.handle.bind(server))
 
 		server.middleware.register([
@@ -147,7 +163,9 @@ test.group('Server | middleware', () => {
 	test('terminate request from global middleware', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
+
 		const httpServer = createServer(server.handle.bind(server))
 
 		server.middleware.register([
@@ -181,7 +199,9 @@ test.group('Server | middleware', () => {
 	test('terminate request from global middleware with exception', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
+
 		const httpServer = createServer(server.handle.bind(server))
 
 		server.middleware.register([
@@ -215,7 +235,9 @@ test.group('Server | middleware', () => {
 	test('terminate request from named middleware with exception', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
+
 		const httpServer = createServer(server.handle.bind(server))
 
 		server.middleware.register([
@@ -248,7 +270,9 @@ test.group('Server | middleware', () => {
 	test('terminate request from named middleware by not calling next', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
+
 		const httpServer = createServer(server.handle.bind(server))
 
 		server.middleware.register([
@@ -280,8 +304,8 @@ test.group('Server | middleware', () => {
 	})
 
 	test('middleware must profile in the request scope', async (assert) => {
-		const customProfiler = new Profiler(__dirname, logger, { enabled: true })
-		const server = new Server(new Ioc(), logger, customProfiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		let requestPacket: ProfilerRow
 		let hookPacket: ProfilerAction
@@ -297,7 +321,7 @@ test.group('Server | middleware', () => {
 
 		server.optimize()
 
-		customProfiler.process((packet) => {
+		app.profiler.process((packet) => {
 			if (packet.label === 'foo') {
 				hookPacket = packet as ProfilerAction
 			} else {
@@ -308,12 +332,13 @@ test.group('Server | middleware', () => {
 		const httpServer = createServer(server.handle.bind(server))
 		await supertest(httpServer).get('/').expect(200)
 
+		assert.isDefined(hookPacket!.parent_id)
 		assert.equal(hookPacket!.parent_id, requestPacket!.id)
 	})
 
 	test('upstream middleware must profile in the request scope', async (assert) => {
-		const customProfiler = new Profiler(__dirname, logger, { enabled: true })
-		const server = new Server(new Ioc(), logger, customProfiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		let requestPacket: ProfilerRow
 		let hookPacket: ProfilerAction
@@ -329,7 +354,7 @@ test.group('Server | middleware', () => {
 
 		server.optimize()
 
-		customProfiler.process((packet) => {
+		app.profiler.process((packet) => {
 			if (packet.label === 'foo') {
 				hookPacket = packet as ProfilerAction
 			} else {
@@ -340,15 +365,22 @@ test.group('Server | middleware', () => {
 		const httpServer = createServer(server.handle.bind(server))
 		await supertest(httpServer).get('/').expect(200)
 
+		assert.isDefined(hookPacket!.parent_id)
 		assert.equal(hookPacket!.parent_id, requestPacket!.id)
 	})
 })
 
-test.group('Server | hooks', () => {
+test.group('Server | hooks', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('execute all before hooks', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
+
 		server.hooks.before(async () => {
 			stack.push('hook1')
 		})
@@ -366,7 +398,9 @@ test.group('Server | hooks', () => {
 	test('do not execute next hook when first raises error', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
+
 		server.hooks.before(async () => {
 			stack.push('hook1')
 			throw new Error('Blown away')
@@ -387,7 +421,9 @@ test.group('Server | hooks', () => {
 	test('do not execute next hook when first writes the body', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
+
 		server.hooks.before(async ({ response }) => {
 			stack.push('hook1')
 			response.send('done')
@@ -408,7 +444,8 @@ test.group('Server | hooks', () => {
 	test('do not execute next hook when first writes the body in non-explicit mode', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		server.hooks.before(async ({ response }) => {
 			stack.push('hook1')
@@ -430,7 +467,8 @@ test.group('Server | hooks', () => {
 	test('execute after hooks before writing the response', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		server.hooks.before(async () => {
 			stack.push('hook1')
@@ -461,7 +499,8 @@ test.group('Server | hooks', () => {
 	test('execute after hooks when route handler raises error', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		server.hooks.before(async () => {
 			stack.push('hook1')
@@ -492,7 +531,8 @@ test.group('Server | hooks', () => {
 	test('execute after hooks when route is missing', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		server.hooks.before(async () => {
 			stack.push('hook1')
@@ -518,7 +558,8 @@ test.group('Server | hooks', () => {
 	test('execute after hooks when before hook raises error', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		server.hooks.before(async () => {
 			stack.push('hook1')
@@ -545,7 +586,8 @@ test.group('Server | hooks', () => {
 	test('execute after hooks when before hook writes response', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		server.hooks.before(async ({ response }) => {
 			stack.push('hook1')
@@ -573,7 +615,8 @@ test.group('Server | hooks', () => {
 	test('catch after hook errors', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		server.hooks.before(async () => {
 			stack.push('hook1')
@@ -600,7 +643,8 @@ test.group('Server | hooks', () => {
 	test('allow after hooks to set headers when route handler raises an exception', async (assert) => {
 		const stack: string[] = []
 
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		server.hooks.before(async () => {
 			stack.push('hook1')
@@ -630,8 +674,8 @@ test.group('Server | hooks', () => {
 	})
 
 	test('after hooks must profile in the request scope', async (assert) => {
-		const customProfiler = new Profiler(__dirname, logger, { enabled: true })
-		const server = new Server(new Ioc(), logger, customProfiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		let requestPacket: ProfilerRow
 		let hookPacket: ProfilerAction
@@ -646,7 +690,7 @@ test.group('Server | hooks', () => {
 
 		server.optimize()
 
-		customProfiler.process((packet) => {
+		app.profiler.process((packet) => {
 			if (packet.label === 'foo') {
 				hookPacket = packet as ProfilerAction
 			} else {
@@ -661,9 +705,15 @@ test.group('Server | hooks', () => {
 	})
 })
 
-test.group('Server | error handler', () => {
+test.group('Server | error handler', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	test('pass before hook errors to error handler', async (assert) => {
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
+
 		server.errorHandler(async (_error, { response }) => {
 			response.status(200).send('handled by error handler')
 		})
@@ -681,7 +731,8 @@ test.group('Server | error handler', () => {
 	})
 
 	test('pass route handler errors to error handler', async (assert) => {
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		server.errorHandler(async (_error, { response }) => {
 			response.status(200).send('handled by error handler')
@@ -700,7 +751,8 @@ test.group('Server | error handler', () => {
 	})
 
 	test('pass middleware error to custom error handler', async (assert) => {
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		server.errorHandler(async (_error, { response }) => {
 			response.status(200).send('handled by error handler')
@@ -725,7 +777,8 @@ test.group('Server | error handler', () => {
 	})
 
 	test('pass after hooks error to custom error handler', async (assert) => {
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		server.errorHandler(async (_error, { response }) => {
 			response.send('handled by error handler')
@@ -744,7 +797,8 @@ test.group('Server | error handler', () => {
 	})
 
 	test('pass missing route error to error handler', async (assert) => {
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		server.errorHandler(async (_error, { response }) => {
 			response.send('handled by error handler')
@@ -772,10 +826,10 @@ test.group('Server | error handler', () => {
 			}
 		}
 
-		const ioc = new Ioc()
-		ioc.bind('App/Exceptions/Handler', () => new ErrorHandler())
+		const app = await setupApp()
+		app.container.bind('App/Exceptions/Handler', () => new ErrorHandler())
 
-		const server = new Server(ioc, logger, profiler, encryption, serverConfig)
+		const server = new Server(app, encryption, serverConfig)
 		server.errorHandler('App/Exceptions/Handler')
 
 		server.router.get('/', async () => {
@@ -804,10 +858,9 @@ test.group('Server | error handler', () => {
 			}
 		}
 
-		const ioc = new Ioc()
-		ioc.bind('App/Exceptions/Handler', () => new ErrorHandler())
-
-		const server = new Server(ioc, logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		app.container.bind('App/Exceptions/Handler', () => new ErrorHandler())
+		const server = new Server(app, encryption, serverConfig)
 		server.errorHandler('App/Exceptions/Handler')
 
 		server.router.get('/', async () => {
@@ -823,7 +876,8 @@ test.group('Server | error handler', () => {
 	})
 
 	test('pass response toJSON error to error handler', async (assert) => {
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
 
 		server.errorHandler(async (_error, { response }) => {
 			response.send('handled by error handler')
@@ -846,6 +900,10 @@ test.group('Server | error handler', () => {
 })
 
 test.group('Server | all', (group) => {
+	group.afterEach(async () => {
+		await fs.cleanup()
+	})
+
 	group.afterEach(() => {
 		delete global[Symbol.for('ioc.use')]
 		delete global[Symbol.for('ioc.call')]
@@ -853,7 +911,9 @@ test.group('Server | all', (group) => {
 	})
 
 	test('raise 404 when route is missing', async (assert) => {
-		const server = new Server(new Ioc(), logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		const server = new Server(app, encryption, serverConfig)
+
 		server.optimize()
 
 		const httpServer = createServer(server.handle.bind(server))
@@ -874,10 +934,10 @@ test.group('Server | all', (group) => {
 			}
 		}
 
-		const ioc = new Ioc()
-		ioc.bind('App/Controllers/Http/HomeController', () => new HomeController())
+		const app = await setupApp()
+		app.container.bind('App/Controllers/Http/HomeController', () => new HomeController())
 
-		const server = new Server(ioc, logger, profiler, encryption, serverConfig)
+		const server = new Server(app, encryption, serverConfig)
 		server.router.get('/', 'HomeController.index')
 		server.optimize()
 
@@ -900,9 +960,10 @@ test.group('Server | all', (group) => {
 			}
 		}
 
-		const ioc = new Ioc()
-		ioc.bind('App/Middleware/Auth', () => new AuthMiddleware())
-		const server = new Server(ioc, logger, profiler, encryption, serverConfig)
+		const app = await setupApp()
+		app.container.bind('App/Middleware/Auth', () => new AuthMiddleware())
+
+		const server = new Server(app, encryption, serverConfig)
 
 		server.middleware.registerNamed({
 			auth: 'App/Middleware/Auth',
@@ -923,15 +984,15 @@ test.group('Server | all', (group) => {
 	})
 
 	test('set accept header when forceContentNegotiationToJson is true', async (assert) => {
+		const app = await setupApp()
 		const server = new Server(
-			new Ioc(),
-			logger,
-			profiler,
+			app,
 			encryption,
 			Object.assign({}, serverConfig, {
 				forceContentNegotiationToJSON: true,
 			})
 		)
+
 		const httpServer = createServer(server.handle.bind(server))
 
 		server.router.get('/', async ({ request, response }) => response.send(request.header('accept')))
@@ -942,17 +1003,16 @@ test.group('Server | all', (group) => {
 	})
 
 	test('pass routeKey to the context', async (assert) => {
+		const app = await setupApp()
 		const server = new Server(
-			new Ioc(),
-			logger,
-			profiler,
+			app,
 			encryption,
 			Object.assign({}, serverConfig, {
 				forceContentNegotiationToJSON: true,
 			})
 		)
-		const httpServer = createServer(server.handle.bind(server))
 
+		const httpServer = createServer(server.handle.bind(server))
 		server.router.get('/', async ({ routeKey, response }) => response.send(routeKey))
 		server.optimize()
 

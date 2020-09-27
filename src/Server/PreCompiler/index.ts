@@ -44,7 +44,7 @@ export class PreCompiler {
 		if (routeHandler.type === 'function') {
 			returnValue = await routeHandler.handler(ctx)
 		} else {
-			returnValue = await this.resolver.call(routeHandler, ctx.route!.meta.namespace, [ctx])
+			returnValue = await this.resolver.call(routeHandler, undefined, [ctx])
 		}
 
 		if (useReturnValue(returnValue, ctx)) {
@@ -77,7 +77,7 @@ export class PreCompiler {
 	/**
 	 * The resolver used to resolve the controllers from IoC container
 	 */
-	private resolver: IocResolverContract
+	private resolver: IocResolverContract<any>
 
 	constructor(container: IocContract, private middlewareStore: MiddlewareStoreContract) {
 		this.resolver = container.getResolver(undefined, 'httpControllers', 'App/Controllers/Http')

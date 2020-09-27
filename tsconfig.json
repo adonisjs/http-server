@@ -6,8 +6,7 @@
 		"resolveJsonModule": true
 	},
 	"files": [
-		"./node_modules/@adonisjs/profiler/build/adonis-typings/profiler.d.ts",
-		"./node_modules/@adonisjs/logger/build/adonis-typings/logger.d.ts",
+		"./node_modules/@adonisjs/application/build/adonis-typings/index.d.ts",
 		"./node_modules/@adonisjs/encryption/build/adonis-typings/encryption.d.ts"
 	]
 }

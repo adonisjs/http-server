@@ -8,9 +8,6 @@
  */
 
 import test from 'japa'
-import { join } from 'path'
-import { Filesystem } from '@poppinss/dev-utils'
-import { Application } from '@adonisjs/application'
 
 import { Router } from '../src/Router'
 import { Server } from '../src/Server'
@@ -18,29 +15,7 @@ import { Request } from '../src/Request'
 import { Response } from '../src/Response'
 import { HttpContext } from '../src/HttpContext'
 import { MiddlewareStore } from '../src/MiddlewareStore'
-import { serverConfig, appSecret } from '../test-helpers'
-
-const fs = new Filesystem(join(__dirname, './app'))
-
-async function setupApp() {
-	await fs.add('.env', '')
-
-	await fs.add(
-		'config/app.ts',
-		`
-		export const appKey = '${appSecret}'
-		export const http = ${JSON.stringify(serverConfig)}
-	`
-	)
-
-	const app = new Application(fs.basePath, 'web', {
-		providers: ['@adonisjs/encryption', '../../providers/HttpServerProvider'],
-	})
-	app.setup()
-	app.registerProviders()
-	await app.bootProviders()
-	return app
-}
+import { fs, setupApp } from '../test-helpers'
 
 test.group('Http Server Provider', (group) => {
 	group.afterEach(async () => {
@@ -48,7 +23,7 @@ test.group('Http Server Provider', (group) => {
 	})
 
 	test('register http server provider', async (assert) => {
-		const app = await setupApp()
+		const app = await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
 
 		assert.instanceOf(app.container.use('Adonis/Core/Route'), Router)
 		assert.deepEqual(app.container.use('Adonis/Core/Request'), Request)
@@ -65,7 +40,7 @@ test.group('Http Context', (group) => {
 	})
 
 	test('create fake Http context instance', async (assert) => {
-		await setupApp()
+		await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
 		const ctx = HttpContext.create('/', {})
 
 		assert.instanceOf(ctx, HttpContext)
@@ -74,7 +49,7 @@ test.group('Http Context', (group) => {
 	})
 
 	test('compute request url from params', async (assert) => {
-		await setupApp()
+		await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
 		const ctx = HttpContext.create('/:id', { id: '1' })
 
 		assert.instanceOf(ctx, HttpContext)
@@ -84,7 +59,7 @@ test.group('Http Context', (group) => {
 	})
 
 	test('add macro to http context', async (assert) => {
-		await setupApp()
+		await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
 		HttpContext.macro('url', function url() {
 			return `user/${this.params.id}`
 		})
@@ -97,7 +72,7 @@ test.group('Http Context', (group) => {
 	})
 
 	test('pass ctx to request and response', async (assert) => {
-		await setupApp()
+		await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
 		const ctx = HttpContext.create('/', {})
 		assert.deepEqual(ctx.request.ctx, ctx)
 		assert.deepEqual(ctx.response.ctx, ctx)

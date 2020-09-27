@@ -30,7 +30,7 @@ declare module '@ioc:Adonis/Core/Middleware' {
 				args: string[]
 		  }
 		| {
-				type: 'autoload' | 'binding'
+				type: 'alias' | 'binding'
 				namespace: string
 				method: string
 				args: string[]

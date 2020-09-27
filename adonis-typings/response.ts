@@ -10,9 +10,9 @@
 declare module '@ioc:Adonis/Core/Response' {
 	import { ServerResponse, IncomingMessage } from 'http'
 	import { MacroableConstructorContract } from 'macroable'
-	import { MakeUrlOptions } from '@ioc:Adonis/Core/Route'
 	import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 	import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+	import { MakeUrlOptions, RouterContract } from '@ioc:Adonis/Core/Route'
 
 	/**
 	 * Cookie options can that can be set on the response
@@ -471,7 +471,8 @@ declare module '@ioc:Adonis/Core/Response' {
 			request: IncomingMessage,
 			response: ServerResponse,
 			encryption: EncryptionContract,
-			config: ResponseConfig
+			config: ResponseConfig,
+			router: RouterContract
 		): ResponseContract
 	}
 

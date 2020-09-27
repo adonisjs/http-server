@@ -26,7 +26,7 @@ declare module '@ioc:Adonis/Core/Route' {
 				handler: Exclude<RouteHandler, string>
 		  }
 		| {
-				type: 'autoload' | 'binding'
+				type: 'alias' | 'binding'
 				namespace: string
 				method: string
 		  }
@@ -469,7 +469,7 @@ declare module '@ioc:Adonis/Core/Route' {
 		/**
 		 * Returns a flat list of routes JSON
 		 */
-		toJSON(): RouteNode[]
+		toJSON(): RouteLookupNode[]
 
 		/**
 		 * Commit routes to the store. After this, no more

@@ -7,15 +7,17 @@
  * file that was distributed with this source code.
  */
 
+import { join } from 'path'
 import proxyaddr from 'proxy-addr'
-import { Profiler } from '@adonisjs/profiler'
-import { FakeLogger } from '@adonisjs/logger'
+import { Filesystem } from '@poppinss/dev-utils'
+import { Application } from '@adonisjs/application'
 import { ServerConfig } from '@ioc:Adonis/Core/Server'
 import { RequestConfig } from '@ioc:Adonis/Core/Request'
 import { ResponseConfig } from '@ioc:Adonis/Core/Response'
 import { Encryption } from '@adonisjs/encryption/build/standalone'
 
 export const appSecret = 'averylongrandom32charslongsecret'
+export const fs = new Filesystem(join(__dirname, './app'))
 
 export const loggerConfig = {
 	name: 'http-server',
@@ -43,7 +45,25 @@ export const responseConfig: ResponseConfig = {
 }
 
 export const serverConfig: ServerConfig = Object.assign({}, requestConfig, responseConfig)
-
-export const logger = new FakeLogger(loggerConfig)
-export const profiler = new Profiler(__dirname, logger, { enabled: false })
 export const encryption = new Encryption({ secret: appSecret })
+
+export async function setupApp(providers?: string[]) {
+	const app = new Application(fs.basePath, 'web', {
+		providers: providers || [],
+	})
+
+	await fs.add('.env', '')
+	await fs.add(
+		'config/app.ts',
+		`
+		export const appKey = '${appSecret}'
+		export const http = ${JSON.stringify(serverConfig)}
+	`
+	)
+
+	app.setup()
+	app.registerProviders()
+	await app.bootProviders()
+
+	return app
+}
