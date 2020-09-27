@@ -18,7 +18,7 @@
     "clean": "del build",
     "compile": "npm run lint && npm run clean && tsc",
     "build": "npm run compile",
-    "benchmark": "node build/benchmarks/index.js",
+    "benchmark": "ENV_SILENT=true node build/benchmarks/index.js",
     "build:tmp": "npm run compile",
     "commit": "git-cz",
     "release": "np",

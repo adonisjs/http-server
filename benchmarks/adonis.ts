@@ -7,22 +7,19 @@
  * file that was distributed with this source code.
  */
 
-import { createServer } from 'http'
 import proxyaddr from 'proxy-addr'
-import { Ioc } from '@adonisjs/fold'
-import { Logger } from '@adonisjs/logger'
-import { Profiler } from '@adonisjs/profiler'
+import { createServer } from 'http'
 import { Encryption } from '@adonisjs/encryption/build/standalone'
+import { Application } from '@adonisjs/application'
 
 import { Server } from '../standalone'
 
-const logger = new Logger({ enabled: false, level: 'trace', name: 'adonis' })
-const profiler = new Profiler(__dirname, logger, { enabled: false })
-const encryption = new Encryption({
-	secret: 'averylongrandom32charslongsecret',
-})
+const app = new Application(__dirname, 'web', {})
+app.setup()
 
-const server = new Server(new Ioc(), logger, profiler, encryption, {
+const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
+
+const server = new Server(app, encryption, {
 	etag: false,
 	jsonpCallbackName: 'callback',
 	cookie: {},
