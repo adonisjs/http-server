@@ -75,6 +75,11 @@ declare module '@ioc:Adonis/Core/Request' {
 		updateQs(data: any): void
 
 		/**
+		 * Returns route params
+		 */
+		params(): { [key: string]: any }
+
+		/**
 		 * Returns reference to the query string object
 		 */
 		get(): { [key: string]: any }
@@ -117,6 +122,19 @@ declare module '@ioc:Adonis/Core/Request' {
 		 * ```
 		 */
 		input(key: string, defaultValue?: any): any
+
+		/**
+		 * Returns value for a given key from route params
+		 *
+		 * @example
+		 * ```js
+		 * request.param('id')
+		 *
+		 * // with default value
+		 * request.param('id', 1)
+		 * ```
+		 */
+		param(key: string, defaultValue?: any): any
 
 		/**
 		 * Get everything from the request body except the given keys.
