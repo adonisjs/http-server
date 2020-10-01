@@ -170,6 +170,9 @@ test.group('Route precompiler', () => {
 		const route = router.get('/', '/UserController.store').toJSON()
 		const fn = () => preCompiler.compileRoute(route)
 
-		assert.throw(fn, 'Unable to resolve "/UserController" namespace from IoC container')
+		assert.throw(
+			fn,
+			'E_IOC_LOOKUP_FAILED: Cannot resolve "/UserController" namespace from the IoC Container'
+		)
 	})
 })

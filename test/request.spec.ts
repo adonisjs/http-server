@@ -314,7 +314,7 @@ test.group('Request', () => {
 		})
 
 		const { body } = await supertest(server).get('/')
-		assert.includeMembers(Object.keys(body), ['accept-encoding', 'user-agent', 'host'])
+		assert.includeMembers(Object.keys(body), ['host'])
 	})
 
 	test('get value for a given request header', async (assert) => {
