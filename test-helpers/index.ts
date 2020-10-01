@@ -57,7 +57,10 @@ export async function setupApp(providers?: string[]) {
 		'config/app.ts',
 		`
 		export const appKey = '${appSecret}'
-		export const http = ${JSON.stringify(serverConfig)}
+		export const http = {
+			trustProxy: () => true,
+			cookie: {}
+		}
 	`
 	)
 
