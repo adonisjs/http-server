@@ -13,6 +13,8 @@ import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 export default class HttpServerProvider {
 	constructor(protected application: ApplicationContract) {}
 
+	public static needsApplication = true
+
 	/**
 	 * Validate server config to ensure we start with sane defaults
 	 */
