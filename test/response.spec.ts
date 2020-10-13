@@ -1067,4 +1067,15 @@ test.group('Response', (group) => {
 			assert.equal(res.statusCode, status[statusText])
 		})
 	})
+
+	test('send null in body with an explicit http status code', async (assert) => {
+		const server = createServer((req, res) => {
+			const response = new Response(req, res, encryption, responseConfig, router)
+			response.status(202).send(undefined)
+			response.finish()
+		})
+
+		const { text } = await supertest(server).get('/').expect(202)
+		assert.deepEqual(text, '')
+	})
 })

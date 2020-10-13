@@ -185,26 +185,36 @@ export class Response extends Macroable implements ResponseContract {
 	 * Empty body results in `204`.
 	 */
 	protected writeBody(content: any, generateEtag: boolean, jsonpCallbackName?: string): void {
-		if (content === null || content === undefined || content === '') {
+		const hasEmptyBody = content === null || content === undefined || content === ''
+
+		/**
+		 * Set status to "204" when body is empty. The `safeStatus` method only
+		 * sets the status when no explicit status has been set already
+		 */
+		if (hasEmptyBody) {
 			this.safeStatus(204)
 		}
 
-		const isEmptyBody = this.response.statusCode === 204
-		const isNotModified = this.response.statusCode === 304
+		const statusCode = this.response.statusCode
 
 		/**
 		 * Do not process body when status code is less than 200 or is 204 or 304. As per
 		 * https://tools.ietf.org/html/rfc7230#section-3.3.2
 		 */
-		if (
-			isEmptyBody ||
-			isNotModified ||
-			(this.response.statusCode && this.response.statusCode < 200)
-		) {
+		if (statusCode && (statusCode < 200 || statusCode === 204 || statusCode === 304)) {
 			this.removeHeader('Content-Type')
 			this.removeHeader('Content-Length')
 			this.removeHeader('Transfer-Encoding')
-			isNotModified ? this.endResponse(content) : this.endResponse()
+			statusCode === 304 ? this.endResponse(content) : this.endResponse()
+			return
+		}
+
+		/**
+		 * Body is empty and status code is not "204", "304" and neither under 200.
+		 */
+		if (hasEmptyBody) {
+			this.removeHeader('Content-Length')
+			this.endResponse()
 			return
 		}
 
