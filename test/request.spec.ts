@@ -452,19 +452,6 @@ test.group('Request', () => {
 		})
 	})
 
-	test('return true for inertia when X-Inertia header is set to true', async (assert) => {
-		const server = createServer((req, res) => {
-			const request = new Request(req, res, encryption, requestConfig)
-			res.writeHead(200, { 'content-type': 'application/json' })
-			res.end(JSON.stringify({ inertia: request.inertia() }))
-		})
-
-		const { body } = await supertest(server).get('/').set('X-Inertia', 'true')
-		assert.deepEqual(body, {
-			inertia: true,
-		})
-	})
-
 	test('return false for ajax when X-Requested-With header is missing', async (assert) => {
 		const server = createServer((req, res) => {
 			const request = new Request(req, res, encryption, requestConfig)

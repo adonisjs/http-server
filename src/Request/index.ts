@@ -551,14 +551,6 @@ export class Request extends Macroable implements RequestContract {
 	}
 
 	/**
-	 * Returns a boolean telling, if request `X-Inertia === true` or not.
-	 */
-	public inertia(): boolean {
-		const xInertia = this.header('X-Inertia', '')
-		return xInertia!.toLowerCase() === 'true'
-	}
-
-	/**
 	 * Returns a boolean telling, if request has `X-Pjax` header
 	 * set or not
 	 */
