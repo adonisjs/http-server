@@ -311,6 +311,11 @@ declare module '@ioc:Adonis/Core/Request' {
 		ajax(): boolean
 
 		/**
+		 * Returns a boolean telling, if request `X-Inertia === true` or not.
+		 */
+		inertia(): boolean
+
+		/**
 		 * Returns a boolean telling, if request has `X-Pjax` header
 		 * set or not
 		 */
