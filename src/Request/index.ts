@@ -882,6 +882,8 @@ export class Request extends Macroable implements RequestContract {
 			id: this.id(),
 			url: this.url(),
 			query: this.parsedUrl.query,
+			body: this.all(),
+			params: this.params(),
 			headers: this.headers(),
 			method: this.method(),
 			protocol: this.protocol(),
