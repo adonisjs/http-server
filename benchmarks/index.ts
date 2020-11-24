@@ -15,7 +15,7 @@ function coolOff() {
 	return new Promise((resolve) => setTimeout(resolve, 2000))
 }
 
-function autocannonRun(opts: any) {
+function autocannonRun(opts: any): Promise<void> {
 	return new Promise((resolve) => {
 		const instance = autocannon(opts, () => {
 			resolve()

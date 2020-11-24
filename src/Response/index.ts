@@ -329,7 +329,7 @@ export class Response extends Macroable implements ResponseContract {
 	protected streamBody(
 		body: ResponseStream,
 		errorCallback?: (error: NodeJS.ErrnoException) => [string, number?]
-	) {
+	): Promise<void> {
 		return new Promise((resolve) => {
 			let finished = false
 
