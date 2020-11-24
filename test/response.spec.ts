@@ -1078,4 +1078,15 @@ test.group('Response', (group) => {
 		const { text } = await supertest(server).get('/').expect(202)
 		assert.deepEqual(text, '')
 	})
+
+	test('do not send body or calculate content-length for a 304 response', async (assert) => {
+		const server = createServer((req, res) => {
+			const response = new Response(req, res, encryption, responseConfig, router)
+			response.notModified({ hello: 'world' })
+			response.finish()
+		})
+
+		const { header } = await supertest(server).get('/').expect(304)
+		assert.notProperty(header, 'content-length')
+	})
 })
