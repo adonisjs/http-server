@@ -23,7 +23,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'PhotosController.index',
@@ -35,7 +35,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'PhotosController.create',
@@ -59,7 +59,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'PhotosController.show',
@@ -71,7 +71,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'PhotosController.edit',
@@ -117,7 +117,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'AdsController.index',
@@ -129,7 +129,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'AdsController.create',
@@ -153,7 +153,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'AdsController.show',
@@ -165,7 +165,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'AdsController.edit',
@@ -211,7 +211,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'AdsController.index',
@@ -223,7 +223,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'AdsController.create',
@@ -247,7 +247,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'AdsController.show',
@@ -259,7 +259,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'AdsController.edit',
@@ -436,7 +436,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'PhotosController.index',
@@ -448,7 +448,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'PhotosController.create',
@@ -472,7 +472,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'PhotosController.show',
@@ -484,7 +484,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'PhotosController.edit',
@@ -530,7 +530,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'ProfileController.index',
@@ -542,7 +542,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'ProfileController.create',
@@ -566,7 +566,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'ProfileController.show',
@@ -578,7 +578,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'ProfileController.edit',
@@ -624,7 +624,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'CommentsController.index',
@@ -636,7 +636,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'CommentsController.create',
@@ -660,7 +660,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'CommentsController.show',
@@ -672,7 +672,7 @@ test.group('Route Resource', () => {
 					meta: {
 						namespace: undefined,
 					},
-					methods: ['GET'],
+					methods: ['HEAD', 'GET'],
 					domain: 'root',
 					middleware: [],
 					handler: 'CommentsController.edit',

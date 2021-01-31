@@ -78,11 +78,11 @@ export class RouteResource extends Macroable implements RouteResourceContract {
 			.map((token) => `${token}/:${lodash.snakeCase(singular(token))}_id`)
 			.join('/')}/${mainResource}`
 
-		this.makeRoute(fullUrl, ['GET'], 'index')
-		this.makeRoute(`${fullUrl}/create`, ['GET'], 'create')
+		this.makeRoute(fullUrl, ['HEAD', 'GET'], 'index')
+		this.makeRoute(`${fullUrl}/create`, ['HEAD', 'GET'], 'create')
 		this.makeRoute(fullUrl, ['POST'], 'store')
-		this.makeRoute(`${this.shallow ? mainResource : fullUrl}/:id`, ['GET'], 'show')
-		this.makeRoute(`${this.shallow ? mainResource : fullUrl}/:id/edit`, ['GET'], 'edit')
+		this.makeRoute(`${this.shallow ? mainResource : fullUrl}/:id`, ['HEAD', 'GET'], 'show')
+		this.makeRoute(`${this.shallow ? mainResource : fullUrl}/:id/edit`, ['HEAD', 'GET'], 'edit')
 		this.makeRoute(`${this.shallow ? mainResource : fullUrl}/:id`, ['PUT', 'PATCH'], 'update')
 		this.makeRoute(`${this.shallow ? mainResource : fullUrl}/:id`, ['DELETE'], 'destroy')
 	}
