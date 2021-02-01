@@ -77,29 +77,29 @@ declare module '@ioc:Adonis/Core/Request' {
 		/**
 		 * Returns route params
 		 */
-		params(): { [key: string]: any }
+		params<T = {[key: string]: any}>(): T;
 
 		/**
 		 * Returns reference to the query string object
 		 */
-		get(): { [key: string]: any }
+		get<T = {[key: string]: any}>(): T;
 
 		/**
 		 * Returns reference to the request body
 		 */
-		post(): { [key: string]: any }
+		post<T = {[key: string]: any}>(): T;
 
 		/**
 		 * Returns reference to the merged copy of original request
 		 * query string and body
 		 */
-		original(): { [key: string]: any }
+		original<T = {[key: string]: any}>(): T;
 
 		/**
 		 * Returns reference to the merged copy of request body
 		 * and query string
 		 */
-		all(): { [key: string]: any }
+		all<T = {[key: string]: any}>(): T;
 
 		/**
 		 * Returns the request raw body (if exists), or returns `null`.
