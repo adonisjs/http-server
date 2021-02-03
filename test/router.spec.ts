@@ -41,7 +41,7 @@ test.group('Router | add', () => {
 
 		assert.deepEqual(getRoute.toJSON(), {
 			pattern: '/',
-			methods: ['GET'],
+			methods: ['HEAD', 'GET'],
 			meta: {
 				namespace: undefined,
 			},
@@ -201,6 +201,35 @@ test.group('Router | add', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/api/v1',
+									type: 0,
+									val: 'api',
+									end: '',
+								},
+								{
+									old: '/api/v1',
+									type: 0,
+									val: 'v1',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/api/v1': {
+								pattern: '/api/v1',
+								handler,
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: undefined,
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -266,6 +295,29 @@ test.group('Router | add', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/',
+									type: 0,
+									val: '/',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/': {
+								pattern: '/',
+								handler,
+								meta: {
+									namespace: undefined,
+								},
+								middleware: ['auth', 'admin:acl'],
+								name: undefined,
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -325,6 +377,29 @@ test.group('Router | add', () => {
 			],
 			domains: {
 				'foo.com': {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/',
+									type: 0,
+									val: '/',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/': {
+								pattern: '/',
+								handler,
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: undefined,
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -384,6 +459,29 @@ test.group('Router | add', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/',
+									type: 0,
+									val: '/',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/': {
+								pattern: '/',
+								handler,
+								meta: {
+									namespace: 'User',
+								},
+								middleware: [],
+								name: undefined,
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -444,6 +542,37 @@ test.group('Router | add', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/:user_id/:id',
+									type: 1,
+									val: 'user_id',
+									end: '',
+									matcher: /[0-9]/,
+								},
+								{
+									old: '/:user_id/:id',
+									type: 1,
+									val: 'id',
+									end: '',
+									matcher: /[a-z]/,
+								},
+							],
+						],
+						routes: {
+							'/:user_id/:id': {
+								pattern: '/:user_id/:id',
+								handler,
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: undefined,
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -511,6 +640,29 @@ test.group('Router | add', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/',
+									type: 0,
+									val: '/',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/': {
+								pattern: '/',
+								handler,
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'api.admin.home',
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -561,6 +713,29 @@ test.group('Router | commit', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/',
+									type: 0,
+									val: '/',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/': {
+								pattern: '/',
+								handler,
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: undefined,
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -614,6 +789,29 @@ test.group('Router | commit', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/api',
+									type: 0,
+									val: 'api',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/api': {
+								pattern: '/api',
+								handler,
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: undefined,
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -666,6 +864,130 @@ test.group('Router | commit', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/api/posts',
+									type: 0,
+									val: 'api',
+									end: '',
+								},
+								{
+									old: '/api/posts',
+									type: 0,
+									val: 'posts',
+									end: '',
+								},
+							],
+							[
+								{
+									old: '/api/posts/create',
+									type: 0,
+									val: 'api',
+									end: '',
+								},
+								{
+									old: '/api/posts/create',
+									type: 0,
+									val: 'posts',
+									end: '',
+								},
+								{
+									old: '/api/posts/create',
+									type: 0,
+									val: 'create',
+									end: '',
+								},
+							],
+							[
+								{
+									old: '/api/posts/:id',
+									type: 0,
+									val: 'api',
+									end: '',
+								},
+								{
+									old: '/api/posts/:id',
+									type: 0,
+									val: 'posts',
+									end: '',
+								},
+								{
+									old: '/api/posts/:id',
+									type: 1,
+									val: 'id',
+									end: '',
+									matcher: undefined,
+								},
+							],
+							[
+								{
+									old: '/api/posts/:id/edit',
+									type: 0,
+									val: 'api',
+									end: '',
+								},
+								{
+									old: '/api/posts/:id/edit',
+									type: 0,
+									val: 'posts',
+									end: '',
+								},
+								{
+									old: '/api/posts/:id/edit',
+									type: 1,
+									val: 'id',
+									end: '',
+									matcher: undefined,
+								},
+								{
+									old: '/api/posts/:id/edit',
+									type: 0,
+									val: 'edit',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/api/posts': {
+								pattern: '/api/posts',
+								handler: 'PostController.index',
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'posts.index',
+							},
+							'/api/posts/create': {
+								pattern: '/api/posts/create',
+								handler: 'PostController.create',
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'posts.create',
+							},
+							'/api/posts/:id': {
+								pattern: '/api/posts/:id',
+								handler: 'PostController.show',
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'posts.show',
+							},
+							'/api/posts/:id/edit': {
+								pattern: '/api/posts/:id/edit',
+								handler: 'PostController.edit',
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'posts.edit',
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -960,6 +1282,154 @@ test.group('Router | commit', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/api/v1/posts',
+									type: 0,
+									val: 'api',
+									end: '',
+								},
+								{
+									old: '/api/v1/posts',
+									type: 0,
+									val: 'v1',
+									end: '',
+								},
+								{
+									old: '/api/v1/posts',
+									type: 0,
+									val: 'posts',
+									end: '',
+								},
+							],
+							[
+								{
+									old: '/api/v1/posts/create',
+									type: 0,
+									val: 'api',
+									end: '',
+								},
+								{
+									old: '/api/v1/posts/create',
+									type: 0,
+									val: 'v1',
+									end: '',
+								},
+								{
+									old: '/api/v1/posts/create',
+									type: 0,
+									val: 'posts',
+									end: '',
+								},
+								{
+									old: '/api/v1/posts/create',
+									type: 0,
+									val: 'create',
+									end: '',
+								},
+							],
+							[
+								{
+									old: '/api/v1/posts/:id',
+									type: 0,
+									val: 'api',
+									end: '',
+								},
+								{
+									old: '/api/v1/posts/:id',
+									type: 0,
+									val: 'v1',
+									end: '',
+								},
+								{
+									old: '/api/v1/posts/:id',
+									type: 0,
+									val: 'posts',
+									end: '',
+								},
+								{
+									old: '/api/v1/posts/:id',
+									type: 1,
+									val: 'id',
+									end: '',
+									matcher: undefined,
+								},
+							],
+							[
+								{
+									old: '/api/v1/posts/:id/edit',
+									type: 0,
+									val: 'api',
+									end: '',
+								},
+								{
+									old: '/api/v1/posts/:id/edit',
+									type: 0,
+									val: 'v1',
+									end: '',
+								},
+								{
+									old: '/api/v1/posts/:id/edit',
+									type: 0,
+									val: 'posts',
+									end: '',
+								},
+								{
+									old: '/api/v1/posts/:id/edit',
+									type: 1,
+									val: 'id',
+									end: '',
+									matcher: undefined,
+								},
+								{
+									old: '/api/v1/posts/:id/edit',
+									type: 0,
+									val: 'edit',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/api/v1/posts': {
+								pattern: '/api/v1/posts',
+								handler: 'PostController.index',
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'posts.index',
+							},
+							'/api/v1/posts/create': {
+								pattern: '/api/v1/posts/create',
+								handler: 'PostController.create',
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'posts.create',
+							},
+							'/api/v1/posts/:id': {
+								pattern: '/api/v1/posts/:id',
+								handler: 'PostController.show',
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'posts.show',
+							},
+							'/api/v1/posts/:id/edit': {
+								pattern: '/api/v1/posts/:id/edit',
+								handler: 'PostController.edit',
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'posts.edit',
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -1293,6 +1763,132 @@ test.group('Router | commit', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/posts/:post_id/comments',
+									type: 0,
+									val: 'posts',
+									end: '',
+								},
+								{
+									old: '/posts/:post_id/comments',
+									type: 1,
+									val: 'post_id',
+									matcher: undefined,
+									end: '',
+								},
+								{
+									old: '/posts/:post_id/comments',
+									type: 0,
+									val: 'comments',
+									end: '',
+								},
+							],
+							[
+								{
+									old: '/posts/:post_id/comments/create',
+									type: 0,
+									val: 'posts',
+									end: '',
+								},
+								{
+									old: '/posts/:post_id/comments/create',
+									type: 1,
+									val: 'post_id',
+									end: '',
+									matcher: undefined,
+								},
+								{
+									old: '/posts/:post_id/comments/create',
+									type: 0,
+									val: 'comments',
+									end: '',
+								},
+								{
+									old: '/posts/:post_id/comments/create',
+									type: 0,
+									val: 'create',
+									end: '',
+								},
+							],
+							[
+								{
+									old: '/comments/:id',
+									type: 0,
+									val: 'comments',
+									end: '',
+								},
+								{
+									old: '/comments/:id',
+									type: 1,
+									val: 'id',
+									end: '',
+									matcher: undefined,
+								},
+							],
+							[
+								{
+									old: '/comments/:id/edit',
+									type: 0,
+									val: 'comments',
+									end: '',
+								},
+								{
+									old: '/comments/:id/edit',
+									type: 1,
+									val: 'id',
+									end: '',
+									matcher: undefined,
+								},
+								{
+									old: '/comments/:id/edit',
+									type: 0,
+									val: 'edit',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/posts/:post_id/comments': {
+								pattern: '/posts/:post_id/comments',
+								handler: 'CommentsController.index',
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'posts.comments.index',
+							},
+							'/posts/:post_id/comments/create': {
+								pattern: '/posts/:post_id/comments/create',
+								handler: 'CommentsController.create',
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'posts.comments.create',
+							},
+							'/comments/:id': {
+								pattern: '/comments/:id',
+								handler: 'CommentsController.show',
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'posts.comments.show',
+							},
+							'/comments/:id/edit': {
+								pattern: '/comments/:id/edit',
+								handler: 'CommentsController.edit',
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'posts.comments.edit',
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -1589,6 +2185,35 @@ test.group('Router | commit', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/photos/create',
+									type: 0,
+									val: 'photos',
+									end: '',
+								},
+								{
+									old: '/photos/create',
+									type: 0,
+									val: 'create',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/photos/create': {
+								pattern: '/photos/create',
+								handler: 'PhotosController.create',
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'v1.photos.create',
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -1644,6 +2269,30 @@ test.group('Router | commit', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/',
+									type: 0,
+									val: '/',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/': {
+								pattern: '/',
+								handler: 'FooHandler.get',
+								meta: {
+									processed: true,
+									namespace: undefined,
+								},
+								middleware: [],
+								name: undefined,
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -1694,6 +2343,36 @@ test.group('Router | commit', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/photos/create',
+									type: 0,
+									val: 'photos',
+									end: '',
+								},
+								{
+									old: '/photos/create',
+									type: 0,
+									val: 'create',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/photos/create': {
+								pattern: '/photos/create',
+								handler: 'PhotosController.create',
+								meta: {
+									processed: true,
+									namespace: undefined,
+								},
+								middleware: [],
+								name: 'photos.create',
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -1752,6 +2431,30 @@ test.group('Router | commit', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/',
+									type: 0,
+									val: '/',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/': {
+								pattern: '/',
+								handler: 'FooHandler.get',
+								meta: {
+									processed: true,
+									namespace: undefined,
+								},
+								middleware: [],
+								name: undefined,
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -1802,6 +2505,30 @@ test.group('Router | commit', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/:id',
+									type: 1,
+									val: 'id',
+									end: '',
+									matcher: /^[a-z]+/,
+								},
+							],
+						],
+						routes: {
+							'/:id': {
+								pattern: '/:id',
+								handler,
+								meta: {
+									namespace: undefined,
+								},
+								middleware: [],
+								name: undefined,
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[
@@ -2054,7 +2781,7 @@ test.group('Brisk route', () => {
 				name: undefined,
 				pattern: '/',
 				handler,
-				methods: ['GET'],
+				methods: ['HEAD', 'GET'],
 				domain: 'root',
 			},
 		])
@@ -2077,7 +2804,7 @@ test.group('Brisk route', () => {
 				name: 'v1.root',
 				pattern: '/api/v1',
 				handler,
-				methods: ['GET'],
+				methods: ['HEAD', 'GET'],
 				domain: 'root',
 			},
 		])
@@ -2109,6 +2836,35 @@ test.group('Brisk route', () => {
 			],
 			domains: {
 				root: {
+					HEAD: {
+						tokens: [
+							[
+								{
+									old: '/api/v1',
+									type: 0,
+									val: 'api',
+									end: '',
+								},
+								{
+									old: '/api/v1',
+									type: 0,
+									val: 'v1',
+									end: '',
+								},
+							],
+						],
+						routes: {
+							'/api/v1': {
+								pattern: '/api/v1',
+								meta: {
+									namespace: undefined,
+								},
+								handler,
+								middleware: [],
+								name: 'v1.root',
+							},
+						},
+					},
 					GET: {
 						tokens: [
 							[

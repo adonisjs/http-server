@@ -23,7 +23,7 @@ test.group('Brisk Route', () => {
 			meta: {
 				namespace: undefined,
 			},
-			methods: ['GET'],
+			methods: ['HEAD', 'GET'],
 			middleware: [],
 			name: undefined,
 			pattern: '/',
