@@ -14,10 +14,10 @@ import { base64, MessageBuilder } from '@poppinss/utils/build/helpers'
  * be set as cookie
  */
 export function pack(value: any): null | string {
-	if (value === undefined || value === null) {
-		return null
-	}
-	return base64.urlEncode(new MessageBuilder().build(value))
+  if (value === undefined || value === null) {
+    return null
+  }
+  return base64.urlEncode(new MessageBuilder().build(value))
 }
 
 /**
@@ -25,7 +25,7 @@ export function pack(value: any): null | string {
  * to unpack the encode value.
  */
 export function canUnpack(encodedValue: string) {
-	return typeof encodedValue === 'string'
+  return typeof encodedValue === 'string'
 }
 
 /**
@@ -33,6 +33,6 @@ export function canUnpack(encodedValue: string) {
  * before calling this method
  */
 export function unpack(encodedValue: string): null | any {
-	const verified = new MessageBuilder().verify(base64.urlDecode(encodedValue, 'utf-8', true))
-	return verified === undefined ? null : verified
+  const verified = new MessageBuilder().verify(base64.urlDecode(encodedValue, 'utf-8', true))
+  return verified === undefined ? null : verified
 }

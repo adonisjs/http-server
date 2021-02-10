@@ -11,93 +11,93 @@ import { Exception } from '@poppinss/utils'
 import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 
 export default class HttpServerProvider {
-	constructor(protected application: ApplicationContract) {}
+  constructor(protected application: ApplicationContract) {}
 
-	public static needsApplication = true
+  public static needsApplication = true
 
-	/**
-	 * Validate server config to ensure we start with sane defaults
-	 */
-	private validateServerConfig(config: any) {
-		if (!config.cookie || typeof config.cookie !== 'object') {
-			throw new Exception('Missing "cookie" config inside the "http" block in "config/app" file.')
-		}
+  /**
+   * Validate server config to ensure we start with sane defaults
+   */
+  private validateServerConfig(config: any) {
+    if (!config.cookie || typeof config.cookie !== 'object') {
+      throw new Exception('Missing "cookie" config inside the "http" block in "config/app" file.')
+    }
 
-		if (typeof config.trustProxy !== 'function') {
-			throw new Exception(
-				'Invalid "trustProxy" value inside the "http" block in "config/app" file.'
-			)
-		}
-	}
+    if (typeof config.trustProxy !== 'function') {
+      throw new Exception(
+        'Invalid "trustProxy" value inside the "http" block in "config/app" file.'
+      )
+    }
+  }
 
-	/**
-	 * Register request and response bindings to the container
-	 */
-	protected registerRequestResponse() {
-		this.application.container.singleton('Adonis/Core/Request', () => {
-			return require('../src/Request').Request
-		})
+  /**
+   * Register request and response bindings to the container
+   */
+  protected registerRequestResponse() {
+    this.application.container.singleton('Adonis/Core/Request', () => {
+      return require('../src/Request').Request
+    })
 
-		this.application.container.singleton('Adonis/Core/Response', () => {
-			return require('../src/Response').Response
-		})
-	}
+    this.application.container.singleton('Adonis/Core/Response', () => {
+      return require('../src/Response').Response
+    })
+  }
 
-	/**
-	 * Registering middleware store to the container
-	 */
-	protected registerMiddlewareStore() {
-		this.application.container.bind('Adonis/Core/MiddlewareStore', () => {
-			return require('../src/MiddlewareStore').MiddlewareStore
-		})
-	}
+  /**
+   * Registering middleware store to the container
+   */
+  protected registerMiddlewareStore() {
+    this.application.container.bind('Adonis/Core/MiddlewareStore', () => {
+      return require('../src/MiddlewareStore').MiddlewareStore
+    })
+  }
 
-	/**
-	 * Registering the HTTP context
-	 */
-	protected registerHTTPContext() {
-		this.application.container.bind('Adonis/Core/HttpContext', () => {
-			const { HttpContext } = require('../src/HttpContext')
-			HttpContext.app = this.application.container.use('Adonis/Core/Application')
-			return HttpContext
-		})
-	}
+  /**
+   * Registering the HTTP context
+   */
+  protected registerHTTPContext() {
+    this.application.container.bind('Adonis/Core/HttpContext', () => {
+      const { HttpContext } = require('../src/HttpContext')
+      HttpContext.app = this.application.container.use('Adonis/Core/Application')
+      return HttpContext
+    })
+  }
 
-	/**
-	 * Register the HTTP server
-	 */
-	protected registerHttpServer() {
-		this.application.container.singleton('Adonis/Core/Server', () => {
-			const { Server } = require('../src/Server')
+  /**
+   * Register the HTTP server
+   */
+  protected registerHttpServer() {
+    this.application.container.singleton('Adonis/Core/Server', () => {
+      const { Server } = require('../src/Server')
 
-			const Config = this.application.container.use('Adonis/Core/Config')
-			const Encryption = this.application.container.use('Adonis/Core/Encryption')
+      const Config = this.application.container.use('Adonis/Core/Config')
+      const Encryption = this.application.container.use('Adonis/Core/Encryption')
 
-			const serverConfig = Config.get('app.http', {})
-			this.validateServerConfig(serverConfig)
+      const serverConfig = Config.get('app.http', {})
+      this.validateServerConfig(serverConfig)
 
-			return new Server(this.application, Encryption, serverConfig)
-		})
-	}
+      return new Server(this.application, Encryption, serverConfig)
+    })
+  }
 
-	/**
-	 * Register the router. The router points to the instance of router used
-	 * by the middleware
-	 */
-	protected registerRouter() {
-		this.application.container.singleton('Adonis/Core/Route', () => {
-			return this.application.container.use('Adonis/Core/Server').router
-		})
-	}
+  /**
+   * Register the router. The router points to the instance of router used
+   * by the middleware
+   */
+  protected registerRouter() {
+    this.application.container.singleton('Adonis/Core/Route', () => {
+      return this.application.container.use('Adonis/Core/Server').router
+    })
+  }
 
-	/**
-	 * Registering all bindings
-	 */
-	public register() {
-		this.registerRequestResponse()
-		this.registerMiddlewareStore()
-		this.registerHttpServer()
-		this.registerHTTPContext()
-		this.registerRouter()
-	}
+  /**
+   * Registering all bindings
+   */
+  public register() {
+    this.registerRequestResponse()
+    this.registerMiddlewareStore()
+    this.registerHttpServer()
+    this.registerHTTPContext()
+    this.registerRouter()
+  }
 }

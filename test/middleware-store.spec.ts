@@ -12,74 +12,74 @@ import { Ioc } from '@adonisjs/fold'
 import { MiddlewareStore } from '../src/MiddlewareStore'
 
 test.group('Middleware', () => {
-	test('register global middleware', (assert) => {
-		const middleware = new MiddlewareStore(new Ioc())
-		async function handler() {}
+  test('register global middleware', (assert) => {
+    const middleware = new MiddlewareStore(new Ioc())
+    async function handler() {}
 
-		middleware.register([handler])
-		assert.deepEqual(middleware.get(), [
-			{
-				type: 'function',
-				value: handler,
-				args: [],
-			},
-		])
-	})
+    middleware.register([handler])
+    assert.deepEqual(middleware.get(), [
+      {
+        type: 'function',
+        value: handler,
+        args: [],
+      },
+    ])
+  })
 
-	test('register named middleware', (assert) => {
-		const middleware = new MiddlewareStore(new Ioc())
-		async function handler() {}
+  test('register named middleware', (assert) => {
+    const middleware = new MiddlewareStore(new Ioc())
+    async function handler() {}
 
-		middleware.registerNamed({ auth: handler })
-		assert.deepEqual(middleware['named'], {
-			auth: { type: 'function', value: handler, args: [] },
-		})
-	})
+    middleware.registerNamed({ auth: handler })
+    assert.deepEqual(middleware['named'], {
+      auth: { type: 'function', value: handler, args: [] },
+    })
+  })
 
-	test('get named middleware', (assert) => {
-		const middleware = new MiddlewareStore(new Ioc())
-		async function handler() {}
+  test('get named middleware', (assert) => {
+    const middleware = new MiddlewareStore(new Ioc())
+    async function handler() {}
 
-		middleware.registerNamed({ auth: handler })
-		assert.deepEqual(middleware.getNamed('auth'), {
-			type: 'function',
-			value: handler,
-			args: [],
-		})
-	})
+    middleware.registerNamed({ auth: handler })
+    assert.deepEqual(middleware.getNamed('auth'), {
+      type: 'function',
+      value: handler,
+      args: [],
+    })
+  })
 
-	test("return null when middleware doesn't exists", (assert) => {
-		const middleware = new MiddlewareStore(new Ioc())
-		assert.isNull(middleware.getNamed('auth'))
-	})
+  test("return null when middleware doesn't exists", (assert) => {
+    const middleware = new MiddlewareStore(new Ioc())
+    assert.isNull(middleware.getNamed('auth'))
+  })
 
-	test('invoke resolved middleware', async (assert) => {
-		const stack: any[] = []
-		async function middlewareFn() {
-			stack.push('middlewareFn')
-		}
+  test('invoke resolved middleware', async (assert) => {
+    const stack: any[] = []
+    async function middlewareFn() {
+      stack.push('middlewareFn')
+    }
 
-		const middleware = new MiddlewareStore(new Ioc())
-		middleware.register([middlewareFn])
-		await middleware.invokeMiddleware(middleware.get()[0], [] as any)
-		assert.deepEqual(stack, ['middlewareFn'])
-	})
+    const middleware = new MiddlewareStore(new Ioc())
+    middleware.register([middlewareFn])
+    await middleware.invokeMiddleware(middleware.get()[0], [] as any)
+    assert.deepEqual(stack, ['middlewareFn'])
+  })
 
-	test('invoke middleware by resolving them from IoC container', async (assert) => {
-		const stack: any[] = []
+  test('invoke middleware by resolving them from IoC container', async (assert) => {
+    const stack: any[] = []
 
-		class Middleware {
-			public async handle() {
-				stack.push('middleware class')
-			}
-		}
+    class Middleware {
+      public async handle() {
+        stack.push('middleware class')
+      }
+    }
 
-		const ioc = new Ioc()
-		ioc.bind('App/Middleware', () => new Middleware())
+    const ioc = new Ioc()
+    ioc.bind('App/Middleware', () => new Middleware())
 
-		const middleware = new MiddlewareStore(ioc)
-		middleware.register(['App/Middleware'])
-		await middleware.invokeMiddleware(middleware.get()[0], [] as any)
-		assert.deepEqual(stack, ['middleware class'])
-	})
+    const middleware = new MiddlewareStore(ioc)
+    middleware.register(['App/Middleware'])
+    await middleware.invokeMiddleware(middleware.get()[0], [] as any)
+    assert.deepEqual(stack, ['middleware class'])
+  })
 })

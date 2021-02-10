@@ -30,146 +30,146 @@ import { processPattern } from '../helpers'
  * error handler and server hooks.
  */
 export class HttpContext extends Macroable implements HttpContextContract {
-	/**
-	 * Set inside the provider
-	 */
-	public static app: ApplicationContract
+  /**
+   * Set inside the provider
+   */
+  public static app: ApplicationContract
 
-	/**
-	 * A unique key for the current route
-	 */
-	public routeKey: string
+  /**
+   * A unique key for the current route
+   */
+  public routeKey: string
 
-	/**
-	 * Route params
-	 */
-	public params: any = {}
+  /**
+   * Route params
+   */
+  public params: any = {}
 
-	/**
-	 * Route subdomains
-	 */
-	public subdomains: any = {}
+  /**
+   * Route subdomains
+   */
+  public subdomains: any = {}
 
-	/**
-	 * Reference to the current route. Not available inside
-	 * server hooks
-	 */
-	public route?: RouteNode
+  /**
+   * Reference to the current route. Not available inside
+   * server hooks
+   */
+  public route?: RouteNode
 
-	/**
-	 * Required by macroable
-	 */
-	protected static macros = {}
-	protected static getters = {}
+  /**
+   * Required by macroable
+   */
+  protected static macros = {}
+  protected static getters = {}
 
-	constructor(
-		public request: RequestContract,
-		public response: ResponseContract,
-		public logger: LoggerContract,
-		public profiler: ProfilerRowContract
-	) {
-		super()
-		/*
-		 * Creating the circular reference. We do this, since request and response
-		 * are meant to be extended and at times people would want to access
-		 * other ctx properties like `logger`, `profiler` inside those
-		 * extended methods.
-		 */
-		this.request.ctx = this
-		this.response.ctx = this
-	}
+  constructor(
+    public request: RequestContract,
+    public response: ResponseContract,
+    public logger: LoggerContract,
+    public profiler: ProfilerRowContract
+  ) {
+    super()
+    /*
+     * Creating the circular reference. We do this, since request and response
+     * are meant to be extended and at times people would want to access
+     * other ctx properties like `logger`, `profiler` inside those
+     * extended methods.
+     */
+    this.request.ctx = this
+    this.response.ctx = this
+  }
 
-	/**
-	 * A helper to see top level properties on the context object
-	 */
-	public inspect() {
-		return inspect(this, false, 1, true)
-	}
+  /**
+   * A helper to see top level properties on the context object
+   */
+  public inspect() {
+    return inspect(this, false, 1, true)
+  }
 
-	/**
-	 * Creates a new fake context instance for a given route. The method is
-	 * meant to be used inside an AdonisJS application since it relies
-	 * directly on the IoC container.
-	 */
-	public static create(
-		routePattern: string,
-		routeParams: any,
-		req?: IncomingMessage,
-		res?: ServerResponse
-	) {
-		const Router = HttpContext.app.container.use('Adonis/Core/Route')
-		const Encryption = HttpContext.app.container.use('Adonis/Core/Encryption')
-		const serverConfig = HttpContext.app.container.use('Adonis/Core/Config').get('app.http', {})
+  /**
+   * Creates a new fake context instance for a given route. The method is
+   * meant to be used inside an AdonisJS application since it relies
+   * directly on the IoC container.
+   */
+  public static create(
+    routePattern: string,
+    routeParams: any,
+    req?: IncomingMessage,
+    res?: ServerResponse
+  ) {
+    const Router = HttpContext.app.container.use('Adonis/Core/Route')
+    const Encryption = HttpContext.app.container.use('Adonis/Core/Encryption')
+    const serverConfig = HttpContext.app.container.use('Adonis/Core/Config').get('app.http', {})
 
-		req = req || new IncomingMessage(new Socket())
-		res = res || new ServerResponse(req)
+    req = req || new IncomingMessage(new Socket())
+    res = res || new ServerResponse(req)
 
-		/*
-		 * Creating the url from the router pattern and params. Only
-		 * when actual URL isn't defined.
-		 */
-		req.url = req.url || processPattern(routePattern, routeParams)
+    /*
+     * Creating the url from the router pattern and params. Only
+     * when actual URL isn't defined.
+     */
+    req.url = req.url || processPattern(routePattern, routeParams)
 
-		/*
-		 * Creating new request instance
-		 */
-		const request = new Request(req, res, Encryption, {
-			allowMethodSpoofing: serverConfig.allowMethodSpoofing,
-			subdomainOffset: serverConfig.subdomainOffset,
-			trustProxy: serverConfig.trustProxy,
-			generateRequestId: serverConfig.generateRequestId,
-		})
+    /*
+     * Creating new request instance
+     */
+    const request = new Request(req, res, Encryption, {
+      allowMethodSpoofing: serverConfig.allowMethodSpoofing,
+      subdomainOffset: serverConfig.subdomainOffset,
+      trustProxy: serverConfig.trustProxy,
+      generateRequestId: serverConfig.generateRequestId,
+    })
 
-		/*
-		 * Creating new response instance
-		 */
-		const response = new Response(
-			req,
-			res,
-			Encryption,
-			{
-				etag: serverConfig.etag,
-				cookie: serverConfig.cookie,
-				jsonpCallbackName: serverConfig.jsonpCallbackName,
-			},
-			Router
-		)
+    /*
+     * Creating new response instance
+     */
+    const response = new Response(
+      req,
+      res,
+      Encryption,
+      {
+        etag: serverConfig.etag,
+        cookie: serverConfig.cookie,
+        jsonpCallbackName: serverConfig.jsonpCallbackName,
+      },
+      Router
+    )
 
-		/*
-		 * Creating new ctx instance
-		 */
-		const ctx = new HttpContext(
-			request,
-			response,
-			this.app.logger.child({}),
-			this.app.profiler.create('http:context')
-		)
+    /*
+     * Creating new ctx instance
+     */
+    const ctx = new HttpContext(
+      request,
+      response,
+      this.app.logger.child({}),
+      this.app.profiler.create('http:context')
+    )
 
-		/*
-		 * Attaching route to the ctx
-		 */
-		ctx.route = {
-			pattern: routePattern,
-			middleware: [],
-			handler: async () => 'handled',
-			meta: {},
-		}
+    /*
+     * Attaching route to the ctx
+     */
+    ctx.route = {
+      pattern: routePattern,
+      middleware: [],
+      handler: async () => 'handled',
+      meta: {},
+    }
 
-		/*
-		 * Defining route key
-		 */
-		ctx.routeKey = `${request.method()}-${ctx.route.pattern}`
+    /*
+     * Defining route key
+     */
+    ctx.routeKey = `${request.method()}-${ctx.route.pattern}`
 
-		/*
-		 * Attaching params to the ctx
-		 */
-		ctx.params = routeParams
+    /*
+     * Attaching params to the ctx
+     */
+    ctx.params = routeParams
 
-		/**
-		 * Set params on the request
-		 */
-		ctx.request.updateParams(routeParams)
+    /**
+     * Set params on the request
+     */
+    ctx.request.updateParams(routeParams)
 
-		return ctx
-	}
+    return ctx
+  }
 }

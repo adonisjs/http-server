@@ -51,7 +51,6 @@
     "commitizen": "^4.2.3",
     "cz-conventional-changelog": "^3.3.0",
     "del-cli": "^3.0.1",
-    "doctoc": "^2.0.0",
     "eslint": "^7.19.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-adonis": "^1.2.0",

@@ -13,10 +13,10 @@ import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
  * Encrypt a value to be set as cookie
  */
 export function pack(key: string, value: any, encryption: EncryptionContract): null | string {
-	if (value === undefined || value === null) {
-		return null
-	}
-	return `e:${encryption.encrypt(value, undefined, key)}`
+  if (value === undefined || value === null) {
+    return null
+  }
+  return `e:${encryption.encrypt(value, undefined, key)}`
 }
 
 /**
@@ -24,7 +24,7 @@ export function pack(key: string, value: any, encryption: EncryptionContract): n
  * to unpack encrypted value.
  */
 export function canUnpack(encryptedValue: string) {
-	return typeof encryptedValue === 'string' && encryptedValue.substr(0, 2) === 'e:'
+  return typeof encryptedValue === 'string' && encryptedValue.substr(0, 2) === 'e:'
 }
 
 /**
@@ -33,14 +33,14 @@ export function canUnpack(encryptedValue: string) {
  * exceptions can be raised.
  */
 export function unpack(
-	key: string,
-	encryptedValue: string,
-	encryption: EncryptionContract
+  key: string,
+  encryptedValue: string,
+  encryption: EncryptionContract
 ): null | any {
-	const value = encryptedValue.slice(2)
-	if (!value) {
-		return null
-	}
+  const value = encryptedValue.slice(2)
+  if (!value) {
+    return null
+  }
 
-	return encryption.decrypt(value, key)
+  return encryption.decrypt(value, key)
 }

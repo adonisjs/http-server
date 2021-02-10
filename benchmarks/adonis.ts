@@ -20,20 +20,20 @@ app.setup()
 const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
 
 const server = new Server(app, encryption, {
-	etag: false,
-	jsonpCallbackName: 'callback',
-	cookie: {},
-	subdomainOffset: 2,
-	generateRequestId: false,
-	trustProxy: proxyaddr.compile('loopback'),
-	allowMethodSpoofing: false,
+  etag: false,
+  jsonpCallbackName: 'callback',
+  cookie: {},
+  subdomainOffset: 2,
+  generateRequestId: false,
+  trustProxy: proxyaddr.compile('loopback'),
+  allowMethodSpoofing: false,
 })
 
 server.router.get('/', async () => {
-	return { hello: 'world' }
+  return { hello: 'world' }
 })
 server.optimize()
 
 createServer(server.handle.bind(server)).listen(4000, () => {
-	console.log('listening on 4000')
+  console.log('listening on 4000')
 })
