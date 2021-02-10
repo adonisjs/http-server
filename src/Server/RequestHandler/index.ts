@@ -10,8 +10,8 @@
 /// <reference path="../../../adonis-typings/index.ts" />
 
 import { Middleware } from 'co-compose'
-import { interpolate } from '@poppinss/utils'
 import { RouterContract } from '@ioc:Adonis/Core/Route'
+import { interpolate } from '@poppinss/utils/build/helpers'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { MiddlewareStoreContract, ResolvedMiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 

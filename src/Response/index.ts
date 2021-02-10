@@ -20,7 +20,8 @@ import { Macroable } from 'macroable'
 import { createReadStream } from 'fs'
 import contentDisposition from 'content-disposition'
 import { ServerResponse, IncomingMessage } from 'http'
-import { Exception, interpolate, safeStringify } from '@poppinss/utils'
+import { Exception, safeStringify } from '@poppinss/utils'
+import { interpolate } from '@poppinss/utils/build/helpers'
 
 import {
 	CookieOptions,

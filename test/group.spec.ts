@@ -8,10 +8,10 @@
  */
 
 import test from 'japa'
-import { RouteGroup } from '../src/Router/Group'
 import { Route } from '../src/Router/Route'
-import { RouteResource } from '../src/Router/Resource'
 import { toRoutesJSON } from '../src/helpers'
+import { RouteGroup } from '../src/Router/Group'
+import { RouteResource } from '../src/Router/Resource'
 
 test.group('Route Group', () => {
 	test('add matcher for the given route', (assert) => {

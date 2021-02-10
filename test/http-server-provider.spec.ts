@@ -13,9 +13,9 @@ import { Router } from '../src/Router'
 import { Server } from '../src/Server'
 import { Request } from '../src/Request'
 import { Response } from '../src/Response'
+import { fs, setupApp } from '../test-helpers'
 import { HttpContext } from '../src/HttpContext'
 import { MiddlewareStore } from '../src/MiddlewareStore'
-import { fs, setupApp } from '../test-helpers'
 
 test.group('Http Server Provider', (group) => {
 	group.afterEach(async () => {
@@ -60,7 +60,7 @@ test.group('Http Context', (group) => {
 
 	test('add macro to http context', async (assert) => {
 		await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
-		HttpContext.macro('url', function url() {
+		HttpContext.macro<HttpContext>('url', function url() {
 			return `user/${this.params.id}`
 		})
 

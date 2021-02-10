@@ -8,7 +8,7 @@
  */
 
 import test from 'japa'
-import { base64 } from '@poppinss/utils'
+import { base64 } from '@poppinss/utils/build/helpers'
 import { pack, unpack, canUnpack } from '../src/Cookie/Drivers/Signed'
 
 import { encryption } from '../test-helpers'

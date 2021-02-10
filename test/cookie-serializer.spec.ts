@@ -8,7 +8,7 @@
  */
 
 import test from 'japa'
-import { base64, MessageBuilder } from '@poppinss/utils'
+import { base64, MessageBuilder } from '@poppinss/utils/build/helpers'
 
 import { encryption } from '../test-helpers'
 import { CookieSerializer } from '../src/Cookie/Serializer'

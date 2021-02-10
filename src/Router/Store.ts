@@ -9,7 +9,7 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
-import matchit from 'matchit'
+import matchit from '@poppinss/matchit'
 import { lodash } from '@poppinss/utils'
 import {
 	RouteNode,

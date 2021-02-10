@@ -7,7 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { Exception, interpolate } from '@poppinss/utils'
+import { Exception } from '@poppinss/utils'
+import { interpolate } from '@poppinss/utils/build/helpers'
 import {
 	E_DUPLICATE_ROUTE,
 	E_CANNOT_LOOKUP_ROUTE,

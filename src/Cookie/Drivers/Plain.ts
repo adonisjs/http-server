@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { base64, MessageBuilder } from '@poppinss/utils'
+import { base64, MessageBuilder } from '@poppinss/utils/build/helpers'
 
 /**
  * Encodes a value into a base64 url encoded string to

@@ -9,7 +9,8 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
-import { Exception, interpolate } from '@poppinss/utils'
+import { Exception } from '@poppinss/utils'
+import { interpolate } from '@poppinss/utils/build/helpers'
 
 import { E_HTTP_EXCEPTION } from '../../exceptions.json'
 

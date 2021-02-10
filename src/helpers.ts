@@ -9,7 +9,7 @@
 
 /// <reference path="../adonis-typings/index.ts" />
 
-import QuickLru from 'quick-lru'
+import Cache from 'tmp-cache'
 import { stat, Stats } from 'fs'
 
 import { Route } from './Router/Route'
@@ -20,7 +20,7 @@ import { RouterException } from './Exceptions/RouterException'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { RouteJSON, MakeUrlOptions, MakeSignedUrlOptions } from '@ioc:Adonis/Core/Route'
 
-const proxyCache = new QuickLru({ maxSize: 100 })
+const proxyCache = new Cache({ max: 200 })
 
 /**
  * Makes input string consistent by having only the starting

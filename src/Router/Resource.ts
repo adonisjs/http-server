@@ -11,7 +11,7 @@
 
 import { singular } from 'pluralize'
 import { Macroable } from 'macroable'
-import { lodash } from '@poppinss/utils'
+import { string } from '@poppinss/utils/build/helpers'
 
 import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 import { RouteMatchers, RouteResourceContract, ResourceRouteNames } from '@ioc:Adonis/Core/Route'
@@ -42,7 +42,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
 	 */
 	private resourceName: string = this.resource
 		.split('.')
-		.map((token) => lodash.snakeCase(token))
+		.map((token) => string.snakeCase(token))
 		.join('.')
 
 	constructor(
@@ -75,7 +75,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
 		const mainResource = resourceTokens.pop()!
 
 		const fullUrl = `${resourceTokens
-			.map((token) => `${token}/:${lodash.snakeCase(singular(token))}_id`)
+			.map((token) => `${token}/:${string.snakeCase(singular(token))}_id`)
 			.join('/')}/${mainResource}`
 
 		this.makeRoute(fullUrl, ['HEAD', 'GET'], 'index')
@@ -172,7 +172,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
 	 * Prepend name to the routes names
 	 */
 	public as(name: string): this {
-		name = lodash.snakeCase(name)
+		name = string.snakeCase(name)
 		this.routes.forEach((route) => {
 			route.as(route.name.replace(this.resourceName, name), false)
 		})

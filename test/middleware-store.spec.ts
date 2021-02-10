@@ -61,7 +61,7 @@ test.group('Middleware', () => {
 
 		const middleware = new MiddlewareStore(new Ioc())
 		middleware.register([middlewareFn])
-		middleware.invokeMiddleware(middleware.get()[0], [] as any)
+		await middleware.invokeMiddleware(middleware.get()[0], [] as any)
 		assert.deepEqual(stack, ['middlewareFn'])
 	})
 
@@ -79,7 +79,7 @@ test.group('Middleware', () => {
 
 		const middleware = new MiddlewareStore(ioc)
 		middleware.register(['App/Middleware'])
-		middleware.invokeMiddleware(middleware.get()[0], [] as any)
+		await middleware.invokeMiddleware(middleware.get()[0], [] as any)
 		assert.deepEqual(stack, ['middleware class'])
 	})
 })
