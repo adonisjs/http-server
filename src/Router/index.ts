@@ -10,6 +10,7 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import { stringify } from 'qs'
+import { types } from '@poppinss/utils/build/helpers'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 
 import {
@@ -265,7 +266,14 @@ export class Router implements RouterContract {
    * Define global route matcher
    */
   public where(param: string, matcher: string | RegExp): this {
-    this.matchers[param] = typeof matcher === 'string' ? new RegExp(matcher) : matcher
+    if (typeof matcher === 'string') {
+      this.matchers[param] = { match: new RegExp(matcher) }
+    } else if (types.isRegexp(matcher)) {
+      this.matchers[param] = { match: matcher }
+    } else {
+      this.matchers[param] = matcher
+    }
+
     return this
   }
 

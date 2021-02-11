@@ -10,8 +10,8 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import { Macroable } from 'macroable'
-import { RouteGroupContract } from '@ioc:Adonis/Core/Route'
 import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
+import { RouteGroupContract, RouteParamMatcher } from '@ioc:Adonis/Core/Route'
 
 import { Route } from './Route'
 import { BriskRoute } from './BriskRoute'
@@ -85,7 +85,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * }).where('id', /^[0-9]+/)
    * ```
    */
-  public where(param: string, matcher: RegExp | string): this {
+  public where(param: string, matcher: RouteParamMatcher): this {
     this.routes.forEach((route) => this.invoke(route, 'where', [param, matcher]))
     return this
   }

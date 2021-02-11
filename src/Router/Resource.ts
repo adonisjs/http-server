@@ -14,7 +14,12 @@ import { Macroable } from 'macroable'
 import { string } from '@poppinss/utils/build/helpers'
 
 import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
-import { RouteMatchers, RouteResourceContract, ResourceRouteNames } from '@ioc:Adonis/Core/Route'
+import {
+  RouteMatchers,
+  RouteResourceContract,
+  ResourceRouteNames,
+  RouteParamMatcher,
+} from '@ioc:Adonis/Core/Route'
 
 import { Route } from './Route'
 
@@ -149,7 +154,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
   /**
    * Define matcher for params inside the resource
    */
-  public where(key: string, matcher: string | RegExp): this {
+  public where(key: string, matcher: RouteParamMatcher): this {
     this.routes.forEach((route) => {
       route.where(key, matcher)
     })

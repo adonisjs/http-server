@@ -551,6 +551,7 @@ test.group('Router | add', () => {
                   val: 'user_id',
                   end: '',
                   matcher: /[0-9]/,
+                  cast: undefined,
                 },
                 {
                   old: '/:user_id/:id',
@@ -558,6 +559,7 @@ test.group('Router | add', () => {
                   val: 'id',
                   end: '',
                   matcher: /[a-z]/,
+                  cast: undefined,
                 },
               ],
             ],
@@ -582,6 +584,7 @@ test.group('Router | add', () => {
                   val: 'user_id',
                   end: '',
                   matcher: /[0-9]/,
+                  cast: undefined,
                 },
                 {
                   old: '/:user_id/:id',
@@ -589,6 +592,7 @@ test.group('Router | add', () => {
                   val: 'id',
                   end: '',
                   matcher: /[a-z]/,
+                  cast: undefined,
                 },
               ],
             ],
@@ -919,6 +923,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
               [
@@ -940,6 +945,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
                 {
                   old: '/api/posts/:id/edit',
@@ -1043,6 +1049,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
               [
@@ -1064,6 +1071,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
                 {
                   old: '/api/posts/:id/edit',
@@ -1162,6 +1170,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
             ],
@@ -1198,6 +1207,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
             ],
@@ -1234,6 +1244,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
             ],
@@ -1355,6 +1366,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
               [
@@ -1382,6 +1394,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
                 {
                   old: '/api/v1/posts/:id/edit',
@@ -1503,6 +1516,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
               [
@@ -1530,6 +1544,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
                 {
                   old: '/api/v1/posts/:id/edit',
@@ -1640,6 +1655,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
             ],
@@ -1682,6 +1698,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
             ],
@@ -1724,6 +1741,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
             ],
@@ -1777,6 +1795,7 @@ test.group('Router | commit', () => {
                   type: 1,
                   val: 'post_id',
                   matcher: undefined,
+                  cast: undefined,
                   end: '',
                 },
                 {
@@ -1799,6 +1818,7 @@ test.group('Router | commit', () => {
                   val: 'post_id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
                 {
                   old: '/posts/:post_id/comments/create',
@@ -1826,6 +1846,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
               [
@@ -1841,6 +1862,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
                 {
                   old: '/comments/:id/edit',
@@ -1903,6 +1925,7 @@ test.group('Router | commit', () => {
                   type: 1,
                   val: 'post_id',
                   matcher: undefined,
+                  cast: undefined,
                   end: '',
                 },
                 {
@@ -1925,6 +1948,7 @@ test.group('Router | commit', () => {
                   val: 'post_id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
                 {
                   old: '/posts/:post_id/comments/create',
@@ -1952,6 +1976,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
               [
@@ -1967,6 +1992,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
                 {
                   old: '/comments/:id/edit',
@@ -2029,6 +2055,7 @@ test.group('Router | commit', () => {
                   type: 1,
                   val: 'post_id',
                   matcher: undefined,
+                  cast: undefined,
                   end: '',
                 },
                 {
@@ -2066,6 +2093,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
             ],
@@ -2096,6 +2124,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
             ],
@@ -2126,6 +2155,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: undefined,
+                  cast: undefined,
                 },
               ],
             ],
@@ -2514,6 +2544,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: /^[a-z]+/,
+                  cast: undefined,
                 },
               ],
             ],
@@ -2538,6 +2569,7 @@ test.group('Router | commit', () => {
                   val: 'id',
                   end: '',
                   matcher: /^[a-z]+/,
+                  cast: undefined,
                 },
               ],
             ],

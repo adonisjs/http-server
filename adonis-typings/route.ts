@@ -13,6 +13,17 @@ declare module '@ioc:Adonis/Core/Route' {
   import { MiddlewareHandler, ResolvedMiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 
   /**
+   * Route.where param matcher shape
+   */
+  export type RouteParamMatcher =
+    | string
+    | RegExp
+    | {
+        match?: RegExp
+        cast?: (value: string) => any
+      }
+
+  /**
    * The shape of the route handler
    */
   export type RouteHandler = ((ctx: HttpContextContract) => Promise<any>) | string
@@ -40,7 +51,10 @@ declare module '@ioc:Adonis/Core/Route' {
    * Shape of route param matchers
    */
   export type RouteMatchers = {
-    [param: string]: RegExp
+    [param: string]: {
+      match?: RegExp
+      cast?: (value: string) => any
+    }
   }
 
   /**
@@ -172,7 +186,7 @@ declare module '@ioc:Adonis/Core/Route' {
      *
      * The `/^[0-9]$/` should win over the matcher defined by the group
      */
-    where(param: string, matcher: string | RegExp): this
+    where(param: string, matcher: RouteParamMatcher): this
 
     /**
      * Define prefix for the route. Prefixes will be concated
@@ -264,7 +278,7 @@ declare module '@ioc:Adonis/Core/Route' {
     /**
      * Define matcher for params inside the resource
      */
-    where(key: string, matcher: string | RegExp): this
+    where(key: string, matcher: RouteParamMatcher): this
 
     /**
      * Define namespace for all the routes inside a given resource
@@ -292,7 +306,7 @@ declare module '@ioc:Adonis/Core/Route' {
      * }).where('id', /^[0-9]+/)
      * ```
      */
-    where(param: string, matcher: RegExp | string): this
+    where(param: string, matcher: RouteParamMatcher): this
 
     /**
      * Define prefix all the routes in the group.
@@ -464,7 +478,7 @@ declare module '@ioc:Adonis/Core/Route' {
     /**
      * Define global route matcher
      */
-    where(key: string, matcher: string | RegExp): this
+    where(key: string, matcher: RouteParamMatcher): this
 
     /**
      * Returns a flat list of routes JSON

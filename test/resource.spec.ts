@@ -375,33 +375,33 @@ test.group('Route Resource', () => {
     resource.where('id', '[a-z]')
 
     assert.deepEqual(resource.routes.find((route) => route.name === 'photos.index')!['matchers'], {
-      id: /[a-z]/,
+      id: { match: /[a-z]/ },
     })
 
     assert.deepEqual(resource.routes.find((route) => route.name === 'photos.create')!['matchers'], {
-      id: /[a-z]/,
+      id: { match: /[a-z]/ },
     })
 
     assert.deepEqual(resource.routes.find((route) => route.name === 'photos.store')!['matchers'], {
-      id: /[a-z]/,
+      id: { match: /[a-z]/ },
     })
 
     assert.deepEqual(resource.routes.find((route) => route.name === 'photos.show')!['matchers'], {
-      id: /[a-z]/,
+      id: { match: /[a-z]/ },
     })
 
     assert.deepEqual(resource.routes.find((route) => route.name === 'photos.edit')!['matchers'], {
-      id: /[a-z]/,
+      id: { match: /[a-z]/ },
     })
 
     assert.deepEqual(resource.routes.find((route) => route.name === 'photos.update')!['matchers'], {
-      id: /[a-z]/,
+      id: { match: /[a-z]/ },
     })
 
     assert.deepEqual(
       resource.routes.find((route) => route.name === 'photos.destroy')!['matchers'],
       {
-        id: /[a-z]/,
+        id: { match: /[a-z]/ },
       }
     )
   })

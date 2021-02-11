@@ -24,7 +24,7 @@ test.group('Route Group', () => {
       {
         pattern: '/:id',
         matchers: {
-          id: new RegExp('[a-z]'),
+          id: { match: new RegExp('[a-z]') },
         },
         meta: {
           namespace: undefined,

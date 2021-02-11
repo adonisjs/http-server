@@ -362,6 +362,7 @@ test.group('Store | add', () => {
                   type: 1,
                   val: 'id',
                   end: '',
+                  cast: undefined,
                   matcher: undefined,
                 },
               ],
@@ -383,6 +384,7 @@ test.group('Store | add', () => {
                   type: 1,
                   val: 'id',
                   end: '',
+                  cast: undefined,
                   matcher: undefined,
                 },
               ],
@@ -543,7 +545,7 @@ test.group('Store | match', () => {
       handler,
       meta: {},
       matchers: {
-        username: new RegExp(/[a-z]+/),
+        username: { match: new RegExp(/[a-z]+/) },
       },
       middleware: [],
       methods: ['GET'],
@@ -554,7 +556,7 @@ test.group('Store | match', () => {
       handler,
       meta: {},
       matchers: {
-        id: new RegExp(/[0-9]+/),
+        id: { match: new RegExp(/[0-9]+/) },
       },
       middleware: [],
       methods: ['GET'],
@@ -716,7 +718,7 @@ test.group('Store | match', () => {
       handler,
       meta: {},
       matchers: {
-        id: new RegExp(/^[0-9]+$/),
+        id: { match: new RegExp(/^[0-9]+$/) },
       },
       middleware: [],
       methods: ['GET'],
@@ -744,7 +746,7 @@ test.group('Store | match', () => {
       handler,
       meta: {},
       matchers: {
-        id: new RegExp(/^[0-9]+$/),
+        id: { match: new RegExp(/^[0-9]+$/) },
       },
       middleware: [],
       methods: ['GET'],
@@ -762,6 +764,129 @@ test.group('Store | match', () => {
       },
       subdomains: {},
       routeKey: 'GET-/users/:id?',
+    })
+  })
+
+  test('cast params using route matchers', (assert) => {
+    async function handler() {}
+
+    const store = new Store()
+    store.add({
+      pattern: '/:username',
+      handler,
+      meta: {},
+      matchers: {
+        username: { match: new RegExp(/[a-z]+/) },
+      },
+      middleware: [],
+      methods: ['GET'],
+    })
+
+    store.add({
+      pattern: '/:id',
+      handler,
+      meta: {},
+      matchers: {
+        id: { match: new RegExp(/[0-9]+/), cast: (value) => Number(value) },
+      },
+      middleware: [],
+      methods: ['GET'],
+    })
+
+    assert.deepEqual(store.match('/1', 'GET'), {
+      route: {
+        pattern: '/:id',
+        handler,
+        meta: {},
+        middleware: [],
+      },
+      params: {
+        id: 1,
+      },
+      subdomains: {},
+      routeKey: 'GET-/:id',
+    })
+  })
+
+  test('do not cast optional params', (assert) => {
+    async function handler() {}
+
+    const store = new Store()
+    store.add({
+      pattern: '/:username',
+      handler,
+      meta: {},
+      matchers: {
+        username: { match: new RegExp(/[a-z]+/) },
+      },
+      middleware: [],
+      methods: ['GET'],
+    })
+
+    store.add({
+      pattern: '/:id?',
+      handler,
+      meta: {},
+      matchers: {
+        id: { match: new RegExp(/[0-9]+/), cast: (value) => Number(value) },
+      },
+      middleware: [],
+      methods: ['GET'],
+    })
+
+    assert.deepEqual(store.match('/', 'GET'), {
+      route: {
+        pattern: '/:id?',
+        handler,
+        meta: {},
+        middleware: [],
+      },
+      params: {},
+      subdomains: {},
+      routeKey: 'GET-/:id?',
+    })
+  })
+
+  test('cast multiple params', (assert) => {
+    async function handler() {}
+
+    const store = new Store()
+    store.add({
+      pattern: '/:username',
+      handler,
+      meta: {},
+      matchers: {
+        username: { match: new RegExp(/[a-z]+/) },
+      },
+      middleware: [],
+      methods: ['GET'],
+    })
+
+    store.add({
+      pattern: '/:id/:slug',
+      handler,
+      meta: {},
+      matchers: {
+        id: { match: new RegExp(/[0-9]+/), cast: (value) => Number(value) },
+        slug: { cast: (value) => value.toLowerCase() },
+      },
+      middleware: [],
+      methods: ['GET'],
+    })
+
+    assert.deepEqual(store.match('/1/HELLO-WORLD', 'GET'), {
+      route: {
+        pattern: '/:id/:slug',
+        handler,
+        meta: {},
+        middleware: [],
+      },
+      params: {
+        id: 1,
+        slug: 'hello-world',
+      },
+      subdomains: {},
+      routeKey: 'GET-/:id/:slug',
     })
   })
 })

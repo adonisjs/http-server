@@ -10,7 +10,14 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import { Macroable } from 'macroable'
-import { RouteJSON, RouteMatchers, RouteContract, RouteHandler } from '@ioc:Adonis/Core/Route'
+import { types } from '@poppinss/utils/build/helpers'
+import {
+  RouteJSON,
+  RouteMatchers,
+  RouteContract,
+  RouteHandler,
+  RouteParamMatcher,
+} from '@ioc:Adonis/Core/Route'
 import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 
 import { dropSlash } from '../helpers'
@@ -121,12 +128,19 @@ export class Route extends Macroable implements RouteContract {
    *
    * The `/^[0-9]$/` should win over the matcher defined by the group
    */
-  public where(param: string, matcher: string | RegExp): this {
+  public where(param: string, matcher: RouteParamMatcher): this {
     if (this.matchers[param]) {
       return this
     }
 
-    this.matchers[param] = typeof matcher === 'string' ? new RegExp(matcher) : matcher
+    if (typeof matcher === 'string') {
+      this.matchers[param] = { match: new RegExp(matcher) }
+    } else if (types.isRegexp(matcher)) {
+      this.matchers[param] = { match: matcher }
+    } else {
+      this.matchers[param] = matcher
+    }
+
     return this
   }
 

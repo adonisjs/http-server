@@ -97,7 +97,7 @@ test.group('Route', () => {
       },
       methods: ['GET'],
       matchers: {
-        id: /^[a-z]+$/,
+        id: { match: /^[a-z]+$/ },
       },
       domain: 'root',
       handler,
@@ -109,7 +109,7 @@ test.group('Route', () => {
   test('define global matchers for params', (assert) => {
     async function handler() {}
     const route = new Route('posts/:id', ['GET'], handler, {
-      id: /^[a-z]+$/,
+      id: { match: /^[a-z]+$/ },
     })
 
     assert.deepEqual(route.toJSON(), {
@@ -119,7 +119,7 @@ test.group('Route', () => {
       },
       methods: ['GET'],
       matchers: {
-        id: /^[a-z]+$/,
+        id: { match: /^[a-z]+$/ },
       },
       domain: 'root',
       handler,
@@ -131,7 +131,7 @@ test.group('Route', () => {
   test('give preference to local matcher over global', (assert) => {
     async function handler() {}
     const route = new Route('posts/:id', ['GET'], handler, {
-      id: /^[a-z]+$/,
+      id: { match: /^[a-z]+$/ },
     })
     route.where('id', '(.*)')
 
@@ -142,7 +142,7 @@ test.group('Route', () => {
       },
       methods: ['GET'],
       matchers: {
-        id: /(.*)/,
+        id: { match: /(.*)/ },
       },
       domain: 'root',
       handler,
