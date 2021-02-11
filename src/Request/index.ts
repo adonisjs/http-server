@@ -217,6 +217,17 @@ export class Request extends Macroable implements RequestContract {
    * Returns reference to the query string object
    */
   public get(): { [key: string]: any } {
+    process.emitWarning(
+      'DeprecationWarning',
+      'request.get() is deprecated. Use request.qs() instead'
+    )
+    return this.qs()
+  }
+
+  /**
+   * Returns the query string object by reference
+   */
+  public qs(): { [key: string]: any } {
     return this.requestQs
   }
 
@@ -224,6 +235,17 @@ export class Request extends Macroable implements RequestContract {
    * Returns reference to the request body
    */
   public post(): { [key: string]: any } {
+    process.emitWarning(
+      'DeprecationWarning',
+      'request.post() is deprecated. Use request.body() instead'
+    )
+    return this.body()
+  }
+
+  /**
+   * Returns reference to the request body
+   */
+  public body(): { [key: string]: any } {
     return this.requestBody
   }
 
@@ -857,7 +879,7 @@ export class Request extends Macroable implements RequestContract {
    * or not.
    */
   public hasValidSignature(purpose?: string) {
-    const { signature, ...rest } = this.get()
+    const { signature, ...rest } = this.qs()
     if (!signature) {
       return false
     }

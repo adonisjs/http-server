@@ -25,7 +25,7 @@ test.group('Request', () => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
-      res.end(JSON.stringify(request.get()))
+      res.end(JSON.stringify(request.qs()))
     })
 
     const { body } = await supertest(server).get('/?username=virk&age=22')
@@ -39,7 +39,7 @@ test.group('Request', () => {
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
         JSON.stringify({
-          post: request.post(),
+          body: request.body(),
           all: request.all(),
           original: request.original(),
         })
@@ -48,7 +48,7 @@ test.group('Request', () => {
 
     const { body } = await supertest(server).get('/')
     assert.deepEqual(body, {
-      post: { username: 'virk' },
+      body: { username: 'virk' },
       all: { username: 'virk' },
       original: { username: 'virk' },
     })
@@ -63,7 +63,7 @@ test.group('Request', () => {
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
         JSON.stringify({
-          post: request.post(),
+          body: request.body(),
           all: request.all(),
           original: request.original(),
         })
@@ -72,7 +72,7 @@ test.group('Request', () => {
 
     const { body } = await supertest(server).get('/')
     assert.deepEqual(body, {
-      post: { username: 'nikk' },
+      body: { username: 'nikk' },
       all: { username: 'nikk' },
       original: { username: 'virk' },
     })
@@ -87,7 +87,7 @@ test.group('Request', () => {
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
         JSON.stringify({
-          post: request.post(),
+          body: request.body(),
           all: request.all(),
           original: request.original(),
         })
@@ -96,7 +96,7 @@ test.group('Request', () => {
 
     const { body } = await supertest(server).get('/?age=22')
     assert.deepEqual(body, {
-      post: { username: 'nikk' },
+      body: { username: 'nikk' },
       all: { username: 'nikk', age: '22' },
       original: { username: 'virk', age: '22' },
     })
@@ -127,7 +127,7 @@ test.group('Request', () => {
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
         JSON.stringify({
-          post: request.post(),
+          body: request.body(),
           all: request.all(),
           original: request.original(),
         })
@@ -136,7 +136,7 @@ test.group('Request', () => {
 
     const { body } = await supertest(server).get('/?age=22')
     assert.deepEqual(body, {
-      post: {},
+      body: {},
       all: { age: '22' },
       original: { age: '22' },
     })
@@ -150,7 +150,7 @@ test.group('Request', () => {
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
         JSON.stringify({
-          post: request.post(),
+          body: request.body(),
           all: request.all(),
           original: request.original(),
         })
@@ -159,7 +159,7 @@ test.group('Request', () => {
 
     const { body } = await supertest(server).get('/?age=22')
     assert.deepEqual(body, {
-      post: {},
+      body: {},
       all: { age: '24' },
       original: { age: '22' },
     })

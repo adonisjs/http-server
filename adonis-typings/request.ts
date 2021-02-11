@@ -81,13 +81,25 @@ declare module '@ioc:Adonis/Core/Request' {
 
     /**
      * Returns reference to the query string object
+     * @deprecated: Use ".qs()" instead
      */
     get(): { [key: string]: any }
 
     /**
-     * Returns reference to the request body
+     * Returns the query string object by reference
+     */
+    qs(): { [key: string]: any }
+
+    /**
+     * Returns the request body object by reference
+     * @deprecated: Use ".body()" instead
      */
     post(): { [key: string]: any }
+
+    /**
+     * Returns the request body object by reference
+     */
+    body(): { [key: string]: any }
 
     /**
      * Returns reference to the merged copy of original request
