@@ -627,6 +627,18 @@ test.group('Router | add', () => {
     assert.deepEqual(route.matchers.user_id.match, /^[0-9]+$/)
   })
 
+  test('test empty string param against the matcher', (assert) => {
+    const router = new Router(encryption)
+    async function handler() {}
+
+    router.get('user/:user_id', handler)
+    router.get('users/:user_id', handler).where('user_id', router.matchers.number())
+    router.commit()
+
+    assert.isNull(router.match('/users/ ', 'GET'))
+    assert.isNotNull(router.match('/user/ ', 'GET')) // without matcher
+  })
+
   test('apply route names in group', (assert) => {
     assert.plan(1)
 
