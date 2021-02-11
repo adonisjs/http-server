@@ -17,10 +17,10 @@ import {
   RouteNode,
   RouteHandler,
   MatchedRoute,
-  RouteMatchers,
   RouterContract,
   MakeUrlOptions,
   RouteLookupNode,
+  RouteMatchersNode,
   MakeSignedUrlOptions,
 } from '@ioc:Adonis/Core/Route'
 
@@ -37,6 +37,8 @@ import {
   normalizeMakeUrlOptions,
   normalizeMakeSignedUrlOptions,
 } from '../helpers'
+
+import { RouteMatchers } from './Matchers'
 
 /**
  * Router class exposes unified API to create new routes, group them or
@@ -66,11 +68,17 @@ export class Router implements RouterContract {
   public RouteGroup = RouteGroup
   public RouteResource = RouteResource
   public Route = Route
+  public RouteMatchers = RouteMatchers
+
+  /**
+   * Shortcut methods for commonly used route matchers
+   */
+  public matchers = new RouteMatchers()
 
   /**
    * Global matchers to test route params against regular expressions.
    */
-  private matchers: RouteMatchers = {}
+  private paramMatchers: RouteMatchersNode = {}
 
   /**
    * Store with tokenized routes
@@ -114,7 +122,7 @@ export class Router implements RouterContract {
    * Add route for a given pattern and methods
    */
   public route(pattern: string, methods: string[], handler: RouteHandler): Route {
-    const route = new Route(pattern, methods, handler, this.matchers)
+    const route = new Route(pattern, methods, handler, this.paramMatchers)
     const openedGroup = this.getRecentGroup()
 
     if (openedGroup) {
@@ -218,7 +226,7 @@ export class Router implements RouterContract {
    * Registers a route resource with conventional set of routes
    */
   public resource(resource: string, controller: string): RouteResource {
-    const resourceInstance = new RouteResource(resource, controller, this.matchers)
+    const resourceInstance = new RouteResource(resource, controller, this.paramMatchers)
     const openedGroup = this.getRecentGroup()
 
     if (openedGroup) {
@@ -234,7 +242,7 @@ export class Router implements RouterContract {
    * Register a route resource with shallow nested routes.
    */
   public shallowResource(resource: string, controller: string): RouteResource {
-    const resourceInstance = new RouteResource(resource, controller, this.matchers, true)
+    const resourceInstance = new RouteResource(resource, controller, this.paramMatchers, true)
     const openedGroup = this.getRecentGroup()
 
     if (openedGroup) {
@@ -250,7 +258,7 @@ export class Router implements RouterContract {
    * Returns a brisk route instance for a given URL pattern
    */
   public on(pattern: string): BriskRoute {
-    const briskRoute = new BriskRoute(pattern, this.matchers)
+    const briskRoute = new BriskRoute(pattern, this.paramMatchers)
     const openedGroup = this.getRecentGroup()
 
     if (openedGroup) {
@@ -267,11 +275,11 @@ export class Router implements RouterContract {
    */
   public where(param: string, matcher: string | RegExp): this {
     if (typeof matcher === 'string') {
-      this.matchers[param] = { match: new RegExp(matcher) }
+      this.paramMatchers[param] = { match: new RegExp(matcher) }
     } else if (types.isRegexp(matcher)) {
-      this.matchers[param] = { match: matcher }
+      this.paramMatchers[param] = { match: matcher }
     } else {
-      this.matchers[param] = matcher
+      this.paramMatchers[param] = matcher
     }
 
     return this
@@ -331,7 +339,7 @@ export class Router implements RouterContract {
     })
 
     this.routes = []
-    this.matchers = {}
+    this.paramMatchers = {}
   }
 
   /**

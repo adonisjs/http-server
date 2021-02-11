@@ -15,10 +15,10 @@ import { string } from '@poppinss/utils/build/helpers'
 
 import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 import {
-  RouteMatchers,
-  RouteResourceContract,
-  ResourceRouteNames,
   RouteParamMatcher,
+  ResourceRouteNames,
+  RouteMatchersNode,
+  RouteResourceContract,
 } from '@ioc:Adonis/Core/Route'
 
 import { Route } from './Route'
@@ -53,7 +53,7 @@ export class RouteResource extends Macroable implements RouteResourceContract {
   constructor(
     private resource: string,
     private controller: string,
-    private globalMatchers: RouteMatchers,
+    private globalMatchers: RouteMatchersNode,
     private shallow = false
   ) {
     super()

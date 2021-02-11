@@ -13,7 +13,7 @@ import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
 
 import { Route } from './Route'
-import { BriskRouteContract, RouteMatchers, RouteHandler } from '@ioc:Adonis/Core/Route'
+import { BriskRouteContract, RouteMatchersNode, RouteHandler } from '@ioc:Adonis/Core/Route'
 
 /**
  * Brisk route enables you to expose expressive API for
@@ -39,7 +39,7 @@ export class BriskRoute extends Macroable implements BriskRouteContract {
    */
   public route: null | Route = null
 
-  constructor(private pattern: string, private globalMatchers: RouteMatchers) {
+  constructor(private pattern: string, private globalMatchers: RouteMatchersNode) {
     super()
   }
 

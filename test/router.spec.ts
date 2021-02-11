@@ -613,6 +613,20 @@ test.group('Router | add', () => {
     })
   })
 
+  test('apply route matchers using shorthand methods', (assert) => {
+    assert.plan(1)
+
+    const router = new Router(encryption)
+    async function handler() {}
+
+    const route = router
+      .get('/:user_id', handler)
+      .where('user_id', router.matchers.number())
+      .toJSON()
+
+    assert.deepEqual(route.matchers.user_id.match, /^[0-9]+$/)
+  })
+
   test('apply route names in group', (assert) => {
     assert.plan(1)
 

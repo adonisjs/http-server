@@ -50,7 +50,7 @@ declare module '@ioc:Adonis/Core/Route' {
   /**
    * Shape of route param matchers
    */
-  export type RouteMatchers = {
+  export type RouteMatchersNode = {
     [param: string]: {
       match?: RegExp
       cast?: (value: string) => any
@@ -126,7 +126,7 @@ declare module '@ioc:Adonis/Core/Route' {
   export type RouteJSON = RouteNode & {
     methods: string[]
     domain?: string
-    matchers: RouteMatchers
+    matchers: RouteMatchersNode
   }
 
   /**
@@ -412,6 +412,7 @@ declare module '@ioc:Adonis/Core/Route' {
     RouteGroup: MacroableConstructorContract<RouteGroupContract>
     RouteResource: MacroableConstructorContract<RouteResourceContract>
     Route: MacroableConstructorContract<RouteContract>
+    RouteMatchers: MacroableConstructorContract<RouteMatchersContract>
 
     /**
      * Collection of routes, including route resource and route
@@ -528,6 +529,29 @@ declare module '@ioc:Adonis/Core/Route' {
      * test middleware or validators by hitting a route from outside in.
      */
     forTesting(pattern?: string, methods?: string[], handler?: any): RouteContract
+
+    matchers: RouteMatchersContract
+  }
+
+  /**
+   * Shortcut methods for commonly used route matchers
+   */
+  export interface RouteMatchersContract {
+    /**
+     * Enforce value to be a number and also casts it to number data
+     * type
+     */
+    number(): { match: RegExp; cast: (value: string) => number }
+
+    /**
+     * Enforce value to be formatted as uuid
+     */
+    uuid(): { match: RegExp }
+
+    /**
+     * Enforce value to be formatted as slug
+     */
+    slug(): { match: RegExp }
   }
 
   const Route: RouterContract

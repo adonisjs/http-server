@@ -13,9 +13,9 @@ import { Macroable } from 'macroable'
 import { types } from '@poppinss/utils/build/helpers'
 import {
   RouteJSON,
-  RouteMatchers,
   RouteContract,
   RouteHandler,
+  RouteMatchersNode,
   RouteParamMatcher,
 } from '@ioc:Adonis/Core/Route'
 import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
@@ -53,7 +53,7 @@ export class Route extends Macroable implements RouteContract {
    * store. The matchers list is populated by
    * calling `where` method
    */
-  private matchers: RouteMatchers = {}
+  private matchers: RouteMatchersNode = {}
 
   /**
    * Custom prefixes. Usually added to a group of routes. We keep an array of them
@@ -88,7 +88,7 @@ export class Route extends Macroable implements RouteContract {
     private pattern: string,
     private methods: string[],
     private handler: RouteHandler,
-    private globalMatchers: RouteMatchers
+    private globalMatchers: RouteMatchersNode
   ) {
     super()
   }
@@ -98,7 +98,7 @@ export class Route extends Macroable implements RouteContract {
    * matchers. The local copy is given preference over the global
    * one's
    */
-  private getMatchers(): RouteMatchers {
+  private getMatchers(): RouteMatchersNode {
     return Object.assign({}, this.globalMatchers, this.matchers)
   }
 
