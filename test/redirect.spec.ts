@@ -16,11 +16,10 @@ import { Router } from '../src/Router'
 import { Response } from '../src/Response'
 import { encryption, responseConfig } from '../test-helpers'
 
-const router = new Router(encryption)
-
 test.group('Redirect', () => {
   test('redirect to given url', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect('/foo')
       response.finish()
@@ -32,6 +31,7 @@ test.group('Redirect', () => {
 
   test('redirect to given url with query string', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect('/foo', true)
       response.finish()
@@ -43,6 +43,7 @@ test.group('Redirect', () => {
 
   test('redirect to given url and forward current query string', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect().withQs().toPath('/foo')
       response.finish()
@@ -54,6 +55,7 @@ test.group('Redirect', () => {
 
   test('redirect to given url with custom query string', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect().withQs('username', 'romain').toPath('/foo')
       response.finish()
@@ -65,6 +67,7 @@ test.group('Redirect', () => {
 
   test('redirect to given url with custom query string overwriting the forward rules', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect().withQs().withQs('username', 'romain').toPath('/foo')
       response.finish()
@@ -76,6 +79,7 @@ test.group('Redirect', () => {
 
   test('redirect to given url with custom query given as object', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response
         .redirect()
@@ -93,6 +97,7 @@ test.group('Redirect', () => {
 
   test('do not set query string when originally there was no query string', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect('/foo', true)
       response.finish()
@@ -104,6 +109,7 @@ test.group('Redirect', () => {
 
   test('redirect to given url and set custom statusCode', async () => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect('/foo', false, 301)
       response.finish()
@@ -114,6 +120,7 @@ test.group('Redirect', () => {
 
   test('redirect to given url and set custom statusCode using fluent API', async () => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect().status(301).toPath('/foo')
       response.finish()
@@ -124,6 +131,7 @@ test.group('Redirect', () => {
 
   test('redirect back to referrer', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect('back')
       response.finish()
@@ -133,8 +141,25 @@ test.group('Redirect', () => {
     assert.equal(header.location, '/foo')
   })
 
+  test('redirect back to referrer with existing query string', async (assert) => {
+    const server = createServer((req, res) => {
+      const router = new Router(encryption)
+      const response = new Response(req, res, encryption, responseConfig, router)
+      response.redirect().withQs().back()
+      response.finish()
+    })
+
+    const { header } = await supertest(server)
+      .get('/')
+      .set('referrer', '/foo?name=virk')
+      .redirects(1)
+
+    assert.equal(header.location, '/foo?name=virk')
+  })
+
   test('redirect back to referrer with query string', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect().withQs({ name: 'virk' }).back()
       response.finish()
@@ -150,6 +175,7 @@ test.group('Redirect', () => {
 
   test('redirect back to root (/) when referrer header is not set', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect('back')
       response.finish()
@@ -160,6 +186,7 @@ test.group('Redirect', () => {
   })
 
   test('redirect to given route', async (assert) => {
+    const router = new Router(encryption)
     router.get('posts', 'PostsController.index').as('posts.index')
     router.commit()
 
@@ -174,6 +201,7 @@ test.group('Redirect', () => {
   })
 
   test('redirect to given route with params', async (assert) => {
+    const router = new Router(encryption)
     router.get('posts/:id', 'PostsController.show').as('post.show')
     router.commit()
 
@@ -188,6 +216,7 @@ test.group('Redirect', () => {
   })
 
   test.failing('redirect to given route with domain', async (assert) => {
+    const router = new Router(encryption)
     router
       .get('posts/create', 'PostsController.create')
       .as('post.create')
@@ -207,7 +236,42 @@ test.group('Redirect', () => {
     assert.equal(response.getHeader('location'), 'http://domain.example.com/posts/create')
   })
 
+  test('redirect to given route and forward query string', async (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/:id', 'PostsController.show').as('post.show')
+    router.commit()
+
+    const server = createServer((req, res) => {
+      const response = new Response(req, res, encryption, responseConfig, router)
+      response.redirect().withQs().toRoute('post.show', { id: 1 })
+      response.finish()
+    })
+
+    const { header } = await supertest(server).get('/?published=true').redirects(1)
+    assert.equal(header.location, '/posts/1?published=true')
+  })
+
+  test('redirect to given route and add qs via makeRoute', async (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/:id', 'PostsController.show').as('post.show')
+    router.commit()
+
+    const server = createServer((req, res) => {
+      const response = new Response(req, res, encryption, responseConfig, router)
+      response
+        .redirect()
+        .withQs('user', 'virk')
+        .toRoute('post.show', { id: 1, qs: { published: true } })
+
+      response.finish()
+    })
+
+    const { header } = await supertest(server).get('/').redirects(1)
+    assert.equal(header.location, '/posts/1?user=virk&published=true')
+  })
+
   test('throw when given route is not found', async (assert) => {
+    const router = new Router(encryption)
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
 
@@ -223,6 +287,7 @@ test.group('Redirect', () => {
 
   test('merge query string values when withQs is called multiple times', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect().withQs('username', 'romain').withQs('age', 28).toPath('/foo')
       response.finish()
@@ -234,6 +299,7 @@ test.group('Redirect', () => {
 
   test('merge query string with current url qs values', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect().withQs().withQs('age', 28).toPath('/foo')
       response.finish()
@@ -245,6 +311,7 @@ test.group('Redirect', () => {
 
   test('do not set query string original url has no qs', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect().withQs().toPath('/foo')
       response.finish()
@@ -256,6 +323,7 @@ test.group('Redirect', () => {
 
   test('clear existing qs', async (assert) => {
     const server = createServer((req, res) => {
+      const router = new Router(encryption)
       const response = new Response(req, res, encryption, responseConfig, router)
       response.redirect().withQs('name', 'virk').clearQs().toPath('/foo')
       response.finish()

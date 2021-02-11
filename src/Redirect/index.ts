@@ -44,6 +44,27 @@ export class Redirect implements RedirectContract {
   ) {}
 
   /**
+   * Sends response by setting require headers
+   */
+  private sendResponse(url: string, query: any) {
+    const stringified = qs.stringify(query)
+
+    url = stringified ? `${url}?${stringified}` : url
+    this.response.location(encodeurl(url))
+    this.response.safeStatus(this.statusCode)
+    this.response.type('text/plain; charset=utf-8')
+    this.response.send(`Redirecting to ${url}`)
+  }
+
+  /**
+   * Returns the referrer url
+   */
+  private getReferrerUrl(): string {
+    let url = this.request.headers['referer'] || this.request.headers['referrer'] || '/'
+    return Array.isArray(url) ? url[0] : url
+  }
+
+  /**
    * Set a custom status code.
    */
   public status(statusCode: number): this {
@@ -88,19 +109,37 @@ export class Redirect implements RedirectContract {
    * Redirect to the previous path.
    */
   public back() {
-    let url = this.request.headers['referer'] || this.request.headers['referrer'] || '/'
-    url = Array.isArray(url) ? url[0] : url
+    let query: any = {}
+
+    const url = parse(this.getReferrerUrl())
 
     /**
-     * Remove query string from the referrer
+     * Parse query string from the referrer url
      */
-    return this.toPath(url.split('?')[0])
+    if (this.forwardQueryString) {
+      query = qs.parse(url.query || '')
+    }
+
+    /**
+     * Append custom query string
+     */
+    Object.assign(query, this.queryString)
+
+    /**
+     * Redirect
+     */
+    this.sendResponse(url.pathname || '', query)
   }
 
   /**
    * Redirect the request using a route identifier.
    */
   public toRoute(routeIdentifier: string, urlOptions?: MakeUrlOptions, domain?: string) {
+    if (urlOptions && urlOptions.qs) {
+      this.withQs(urlOptions.qs)
+      urlOptions.qs = undefined
+    }
+
     const url = this.router.makeUrl(routeIdentifier, urlOptions, domain)
     if (!url) {
       throw RouterException.cannotLookupRoute(routeIdentifier)
@@ -116,10 +155,10 @@ export class Redirect implements RedirectContract {
     let query: any = {}
 
     /**
-     * Extract the current query string
+     * Extract query string from the current URL
      */
     if (this.forwardQueryString) {
-      query = qs.parse(parse(this.request.url!, false).query || '')
+      query = qs.parse(parse(this.request.url!).query || '')
     }
 
     /**
@@ -128,14 +167,8 @@ export class Redirect implements RedirectContract {
     Object.assign(query, this.queryString)
 
     /**
-     * Convert string
+     * Redirect
      */
-    const stringified = qs.stringify(query)
-
-    url = stringified ? `${url}?${stringified}` : url
-    this.response.location(encodeurl(url))
-    this.response.safeStatus(this.statusCode)
-    this.response.type('text/plain; charset=utf-8')
-    this.response.send(`Redirecting to ${url}`)
+    this.sendResponse(url, query)
   }
 }
