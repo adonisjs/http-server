@@ -100,7 +100,6 @@
     "co-compose": "^6.1.0",
     "content-disposition": "^0.5.3",
     "cookie": "^0.4.1",
-    "cuid": "^2.1.8",
     "destroy": "^1.0.4",
     "encodeurl": "^1.0.2",
     "etag": "^1.8.1",

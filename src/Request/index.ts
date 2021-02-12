@@ -10,7 +10,6 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import qs from 'qs'
-import cuid from 'cuid'
 import fresh from 'fresh'
 import { isIP } from 'net'
 import typeIs from 'type-is'
@@ -19,6 +18,7 @@ import proxyaddr from 'proxy-addr'
 import { Macroable } from 'macroable'
 import { lodash } from '@poppinss/utils'
 import { parse, UrlWithStringQuery } from 'url'
+import { cuid } from '@poppinss/utils/build/helpers'
 import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'http'
 
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
