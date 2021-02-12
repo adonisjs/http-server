@@ -36,8 +36,9 @@ declare module '@ioc:Adonis/Core/Server' {
         value: Exclude<ErrorHandler, string>
       }
     | {
-        type: 'class'
-        value: any
+        type: 'alias' | 'binding'
+        namespace: string
+        method: string
       }
 
   /**

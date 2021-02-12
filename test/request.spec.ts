@@ -117,7 +117,7 @@ test.group('Request', () => {
 
     const { body } = await supertest(server).get('/?age=22')
     assert.deepEqual(body, {
-      message: 'Cannot re-set initial body. Use request.updateBody instead',
+      message: 'Cannot re-set initial body. Use "request.updateBody" instead',
     })
   })
 

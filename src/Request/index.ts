@@ -161,7 +161,7 @@ export class Request extends Macroable implements RequestContract {
    */
   public setInitialBody(body: object) {
     if (this.originalRequestData && Object.isFrozen(this.originalRequestData)) {
-      throw new Error('Cannot re-set initial body. Use request.updateBody instead')
+      throw new Error('Cannot re-set initial body. Use "request.updateBody" instead')
     }
 
     this.updateBody(body)

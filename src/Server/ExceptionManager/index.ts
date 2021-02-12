@@ -9,9 +9,9 @@
 
 /// <reference path="../../../adonis-typings/index.ts" />
 
-import { IocContract, IocResolverContract } from '@adonisjs/fold'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { ErrorHandler, ResolvedErrorHandler } from '@ioc:Adonis/Core/Server'
+import { IocContract, IocResolverContract, IocResolverLookupNode } from '@adonisjs/fold'
 
 import { useReturnValue } from '../../helpers'
 
@@ -27,12 +27,17 @@ export class ExceptionManager {
   private resolvedErrorHandler?: ResolvedErrorHandler
 
   /**
+   * Resolved copy of error reporter
+   */
+  private resolvedErrorReporter?: IocResolverLookupNode<string>
+
+  /**
    * A reference to ioc resolver to resolve the error handler from
    * the IoC container
    */
   private resolver: IocResolverContract<any>
 
-  constructor(private container: IocContract) {
+  constructor(container: IocContract) {
     this.resolver = container.getResolver()
   }
 
@@ -41,10 +46,8 @@ export class ExceptionManager {
    */
   public registerHandler(handler: ErrorHandler) {
     if (typeof handler === 'string') {
-      this.resolvedErrorHandler = {
-        type: 'class',
-        value: this.container.make(this.resolver.resolve(handler)),
-      }
+      this.resolvedErrorHandler = this.resolver.resolve(`${handler}.handle`)
+      this.resolvedErrorReporter = this.resolver.resolve(`${handler}.report`)
     } else {
       this.resolvedErrorHandler = {
         type: 'function',
@@ -79,7 +82,7 @@ export class ExceptionManager {
       if (this.resolvedErrorHandler.type === 'function') {
         value = await this.resolvedErrorHandler.value(error, ctx)
       } else {
-        value = await this.container.call(this.resolvedErrorHandler.value, 'handle', [error, ctx])
+        value = await this.resolver.call(this.resolvedErrorHandler, undefined, [error, ctx])
       }
 
       if (useReturnValue(value, ctx)) {
@@ -101,13 +104,9 @@ export class ExceptionManager {
    * Report error when report method exists
    */
   private async reportError(error: any, ctx: HttpContextContract) {
-    if (
-      this.resolvedErrorHandler &&
-      this.resolvedErrorHandler.type === 'class' &&
-      typeof this.resolvedErrorHandler.value['report'] === 'function'
-    ) {
+    if (this.resolvedErrorReporter) {
       try {
-        await this.resolvedErrorHandler.value['report'](error, ctx)
+        await this.resolver.call(this.resolvedErrorReporter, undefined, [error, ctx])
       } catch (finalError) {
         ctx.logger.fatal(
           finalError,

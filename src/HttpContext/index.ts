@@ -97,9 +97,11 @@ export class HttpContext extends Macroable implements HttpContextContract {
     req?: IncomingMessage,
     res?: ServerResponse
   ) {
-    const Router = HttpContext.app.container.use('Adonis/Core/Route')
-    const Encryption = HttpContext.app.container.use('Adonis/Core/Encryption')
-    const serverConfig = HttpContext.app.container.use('Adonis/Core/Config').get('app.http', {})
+    const Router = HttpContext.app.container.resolveBinding('Adonis/Core/Route')
+    const Encryption = HttpContext.app.container.resolveBinding('Adonis/Core/Encryption')
+    const serverConfig = HttpContext.app.container
+      .resolveBinding('Adonis/Core/Config')
+      .get('app.http', {})
 
     req = req || new IncomingMessage(new Socket())
     res = res || new ServerResponse(req)

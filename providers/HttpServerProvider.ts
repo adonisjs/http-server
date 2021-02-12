@@ -58,7 +58,7 @@ export default class HttpServerProvider {
   protected registerHTTPContext() {
     this.application.container.bind('Adonis/Core/HttpContext', () => {
       const { HttpContext } = require('../src/HttpContext')
-      HttpContext.app = this.application.container.use('Adonis/Core/Application')
+      HttpContext.app = this.application.container.resolveBinding('Adonis/Core/Application')
       return HttpContext
     })
   }
@@ -70,8 +70,8 @@ export default class HttpServerProvider {
     this.application.container.singleton('Adonis/Core/Server', () => {
       const { Server } = require('../src/Server')
 
-      const Config = this.application.container.use('Adonis/Core/Config')
-      const Encryption = this.application.container.use('Adonis/Core/Encryption')
+      const Config = this.application.container.resolveBinding('Adonis/Core/Config')
+      const Encryption = this.application.container.resolveBinding('Adonis/Core/Encryption')
 
       const serverConfig = Config.get('app.http', {})
       this.validateServerConfig(serverConfig)
@@ -86,7 +86,7 @@ export default class HttpServerProvider {
    */
   protected registerRouter() {
     this.application.container.singleton('Adonis/Core/Route', () => {
-      return this.application.container.use('Adonis/Core/Server').router
+      return this.application.container.resolveBinding('Adonis/Core/Server').router
     })
   }
 
