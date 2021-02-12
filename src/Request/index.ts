@@ -910,6 +910,9 @@ export class Request extends Macroable implements RequestContract {
       method: this.method(),
       protocol: this.protocol(),
       cookies: this.cookiesList(),
+      hostname: this.hostname(),
+      ip: this.ip(),
+      subdomains: this.ctx!.subdomains,
     }
   }
 }
