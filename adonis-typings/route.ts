@@ -130,15 +130,20 @@ declare module '@ioc:Adonis/Core/Route' {
   }
 
   /**
-   * Route look node is used to find the routes using
-   * handler, pattern or name.
+   * Shape of the identifier node of the URL builder
    */
-  export type RouteLookupNode = {
+  export type LookupStoreIdentifier = {
     handler: RouteHandler
     methods: string[]
     pattern: string
-    domain: string
     name?: string
+  }
+
+  /**
+   * Shape of the routes tree maintained by the UrlBuilder
+   */
+  export type LookupStoreTree = {
+    [domain: string]: LookupStoreIdentifier[]
   }
 
   /**
@@ -386,10 +391,9 @@ declare module '@ioc:Adonis/Core/Route' {
    * Options accepted by makeUrl methods
    */
   export type MakeUrlOptions = {
-    qs?: any
-    params?: any
-    domainParams?: any
-    prefixDomain?: boolean
+    qs?: { [key: string]: any }
+    domain?: string
+    prefixUrl?: string
   } & { [key: string]: any }
 
   /**
@@ -403,7 +407,7 @@ declare module '@ioc:Adonis/Core/Route' {
   /**
    * Shape of router exposed for creating routes
    */
-  export interface RouterContract {
+  export interface RouterContract extends LookupStoreContract {
     /**
      * Exposing BriskRoute, RouteGroup and RouteResource constructors
      * to be extended from outside
@@ -484,7 +488,7 @@ declare module '@ioc:Adonis/Core/Route' {
     /**
      * Returns a flat list of routes JSON
      */
-    toJSON(): RouteLookupNode[]
+    toJSON(): { [domain: string]: (RouteNode & { methods: string[] })[] }
 
     /**
      * Commit routes to the store. After this, no more
@@ -498,16 +502,14 @@ declare module '@ioc:Adonis/Core/Route' {
     match(url: string, method: string, domain?: string): null | MatchedRoute
 
     /**
-     * Look route for a given `pattern`, `route handler` or `route name`. Later this
-     * info can be used to make url for a given route.
-     */
-    lookup(routeIdentifier: string, domain?: string): null | RouteLookupNode
-
-    /**
      * Makes url to a registered route by looking it up with the route pattern,
      * name or the controller.method
      */
-    makeUrl(routeIdentifier: string, options?: MakeUrlOptions, domain?: string): string | null
+    makeUrl(
+      routeIdentifier: string,
+      params?: any[] | MakeUrlOptions,
+      options?: MakeUrlOptions
+    ): string
 
     /**
      * Makes a signed url, which can be confirmed for it's integrity without
@@ -515,8 +517,8 @@ declare module '@ioc:Adonis/Core/Route' {
      */
     makeSignedUrl(
       routeIdentifier: string,
-      options?: MakeSignedUrlOptions,
-      domain?: string
+      params?: any[] | MakeSignedUrlOptions,
+      options?: MakeSignedUrlOptions
     ): string | null
 
     /**
@@ -530,6 +532,9 @@ declare module '@ioc:Adonis/Core/Route' {
      */
     forTesting(pattern?: string, methods?: string[], handler?: any): RouteContract
 
+    /**
+     * Shortcut methods for defining route param matchers
+     */
     matchers: RouteMatchersContract
   }
 
@@ -552,6 +557,48 @@ declare module '@ioc:Adonis/Core/Route' {
      * Enforce value to be formatted as slug
      */
     slug(): { match: RegExp }
+  }
+
+  /**
+   * Lookup store allows making urls to a given route by performing
+   * lookup using its name, route handler or the route pattern
+   * directly
+   */
+  export interface LookupStoreContract {
+    /**
+     * Get the builder instance for the main domain
+     */
+    builder(): UrlBuilderContract
+
+    /**
+     * Get the builder instance for a specific domain
+     */
+    builderForDomain(domainPattern: string): UrlBuilderContract
+  }
+
+  /**
+   * Shape of the Url builder
+   */
+  export interface UrlBuilderContract {
+    /**
+     * Prefix a custom url to the final URI
+     */
+    params(params: undefined | any[] | { [key: string]: any }): this
+
+    /**
+     * Append query string to the final URI
+     */
+    qs(qs: undefined | { [key: string]: any }): this
+
+    /**
+     * Define required params to resolve the route
+     */
+    prefixUrl(url: string): this
+
+    /**
+     * Generate url for the given route
+     */
+    make(identifier: string): string
   }
 
   const Route: RouterContract

@@ -137,15 +137,47 @@ export function trustProxy(
 }
 
 /**
- * Normalizes the make url options by allowing params to appear on
- * top level object with option to nest inside `params` property.
+ * Invokes a callback if any of the defined keys is part of the values object
  */
-export function normalizeMakeUrlOptions(options?: MakeUrlOptions): Required<MakeUrlOptions> {
-  const params = options ? (options.params ? options.params : options) : {}
-  const qs = options && options.qs ? options.qs : {}
-  const domainParams = options && options.domainParams ? options.domainParams : {}
-  const prefixDomain = options && options.prefixDomain !== undefined ? options.prefixDomain : true
-  return { params, qs, domainParams, prefixDomain }
+function onIntersect(values: any, keys: string[], callback: (key: string) => void) {
+  if (Array.isArray(values)) {
+    return
+  }
+
+  const valueKeys = Object.keys(values)
+  const matchingKey = keys.find((key) => valueKeys.includes(key))
+  if (matchingKey) {
+    callback(matchingKey)
+  }
+}
+
+/**
+ * Normalizes the makeURL options to work with the new API and the old
+ * one as well
+ */
+export function normalizeMakeUrlOptions(params?: any[] | MakeUrlOptions, options?: MakeUrlOptions) {
+  /**
+   * Params used to be options earlier. So we are checking a few properties of it
+   */
+  params = params || {}
+  options = options || {}
+
+  const normalizedParams = params['params'] ? params['params'] : params
+  const qs = options.qs || params['qs']
+  const domain = options.domain
+  const prefixUrl = options.prefixUrl
+
+  /**
+   * Using legacy options
+   */
+  onIntersect(params, ['prefixDomain', 'domainParams', 'qs', 'params'], () => {
+    process.emitWarning(
+      'DeprecationWarning',
+      'You are using legacy the API of the "Route.makeUrl". We recommend reading the docs and use the latest API'
+    )
+  })
+
+  return { params: normalizedParams, qs, domain, prefixUrl }
 }
 
 /**
@@ -153,23 +185,37 @@ export function normalizeMakeUrlOptions(options?: MakeUrlOptions): Required<Make
  * top level object with option to nest inside `params` property.
  */
 export function normalizeMakeSignedUrlOptions(
+  params?: any[] | MakeSignedUrlOptions,
   options?: MakeSignedUrlOptions
-): Required<MakeUrlOptions> & { purpose?: string; expiresIn?: string | number } {
-  const params = options ? (options.params ? options.params : options) : {}
-  const qs = options && options.qs ? options.qs : {}
-  const domainParams = options && options.domainParams ? options.domainParams : {}
-  const prefixDomain = options && options.prefixDomain !== undefined ? options.prefixDomain : true
-  const expiresIn = options && options.expiresIn !== undefined ? options.expiresIn : undefined
-  const purpose = options && options.purpose ? options.purpose : undefined
+) {
+  /**
+   * Params used to be options earlier. So we are checking a few properties of it
+   */
+  params = params || {}
+  options = options || {}
 
-  return {
+  const normalizedParams = params['params'] ? params['params'] : params
+  const qs = options.qs || params['qs']
+  const expiresIn = options.expiresIn || params['expiresIn']
+  const purpose = options.purpose || params['purpose']
+  const domain = options.domain
+  const prefixUrl = options.prefixUrl
+
+  /**
+   * Using legacy options
+   */
+  onIntersect(
     params,
-    qs,
-    domainParams,
-    prefixDomain,
-    expiresIn,
-    purpose,
-  }
+    ['prefixDomain', 'domainParams', 'qs', 'params', 'purpose', 'expiresIn'],
+    () => {
+      process.emitWarning(
+        'DeprecationWarning',
+        'You are using legacy the API of the "Route.makeSignedUrl". We recommend reading the docs and use the latest API'
+      )
+    }
+  )
+
+  return { params: normalizedParams, qs, domain, prefixUrl, expiresIn, purpose }
 }
 
 /**

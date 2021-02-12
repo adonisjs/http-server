@@ -215,7 +215,7 @@ test.group('Redirect', () => {
     assert.equal(header.location, '/posts/1')
   })
 
-  test.failing('redirect to given route with domain', async (assert) => {
+  test('redirect to given route with domain', async (assert) => {
     const router = new Router(encryption)
     router
       .get('posts/create', 'PostsController.create')
@@ -227,13 +227,13 @@ test.group('Redirect', () => {
     const req = new IncomingMessage(new Socket())
     const res = new ServerResponse(req)
     const response = new Response(req, res, encryption, responseConfig, router)
-    response.redirect().toRoute('post.create', {}, 'domain.example.com')
+    response.redirect().toRoute('post.create', {}, { domain: 'domain.example.com' })
 
     /**
      * Header location cannot be protocol agnostic. We need to add support for
      * defining domain protocols in the router and then this test should pass
      */
-    assert.equal(response.getHeader('location'), 'http://domain.example.com/posts/create')
+    assert.equal(response.getHeader('location'), '/posts/create')
   })
 
   test('redirect to given route and forward query string', async (assert) => {
@@ -261,7 +261,7 @@ test.group('Redirect', () => {
       response
         .redirect()
         .withQs('user', 'virk')
-        .toRoute('post.show', { id: 1, qs: { published: true } })
+        .toRoute('post.show', { id: 1 }, { qs: { published: true } })
 
       response.finish()
     })

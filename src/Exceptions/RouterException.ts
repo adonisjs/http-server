@@ -13,6 +13,7 @@ import {
   E_DUPLICATE_ROUTE,
   E_CANNOT_LOOKUP_ROUTE,
   E_DUPLICATE_ROUTE_NAME,
+  E_CANNOT_LOOKUP_DOMAIN,
   E_CANNOT_MAKE_ROUTE_URL,
   E_DUPLICATE_ROUTE_PARAM,
   E_CANNOT_DEFINE_GROUP_NAME,
@@ -102,6 +103,20 @@ export class RouterException extends Exception {
     )
 
     error.help = E_CANNOT_LOOKUP_ROUTE.help.join('\n')
+    throw error
+  }
+
+  /**
+   * Raised when unable to lookup domain
+   */
+  public static cannotLookupDomain(domain: string) {
+    const error = new this(
+      interpolate(E_CANNOT_LOOKUP_DOMAIN.message, { domain }),
+      E_CANNOT_LOOKUP_DOMAIN.status,
+      E_CANNOT_LOOKUP_DOMAIN.code
+    )
+
+    error.help = E_CANNOT_LOOKUP_DOMAIN.help.join('\n')
     throw error
   }
 }

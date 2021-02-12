@@ -16,8 +16,6 @@ import { IncomingMessage } from 'http'
 import { RouterContract, MakeUrlOptions } from '@ioc:Adonis/Core/Route'
 import { RedirectContract, ResponseContract } from '@ioc:Adonis/Core/Response'
 
-import { RouterException } from '../Exceptions/RouterException'
-
 /**
  * Exposes the API to construct redirect routes
  */
@@ -134,17 +132,17 @@ export class Redirect implements RedirectContract {
   /**
    * Redirect the request using a route identifier.
    */
-  public toRoute(routeIdentifier: string, urlOptions?: MakeUrlOptions, domain?: string) {
-    if (urlOptions && urlOptions.qs) {
-      this.withQs(urlOptions.qs)
-      urlOptions.qs = undefined
+  public toRoute(
+    routeIdentifier: string,
+    params?: any[] | MakeUrlOptions,
+    options?: MakeUrlOptions
+  ) {
+    if (options && options.qs) {
+      this.withQs(options.qs)
+      options.qs = undefined
     }
 
-    const url = this.router.makeUrl(routeIdentifier, urlOptions, domain)
-    if (!url) {
-      throw RouterException.cannotLookupRoute(routeIdentifier)
-    }
-
+    const url = this.router.makeUrl(routeIdentifier, params, options)
     return this.toPath(url)
   }
 

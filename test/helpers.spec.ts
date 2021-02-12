@@ -15,17 +15,41 @@ test.group('Helpers | normalizeMakeUrlOptions', () => {
     assert.deepEqual(normalizeMakeUrlOptions({ id: 1, qs: { method: '_GET' } }), {
       params: { id: 1, qs: { method: '_GET' } },
       qs: { method: '_GET' },
-      domainParams: {},
-      prefixDomain: true,
+      prefixUrl: undefined,
+      domain: undefined,
     })
   })
 
-  test('use top params as params when defined explictly', (assert) => {
+  test('use top level params as params when defined explictly', (assert) => {
     assert.deepEqual(normalizeMakeUrlOptions({ params: { id: 1 }, qs: { method: '_GET' } }), {
       params: { id: 1 },
       qs: { method: '_GET' },
-      domainParams: {},
-      prefixDomain: true,
+      prefixUrl: undefined,
+      domain: undefined,
+    })
+  })
+
+  test('use qs from the options object', (assert) => {
+    assert.deepEqual(
+      normalizeMakeUrlOptions(
+        { params: { id: 1 }, qs: { method: '_GET' } },
+        { qs: { method: 'POST' } }
+      ),
+      {
+        params: { id: 1 },
+        qs: { method: 'POST' },
+        prefixUrl: undefined,
+        domain: undefined,
+      }
+    )
+  })
+
+  test('use params when defined as an array', (assert) => {
+    assert.deepEqual(normalizeMakeUrlOptions([1], { qs: { method: 'POST' } }), {
+      params: [1],
+      qs: { method: 'POST' },
+      prefixUrl: undefined,
+      domain: undefined,
     })
   })
 })
@@ -35,10 +59,10 @@ test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
     assert.deepEqual(normalizeMakeSignedUrlOptions({ id: 1, qs: { method: '_GET' } }), {
       params: { id: 1, qs: { method: '_GET' } },
       qs: { method: '_GET' },
-      domainParams: {},
-      prefixDomain: true,
       expiresIn: undefined,
       purpose: undefined,
+      prefixUrl: undefined,
+      domain: undefined,
     })
   })
 
@@ -46,32 +70,60 @@ test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
     assert.deepEqual(normalizeMakeSignedUrlOptions({ params: { id: 1 }, qs: { method: '_GET' } }), {
       params: { id: 1 },
       qs: { method: '_GET' },
-      domainParams: {},
-      prefixDomain: true,
       expiresIn: undefined,
       purpose: undefined,
+      prefixUrl: undefined,
+      domain: undefined,
     })
   })
 
   test('return expiresIn value when defined', (assert) => {
     assert.deepEqual(normalizeMakeSignedUrlOptions({ id: 1, expiresIn: '1min' }), {
       params: { id: 1, expiresIn: '1min' },
-      qs: {},
-      domainParams: {},
-      prefixDomain: true,
+      qs: undefined,
       expiresIn: '1min',
       purpose: undefined,
+      prefixUrl: undefined,
+      domain: undefined,
     })
   })
 
   test('return purpose value when defined', (assert) => {
     assert.deepEqual(normalizeMakeSignedUrlOptions({ id: 1, purpose: 'login' }), {
       params: { id: 1, purpose: 'login' },
-      qs: {},
-      domainParams: {},
-      prefixDomain: true,
+      qs: undefined,
       expiresIn: undefined,
       purpose: 'login',
+      prefixUrl: undefined,
+      domain: undefined,
+    })
+  })
+
+  test('use qs from the options object', (assert) => {
+    assert.deepEqual(
+      normalizeMakeSignedUrlOptions(
+        { params: { id: 1 }, qs: { method: '_GET' } },
+        { qs: { method: 'POST' } }
+      ),
+      {
+        params: { id: 1 },
+        qs: { method: 'POST' },
+        expiresIn: undefined,
+        purpose: undefined,
+        prefixUrl: undefined,
+        domain: undefined,
+      }
+    )
+  })
+
+  test('use params when defined as an array', (assert) => {
+    assert.deepEqual(normalizeMakeSignedUrlOptions([1], { qs: { method: 'POST' } }), {
+      params: [1],
+      qs: { method: 'POST' },
+      expiresIn: undefined,
+      purpose: undefined,
+      prefixUrl: undefined,
+      domain: undefined,
     })
   })
 })

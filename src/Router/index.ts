@@ -9,7 +9,6 @@
 
 /// <reference path="../../adonis-typings/index.ts" />
 
-import { stringify } from 'qs'
 import { types } from '@poppinss/utils/build/helpers'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 
@@ -19,7 +18,6 @@ import {
   MatchedRoute,
   RouterContract,
   MakeUrlOptions,
-  RouteLookupNode,
   RouteMatchersNode,
   MakeSignedUrlOptions,
 } from '@ioc:Adonis/Core/Route'
@@ -30,15 +28,10 @@ import { RouteGroup } from './Group'
 import { BriskRoute } from './BriskRoute'
 import { RouteResource } from './Resource'
 import { RouterException } from '../Exceptions/RouterException'
-
-import {
-  toRoutesJSON,
-  processPattern,
-  normalizeMakeUrlOptions,
-  normalizeMakeSignedUrlOptions,
-} from '../helpers'
+import { toRoutesJSON, normalizeMakeUrlOptions, normalizeMakeSignedUrlOptions } from '../helpers'
 
 import { RouteMatchers } from './Matchers'
+import { LookupStore } from './LookupStore'
 
 /**
  * Router class exposes unified API to create new routes, group them or
@@ -81,15 +74,14 @@ export class Router implements RouterContract {
   private paramMatchers: RouteMatchersNode = {}
 
   /**
+   * The lookup store instance
+   */
+  private lookupStore = new LookupStore(this.encryption)
+
+  /**
    * Store with tokenized routes
    */
   private store: Store = new Store()
-
-  /**
-   * Lookup store to find route by it's name, handler or pattern
-   * and then form a complete URL from it
-   */
-  private lookupStore: RouteLookupNode[] = []
 
   /**
    * A boolean to tell the router that a group is in
@@ -289,7 +281,19 @@ export class Router implements RouterContract {
    * Returns a flat list of routes JSON
    */
   public toJSON() {
-    return this.lookupStore
+    const lookupStoreRoutes = this.lookupStore.tree
+    const domains = Object.keys(lookupStoreRoutes)
+
+    return domains.reduce<{ [domain: string]: (RouteNode & { methods: string[] })[] }>(
+      (result, domain) => {
+        result[domain] = lookupStoreRoutes[domain].map((route) => {
+          const routeJSON = this.store.tree.domains[domain][route.methods[0]].routes[route.pattern]
+          return Object.assign({ methods: route.methods }, routeJSON)
+        })
+        return result
+      },
+      {}
+    )
   }
 
   /**
@@ -323,18 +327,10 @@ export class Router implements RouterContract {
         this.routeProcessor(route)
       }
 
-      /*
-       * Maintain an array of values, using which a route can be lookedup. The `handler` lookup
-       * only works, when Handler is defined as a string
+      /**
+       * Register the route with the lookup store
        */
-      this.lookupStore.push({
-        handler: route.handler,
-        methods: route.methods,
-        name: route.name,
-        pattern: route.pattern,
-        domain: route.domain || 'root',
-      })
-
+      this.lookupStore.register(route)
       this.store.add(route)
     })
 
@@ -378,18 +374,17 @@ export class Router implements RouterContract {
   }
 
   /**
-   * Look route for a given `pattern`, `route handler` or `route name`. Later this
-   * info can be used to make url for a given route.
+   * Access to the URL builder
    */
-  public lookup(routeIdentifier: string, forDomain?: string): null | RouteLookupNode {
-    return (
-      this.lookupStore.find(({ name, pattern, handler, domain }) => {
-        return (
-          [name, pattern, handler].indexOf(routeIdentifier) > -1 &&
-          (!forDomain || forDomain === domain)
-        )
-      }) || null
-    )
+  public builder() {
+    return this.lookupStore.builder()
+  }
+
+  /**
+   * Access to the URL builder for a specific domain
+   */
+  public builderForDomain(domainPattern: string) {
+    return this.lookupStore.builderForDomain(domainPattern)
   }
 
   /**
@@ -398,35 +393,19 @@ export class Router implements RouterContract {
    */
   public makeUrl(
     routeIdentifier: string,
-    options?: MakeUrlOptions,
-    domain?: string
-  ): string | null {
-    const route = this.lookup(routeIdentifier, domain)
-    if (!route) {
-      return null
-    }
+    params?: any[] | MakeUrlOptions,
+    options?: MakeUrlOptions
+  ): string {
+    const normalizedOptions = normalizeMakeUrlOptions(params, options)
+    const builder = normalizedOptions.domain
+      ? this.builderForDomain(normalizedOptions.domain)
+      : this.builder()
 
-    /*
-     * Normalizing options
-     */
-    options = normalizeMakeUrlOptions(options)
+    normalizedOptions.params && builder.params(normalizedOptions.params)
+    normalizedOptions.qs && builder.qs(normalizedOptions.qs)
+    normalizedOptions.prefixUrl && builder.prefixUrl(normalizedOptions.prefixUrl)
 
-    /*
-     * Processing the route pattern with dynamic segments
-     */
-    let url = processPattern(route.pattern, options.params)
-
-    /*
-     * Append query string to the url when it is defined
-     */
-    const qs = stringify(options.qs)
-    if (qs) {
-      url = `${url}?${qs}`
-    }
-
-    return route.domain !== 'root' && options.prefixDomain
-      ? `//${processPattern(route.domain, options.domainParams)}${url}`
-      : url
+    return builder.make(routeIdentifier)
   }
 
   /**
@@ -435,39 +414,19 @@ export class Router implements RouterContract {
    */
   public makeSignedUrl(
     routeIdentifier: string,
-    options?: MakeSignedUrlOptions,
-    domain?: string
-  ): string | null {
-    const route = this.lookup(routeIdentifier, domain)
-    if (!route) {
-      return null
-    }
+    params?: any[] | MakeSignedUrlOptions,
+    options?: MakeSignedUrlOptions
+  ): string {
+    const normalizedOptions = normalizeMakeSignedUrlOptions(params, options)
+    const builder = normalizedOptions.domain
+      ? this.builderForDomain(normalizedOptions.domain)
+      : this.builder()
 
-    options = normalizeMakeSignedUrlOptions(options)
+    normalizedOptions.params && builder.params(normalizedOptions.params)
+    normalizedOptions.qs && builder.qs(normalizedOptions.qs)
+    normalizedOptions.prefixUrl && builder.prefixUrl(normalizedOptions.prefixUrl)
 
-    /*
-     * Making the signature from the qualified url. We do not prefix the domain when
-     * making signature, since it just makes the signature big.
-     *
-     * There might be a case, when someone wants to generate signature for the same route
-     * on their 2 different domains, but we ignore that case for now and can consider
-     * it later (when someone asks for it)
-     */
-    const signature = this.encryption.verifier.sign(
-      this.makeUrl(route.pattern, {
-        qs: options.qs,
-        params: options.params,
-        prefixDomain: false,
-      }),
-      options.expiresIn,
-      options.purpose
-    )
-
-    /*
-     * Adding signature to the query string and re-making the url again
-     */
-    options.qs.signature = signature
-    return this.makeUrl(route.pattern, options)
+    return builder.makeSigned(routeIdentifier, normalizedOptions)
   }
 
   /**

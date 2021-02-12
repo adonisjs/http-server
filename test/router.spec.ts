@@ -2739,46 +2739,6 @@ test.group('Router | match', () => {
   })
 })
 
-test.group('Router | lookup', () => {
-  test('lookup route using controller.method name', (assert) => {
-    const router = new Router(encryption)
-
-    router.resource('photos', 'PhotosController')
-    router.commit()
-
-    assert.equal(router.lookup('PhotosController.index')!.pattern, '/photos')
-    assert.equal(router.lookup('PhotosController.show')!.pattern, '/photos/:id')
-  })
-
-  test('lookup route by alias', (assert) => {
-    const router = new Router(encryption)
-
-    router.get('/posts/:id', 'PostController.show').as('showPost')
-    router.commit()
-
-    assert.equal(router.lookup('showPost')!.pattern, '/posts/:id')
-  })
-
-  test('lookup within a domain', (assert) => {
-    const router = new Router(encryption)
-
-    router.get('/posts/:id', 'PostController.show')
-    router.get('/posts/:id', 'AdonisController.show').domain('adonisjs.com')
-    router.commit()
-
-    const route = router.lookup('/posts/:id', 'adonisjs.com')!
-    assert.equal(route.domain, 'adonisjs.com')
-    assert.equal(route.pattern, '/posts/:id')
-  })
-
-  test('return null when unable to lookup route', (assert) => {
-    const router = new Router(encryption)
-
-    const route = router.lookup('/posts')
-    assert.isNull(route)
-  })
-})
-
 test.group('Router | forTesting', () => {
   test('auto commit testing routes to the store', (assert) => {
     const router = new Router(encryption)
@@ -2834,15 +2794,20 @@ test.group('Brisk route', () => {
     router.on('/').setHandler(handler, 'render')
     router.commit()
 
-    assert.deepEqual(router.toJSON(), [
-      {
-        name: undefined,
-        pattern: '/',
-        handler,
-        methods: ['HEAD', 'GET'],
-        domain: 'root',
-      },
-    ])
+    assert.deepEqual(router.toJSON(), {
+      root: [
+        {
+          name: undefined,
+          pattern: '/',
+          handler,
+          methods: ['HEAD', 'GET'],
+          middleware: [],
+          meta: {
+            namespace: undefined,
+          },
+        },
+      ],
+    })
   })
 
   test('define brisk route inside a group', (assert) => {
@@ -2857,15 +2822,21 @@ test.group('Brisk route', () => {
       .as('v1')
 
     router.commit()
-    assert.deepEqual(router.toJSON(), [
-      {
-        name: 'v1.root',
-        pattern: '/api/v1',
-        handler,
-        methods: ['HEAD', 'GET'],
-        domain: 'root',
-      },
-    ])
+
+    assert.deepEqual(router.toJSON(), {
+      root: [
+        {
+          name: 'v1.root',
+          pattern: '/api/v1',
+          handler,
+          middleware: [],
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['HEAD', 'GET'],
+        },
+      ],
+    })
   })
 
   test('register brisk route to store', (assert) => {
@@ -2986,13 +2957,52 @@ test.group('Router | Make url', () => {
     assert.equal(url, '/posts/1')
   })
 
-  test('make url to a given route by and append domain to it', (assert) => {
+  test('make url using the builder', (assert) => {
     const router = new Router(encryption)
-    router.get('posts/:id', 'PostsController.index').domain('blog.adonisjs.com')
+    router.get('posts/:id', 'PostsController.index').as('showPost')
     router.commit()
 
-    const url = router.makeUrl('PostsController.index', { id: 1 })
-    assert.equal(url, '//blog.adonisjs.com/posts/1')
+    const url = router.builder().params([1]).make('PostsController.index')
+    assert.equal(url, '/posts/1')
+  })
+
+  test('add query string to the url', (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/:id', 'PostsController.index').as('showPost')
+    router.commit()
+
+    const url = router.builder().params([1]).qs({ name: 'virk' }).make('PostsController.index')
+    assert.equal(url, '/posts/1?name=virk')
+  })
+
+  test('prefix url', (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/:id', 'PostsController.index').as('showPost')
+    router.commit()
+
+    const url = router
+      .builder()
+      .params([1])
+      .qs({ name: 'virk' })
+      .prefixUrl('http://blog.adonisjs.com')
+      .make('PostsController.index')
+
+    assert.equal(url, 'http://blog.adonisjs.com/posts/1?name=virk')
+  })
+
+  test('make url for a domain', (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/:id', 'PostsController.index').as('showPost')
+    router.get('article/:id', 'PostsController.index').domain(':blog.adonisjs.com')
+    router.commit()
+
+    const url = router
+      .builderForDomain(':blog.adonisjs.com')
+      .params([1])
+      .qs({ name: 'virk' })
+      .make('PostsController.index')
+
+    assert.equal(url, '/article/1?name=virk')
   })
 })
 
@@ -3029,19 +3039,6 @@ test.group('Make signed url', () => {
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
   })
 
-  test('make signed url to a given route and append domain to it', (assert) => {
-    const router = new Router(encryption)
-
-    router.get('posts/:id', 'PostsController.index').domain('blog.adonisjs.com')
-    router.commit()
-
-    const url = router.makeSignedUrl('PostsController.index', { id: 1 })!
-    const qs = parse(url.split('?')[1])
-
-    assert.isTrue(url.startsWith('//blog.adonisjs.com/posts/1?signature='))
-    assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
-  })
-
   test('make signed url with expiry', (assert) => {
     const router = new Router(encryption)
 
@@ -3070,19 +3067,65 @@ test.group('Make signed url', () => {
     assert.equal(Number(qs.page), 1)
   })
 
-  test('make signed url with domain with query string', (assert) => {
+  test('make url using the builder', (assert) => {
     const router = new Router(encryption)
-
-    router.get('posts/:id', 'PostsController.index').domain('blog.adonisjs.com')
+    router.get('posts/:id', 'PostsController.index').as('showPost')
     router.commit()
 
-    const url = router.makeSignedUrl('PostsController.index', {
-      id: 1,
-      qs: { page: 1 },
-    })!
+    const url = router.builder().params([1]).makeSigned('PostsController.index')
     const qs = parse(url.split('?')[1])
 
-    assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1?page=1')
-    assert.equal(Number(qs.page), 1)
+    assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
+  })
+
+  test('add query string to the url', (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/:id', 'PostsController.index').as('showPost')
+    router.commit()
+
+    const url = router
+      .builder()
+      .params([1])
+      .qs({ name: 'virk' })
+      .makeSigned('PostsController.index')
+
+    const qs = parse(url.split('?')[1])
+    assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1?name=virk')
+  })
+
+  test('prefix url', (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/:id', 'PostsController.index').as('showPost')
+    router.commit()
+
+    const url = router
+      .builder()
+      .params([1])
+      .qs({ name: 'virk' })
+      .prefixUrl('http://blog.adonisjs.com')
+      .makeSigned('PostsController.index')
+
+    const qs = parse(url.split('?')[1])
+
+    /**
+     * We intentionally do not add prefix url to the signature
+     */
+    assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1?name=virk')
+  })
+
+  test('make url for a domain', (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/:id', 'PostsController.index').as('showPost')
+    router.get('article/:id', 'PostsController.index').domain(':blog.adonisjs.com')
+    router.commit()
+
+    const url = router
+      .builderForDomain(':blog.adonisjs.com')
+      .params([1])
+      .qs({ name: 'virk' })
+      .makeSigned('PostsController.index')
+
+    const qs = parse(url.split('?')[1])
+    assert.equal(encryption.verifier.unsign(qs.signature as string), '/article/1?name=virk')
   })
 })

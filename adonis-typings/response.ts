@@ -443,7 +443,11 @@ declare module '@ioc:Adonis/Core/Response' {
     /**
      * Redirect the request using a route identifier.
      */
-    toRoute(routeIdentifier: string, urlOptions?: MakeUrlOptions, domain?: string): void
+    toRoute(
+      routeIdentifier: string,
+      params?: any[] | MakeUrlOptions,
+      options?: MakeUrlOptions
+    ): void
 
     /**
      * Redirect the request using a path.

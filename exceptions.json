@@ -9,6 +9,16 @@
       "- The route controller.method name. `PostsController.show`"
     ]
   },
+  "E_CANNOT_LOOKUP_DOMAIN": {
+    "message": "Cannot find routes for \"{{ domain }}\" domain",
+    "code": "E_CANNOT_FIND_ROUTE_DOMAIN",
+    "status": 500,
+    "help": [
+      "When making routes for a domain. Make sure",
+      "- You pass in the domain pattern and not the actual URL",
+      "- The domain pattern should be defined inside the routes file"
+    ]
+  },
   "E_CANNOT_SERIALIZE_RESPONSE_BODY": {
     "message": "Unable to send HTTP response. Cannot serialize \"{{ dataType }}\" to a string",
     "code": "E_CANNOT_SERIALIZE_RESPONSE_BODY",
