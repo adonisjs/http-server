@@ -379,6 +379,21 @@ declare module '@ioc:Adonis/Core/Route' {
     route: RouteContract | null
 
     /**
+     * Redirect to a given route. Params from the original request will be used when no
+     * custom params are defined
+     */
+    redirect(
+      identifier: string,
+      params?: any[] | { [key: string]: any },
+      options?: MakeUrlOptions
+    ): RouteContract
+
+    /**
+     * Redirect request to a fixed path
+     */
+    redirectToPath(url: string): RouteContract
+
+    /**
      * Set handler for the brisk route. The `invokedBy` string is the reference
      * to the method that calls this method. It is required to create human
      * readable error message when `setHandler` is called for multiple

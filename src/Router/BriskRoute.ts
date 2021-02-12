@@ -13,7 +13,12 @@ import { Macroable } from 'macroable'
 import { Exception } from '@poppinss/utils'
 
 import { Route } from './Route'
-import { BriskRouteContract, RouteMatchersNode, RouteHandler } from '@ioc:Adonis/Core/Route'
+import {
+  BriskRouteContract,
+  RouteMatchersNode,
+  RouteHandler,
+  MakeUrlOptions,
+} from '@ioc:Adonis/Core/Route'
 
 /**
  * Brisk route enables you to expose expressive API for
@@ -61,5 +66,28 @@ export class BriskRoute extends Macroable implements BriskRouteContract {
     this.route = new Route(this.pattern, methods || ['HEAD', 'GET'], handler, this.globalMatchers)
     this.invokedBy = invokedBy
     return this.route
+  }
+
+  /**
+   * Redirect to a given route. Params from the original request will be used when no
+   * custom params are defined
+   */
+  public redirect(
+    identifier: string,
+    params?: any[] | { [key: string]: any },
+    options?: MakeUrlOptions
+  ): Route {
+    return this.setHandler(async (ctx) => {
+      return ctx.response.redirect().toRoute(identifier, params || ctx.params, options)
+    }, 'redirect')
+  }
+
+  /**
+   * Redirect request to a fixed path
+   */
+  public redirectToPath(url: string): Route {
+    return this.setHandler(async (ctx) => {
+      return ctx.response.redirect().toPath(url)
+    }, 'redirect')
   }
 }

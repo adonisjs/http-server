@@ -88,6 +88,25 @@ test.group('Server | Response handling', (group) => {
     const { header } = await supertest(httpServer).get('/').expect(200)
     assert.equal(header['set-cookie'][0].split(';')[1].trim(), 'Max-Age=7200')
   })
+
+  test('redirect to given route with domain', async (assert) => {
+    assert.plan(1)
+    const app = await setupApp()
+    const server = new Server(app, encryption, serverConfig)
+
+    const httpServer = createServer(server.handle.bind(server))
+
+    server.router
+      .get('/guides/:doc', async ({ params }) => {
+        assert.deepEqual(params, { doc: 'introduction' })
+      })
+      .as('guides')
+
+    server.router.on('/docs/:doc').redirect('guides')
+    server.optimize()
+
+    await supertest(httpServer).get('/docs/introduction').redirects(1)
+  })
 })
 
 test.group('Server | middleware', (group) => {
