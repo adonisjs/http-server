@@ -161,7 +161,7 @@ declare module '@ioc:Adonis/Core/Response' {
     /**
      * Set the Vary HTTP header
      */
-    vary(field: string): this
+    vary(field: string | string[]): this
 
     /**
      * Set etag by computing hash from the body. This class will set the etag automatically

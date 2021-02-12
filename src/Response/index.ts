@@ -632,7 +632,7 @@ export class Response extends Macroable implements ResponseContract {
   /**
    * Set the Vary HTTP header
    */
-  public vary(field: string): this {
+  public vary(field: string | string[]): this {
     vary(this.response, field)
     return this
   }

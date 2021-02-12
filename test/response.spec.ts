@@ -634,6 +634,16 @@ test.group('Response', (group) => {
     await supertest(server).get('/').expect('Vary', 'Origin, Set-Cookie')
   })
 
+  test('add multiple vary fields as an array', async () => {
+    const server = createServer((req, res) => {
+      const response = new Response(req, res, encryption, responseConfig, router)
+      response.vary(['Origin', 'Set-Cookie'])
+      response.finish()
+    })
+
+    await supertest(server).get('/').expect('Vary', 'Origin, Set-Cookie')
+  })
+
   test('set status code to 204 when body is empty', async () => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
