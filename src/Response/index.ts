@@ -157,16 +157,34 @@ export class Response extends Macroable implements ResponseContract {
       return 'buffer'
     }
 
+    /**
+     * Date instance
+     */
     if (content instanceof Date) {
       return 'date'
     }
 
+    /**
+     * Regular expression
+     */
+    if (content instanceof RegExp) {
+      return 'regexp'
+    }
+
     const dataType = typeof content
-    if (dataType === 'number' || dataType === 'boolean' || dataType === 'string') {
+    if (
+      dataType === 'number' ||
+      dataType === 'boolean' ||
+      dataType === 'string' ||
+      dataType === 'bigint'
+    ) {
       return dataType
     }
 
-    if (dataType === 'object' && content instanceof RegExp === false) {
+    /**
+     * Object
+     */
+    if (dataType === 'object') {
       return 'object'
     }
 
@@ -235,7 +253,12 @@ export class Response extends Macroable implements ResponseContract {
      */
     if (dataType === 'object') {
       content = safeStringify(content)
-    } else if (dataType === 'number' || dataType === 'boolean') {
+    } else if (
+      dataType === 'number' ||
+      dataType === 'boolean' ||
+      dataType === 'bigint' ||
+      dataType === 'regexp'
+    ) {
       content = String(content)
     } else if (dataType === 'date') {
       content = content.toISOString()
@@ -274,6 +297,17 @@ export class Response extends Macroable implements ResponseContract {
       this.setEtag(content)
     }
 
+    /**
+     * End response when cache is fresh
+     */
+    if (generateEtag && this.fresh()) {
+      this.removeHeader('Content-Type')
+      this.removeHeader('Content-Length')
+      this.removeHeader('Transfer-Encoding')
+      this.endResponse()
+      return
+    }
+
     /*
      * ----------------------------------------
      * SET CONTENT-LENGTH HEADER
@@ -310,6 +344,8 @@ export class Response extends Macroable implements ResponseContract {
         case 'number':
         case 'boolean':
         case 'date':
+        case 'bigint':
+        case 'regexp':
           this.safeHeader('Content-Type', 'text/plain; charset=utf-8')
           break
         case 'buffer':
