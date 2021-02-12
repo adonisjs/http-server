@@ -359,7 +359,7 @@ declare module '@ioc:Adonis/Core/Response' {
      * Abort the request with custom body and a status code when
      * passed condition returns `false`
      */
-    abortUnless(conditional: any, body: any, status?: number): asserts conditional
+    abortUnless(conditional: any, body: any, status?: number): void
 
     /**
      * Finishes the response by writing the lazy body, when `explicitEnd = true`
