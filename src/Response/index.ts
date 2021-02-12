@@ -479,6 +479,7 @@ export class Response extends Macroable implements ResponseContract {
       return this.streamBody(createReadStream(filePath), errorCallback)
     } catch (error) {
       this.type('text')
+      this.removeHeader('Etag')
 
       if (typeof errorCallback === 'function') {
         this.endResponse(...errorCallback(error))
