@@ -89,20 +89,8 @@ export class Router implements RouterContract {
    */
   private openedGroups: RouteGroup[] = []
 
-  /**
-   * A counter to create unique routes during tests
-   */
-  private testRoutePatternCounter = 0
-
   private getRecentGroup() {
     return this.openedGroups[this.openedGroups.length - 1]
-  }
-
-  /**
-   * A handler to handle routes created for testing
-   */
-  private testsHandler: RouteHandler = async () => {
-    return 'handled by tests handler'
   }
 
   constructor(
@@ -427,25 +415,5 @@ export class Router implements RouterContract {
     normalizedOptions.prefixUrl && builder.prefixUrl(normalizedOptions.prefixUrl)
 
     return builder.makeSigned(routeIdentifier, normalizedOptions)
-  }
-
-  /**
-   * Creates a route when writing tests and auto-commits it to the
-   * routes store. Do not use this method inside your routes file.
-   *
-   * The global matchers doesn't work for testing routes and hence you have
-   * define inline matchers (if required). Also testing routes should be
-   * created to test the route functionality, they should be created to
-   * test middleware or validators by hitting a route from outside in.
-   */
-  public forTesting(pattern?: string, methods?: string[], handler?: RouteHandler): Route {
-    pattern = pattern || `_test_${this.testRoutePatternCounter++}`
-    methods = methods || ['GET']
-    handler = handler || this.testsHandler
-
-    const route = this.route(pattern, methods, handler)
-    this.commit()
-
-    return route
   }
 }

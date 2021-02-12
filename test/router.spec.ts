@@ -2739,53 +2739,6 @@ test.group('Router | match', () => {
   })
 })
 
-test.group('Router | forTesting', () => {
-  test('auto commit testing routes to the store', (assert) => {
-    const router = new Router(encryption)
-    router.forTesting()
-
-    assert.deepEqual(router['store'].tree, {
-      tokens: [
-        [
-          {
-            old: 'root',
-            type: 0,
-            val: 'root',
-            end: '',
-          },
-        ],
-      ],
-      domains: {
-        root: {
-          GET: {
-            tokens: [
-              [
-                {
-                  old: '/_test_0',
-                  type: 0,
-                  val: '_test_0',
-                  end: '',
-                },
-              ],
-            ],
-            routes: {
-              '/_test_0': {
-                pattern: '/_test_0',
-                handler: router['testsHandler'],
-                meta: {
-                  namespace: undefined,
-                },
-                middleware: [],
-                name: undefined,
-              },
-            },
-          },
-        },
-      },
-    })
-  })
-})
-
 test.group('Brisk route', () => {
   test('define brisk route', (assert) => {
     const router = new Router(encryption)

@@ -537,17 +537,6 @@ declare module '@ioc:Adonis/Core/Route' {
     ): string | null
 
     /**
-     * Creates a route when writing tests and auto-commits it to the
-     * routes store. Do not use this method inside your routes file.
-     *
-     * The global matchers doesn't work for testing routes and hence you have
-     * define inline matchers (if required). Also testing routes should be
-     * created to test the route functionality, they should be created to
-     * test middleware or validators by hitting a route from outside in.
-     */
-    forTesting(pattern?: string, methods?: string[], handler?: any): RouteContract
-
-    /**
      * Shortcut methods for defining route param matchers
      */
     matchers: RouteMatchersContract
