@@ -11,13 +11,22 @@ declare module '@ioc:Adonis/Core/Middleware' {
   import { IocContract } from '@adonisjs/fold'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 
+  export type DefaultExport<T> = Promise<{ default: T }>
+
+  /**
+   * Shape of the middleware class
+   */
+  export interface MiddlewareConstructorContract {
+    new (...args: any[]): {
+      handle(ctx: HttpContextContract, next: () => void, ...options: any[]): any
+    }
+  }
+
   /**
    * Input middleware node must be function or a string pointing
    * to the IoC container
    */
-  export type MiddlewareHandler =
-    | string
-    | ((ctx: HttpContextContract, next: () => Promise<void>, args?: string[]) => Promise<void>)
+  export type MiddlewareHandler = string | (() => DefaultExport<MiddlewareConstructorContract>)
 
   /**
    * Shape of resolved middleware. This information is
@@ -26,6 +35,11 @@ declare module '@ioc:Adonis/Core/Middleware' {
   export type ResolvedMiddlewareHandler =
     | {
         type: 'function'
+        value: (ctx: HttpContextContract, next: () => void, ...options: any[]) => any
+        args: string[]
+      }
+    | {
+        type: 'lazy-import'
         value: Exclude<MiddlewareHandler, string>
         args: string[]
       }

@@ -10,7 +10,7 @@
 declare module '@ioc:Adonis/Core/Route' {
   import { MacroableConstructorContract } from 'macroable'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-  import { MiddlewareHandler, ResolvedMiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
+  import { ResolvedMiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 
   /**
    * Route.where param matcher shape
@@ -26,7 +26,14 @@ declare module '@ioc:Adonis/Core/Route' {
   /**
    * The shape of the route handler
    */
-  export type RouteHandler = ((ctx: HttpContextContract) => Promise<any>) | string
+  export type RouteHandler = ((ctx: HttpContextContract) => any) | string
+
+  /**
+   * Middleware handler attached to the route.
+   */
+  export type RouteMiddlewareHandler =
+    | string
+    | ((ctx: HttpContextContract, next: () => void, ...options: any[]) => any)
 
   /**
    * Node after resolving controller.method binding from the route
@@ -75,7 +82,7 @@ declare module '@ioc:Adonis/Core/Route' {
      * leaves the type to `any` for the consumer to decide the
      * shape of the middleware
      */
-    middleware: MiddlewareHandler[]
+    middleware: RouteMiddlewareHandler[]
 
     /**
      * Any custom runtime properties to be added to the route
@@ -212,7 +219,10 @@ declare module '@ioc:Adonis/Core/Route' {
      * is true, then middleware will be added to start of the existing
      * middleware. The option is exposed for [[RouteGroup]]
      */
-    middleware(middleware: MiddlewareHandler | MiddlewareHandler[], prepend?: boolean): this
+    middleware(
+      middleware: RouteMiddlewareHandler | RouteMiddlewareHandler[],
+      prepend?: boolean
+    ): this
 
     /**
      * Give memorizable name to the route. This is helpful, when you
@@ -274,9 +284,9 @@ declare module '@ioc:Adonis/Core/Route' {
      */
     middleware(
       middleware: {
-        [P in ResourceRouteNames]?: MiddlewareHandler | MiddlewareHandler[]
+        [P in ResourceRouteNames]?: RouteMiddlewareHandler | RouteMiddlewareHandler[]
       } & {
-        '*'?: MiddlewareHandler | MiddlewareHandler[]
+        '*'?: RouteMiddlewareHandler | RouteMiddlewareHandler[]
       }
     ): this
 
@@ -355,7 +365,7 @@ declare module '@ioc:Adonis/Core/Route' {
      * }).middleware(['auth'])
      * ```
      */
-    middleware(middleware: MiddlewareHandler | MiddlewareHandler[]): this
+    middleware(middleware: RouteMiddlewareHandler | RouteMiddlewareHandler[]): this
 
     /**
      * Define namespace for all the routes inside the group.

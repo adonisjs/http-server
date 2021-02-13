@@ -10,8 +10,11 @@
 /// <reference path="../../adonis-typings/index.ts" />
 
 import { Macroable } from 'macroable'
-import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
-import { RouteGroupContract, RouteParamMatcher } from '@ioc:Adonis/Core/Route'
+import {
+  RouteGroupContract,
+  RouteParamMatcher,
+  RouteMiddlewareHandler,
+} from '@ioc:Adonis/Core/Route'
 
 import { Route } from './Route'
 import { BriskRoute } from './BriskRoute'
@@ -141,7 +144,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * }).middleware(['auth'])
    * ```
    */
-  public middleware(middleware: MiddlewareHandler | MiddlewareHandler[]): this {
+  public middleware(middleware: RouteMiddlewareHandler | RouteMiddlewareHandler[]): this {
     this.routes.forEach((route) => this.invoke(route, 'middleware', [middleware, true]))
     return this
   }

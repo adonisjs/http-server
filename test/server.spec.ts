@@ -128,13 +128,25 @@ test.group('Server | middleware', (group) => {
     })
 
     server.middleware.register([
-      async function middlewareFn1(_ctx: HttpContextContract, next: any) {
-        stack.push('fn1')
-        await next()
+      async function middlewareFn1() {
+        return {
+          default: class Middleware {
+            public async handle(_ctx: HttpContextContract, next: any) {
+              stack.push('fn1')
+              await next()
+            }
+          },
+        }
       },
-      async function middlewareFn1(_ctx: HttpContextContract, next: any) {
-        stack.push('fn2')
-        await next()
+      async function middlewareFn1() {
+        return {
+          default: class Middleware {
+            public async handle(_ctx: HttpContextContract, next: any) {
+              stack.push('fn2')
+              await next()
+            }
+          },
+        }
       },
     ])
 
@@ -153,13 +165,25 @@ test.group('Server | middleware', (group) => {
     const httpServer = createServer(server.handle.bind(server))
 
     server.middleware.register([
-      async function middlewareFn1(_ctx: HttpContextContract, next: any) {
-        stack.push('fn1')
-        await next()
+      async function middlewareFn1() {
+        return {
+          default: class Middleware {
+            public async handle(_ctx: HttpContextContract, next: any) {
+              stack.push('fn1')
+              await next()
+            }
+          },
+        }
       },
-      async function middlewareFn1(_ctx: HttpContextContract, next: any) {
-        stack.push('fn2')
-        await next()
+      async function middlewareFn1() {
+        return {
+          default: class Middleware {
+            public async handle(_ctx: HttpContextContract, next: any) {
+              stack.push('fn2')
+              await next()
+            }
+          },
+        }
       },
     ])
 
@@ -188,13 +212,25 @@ test.group('Server | middleware', (group) => {
     const httpServer = createServer(server.handle.bind(server))
 
     server.middleware.register([
-      async function middlewareFn1(ctx: HttpContextContract) {
-        stack.push('fn1')
-        ctx.response.send('completed')
+      async function middlewareFn1() {
+        return {
+          default: class Middleware {
+            public async handle(ctx: HttpContextContract) {
+              stack.push('fn1')
+              ctx.response.send('completed')
+            }
+          },
+        }
       },
-      async function middlewareFn1(_ctx: HttpContextContract, next: any) {
-        stack.push('fn2')
-        await next()
+      async function middlewareFn1() {
+        return {
+          default: class Middleware {
+            public async handle(_ctx: HttpContextContract, next: any) {
+              stack.push('fn2')
+              await next()
+            }
+          },
+        }
       },
     ])
 
@@ -225,12 +261,24 @@ test.group('Server | middleware', (group) => {
 
     server.middleware.register([
       async function middlewareFn1() {
-        stack.push('fn1')
-        throw new Error('Cannot process')
+        return {
+          default: class Middleware {
+            public async handle() {
+              stack.push('fn1')
+              throw new Error('Cannot process')
+            }
+          },
+        }
       },
-      async function middlewareFn1(_ctx: HttpContextContract, next: any) {
-        stack.push('fn2')
-        await next()
+      async function middlewareFn1() {
+        return {
+          default: class Middleware {
+            public async handle(_ctx: HttpContextContract, next: any) {
+              stack.push('fn2')
+              await next()
+            }
+          },
+        }
       },
     ])
 
@@ -260,13 +308,25 @@ test.group('Server | middleware', (group) => {
     const httpServer = createServer(server.handle.bind(server))
 
     server.middleware.register([
-      async function middlewareFn1(_ctx: HttpContextContract, next: any) {
-        stack.push('fn1')
-        await next()
+      async function middlewareFn1() {
+        return {
+          default: class Middleware {
+            public async handle(_ctx: HttpContextContract, next: any) {
+              stack.push('fn1')
+              await next()
+            }
+          },
+        }
       },
-      async function middlewareFn1(_ctx: HttpContextContract, next: any) {
-        stack.push('fn2')
-        await next()
+      async function middlewareFn1() {
+        return {
+          default: class Middleware {
+            public async handle(_ctx: HttpContextContract, next: any) {
+              stack.push('fn2')
+              await next()
+            }
+          },
+        }
       },
     ])
 
@@ -295,13 +355,25 @@ test.group('Server | middleware', (group) => {
     const httpServer = createServer(server.handle.bind(server))
 
     server.middleware.register([
-      async function middlewareFn1(_ctx: HttpContextContract, next: any) {
-        stack.push('fn1')
-        await next()
+      async function middlewareFn1() {
+        return {
+          default: class Middleware {
+            public async handle(_ctx: HttpContextContract, next: any) {
+              stack.push('fn1')
+              await next()
+            }
+          },
+        }
       },
-      async function middlewareFn1(_ctx: HttpContextContract, next: any) {
-        stack.push('fn2')
-        await next()
+      async function middlewareFn1() {
+        return {
+          default: class Middleware {
+            public async handle(_ctx: HttpContextContract, next: any) {
+              stack.push('fn2')
+              await next()
+            }
+          },
+        }
       },
     ])
 

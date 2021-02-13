@@ -13,12 +13,12 @@ import { singular } from 'pluralize'
 import { Macroable } from 'macroable'
 import { string } from '@poppinss/utils/build/helpers'
 
-import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 import {
   RouteParamMatcher,
   ResourceRouteNames,
   RouteMatchersNode,
   RouteResourceContract,
+  RouteMiddlewareHandler,
 } from '@ioc:Adonis/Core/Route'
 
 import { Route } from './Route'
@@ -131,9 +131,9 @@ export class RouteResource extends Macroable implements RouteResourceContract {
    */
   public middleware(
     middleware: {
-      [P in ResourceRouteNames]?: MiddlewareHandler | MiddlewareHandler[]
+      [P in ResourceRouteNames]?: RouteMiddlewareHandler | RouteMiddlewareHandler[]
     } & {
-      '*'?: MiddlewareHandler | MiddlewareHandler[]
+      '*'?: RouteMiddlewareHandler | RouteMiddlewareHandler[]
     }
   ): this {
     for (let name in middleware) {

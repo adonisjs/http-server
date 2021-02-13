@@ -55,7 +55,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
    */
   private resolver: IocResolverContract<any>
 
-  constructor(container: IocContract) {
+  constructor(private container: IocContract) {
     this.resolver = container.getResolver()
   }
 
@@ -71,7 +71,7 @@ export class MiddlewareStore implements MiddlewareStoreContract {
   private resolveMiddleware(middleware: MiddlewareHandler): ResolvedMiddlewareHandler {
     return typeof middleware === 'function'
       ? {
-          type: 'function',
+          type: 'lazy-import',
           value: middleware,
           args: [],
         }
@@ -128,6 +128,16 @@ export class MiddlewareStore implements MiddlewareStoreContract {
 
     const args: any[] = [params[0], params[1]]
     args.push(middleware.args)
+
+    /**
+     * Handling the lazily imported middleware
+     */
+    if (middleware.type === 'lazy-import') {
+      const middlewareClass = await middleware.value()
+      const middlewareInstance = await this.container.makeAsync(middlewareClass.default)
+      return this.container.callAsync(middlewareInstance, 'handle', args)
+    }
+
     return this.resolver.call(middleware, undefined, args)
   }
 }

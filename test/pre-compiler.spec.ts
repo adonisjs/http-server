@@ -48,18 +48,24 @@ test.group('Route precompiler', () => {
     const router = new Router(encryption)
     const preCompiler = new PreCompiler(ioc, middlewareStore)
 
-    async function middlewareFn() {}
+    async function middlewareFn() {
+      return {
+        default: class Middleware {
+          public async handle() {}
+        },
+      }
+    }
     middlewareStore.registerNamed({ auth: middlewareFn })
 
     const route = router
       .get('/', async function handler() {})
       .middleware(['auth:jwt'])
       .toJSON()
-    preCompiler.compileRoute(route)
 
+    preCompiler.compileRoute(route)
     assert.deepEqual(route.meta.resolvedMiddleware, [
       {
-        type: 'function',
+        type: 'lazy-import',
         value: middlewareFn,
         args: ['jwt'],
       },

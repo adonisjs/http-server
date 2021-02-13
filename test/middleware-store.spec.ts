@@ -14,12 +14,16 @@ import { MiddlewareStore } from '../src/MiddlewareStore'
 test.group('Middleware', () => {
   test('register global middleware', (assert) => {
     const middleware = new MiddlewareStore(new Ioc())
-    async function handler() {}
+    class GlobalMiddleware {
+      public async handle() {}
+    }
+
+    const handler = () => Promise.resolve({ default: GlobalMiddleware })
 
     middleware.register([handler])
     assert.deepEqual(middleware.get(), [
       {
-        type: 'function',
+        type: 'lazy-import',
         value: handler,
         args: [],
       },
@@ -28,21 +32,29 @@ test.group('Middleware', () => {
 
   test('register named middleware', (assert) => {
     const middleware = new MiddlewareStore(new Ioc())
-    async function handler() {}
+    class GlobalMiddleware {
+      public async handle() {}
+    }
+
+    const handler = () => Promise.resolve({ default: GlobalMiddleware })
 
     middleware.registerNamed({ auth: handler })
     assert.deepEqual(middleware['named'], {
-      auth: { type: 'function', value: handler, args: [] },
+      auth: { type: 'lazy-import', value: handler, args: [] },
     })
   })
 
   test('get named middleware', (assert) => {
     const middleware = new MiddlewareStore(new Ioc())
-    async function handler() {}
+    class GlobalMiddleware {
+      public async handle() {}
+    }
+
+    const handler = () => Promise.resolve({ default: GlobalMiddleware })
 
     middleware.registerNamed({ auth: handler })
     assert.deepEqual(middleware.getNamed('auth'), {
-      type: 'function',
+      type: 'lazy-import',
       value: handler,
       args: [],
     })
@@ -55,12 +67,17 @@ test.group('Middleware', () => {
 
   test('invoke resolved middleware', async (assert) => {
     const stack: any[] = []
-    async function middlewareFn() {
-      stack.push('middlewareFn')
+
+    class GlobalMiddleware {
+      public async handle() {
+        stack.push('middlewareFn')
+      }
     }
 
+    const handler = () => Promise.resolve({ default: GlobalMiddleware })
+
     const middleware = new MiddlewareStore(new Ioc())
-    middleware.register([middlewareFn])
+    middleware.register([handler])
     await middleware.invokeMiddleware(middleware.get()[0], [] as any)
     assert.deepEqual(stack, ['middlewareFn'])
   })

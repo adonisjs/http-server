@@ -17,8 +17,8 @@ import {
   RouteHandler,
   RouteMatchersNode,
   RouteParamMatcher,
+  RouteMiddlewareHandler,
 } from '@ioc:Adonis/Core/Route'
-import { MiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
 
 import { dropSlash } from '../helpers'
 
@@ -64,7 +64,7 @@ export class Route extends Macroable implements RouteContract {
   /**
    * An array of middleware. Added using `middleware` function
    */
-  private routeMiddleware: MiddlewareHandler[] = []
+  private routeMiddleware: RouteMiddlewareHandler[] = []
 
   /**
    * Storing the namespace explicitly set using `route.namespace` method
@@ -171,7 +171,10 @@ export class Route extends Macroable implements RouteContract {
    * is true, then middleware will be added to start of the existing
    * middleware. The option is exposed for [[RouteGroup]]
    */
-  public middleware(middleware: MiddlewareHandler | MiddlewareHandler[], prepend = false): this {
+  public middleware(
+    middleware: RouteMiddlewareHandler | RouteMiddlewareHandler[],
+    prepend = false
+  ): this {
     middleware = Array.isArray(middleware) ? middleware : [middleware]
     this.routeMiddleware = prepend
       ? middleware.concat(this.routeMiddleware)
