@@ -510,6 +510,13 @@ export class Response extends Macroable implements ResponseContract {
   }
 
   /**
+   * Get response headers
+   */
+  public getHeaders(): { [key: string]: string | string[] | number } {
+    return this.headers
+  }
+
+  /**
    * Set header on the response. To `append` values to the existing header, we suggest
    * using [[append]] method.
    *

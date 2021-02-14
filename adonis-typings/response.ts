@@ -98,6 +98,11 @@ declare module '@ioc:Adonis/Core/Response' {
     getHeader(key: string): string | string[] | number | undefined
 
     /**
+     * Get headers
+     */
+    getHeaders(): { [key: string]: string | string[] | number }
+
+    /**
      * Set header on the response. To `append` values to the existing header, we suggest
      * using [[append]] method.
      *
