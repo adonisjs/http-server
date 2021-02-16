@@ -544,7 +544,7 @@ declare module '@ioc:Adonis/Core/Route' {
       routeIdentifier: string,
       params?: any[] | MakeSignedUrlOptions,
       options?: MakeSignedUrlOptions
-    ): string | null
+    ): string
 
     /**
      * Shortcut methods for defining route param matchers
@@ -613,6 +613,14 @@ declare module '@ioc:Adonis/Core/Route' {
      * Generate url for the given route
      */
     make(identifier: string): string
+
+    /**
+     * Generate signed url for the given route
+     */
+    makeSigned(
+      identifier: string,
+      options?: { expiresIn?: string | number; purpose?: string }
+    ): string
   }
 
   const Route: RouterContract
