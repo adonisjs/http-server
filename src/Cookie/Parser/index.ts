@@ -30,9 +30,9 @@ export class CookieParser {
    * initial decoding, unsigning or decrypting.
    */
   private cachedCookies: {
-    encryptedCookies: { [key: string]: any }
-    signedCookies: { [key: string]: any }
-    plainCookies: { [key: string]: any }
+    encryptedCookies: Record<string, any>
+    signedCookies: Record<string, any>
+    plainCookies: Record<string, any>
   } = {
     signedCookies: {},
     plainCookies: {},
@@ -43,7 +43,7 @@ export class CookieParser {
    * An object of key-value pair collected by parsing
    * the request cookie header.
    */
-  private cookies: { [key: string]: any } = this.parse()
+  private cookies: Record<string, any> = this.parse()
 
   constructor(private cookieHeader: string, private encryption: EncryptionContract) {}
 

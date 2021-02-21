@@ -74,7 +74,7 @@ export class BriskRoute extends Macroable implements BriskRouteContract {
    */
   public redirect(
     identifier: string,
-    params?: any[] | { [key: string]: any },
+    params?: any[] | Record<string, any>,
     options?: MakeUrlOptions
   ): Route {
     return this.setHandler(async (ctx) => {

@@ -41,28 +41,28 @@ export class Request extends Macroable implements RequestContract {
   /**
    * Request body set using `setBody` method
    */
-  private requestBody: object = {}
+  private requestBody: Record<string, any> = {}
 
   /**
    * Route params
    */
-  private routeParams: object = {}
+  private routeParams: Record<string, any> = {}
 
   /**
    * A merged copy of `request body` and `querystring`
    */
-  private requestData: object = {}
+  private requestData: Record<string, any> = {}
 
   /**
    * Original merged copy of `request body` and `querystring`.
    * Further mutation to this object are not allowed
    */
-  private originalRequestData: object = {}
+  private originalRequestData: Record<string, any> = {}
 
   /**
    * Parsed query string
    */
-  private requestQs: object = {}
+  private requestQs: Record<string, any> = {}
 
   /**
    * Raw request body as text
@@ -159,7 +159,7 @@ export class Request extends Macroable implements RequestContract {
    * This method is supposed to be invoked by the body parser and must be called only
    * once. For further mutations make use of `updateBody` method.
    */
-  public setInitialBody(body: object) {
+  public setInitialBody(body: Record<string, any>) {
     if (this.originalRequestData && Object.isFrozen(this.originalRequestData)) {
       throw new Error('Cannot re-set initial body. Use "request.updateBody" instead')
     }
@@ -177,7 +177,7 @@ export class Request extends Macroable implements RequestContract {
    * will be re-computed by merging the query string and request
    * body.
    */
-  public updateBody(body: object) {
+  public updateBody(body: Record<string, any>) {
     this.requestBody = body
     this.requestData = { ...this.requestBody, ...this.requestQs }
   }
@@ -194,7 +194,7 @@ export class Request extends Macroable implements RequestContract {
    * Update the query string with the new data object. The `all` property
    * will be re-computed by merging the query and the request body.
    */
-  public updateQs(data: object) {
+  public updateQs(data: Record<string, any>) {
     this.requestQs = data
     this.requestData = { ...this.requestBody, ...this.requestQs }
   }
@@ -202,21 +202,21 @@ export class Request extends Macroable implements RequestContract {
   /**
    * Update route params
    */
-  public updateParams(data: object) {
+  public updateParams(data: Record<string, any>) {
     this.routeParams = data
   }
 
   /**
    * Returns route params
    */
-  public params(): { [key: string]: any } {
+  public params(): Record<string, any> {
     return this.routeParams
   }
 
   /**
    * Returns reference to the query string object
    */
-  public get(): { [key: string]: any } {
+  public get(): Record<string, any> {
     process.emitWarning(
       'DeprecationWarning',
       'request.get() is deprecated. Use request.qs() instead'
@@ -227,14 +227,14 @@ export class Request extends Macroable implements RequestContract {
   /**
    * Returns the query string object by reference
    */
-  public qs(): { [key: string]: any } {
+  public qs(): Record<string, any> {
     return this.requestQs
   }
 
   /**
    * Returns reference to the request body
    */
-  public post(): { [key: string]: any } {
+  public post(): Record<string, any> {
     process.emitWarning(
       'DeprecationWarning',
       'request.post() is deprecated. Use request.body() instead'
@@ -245,7 +245,7 @@ export class Request extends Macroable implements RequestContract {
   /**
    * Returns reference to the request body
    */
-  public body(): { [key: string]: any } {
+  public body(): Record<string, any> {
     return this.requestBody
   }
 
@@ -253,7 +253,7 @@ export class Request extends Macroable implements RequestContract {
    * Returns reference to the merged copy of request body
    * and query string
    */
-  public all(): { [key: string]: any } {
+  public all(): Record<string, any> {
     return this.requestData
   }
 
@@ -261,7 +261,7 @@ export class Request extends Macroable implements RequestContract {
    * Returns reference to the merged copy of original request
    * query string and body
    */
-  public original(): { [key: string]: any } {
+  public original(): Record<string, any> {
     return this.originalRequestData
   }
 
@@ -314,7 +314,7 @@ export class Request extends Macroable implements RequestContract {
    * request.except(['_csrf'])
    * ```
    */
-  public except(keys: string[]): { [key: string]: any } {
+  public except(keys: string[]): Record<string, any> {
     return lodash.omit(this.requestData, keys)
   }
 

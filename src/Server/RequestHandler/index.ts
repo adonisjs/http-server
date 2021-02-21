@@ -68,10 +68,10 @@ export class RequestHandler {
      * Attach `params`, `subdomains` and `route` when route is found. This
      * information only exists on a given route
      */
-    ctx.params = route!.params
-    ctx.subdomains = route!.subdomains
-    ctx.route = route!.route
-    ctx.routeKey = route!.routeKey
+    ctx.params = route.params
+    ctx.subdomains = route.subdomains
+    ctx.route = route.route
+    ctx.routeKey = route.routeKey
     ctx.request.updateParams(ctx.params)
   }
 
