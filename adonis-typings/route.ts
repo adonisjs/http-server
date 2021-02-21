@@ -91,7 +91,7 @@ declare module '@ioc:Adonis/Core/Route' {
       resolvedHandler?: ResolvedRouteHandler
       resolvedMiddleware?: ResolvedMiddlewareHandler[]
       namespace?: string
-    } & { [key: string]: any }
+    } & Record<string, any>
 
     /**
      * A unique name to lookup routes by name
@@ -164,8 +164,8 @@ declare module '@ioc:Adonis/Core/Route' {
      * A unique key for the looked up route
      */
     routeKey: string
-    params: any
-    subdomains: any
+    params: Record<string, any>
+    subdomains: Record<string, any>
   }
 
   /**
@@ -394,7 +394,7 @@ declare module '@ioc:Adonis/Core/Route' {
      */
     redirect(
       identifier: string,
-      params?: any[] | { [key: string]: any },
+      params?: any[] | Record<string, any>,
       options?: MakeUrlOptions
     ): RouteContract
 
@@ -416,10 +416,10 @@ declare module '@ioc:Adonis/Core/Route' {
    * Options accepted by makeUrl methods
    */
   export type MakeUrlOptions = {
-    qs?: { [key: string]: any }
+    qs?: Record<string, any>
     domain?: string
     prefixUrl?: string
-  } & { [key: string]: any }
+  } & Record<string, any>
 
   /**
    * Options for making a signed url
@@ -597,12 +597,12 @@ declare module '@ioc:Adonis/Core/Route' {
     /**
      * Prefix a custom url to the final URI
      */
-    params(params: undefined | any[] | { [key: string]: any }): this
+    params(params?: any[] | Record<string, any>): this
 
     /**
      * Append query string to the final URI
      */
-    qs(qs: undefined | { [key: string]: any }): this
+    qs(qs?: Record<string, any>): this
 
     /**
      * Define required params to resolve the route

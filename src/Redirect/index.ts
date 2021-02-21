@@ -33,7 +33,7 @@ export class Redirect implements RedirectContract {
   /**
    * A custom query string to forward
    */
-  private queryString: { [key: string]: any } = {}
+  private queryString: Record<string, any> = {}
 
   constructor(
     private request: IncomingMessage,
@@ -44,7 +44,7 @@ export class Redirect implements RedirectContract {
   /**
    * Sends response by setting require headers
    */
-  private sendResponse(url: string, query: any) {
+  private sendResponse(url: string, query: Record<string, any>) {
     const stringified = qs.stringify(query)
 
     url = stringified ? `${url}?${stringified}` : url
@@ -86,9 +86,9 @@ export class Redirect implements RedirectContract {
    * string.
    */
   public withQs(): this
-  public withQs(values: { [key: string]: any }): this
+  public withQs(values: Record<string, any>): this
   public withQs(name: string, value: any): this
-  public withQs(name?: { [key: string]: any } | string, value?: any): this {
+  public withQs(name?: Record<string, any> | string, value?: any): this {
     if (typeof name === 'undefined') {
       this.forwardQueryString = true
       return this
@@ -107,7 +107,7 @@ export class Redirect implements RedirectContract {
    * Redirect to the previous path.
    */
   public back() {
-    let query: any = {}
+    let query: Record<string, any> = {}
 
     const url = parse(this.getReferrerUrl())
 
@@ -150,7 +150,7 @@ export class Redirect implements RedirectContract {
    * Redirect the request using a path.
    */
   public toPath(url: string) {
-    let query: any = {}
+    let query: Record<string, any> = {}
 
     /**
      * Extract query string from the current URL

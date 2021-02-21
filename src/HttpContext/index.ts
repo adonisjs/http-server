@@ -43,12 +43,12 @@ export class HttpContext extends Macroable implements HttpContextContract {
   /**
    * Route params
    */
-  public params: any = {}
+  public params: Record<string, any> = {}
 
   /**
    * Route subdomains
    */
-  public subdomains: any = {}
+  public subdomains: Record<string, any> = {}
 
   /**
    * Reference to the current route. Not available inside
@@ -93,7 +93,7 @@ export class HttpContext extends Macroable implements HttpContextContract {
    */
   public static create(
     routePattern: string,
-    routeParams: any,
+    routeParams: Record<string, any>,
     req?: IncomingMessage,
     res?: ServerResponse
   ) {

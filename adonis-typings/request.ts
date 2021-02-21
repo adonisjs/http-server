@@ -48,14 +48,14 @@ declare module '@ioc:Adonis/Core/Request' {
      * This method is supposed to be invoked by the body parser and must be called only
      * once. For further mutations make use of `updateBody` method.
      */
-    setInitialBody(body: any): void
+    setInitialBody(body: Record<string, any>): void
 
     /**
      * Update the request body with new data object. The `all` property
      * will be re-computed by merging the query string and request
      * body.
      */
-    updateBody(body: any): void
+    updateBody(body: Record<string, any>): void
 
     /**
      * Update the request raw body. Bodyparser sets this when unable to parse
@@ -66,52 +66,52 @@ declare module '@ioc:Adonis/Core/Request' {
     /**
      * Update route params
      */
-    updateParams(body: any): void
+    updateParams(body: Record<string, any>): void
 
     /**
      * Update the query string with the new data object. The `all` property
      * will be re-computed by merging the query and the request body.
      */
-    updateQs(data: any): void
+    updateQs(data: Record<string, any>): void
 
     /**
      * Returns route params
      */
-    params(): { [key: string]: any }
+    params(): Record<string, any>
 
     /**
      * Returns reference to the query string object
      * @deprecated: Use ".qs()" instead
      */
-    get(): { [key: string]: any }
+    get(): Record<string, any>
 
     /**
      * Returns the query string object by reference
      */
-    qs(): { [key: string]: any }
+    qs(): Record<string, any>
 
     /**
      * Returns the request body object by reference
      * @deprecated: Use ".body()" instead
      */
-    post(): { [key: string]: any }
+    post(): Record<string, any>
 
     /**
      * Returns the request body object by reference
      */
-    body(): { [key: string]: any }
+    body(): Record<string, any>
 
     /**
      * Returns reference to the merged copy of original request
      * query string and body
      */
-    original(): { [key: string]: any }
+    original(): Record<string, any>
 
     /**
      * Returns reference to the merged copy of request body
      * and query string
      */
-    all(): { [key: string]: any }
+    all(): Record<string, any>
 
     /**
      * Returns the request raw body (if exists), or returns `null`.
@@ -156,7 +156,7 @@ declare module '@ioc:Adonis/Core/Request' {
      * request.except(['_csrf'])
      * ```
      */
-    except(keys: string[]): { [key: string]: any }
+    except(keys: string[]): Record<string, any>
 
     /**
      * Get value for specified keys.
@@ -540,7 +540,7 @@ declare module '@ioc:Adonis/Core/Request' {
      * Returns all parsed and signed cookies. Signed cookies ensures
      * that their value isn't tampered.
      */
-    cookiesList(): { [key: string]: any }
+    cookiesList(): Record<string, any>
 
     /**
      * Returns value for a given key from signed cookies. Optional

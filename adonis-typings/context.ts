@@ -32,8 +32,8 @@ declare module '@ioc:Adonis/Core/HttpContext' {
     profiler: ProfilerRowContract
     route?: RouteNode
     routeKey: string
-    params: any
-    subdomains: any
+    params: Record<string, any>
+    subdomains: Record<string, any>
   }
 
   /**
@@ -50,7 +50,7 @@ declare module '@ioc:Adonis/Core/HttpContext' {
      */
     create(
       routePattern: string,
-      routeParams: any,
+      routeParams: Record<string, any>,
       req?: IncomingMessage,
       res?: ServerResponse
     ): HttpContextContract

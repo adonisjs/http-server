@@ -27,12 +27,12 @@ export class UrlBuilder implements UrlBuilderContract {
   /**
    * Params to be used for building the URL
    */
-  private routeParams: any[] | { [key: string]: any }
+  private routeParams: any[] | Record<string, any>
 
   /**
    * A custom query string to append to the URL
    */
-  private queryString: { [key: string]: any } = {}
+  private queryString: Record<string, any> = {}
 
   /**
    * A baseUrl to prefix to the endpoint
@@ -126,7 +126,7 @@ export class UrlBuilder implements UrlBuilderContract {
   /**
    * Append query string to the final URI
    */
-  public qs(queryString: undefined | { [key: string]: any }): this {
+  public qs(queryString?: Record<string, any>): this {
     if (!queryString) {
       return this
     }
@@ -137,7 +137,7 @@ export class UrlBuilder implements UrlBuilderContract {
   /**
    * Define required params to resolve the route
    */
-  public params(params: undefined | any[] | { [key: string]: any }): this {
+  public params(params?: any[] | Record<string, any>): this {
     if (!params) {
       return this
     }

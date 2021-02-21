@@ -437,7 +437,7 @@ declare module '@ioc:Adonis/Core/Response' {
      * Forward the current QueryString or define one.
      */
     withQs(): this
-    withQs(values: { [key: string]: any }): this
+    withQs(values: Record<string, any>): this
     withQs(name: string, value: any): this
 
     /**
