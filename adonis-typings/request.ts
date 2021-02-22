@@ -166,7 +166,7 @@ declare module '@ioc:Adonis/Core/Request' {
      * request.only(['username', 'age'])
      * ```
      */
-    only<T extends string, U = { [K in T]: any }>(keys: T[]): U
+    only<T extends string>(keys: T[]): { [K in T]: any }
 
     /**
      * Returns the request HTTP method by taking method spoofing into account.

@@ -326,7 +326,7 @@ export class Request extends Macroable implements RequestContract {
    * request.only(['username', 'age'])
    * ```
    */
-  public only<T extends string, U = { [K in T]: any }>(keys: T[]): U {
+  public only<T extends string>(keys: T[]): { [K in T]: any } {
     return lodash.pick(this.requestData, keys)
   }
 
