@@ -327,7 +327,7 @@ export class Request extends Macroable implements RequestContract {
    * ```
    */
   public only<T extends string>(keys: T[]): { [K in T]: any } {
-    return lodash.pick(this.requestData, keys)
+    return lodash.pick(this.requestData, keys) as { [K in T]: any }
   }
 
   /**
