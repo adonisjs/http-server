@@ -356,6 +356,11 @@ declare module '@ioc:Adonis/Core/Request' {
     completeUrl(includeQueryString?: boolean): string
 
     /**
+     * Find if the current HTTP request is for the given route or the routes
+     */
+    matchesRoute(routeIdentifier: string | string[]): boolean
+
+    /**
      * Returns the best matching content type of the request by
      * matching against the given types.
      *

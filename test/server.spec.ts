@@ -1110,4 +1110,72 @@ test.group('Server | all', (group) => {
     const { text } = await supertest(httpServer).get('/').expect(200)
     assert.equal(text, 'GET-/')
   })
+
+  test('find if the current request is for a given route pattern or not', async (assert) => {
+    const app = await setupApp()
+    const server = new Server(
+      app,
+      encryption,
+      Object.assign({}, serverConfig, {
+        forceContentNegotiationToJSON: true,
+      })
+    )
+
+    const httpServer = createServer(server.handle.bind(server))
+    server.router.get('/users/:id', async ({ request }) => {
+      return {
+        matchesRoute: request.matchesRoute('/users/:id'),
+      }
+    })
+    server.optimize()
+
+    const { body } = await supertest(httpServer).get('/users/1').expect(200)
+    assert.deepEqual(body, { matchesRoute: true })
+  })
+
+  test('find if the current request matches one of the given route pattern or not', async (assert) => {
+    const app = await setupApp()
+    const server = new Server(
+      app,
+      encryption,
+      Object.assign({}, serverConfig, {
+        forceContentNegotiationToJSON: true,
+      })
+    )
+
+    const httpServer = createServer(server.handle.bind(server))
+    server.router.get('/users/:id', async ({ request }) => {
+      return {
+        matchesRoute: request.matchesRoute(['/posts/:id', '/users/:id']),
+      }
+    })
+    server.optimize()
+
+    const { body } = await supertest(httpServer).get('/users/1').expect(200)
+    assert.deepEqual(body, { matchesRoute: true })
+  })
+
+  test('find if the current request matches a given route name or not', async (assert) => {
+    const app = await setupApp()
+    const server = new Server(
+      app,
+      encryption,
+      Object.assign({}, serverConfig, {
+        forceContentNegotiationToJSON: true,
+      })
+    )
+
+    const httpServer = createServer(server.handle.bind(server))
+    server.router
+      .get('/users/:id', async ({ request }) => {
+        return {
+          matchesRoute: request.matchesRoute('showUser'),
+        }
+      })
+      .as('showUser')
+    server.optimize()
+
+    const { body } = await supertest(httpServer).get('/users/1').expect(200)
+    assert.deepEqual(body, { matchesRoute: true })
+  })
 })

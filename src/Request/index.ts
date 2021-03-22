@@ -617,6 +617,31 @@ export class Request extends Macroable implements RequestContract {
   }
 
   /**
+   * Find if the current HTTP request is for the given route or the routes
+   */
+  public matchesRoute(routeIdentifier: string | string[]): boolean {
+    /**
+     * The context is missing inside the HTTP server hooks.
+     */
+    if (!this.ctx || !this.ctx.route) {
+      return false
+    }
+
+    const route = this.ctx.route
+
+    /**
+     * Search the identifier(s) against the route "pattern", "name" and the route handler
+     */
+    return !!(Array.isArray(routeIdentifier) ? routeIdentifier : [routeIdentifier]).find(
+      (identifier) => {
+        return (
+          route.pattern === identifier || route.name === identifier || route.handler === identifier
+        )
+      }
+    )
+  }
+
+  /**
    * Returns the best matching content type of the request by
    * matching against the given types.
    *
