@@ -1080,7 +1080,7 @@ test.group('Server | all', (group) => {
       app,
       encryption,
       Object.assign({}, serverConfig, {
-        forceContentNegotiationToJSON: true,
+        forceContentNegotiationTo: 'application/json',
       })
     )
 

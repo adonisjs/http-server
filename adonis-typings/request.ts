@@ -581,7 +581,7 @@ declare module '@ioc:Adonis/Core/Request' {
    * Shape of the request config
    */
   export type RequestConfig = {
-    forceContentNegotiationToJSON?: boolean
+    forceContentNegotiationTo?: string
     subdomainOffset: number
     generateRequestId: boolean
     allowMethodSpoofing: boolean

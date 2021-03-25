@@ -151,8 +151,8 @@ export class Server implements ServerContract {
     /*
      * Reset accept header when `forceContentNegotiationToJSON = true`
      */
-    if (this.httpConfig.forceContentNegotiationToJSON) {
-      req.headers['accept'] = 'application/json'
+    if (this.httpConfig.forceContentNegotiationTo) {
+      req.headers['accept'] = this.httpConfig.forceContentNegotiationTo
     }
 
     const request = new Request(req, res, this.encryption, this.httpConfig)
