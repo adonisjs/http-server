@@ -18,7 +18,7 @@ declare module '@ioc:Adonis/Core/Middleware' {
    */
   export interface MiddlewareConstructorContract {
     new (...args: any[]): {
-      handle(ctx: HttpContextContract, next: () => void, ...options: any[]): any
+      handle(ctx: HttpContextContract, next: () => any, ...options: any[]): any
     }
   }
 
