@@ -1099,4 +1099,60 @@ test.group('Response', (group) => {
     const { header } = await supertest(server).get('/').expect(304)
     assert.notProperty(header, 'content-length')
   })
+
+  test('get response body', async (assert) => {
+    assert.plan(1)
+
+    const server = createServer((req, res) => {
+      const response = new Response(req, res, encryption, responseConfig, router)
+
+      response.send('hello world')
+      assert.equal(response.getBody(), 'hello world')
+      response.finish()
+    })
+
+    await supertest(server).get('/')
+  })
+
+  test('return null when body is a stream', async (assert) => {
+    assert.plan(1)
+    await fs.add('hello.txt', 'hello world')
+
+    const server = createServer((req, res) => {
+      const response = new Response(req, res, encryption, responseConfig, router)
+
+      response.stream(createReadStream(join(fs.basePath, 'hello.txt')))
+      assert.isNull(response.getBody())
+      response.finish()
+    })
+
+    await supertest(server).get('/')
+  })
+
+  test('return response status when not defined explicitly', async (assert) => {
+    assert.plan(1)
+
+    const server = createServer((req, res) => {
+      const response = new Response(req, res, encryption, responseConfig, router)
+
+      assert.equal(response.getStatus(), 200)
+      response.finish()
+    })
+
+    await supertest(server).get('/')
+  })
+
+  test('return response status when defined explicitly', async (assert) => {
+    assert.plan(1)
+
+    const server = createServer((req, res) => {
+      const response = new Response(req, res, encryption, responseConfig, router)
+
+      response.status(301)
+      assert.equal(response.getStatus(), 301)
+      response.finish()
+    })
+
+    await supertest(server).get('/')
+  })
 })

@@ -77,6 +77,12 @@ declare module '@ioc:Adonis/Core/Response' {
      */
     isPending: boolean
 
+    /**
+     * Find if the response body is a stream. Returns false when
+     * no body is defined yet
+     */
+    isStreamResponse: boolean
+
     request: IncomingMessage
     response: ServerResponse
 
@@ -137,6 +143,11 @@ declare module '@ioc:Adonis/Core/Response' {
      * Removes the existing response header from being sent.
      */
     removeHeader(key: string): this
+
+    /**
+     * Get the current status for the response
+     */
+    getStatus(): number
 
     /**
      * Set HTTP status code
@@ -202,6 +213,12 @@ declare module '@ioc:Adonis/Core/Response' {
      * ```
      */
     fresh(): boolean
+
+    /**
+     * Get body for the response. Returns null when body is
+     * a stream
+     */
+    getBody(): any
 
     /**
      * Send the body as response and optionally generate etag. The default value

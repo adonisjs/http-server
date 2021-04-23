@@ -75,6 +75,14 @@ export class Response extends Macroable implements ResponseContract {
   public hasLazyBody: boolean = false
 
   /**
+   * Returns true when response body is set using "response.download"
+   * and "response.attachment" methods
+   */
+  public get isStreamResponse() {
+    return this.writerMethod === 'streamBody' || this.writerMethod === 'streamFileForDownload'
+  }
+
+  /**
    * Lazy body is used to set the response body. However, do not
    * write it on the socket immediately unless `response.finish`
    * is called.
@@ -321,10 +329,10 @@ export class Response extends Macroable implements ResponseContract {
      * ----------------------------------------
      *
      * - If it is a JSONP response, then we always set the content type
-     * 	 to "text/javascript"
+     *   to "text/javascript"
      *
      * - String are checked for HTML and "text/plain" or "text/html" is set
-     * 	 accordingly.
+     *   accordingly.
      *
      * - "text/plain"  is set for "numbers" and "booleans" and "dates"
      *
@@ -596,6 +604,13 @@ export class Response extends Macroable implements ResponseContract {
   }
 
   /**
+   * Returns the status code for the response
+   */
+  public getStatus(): number {
+    return this.response.statusCode
+  }
+
+  /**
    * Set HTTP status code
    */
   public status(code: number): this {
@@ -691,6 +706,22 @@ export class Response extends Macroable implements ResponseContract {
     }
 
     return false
+  }
+
+  /**
+   * Returns the response body. Returns null when response
+   * body is a stream
+   */
+  public getBody() {
+    if (this.isStreamResponse) {
+      return null
+    }
+
+    if (this.hasLazyBody) {
+      return this.lazyBody[0]
+    }
+
+    return null
   }
 
   /**
