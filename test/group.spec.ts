@@ -63,6 +63,185 @@ test.group('Route Group', () => {
     ])
   })
 
+  test('keep group own middleware in right order', (assert) => {
+    async function handler() {}
+
+    const route = new Route('/:id', ['GET'], handler, {})
+    route.middleware('auth')
+
+    const group = new RouteGroup([route])
+    group.middleware('limitter')
+    group.middleware('acl')
+
+    assert.deepEqual(toRoutesJSON(group.routes), [
+      {
+        pattern: '/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: ['limitter', 'acl', 'auth'],
+        handler,
+        name: undefined,
+      },
+    ])
+  })
+
+  test('define middleware on nested group, route and resource', (assert) => {
+    async function handler() {}
+
+    const route = new Route('/:id', ['GET'], handler, {})
+    route.middleware('log')
+
+    const resource = new RouteResource('posts', 'PostsController', {})
+    resource
+      .middleware({
+        '*': ['log'],
+      })
+      .middleware({
+        create: ['logGet'],
+        index: ['logGet'],
+        show: ['logGet'],
+      })
+      .middleware({
+        create: ['logGet', 'logForm'],
+        store: ['logPost', 'logForm'],
+      })
+
+    const group = new RouteGroup([route, resource])
+    group.middleware('limitter')
+    group.middleware('acl')
+
+    const route1 = new Route('1/:id', ['GET'], handler, {})
+    route1.middleware('log')
+
+    const outerGroup = new RouteGroup([group, route1])
+    outerGroup.middleware('auth')
+    outerGroup.middleware('impersonate')
+
+    assert.deepEqual(toRoutesJSON(outerGroup.routes), [
+      {
+        pattern: '/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: ['auth', 'impersonate', 'limitter', 'acl', 'log'],
+        handler,
+        name: undefined,
+      },
+      {
+        pattern: '/posts',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['HEAD', 'GET'],
+        domain: 'root',
+        middleware: ['auth', 'impersonate', 'limitter', 'acl', 'log', 'logGet'],
+        handler: 'PostsController.index',
+        name: 'posts.index',
+      },
+      {
+        pattern: '/posts/create',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['HEAD', 'GET'],
+        domain: 'root',
+        middleware: [
+          'auth',
+          'impersonate',
+          'limitter',
+          'acl',
+          'log',
+          'logGet',
+          'logGet',
+          'logForm',
+        ],
+        handler: 'PostsController.create',
+        name: 'posts.create',
+      },
+      {
+        pattern: '/posts',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['POST'],
+        domain: 'root',
+        middleware: ['auth', 'impersonate', 'limitter', 'acl', 'log', 'logPost', 'logForm'],
+        handler: 'PostsController.store',
+        name: 'posts.store',
+      },
+      {
+        pattern: '/posts/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['HEAD', 'GET'],
+        domain: 'root',
+        middleware: ['auth', 'impersonate', 'limitter', 'acl', 'log', 'logGet'],
+        handler: 'PostsController.show',
+        name: 'posts.show',
+      },
+      {
+        pattern: '/posts/:id/edit',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['HEAD', 'GET'],
+        domain: 'root',
+        middleware: ['auth', 'impersonate', 'limitter', 'acl', 'log'],
+        handler: 'PostsController.edit',
+        name: 'posts.edit',
+      },
+      {
+        pattern: '/posts/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['PUT', 'PATCH'],
+        domain: 'root',
+        middleware: ['auth', 'impersonate', 'limitter', 'acl', 'log'],
+        handler: 'PostsController.update',
+        name: 'posts.update',
+      },
+      {
+        pattern: '/posts/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['DELETE'],
+        domain: 'root',
+        middleware: ['auth', 'impersonate', 'limitter', 'acl', 'log'],
+        handler: 'PostsController.destroy',
+        name: 'posts.destroy',
+      },
+      {
+        pattern: '/1/:id',
+        matchers: {},
+        meta: {
+          namespace: undefined,
+        },
+        methods: ['GET'],
+        domain: 'root',
+        middleware: ['auth', 'impersonate', 'log'],
+        handler,
+        name: undefined,
+      },
+    ])
+  })
+
   test('prepend name to the existing route names', (assert) => {
     async function handler() {}
 

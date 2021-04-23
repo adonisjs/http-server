@@ -335,37 +335,37 @@ test.group('Route Resource', () => {
     })
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.index')!['routeMiddleware'],
+      resource.routes.find((route) => route.name === 'photos.index')!.toJSON().middleware,
       []
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.create')!['routeMiddleware'],
+      resource.routes.find((route) => route.name === 'photos.create')!.toJSON().middleware,
       ['auth']
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.store')!['routeMiddleware'],
+      resource.routes.find((route) => route.name === 'photos.store')!.toJSON().middleware,
       ['auth', 'acl:admin']
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.show')!['routeMiddleware'],
+      resource.routes.find((route) => route.name === 'photos.show')!.toJSON().middleware,
       []
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.edit')!['routeMiddleware'],
+      resource.routes.find((route) => route.name === 'photos.edit')!.toJSON().middleware,
       []
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.update')!['routeMiddleware'],
+      resource.routes.find((route) => route.name === 'photos.update')!.toJSON().middleware,
       []
     )
 
     assert.deepEqual(
-      resource.routes.find((route) => route.name === 'photos.destroy')!['routeMiddleware'],
+      resource.routes.find((route) => route.name === 'photos.destroy')!.toJSON().middleware,
       []
     )
   })
@@ -711,7 +711,7 @@ test.group('Route Resource', () => {
     resource.middleware({ '*': ['auth'] })
 
     const registeredMiddleware = resource.routes.reduce((result, route) => {
-      result[route.name] = route['routeMiddleware']
+      result[route.name] = route.toJSON().middleware
       return result
     }, {})
 
@@ -731,7 +731,7 @@ test.group('Route Resource', () => {
     resource.middleware({ '*': ['auth'], 'update': ['self'] })
 
     const registeredMiddleware = resource.routes.reduce((result, route) => {
-      result[route.name] = route['routeMiddleware']
+      result[route.name] = route.toJSON().middleware
       return result
     }, {})
 

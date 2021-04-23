@@ -64,7 +64,7 @@ export class Route extends Macroable implements RouteContract {
   /**
    * An array of middleware. Added using `middleware` function
    */
-  private routeMiddleware: RouteMiddlewareHandler[] = []
+  private routeMiddleware: RouteMiddlewareHandler[][] = []
 
   /**
    * Storing the namespace explicitly set using `route.namespace` method
@@ -176,9 +176,13 @@ export class Route extends Macroable implements RouteContract {
     prepend = false
   ): this {
     middleware = Array.isArray(middleware) ? middleware : [middleware]
-    this.routeMiddleware = prepend
-      ? middleware.concat(this.routeMiddleware)
-      : this.routeMiddleware.concat(middleware)
+
+    if (prepend) {
+      this.routeMiddleware.unshift(middleware)
+    } else {
+      this.routeMiddleware.push(middleware)
+    }
+
     return this
   }
 
@@ -219,7 +223,7 @@ export class Route extends Macroable implements RouteContract {
       name: this.name,
       handler: this.handler,
       methods: this.methods,
-      middleware: this.routeMiddleware,
+      middleware: this.routeMiddleware.flat(),
     }
   }
 }

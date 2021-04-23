@@ -203,6 +203,50 @@ test.group('Server | middleware', (group) => {
     assert.deepEqual(stack, ['fn1', 'fn2', 'route fn1', 'handler'])
   })
 
+  test('execute route middleware in the order they are defined', async (assert) => {
+    const stack: string[] = []
+
+    const app = await setupApp()
+    const server = new Server(app, encryption, serverConfig)
+
+    const httpServer = createServer(server.handle.bind(server))
+
+    server.middleware.registerNamed({
+      auth: async function auth() {
+        return {
+          default: class Middleware {
+            public async handle(_ctx: HttpContextContract, next: any) {
+              stack.push('auth')
+              await next()
+            }
+          },
+        }
+      },
+      acl: async function acl() {
+        return {
+          default: class Middleware {
+            public async handle(_ctx: HttpContextContract, next: any) {
+              stack.push('acl')
+              await next()
+            }
+          },
+        }
+      },
+    })
+
+    server.router
+      .get('/', async () => {
+        stack.push('handler')
+        return 'done'
+      })
+      .middleware('auth')
+      .middleware('acl')
+
+    server.optimize()
+    await supertest(httpServer).get('/').expect(200)
+    assert.deepEqual(stack, ['auth', 'acl', 'handler'])
+  })
+
   test('terminate request from global middleware', async (assert) => {
     const stack: string[] = []
 

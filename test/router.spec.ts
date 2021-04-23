@@ -3082,3 +3082,509 @@ test.group('Make signed url', () => {
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/article/1?name=virk')
   })
 })
+
+test.group('Regression', () => {
+  test('route where matchers should win over group domain', (assert) => {
+    const router = new Router(encryption)
+
+    router
+      .group(() => {
+        router
+          .group(() => {
+            router.get('/:id', 'HomeController.index').where('id', /^[0-9]$/)
+          })
+          .where('id', /^[a-z]$/)
+      })
+      .where('id', /^[a-z0-9]$/)
+
+    router.commit()
+
+    assert.deepEqual(router['store'].tree, {
+      tokens: [
+        [
+          {
+            old: 'root',
+            type: 0,
+            val: 'root',
+            end: '',
+          },
+        ],
+      ],
+      domains: {
+        root: {
+          HEAD: {
+            tokens: [
+              [
+                {
+                  cast: undefined,
+                  old: '/:id',
+                  type: 1,
+                  val: 'id',
+                  matcher: /^[0-9]$/,
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/:id': {
+                pattern: '/:id',
+                handler: 'HomeController.index',
+                meta: {
+                  namespace: undefined,
+                },
+                middleware: [],
+                name: undefined,
+              },
+            },
+          },
+          GET: {
+            tokens: [
+              [
+                {
+                  cast: undefined,
+                  old: '/:id',
+                  type: 1,
+                  val: 'id',
+                  matcher: /^[0-9]$/,
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/:id': {
+                pattern: '/:id',
+                handler: 'HomeController.index',
+                meta: {
+                  namespace: undefined,
+                },
+                middleware: [],
+                name: undefined,
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+
+  test('apply prefixes in the correct order', (assert) => {
+    const router = new Router(encryption)
+
+    router
+      .group(() => {
+        router
+          .group(() => {
+            router.get('/', 'HomeController.index').prefix('/foo')
+          })
+          .prefix('/bar')
+      })
+      .prefix('/baz')
+
+    router.commit()
+
+    assert.deepEqual(router['store'].tree, {
+      tokens: [
+        [
+          {
+            old: 'root',
+            type: 0,
+            val: 'root',
+            end: '',
+          },
+        ],
+      ],
+      domains: {
+        root: {
+          HEAD: {
+            tokens: [
+              [
+                {
+                  old: '/baz/bar/foo',
+                  type: 0,
+                  val: 'baz',
+                  end: '',
+                },
+                {
+                  old: '/baz/bar/foo',
+                  type: 0,
+                  val: 'bar',
+                  end: '',
+                },
+                {
+                  old: '/baz/bar/foo',
+                  type: 0,
+                  val: 'foo',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/baz/bar/foo': {
+                pattern: '/baz/bar/foo',
+                handler: 'HomeController.index',
+                meta: {
+                  namespace: undefined,
+                },
+                middleware: [],
+                name: undefined,
+              },
+            },
+          },
+          GET: {
+            tokens: [
+              [
+                {
+                  old: '/baz/bar/foo',
+                  type: 0,
+                  val: 'baz',
+                  end: '',
+                },
+                {
+                  old: '/baz/bar/foo',
+                  type: 0,
+                  val: 'bar',
+                  end: '',
+                },
+                {
+                  old: '/baz/bar/foo',
+                  type: 0,
+                  val: 'foo',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/baz/bar/foo': {
+                pattern: '/baz/bar/foo',
+                handler: 'HomeController.index',
+                meta: {
+                  namespace: undefined,
+                },
+                middleware: [],
+                name: undefined,
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+
+  test('route domain should win over group domain', (assert) => {
+    const router = new Router(encryption)
+
+    router
+      .group(() => {
+        router
+          .group(() => {
+            router.get('/', 'HomeController.index').domain('foo.com')
+          })
+          .domain('bar.com')
+      })
+      .domain('baz.com')
+
+    router.commit()
+
+    assert.deepEqual(router['store'].tree, {
+      tokens: [
+        [
+          {
+            old: 'foo.com',
+            type: 0,
+            val: 'foo.com',
+            end: '',
+          },
+        ],
+      ],
+      domains: {
+        'foo.com': {
+          HEAD: {
+            tokens: [
+              [
+                {
+                  old: '/',
+                  type: 0,
+                  val: '/',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/': {
+                pattern: '/',
+                handler: 'HomeController.index',
+                meta: {
+                  namespace: undefined,
+                },
+                middleware: [],
+                name: undefined,
+              },
+            },
+          },
+          GET: {
+            tokens: [
+              [
+                {
+                  old: '/',
+                  type: 0,
+                  val: '/',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/': {
+                pattern: '/',
+                handler: 'HomeController.index',
+                meta: {
+                  namespace: undefined,
+                },
+                middleware: [],
+                name: undefined,
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+
+  test('apply route names in the right order', (assert) => {
+    const router = new Router(encryption)
+
+    router
+      .group(() => {
+        router
+          .group(() => {
+            router.get('/', 'HomeController.index').as('showById')
+          })
+          .as('admin')
+      })
+      .as('auth')
+
+    router.commit()
+
+    assert.deepEqual(router['store'].tree, {
+      tokens: [
+        [
+          {
+            old: 'root',
+            type: 0,
+            val: 'root',
+            end: '',
+          },
+        ],
+      ],
+      domains: {
+        root: {
+          HEAD: {
+            tokens: [
+              [
+                {
+                  old: '/',
+                  type: 0,
+                  val: '/',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/': {
+                pattern: '/',
+                handler: 'HomeController.index',
+                meta: {
+                  namespace: undefined,
+                },
+                middleware: [],
+                name: 'auth.admin.showById',
+              },
+            },
+          },
+          GET: {
+            tokens: [
+              [
+                {
+                  old: '/',
+                  type: 0,
+                  val: '/',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/': {
+                pattern: '/',
+                handler: 'HomeController.index',
+                meta: {
+                  namespace: undefined,
+                },
+                middleware: [],
+                name: 'auth.admin.showById',
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+
+  test('apply middleware in the right order', (assert) => {
+    const router = new Router(encryption)
+
+    router
+      .group(() => {
+        router
+          .group(() => {
+            router.get('/', 'HomeController.index').middleware('bar').middleware('baz')
+          })
+          .middleware('group1Bar')
+          .middleware('group1Baz')
+      })
+      .middleware('group2Bar')
+      .middleware('group2Baz')
+
+    router.commit()
+
+    assert.deepEqual(router['store'].tree, {
+      tokens: [
+        [
+          {
+            old: 'root',
+            type: 0,
+            val: 'root',
+            end: '',
+          },
+        ],
+      ],
+      domains: {
+        root: {
+          HEAD: {
+            tokens: [
+              [
+                {
+                  old: '/',
+                  type: 0,
+                  val: '/',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/': {
+                pattern: '/',
+                handler: 'HomeController.index',
+                meta: {
+                  namespace: undefined,
+                },
+                middleware: ['group2Bar', 'group2Baz', 'group1Bar', 'group1Baz', 'bar', 'baz'],
+                name: undefined,
+              },
+            },
+          },
+          GET: {
+            tokens: [
+              [
+                {
+                  old: '/',
+                  type: 0,
+                  val: '/',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/': {
+                pattern: '/',
+                handler: 'HomeController.index',
+                meta: {
+                  namespace: undefined,
+                },
+                middleware: ['group2Bar', 'group2Baz', 'group1Bar', 'group1Baz', 'bar', 'baz'],
+                name: undefined,
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+
+  test('route namespace should win', (assert) => {
+    const router = new Router(encryption)
+
+    router
+      .group(() => {
+        router
+          .group(() => {
+            router.get('/', 'HomeController.index').namespace('Main')
+          })
+          .namespace('Auth')
+      })
+      .namespace('Shop')
+
+    router.commit()
+
+    assert.deepEqual(router['store'].tree, {
+      tokens: [
+        [
+          {
+            old: 'root',
+            type: 0,
+            val: 'root',
+            end: '',
+          },
+        ],
+      ],
+      domains: {
+        root: {
+          HEAD: {
+            tokens: [
+              [
+                {
+                  old: '/',
+                  type: 0,
+                  val: '/',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/': {
+                pattern: '/',
+                handler: 'HomeController.index',
+                meta: {
+                  namespace: 'Main',
+                },
+                middleware: [],
+                name: undefined,
+              },
+            },
+          },
+          GET: {
+            tokens: [
+              [
+                {
+                  old: '/',
+                  type: 0,
+                  val: '/',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/': {
+                pattern: '/',
+                handler: 'HomeController.index',
+                meta: {
+                  namespace: 'Main',
+                },
+                middleware: [],
+                name: undefined,
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+})

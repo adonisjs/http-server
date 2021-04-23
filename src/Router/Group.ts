@@ -29,6 +29,20 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
   protected static macros = {}
   protected static getters = {}
 
+  /**
+   * Array of middleware registered on the group
+   */
+  private groupMiddleware: RouteMiddlewareHandler[] = []
+
+  /**
+   * We register the group middleware only once with the route
+   * and then mutate the internal stack. This ensures that
+   * group own middleware are pushed to the last, but the
+   * entire group of middleware is added to the front
+   * in the routes
+   */
+  private registeredMiddlewareWithRoute = false
+
   constructor(public routes: (Route | RouteResource | BriskRoute | RouteGroup)[]) {
     super()
   }
@@ -48,7 +62,7 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
     }
 
     if (route instanceof RouteGroup) {
-      route[method](...params)
+      route.routes.forEach((child) => this.invoke(child, method, params))
       return
     }
 
@@ -144,8 +158,23 @@ export class RouteGroup extends Macroable implements RouteGroupContract {
    * }).middleware(['auth'])
    * ```
    */
-  public middleware(middleware: RouteMiddlewareHandler | RouteMiddlewareHandler[]): this {
-    this.routes.forEach((route) => this.invoke(route, 'middleware', [middleware, true]))
+  public middleware(
+    middleware: RouteMiddlewareHandler | RouteMiddlewareHandler[],
+    prepend: boolean = false
+  ): this {
+    middleware = Array.isArray(middleware) ? middleware : [middleware]
+
+    if (prepend) {
+      middleware.forEach((one) => this.groupMiddleware.unshift(one))
+    } else {
+      middleware.forEach((one) => this.groupMiddleware.push(one))
+    }
+
+    if (!this.registeredMiddlewareWithRoute) {
+      this.registeredMiddlewareWithRoute = true
+      this.routes.forEach((route) => this.invoke(route, 'middleware', [this.groupMiddleware, true]))
+    }
+
     return this
   }
 
