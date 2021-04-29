@@ -2910,6 +2910,15 @@ test.group('Router | Make url', () => {
     assert.equal(url, '/posts/1')
   })
 
+  test('make url to a given route with prefixUrl', (assert) => {
+    const router = new Router(encryption)
+    router.get('/posts', 'PostsController.index')
+    router.commit()
+
+    const url = router.makeUrl('PostsController.index', { prefixUrl: '/api' })
+    assert.equal(url, '/api/posts')
+  })
+
   test('make url using the builder', (assert) => {
     const router = new Router(encryption)
     router.get('posts/:id', 'PostsController.index').as('showPost')

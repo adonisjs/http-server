@@ -164,8 +164,8 @@ export function normalizeMakeUrlOptions(params?: any[] | MakeUrlOptions, options
 
   const normalizedParams = params['params'] ? params['params'] : params
   const qs = options.qs || params['qs']
-  const domain = options.domain
-  const prefixUrl = options.prefixUrl
+  const domain = options.domain || params['domain']
+  const prefixUrl = options.prefixUrl || params['prefixUrl']
 
   /**
    * Using legacy options
