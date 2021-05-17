@@ -26,7 +26,8 @@
     "prepublishOnly": "npm run build",
     "lint": "eslint . --ext=.ts",
     "format": "prettier --write .",
-    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json adonisjs/http-server"
+    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json adonisjs/http-server",
+    "prepare": "husky install"
   },
   "keywords": [
     "http",
@@ -79,11 +80,6 @@
     "extension": [
       ".ts"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "node ./node_modules/@adonisjs/mrm-preset/validateCommit/conventional/validate.js"
-    }
   },
   "config": {
     "commitizen": {
