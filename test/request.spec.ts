@@ -511,9 +511,11 @@ test.group('Request', () => {
       res.end(JSON.stringify({ url: request.completeUrl() }))
     })
 
-    const { body } = await supertest(server).get('/?username=virk')
+    const response = await supertest(server).get('/?username=virk')
+    const { body, request } = response as any
+
     assert.deepEqual(body, {
-      url: 'http://127.0.0.1/',
+      url: `http://${request.host}/`,
     })
   })
 
@@ -524,9 +526,11 @@ test.group('Request', () => {
       res.end(JSON.stringify({ url: request.completeUrl(true) }))
     })
 
-    const { body } = await supertest(server).get('/?username=virk')
+    const response = await supertest(server).get('/?username=virk')
+    const { body, request } = response as any
+
     assert.deepEqual(body, {
-      url: 'http://127.0.0.1/?username=virk',
+      url: `http://${request.host}/?username=virk`,
     })
   })
 

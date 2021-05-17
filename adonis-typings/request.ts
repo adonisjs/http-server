@@ -298,7 +298,7 @@ declare module '@ioc:Adonis/Core/Request' {
     subdomains(): string[]
 
     /**
-     * Returns the request hostname. If proxy headers are trusted, then
+     * Returns the request host. If proxy headers are trusted, then
      * `X-Forwarded-Host` is given priority over the `Host` header.
      *
      * You can control the behavior of trusting the proxy values by defining it
@@ -313,6 +313,12 @@ declare module '@ioc:Adonis/Core/Request' {
      * ```
      *
      * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
+     */
+    host(): string | null
+
+    /**
+     * Returns the request hostname. The hostname value does not include the
+     * port.
      */
     hostname(): string | null
 

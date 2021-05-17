@@ -494,6 +494,41 @@ export class Request extends Macroable implements RequestContract {
   }
 
   /**
+   * Returns the request host. If proxy headers are trusted, then
+   * `X-Forwarded-Host` is given priority over the `Host` header.
+   *
+   * You can control the behavior of trusting the proxy values by defining it
+   * inside the `config/app.js` file.
+   *
+   * ```js
+   * {
+   *   http: {
+   *    trustProxy: '127.0.0.1'
+   *   }
+   * }
+   * ```
+   *
+   * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
+   */
+  public host(): string | null {
+    let host = this.header('host')
+
+    /*
+     * Use X-Fowarded-Host when we trust the proxy header and it
+     * exists
+     */
+    if (!trustProxy(this.request.connection.remoteAddress!, this.config.trustProxy)) {
+      host = this.header('X-Forwarded-Host') || host
+    }
+
+    if (!host) {
+      return null
+    }
+
+    return host
+  }
+
+  /**
    * Returns the request hostname. If proxy headers are trusted, then
    * `X-Forwarded-Host` is given priority over the `Host` header.
    *
@@ -511,15 +546,7 @@ export class Request extends Macroable implements RequestContract {
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
    */
   public hostname(): string | null {
-    let host = this.header('host')
-
-    /*
-     * Use X-Fowarded-Host when we trust the proxy header and it
-     * exists
-     */
-    if (!trustProxy(this.request.connection.remoteAddress!, this.config.trustProxy)) {
-      host = this.header('X-Forwarded-Host') || host
-    }
+    const host = this.host()
 
     if (!host) {
       return null
@@ -527,6 +554,8 @@ export class Request extends Macroable implements RequestContract {
 
     /*
      * Support for IPv6
+     * https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.2
+     * https://github.com/nodejs/node/pull/5314
      */
     const offset = host[0] === '[' ? host.indexOf(']') + 1 : 0
     const index = host.indexOf(':', offset)
@@ -612,7 +641,7 @@ export class Request extends Macroable implements RequestContract {
    */
   public completeUrl(includeQueryString?: boolean): string {
     const protocol = this.protocol()
-    const hostname = this.hostname()
+    const hostname = this.host()
     return `${protocol}://${hostname}${this.url(includeQueryString)}`
   }
 
