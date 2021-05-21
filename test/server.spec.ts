@@ -1222,4 +1222,39 @@ test.group('Server | all', (group) => {
     const { body } = await supertest(httpServer).get('/users/1').expect(200)
     assert.deepEqual(body, { matchesRoute: true })
   })
+
+  /**
+   * Reproducing regression
+   */
+  test('find if the signed url signature is valid', async (assert) => {
+    const app = await setupApp()
+    const server = new Server(
+      app,
+      encryption,
+      Object.assign({}, serverConfig, {
+        forceContentNegotiationToJSON: true,
+      })
+    )
+
+    const httpServer = createServer(server.handle.bind(server))
+    server.router
+      .get('/users/:id', async ({ request }) => {
+        return {
+          hasValidSignature: request.hasValidSignature(),
+        }
+      })
+      .as('showUser')
+
+    server.optimize()
+
+    /**
+     * Make a signed url
+     */
+    const url = server.router.makeSignedUrl('showUser', [1], {
+      qs: { site: 1, db: 'pg', dbUser: 1 },
+    })
+
+    const { body } = await supertest(httpServer).get(url).expect(200)
+    assert.deepEqual(body, { hasValidSignature: true })
+  })
 })
