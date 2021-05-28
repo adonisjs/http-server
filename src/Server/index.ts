@@ -27,6 +27,11 @@ import { HttpContext } from '../HttpContext'
 import { RequestHandler } from './RequestHandler'
 import { MiddlewareStore } from '../MiddlewareStore'
 import { ExceptionManager } from './ExceptionManager'
+import {
+  asyncHttpContextEnabled,
+  AsyncHttpContext,
+  setAsyncHttpContextEnabled,
+} from '../AsyncHttpContext'
 
 /**
  * Server class handles the HTTP requests by using all Adonis micro modules.
@@ -80,6 +85,8 @@ export class Server implements ServerContract {
     if (httpConfig.cookie.maxAge && typeof httpConfig.cookie.maxAge === 'string') {
       httpConfig.cookie.maxAge = ms(httpConfig.cookie.maxAge) / 1000
     }
+
+    setAsyncHttpContextEnabled(httpConfig.enableAsyncHttpContext || false)
   }
 
   /**
@@ -124,6 +131,13 @@ export class Server implements ServerContract {
   }
 
   /**
+   * Returns a new async HTTP context for the new request
+   */
+  private getAsyncContext(ctx: HttpContextContract): AsyncHttpContext {
+    return new AsyncHttpContext(ctx)
+  }
+
+  /**
    * Define custom error handler to handler all errors
    * occurred during HTTP request
    */
@@ -161,6 +175,19 @@ export class Server implements ServerContract {
     const requestAction = this.getProfilerRow(request)
     const ctx = this.getContext(request, response, requestAction)
 
+    if (asyncHttpContextEnabled) {
+      const asyncContext = this.getAsyncContext(ctx)
+      return asyncContext.run(() => this.handleImpl(ctx, requestAction, res))
+    } else {
+      this.handleImpl(ctx, requestAction, res)
+    }
+  }
+
+  private async handleImpl(
+    ctx: HttpContext,
+    requestAction: ProfilerRowContract,
+    res: ServerResponse
+  ) {
     /*
      * Handle request by executing hooks, request middleware stack
      * and route handler

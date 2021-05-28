@@ -14,7 +14,7 @@
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
-    "test": "node japaFile.js",
+    "test": "node japaFile.js && cross-env ASYNC_HOOKS=1 node japaFile.js",
     "clean": "del build",
     "compile": "npm run lint && npm run clean && tsc",
     "build": "npm run compile",
@@ -50,6 +50,7 @@
     "@types/supertest": "^2.0.11",
     "autocannon": "^7.3.0",
     "commitizen": "^4.2.3",
+    "cross-env": "^7.0.3",
     "cz-conventional-changelog": "^3.3.0",
     "del-cli": "^3.0.1",
     "eslint": "^7.26.0",

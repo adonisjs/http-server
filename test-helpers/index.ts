@@ -30,6 +30,7 @@ export const requestConfig: RequestConfig = {
   trustProxy: proxyaddr.compile('loopback'),
   subdomainOffset: 2,
   generateRequestId: true,
+  enableAsyncHttpContext: Boolean(process.env.ASYNC_HOOKS),
 }
 
 export const responseConfig: ResponseConfig = {
@@ -59,7 +60,8 @@ export async function setupApp(providers?: string[]) {
 		export const appKey = '${appSecret}'
 		export const http = {
 			trustProxy: () => true,
-			cookie: {}
+			cookie: {},
+      enableAsyncHttpContext: ${process.env.ASYNC_HOOKS ? 'true' : 'false'}
 		}
 	`
   )
