@@ -19,6 +19,7 @@ import { ProfilerAction, ProfilerRow } from '@ioc:Adonis/Core/Profiler'
 
 import { Server } from '../src/Server'
 import { serverConfig, fs, setupApp, encryption } from '../test-helpers'
+import { HttpContext } from '../src/HttpContext'
 
 test.group('Server | Response handling', (group) => {
   group.afterEach(async () => {
@@ -1257,4 +1258,74 @@ test.group('Server | all', (group) => {
     const { body } = await supertest(httpServer).get(url).expect(200)
     assert.deepEqual(body, { hasValidSignature: true })
   })
+
+  if (process.env.ASYNC_HOOKS) {
+    test('async HTTP context (enabled)', async (assert) => {
+      const app = await setupApp()
+      const server = new Server(app, encryption, serverConfig)
+
+      server.router.get('/', async (ctx) => {
+        return {
+          enabled: HttpContext.asyncHttpContextEnabled,
+          get: HttpContext.get() === ctx,
+          getOrFail: HttpContext.getOrFail() === ctx,
+        }
+      })
+
+      server.optimize()
+
+      const httpServer = createServer(server.handle.bind(server))
+
+      assert.strictEqual(HttpContext.asyncHttpContextEnabled, true)
+      assert.strictEqual(HttpContext.get(), null)
+      assert.throws(
+        () => HttpContext.getOrFail(),
+        'async HTTP context accessed outside of a request context'
+      )
+
+      const { body } = await supertest(httpServer).get('/').expect(200)
+      assert.deepStrictEqual(body, {
+        enabled: true,
+        get: true,
+        getOrFail: true,
+      })
+    })
+  } else {
+    test('async HTTP context (disabled)', async (assert) => {
+      const app = await setupApp()
+      const server = new Server(app, encryption, serverConfig)
+
+      server.errorHandler(async (error, { response }) => {
+        response.status(200).send(error.message)
+      })
+
+      server.router.get('/', async () => {
+        return {
+          enabled: HttpContext.asyncHttpContextEnabled,
+          get: HttpContext.get() === null,
+        }
+      })
+
+      server.router.get('/fail', async () => {
+        return HttpContext.getOrFail()
+      })
+
+      server.optimize()
+
+      const httpServer = createServer(server.handle.bind(server))
+
+      assert.strictEqual(HttpContext.asyncHttpContextEnabled, false)
+      assert.strictEqual(HttpContext.get(), null)
+      assert.throws(() => HttpContext.getOrFail(), 'async HTTP context is disabled')
+
+      const { body } = await supertest(httpServer).get('/').expect(200)
+      assert.deepStrictEqual(body, {
+        enabled: false,
+        get: true,
+      })
+
+      const { text } = await supertest(httpServer).get('/fail').expect(200)
+      assert.strictEqual(text, 'async HTTP context is disabled')
+    })
+  }
 })

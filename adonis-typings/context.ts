@@ -46,6 +46,21 @@ declare module '@ioc:Adonis/Core/HttpContext' {
     app?: ApplicationContract
 
     /**
+     * Whether async hooks are enabled and the async HTTP context can be used.
+     */
+    readonly asyncHttpContextEnabled: boolean
+
+    /**
+     * Returns the current HTTP context or null if there is none.
+     */
+    get(): HttpContextContract | null
+
+    /**
+     * Returns the current HTTP context or throws if there is none.
+     */
+    getOrFail(): HttpContextContract
+
+    /**
      * Creates a new fake context instance for a given route.
      */
     create(

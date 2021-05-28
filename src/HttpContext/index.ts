@@ -24,6 +24,8 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { Request } from '../Request'
 import { Response } from '../Response'
 import { processPattern } from '../helpers'
+import { adonisLocalStorage, asyncHttpContextEnabled } from '../AsyncHttpContext'
+import { Exception } from '@poppinss/utils'
 
 /**
  * Http context is passed to all route handlers, middleware,
@@ -34,6 +36,27 @@ export class HttpContext extends Macroable implements HttpContextContract {
    * Set inside the provider
    */
   public static app: ApplicationContract
+
+  public static get asyncHttpContextEnabled() {
+    return asyncHttpContextEnabled
+  }
+
+  public static get(): HttpContextContract | null {
+    const store = adonisLocalStorage.getStore()
+    return store !== undefined ? store.getContext() : null
+  }
+
+  public static getOrFail() {
+    const store = adonisLocalStorage.getStore()
+    if (store !== undefined) {
+      return store.getContext()
+    }
+    if (asyncHttpContextEnabled) {
+      throw new Exception('async HTTP context accessed outside of a request context')
+    } else {
+      throw new Exception('async HTTP context is disabled')
+    }
+  }
 
   /**
    * A unique key for the current route
