@@ -12,6 +12,7 @@
 import { Socket } from 'net'
 import { inspect } from 'util'
 import { Macroable } from 'macroable'
+import { Exception } from '@poppinss/utils'
 import { RouteNode } from '@ioc:Adonis/Core/Route'
 import { IncomingMessage, ServerResponse } from 'http'
 import { LoggerContract } from '@ioc:Adonis/Core/Logger'
@@ -24,8 +25,8 @@ import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { Request } from '../Request'
 import { Response } from '../Response'
 import { processPattern } from '../helpers'
-import { adonisLocalStorage, asyncHttpContextEnabled } from '../AsyncHttpContext'
-import { Exception } from '@poppinss/utils'
+import { usingAsyncLocalStorage, httpContextLocalStorage } from './LocalStorage'
+import { E_INVALID_ALS_ACCESS, E_INVALID_ALS_SCOPE } from '../../exceptions.json'
 
 /**
  * Http context is passed to all route handlers, middleware,
@@ -37,25 +38,60 @@ export class HttpContext extends Macroable implements HttpContextContract {
    */
   public static app: ApplicationContract
 
-  public static get asyncHttpContextEnabled() {
-    return asyncHttpContextEnabled
+  /**
+   * Find if async localstorage is enabled for HTTP requests
+   * or not
+   */
+  public static get usingAsyncLocalStorage() {
+    return usingAsyncLocalStorage
   }
 
+  /**
+   * Get access to the HTTP context. Available only when
+   * "usingAsyncLocalStorage" is true
+   */
   public static get(): HttpContextContract | null {
-    const store = adonisLocalStorage.getStore()
-    return store !== undefined ? store.getContext() : null
+    if (!usingAsyncLocalStorage) {
+      return null
+    }
+
+    return httpContextLocalStorage.getStore() || null
   }
 
-  public static getOrFail() {
-    const store = adonisLocalStorage.getStore()
-    if (store !== undefined) {
-      return store.getContext()
+  /**
+   * Get the HttpContext instance or raise an exception if not
+   * available
+   */
+  public static getOrFail(): HttpContextContract {
+    /**
+     * Localstorage is not enabled
+     */
+    if (!usingAsyncLocalStorage) {
+      const error = new Exception(
+        E_INVALID_ALS_ACCESS.message,
+        E_INVALID_ALS_ACCESS.status,
+        E_INVALID_ALS_ACCESS.code
+      )
+      error.help = E_INVALID_ALS_ACCESS.help.join('\n')
+      throw error
     }
-    if (asyncHttpContextEnabled) {
-      throw new Exception('async HTTP context accessed outside of a request context')
-    } else {
-      throw new Exception('async HTTP context is disabled')
+
+    const store = this.get()
+
+    /**
+     * Store is not accessible
+     */
+    if (!store) {
+      const error = new Exception(
+        E_INVALID_ALS_SCOPE.message,
+        E_INVALID_ALS_SCOPE.status,
+        E_INVALID_ALS_SCOPE.code
+      )
+      error.help = E_INVALID_ALS_SCOPE.help.join('\n')
+      throw error
     }
+
+    return store
   }
 
   /**

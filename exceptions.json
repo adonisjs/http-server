@@ -88,5 +88,23 @@
     "help": [
       "Make sure to define params object when using `Route.makeUrl` or the view help `route`."
     ]
+  },
+  "E_INVALID_ALS_ACCESS": {
+    "message": "HTTP context is not available. Set \"useAsyncLocalStorage\" to true inside \"config/app.ts\" file",
+    "code": "E_INVALID_ALS_ACCESS",
+    "status": 500,
+    "help": [
+      "HttpContext.getOrFail method returns the HTTP context only when Async local storage is enabled",
+      "- Either, you must enable it insie the config/app.ts file",
+      "- Or remove the usage of HttpContext.getOrFail method"
+    ]
+  },
+  "E_INVALID_ALS_SCOPE": {
+    "message": "Http context is not available outside of an HTTP request",
+    "code": "E_INVALID_ALS_SCOPE",
+    "status": 500,
+    "help": [
+      "Make sure the code that attempts to access the HttpContext is running within the scope of an HTTP request"
+    ]
   }
 }

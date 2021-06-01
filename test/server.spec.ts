@@ -18,8 +18,8 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { ProfilerAction, ProfilerRow } from '@ioc:Adonis/Core/Profiler'
 
 import { Server } from '../src/Server'
-import { serverConfig, fs, setupApp, encryption } from '../test-helpers'
 import { HttpContext } from '../src/HttpContext'
+import { serverConfig, fs, setupApp, encryption } from '../test-helpers'
 
 test.group('Server | Response handling', (group) => {
   group.afterEach(async () => {
@@ -1266,7 +1266,7 @@ test.group('Server | all', (group) => {
 
       server.router.get('/', async (ctx) => {
         return {
-          enabled: HttpContext.asyncHttpContextEnabled,
+          enabled: HttpContext.usingAsyncLocalStorage,
           get: HttpContext.get() === ctx,
           getOrFail: HttpContext.getOrFail() === ctx,
         }
@@ -1276,11 +1276,11 @@ test.group('Server | all', (group) => {
 
       const httpServer = createServer(server.handle.bind(server))
 
-      assert.strictEqual(HttpContext.asyncHttpContextEnabled, true)
+      assert.strictEqual(HttpContext.usingAsyncLocalStorage, true)
       assert.strictEqual(HttpContext.get(), null)
       assert.throws(
         () => HttpContext.getOrFail(),
-        'async HTTP context accessed outside of a request context'
+        'E_INVALID_ALS_SCOPE: Http context is not available outside of an HTTP request'
       )
 
       const { body } = await supertest(httpServer).get('/').expect(200)
@@ -1301,7 +1301,7 @@ test.group('Server | all', (group) => {
 
       server.router.get('/', async () => {
         return {
-          enabled: HttpContext.asyncHttpContextEnabled,
+          enabled: HttpContext.usingAsyncLocalStorage,
           get: HttpContext.get() === null,
         }
       })
@@ -1314,9 +1314,12 @@ test.group('Server | all', (group) => {
 
       const httpServer = createServer(server.handle.bind(server))
 
-      assert.strictEqual(HttpContext.asyncHttpContextEnabled, false)
+      assert.strictEqual(HttpContext.usingAsyncLocalStorage, false)
       assert.strictEqual(HttpContext.get(), null)
-      assert.throws(() => HttpContext.getOrFail(), 'async HTTP context is disabled')
+      assert.throws(
+        () => HttpContext.getOrFail(),
+        'E_INVALID_ALS_ACCESS: HTTP context is not available. Set "useAsyncLocalStorage" to true inside "config/app.ts" file'
+      )
 
       const { body } = await supertest(httpServer).get('/').expect(200)
       assert.deepStrictEqual(body, {
@@ -1325,7 +1328,10 @@ test.group('Server | all', (group) => {
       })
 
       const { text } = await supertest(httpServer).get('/fail').expect(200)
-      assert.strictEqual(text, 'async HTTP context is disabled')
+      assert.strictEqual(
+        text,
+        'E_INVALID_ALS_ACCESS: HTTP context is not available. Set "useAsyncLocalStorage" to true inside "config/app.ts" file'
+      )
     })
   }
 })

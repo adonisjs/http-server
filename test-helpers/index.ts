@@ -30,7 +30,7 @@ export const requestConfig: RequestConfig = {
   trustProxy: proxyaddr.compile('loopback'),
   subdomainOffset: 2,
   generateRequestId: true,
-  enableAsyncHttpContext: Boolean(process.env.ASYNC_HOOKS),
+  useAsyncLocalStorage: Boolean(process.env.ASYNC_HOOKS),
 }
 
 export const responseConfig: ResponseConfig = {
