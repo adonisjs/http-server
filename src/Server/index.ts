@@ -28,10 +28,10 @@ import { RequestHandler } from './RequestHandler'
 import { MiddlewareStore } from '../MiddlewareStore'
 import { ExceptionManager } from './ExceptionManager'
 import {
-  asyncHttpContextEnabled,
-  AsyncHttpContext,
-  setAsyncHttpContextEnabled,
-} from '../AsyncHttpContext'
+  useAsyncLocalStorage,
+  usingAsyncLocalStorage,
+  httpContextLocalStorage,
+} from '../HttpContext/LocalStorage'
 
 /**
  * Server class handles the HTTP requests by using all Adonis micro modules.
@@ -86,13 +86,13 @@ export class Server implements ServerContract {
       httpConfig.cookie.maxAge = ms(httpConfig.cookie.maxAge) / 1000
     }
 
-    setAsyncHttpContextEnabled(httpConfig.enableAsyncHttpContext || false)
+    useAsyncLocalStorage(httpConfig.useAsyncLocalStorage || false)
   }
 
   /**
    * Handles HTTP request
    */
-  private async handleRequest(ctx: HttpContextContract) {
+  private async runBeforeHooksAndHandler(ctx: HttpContextContract) {
     /*
      * Start with before hooks upfront. If they raise error
      * then execute error handler.
@@ -131,10 +131,41 @@ export class Server implements ServerContract {
   }
 
   /**
-   * Returns a new async HTTP context for the new request
+   * Handle the request
    */
-  private getAsyncContext(ctx: HttpContextContract): AsyncHttpContext {
-    return new AsyncHttpContext(ctx)
+  private async handleRequest(
+    ctx: HttpContext,
+    requestAction: ProfilerRowContract,
+    res: ServerResponse
+  ) {
+    /*
+     * Handle request by executing hooks, request middleware stack
+     * and route handler
+     */
+    try {
+      await this.runBeforeHooksAndHandler(ctx)
+    } catch (error) {
+      await this.exception.handle(error, ctx)
+    }
+
+    /*
+     * Excute hooks when there are one or more hooks. The `ctx.response.finish`
+     * is intentionally inside both the `try` and `catch` blocks as a defensive
+     * measure.
+     *
+     * When we call `response.finish`, it will serialize the response body and may
+     * encouter errors while doing so and hence will be catched by the catch
+     * block.
+     */
+    try {
+      await this.hooks.executeAfter(ctx)
+      requestAction.end({ status_code: res.statusCode })
+      ctx.response.finish()
+    } catch (error) {
+      await this.exception.handle(error, ctx)
+      requestAction.end({ status_code: res.statusCode, error })
+      ctx.response.finish()
+    }
   }
 
   /**
@@ -175,46 +206,10 @@ export class Server implements ServerContract {
     const requestAction = this.getProfilerRow(request)
     const ctx = this.getContext(request, response, requestAction)
 
-    if (asyncHttpContextEnabled) {
-      const asyncContext = this.getAsyncContext(ctx)
-      return asyncContext.run(() => this.handleImpl(ctx, requestAction, res))
+    if (usingAsyncLocalStorage) {
+      return httpContextLocalStorage.run(ctx, () => this.handleRequest(ctx, requestAction, res))
     } else {
-      this.handleImpl(ctx, requestAction, res)
-    }
-  }
-
-  private async handleImpl(
-    ctx: HttpContext,
-    requestAction: ProfilerRowContract,
-    res: ServerResponse
-  ) {
-    /*
-     * Handle request by executing hooks, request middleware stack
-     * and route handler
-     */
-    try {
-      await this.handleRequest(ctx)
-    } catch (error) {
-      await this.exception.handle(error, ctx)
-    }
-
-    /*
-     * Excute hooks when there are one or more hooks. The `ctx.response.finish`
-     * is intentionally inside both the `try` and `catch` blocks as a defensive
-     * measure.
-     *
-     * When we call `response.finish`, it will serialize the response body and may
-     * encouter errors while doing so and hence will be catched by the catch
-     * block.
-     */
-    try {
-      await this.hooks.executeAfter(ctx)
-      requestAction.end({ status_code: res.statusCode })
-      ctx.response.finish()
-    } catch (error) {
-      await this.exception.handle(error, ctx)
-      requestAction.end({ status_code: res.statusCode, error })
-      ctx.response.finish()
+      return this.handleRequest(ctx, requestAction, res)
     }
   }
 }

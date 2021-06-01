@@ -46,9 +46,9 @@ declare module '@ioc:Adonis/Core/HttpContext' {
     app?: ApplicationContract
 
     /**
-     * Whether async hooks are enabled and the async HTTP context can be used.
+     * Find if ALS is enabled inside the config/app.ts file
      */
-    readonly asyncHttpContextEnabled: boolean
+    readonly usingAsyncLocalStorage: boolean
 
     /**
      * Returns the current HTTP context or null if there is none.
