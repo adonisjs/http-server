@@ -1290,6 +1290,29 @@ test.group('Server | all', (group) => {
         getOrFail: true,
       })
     })
+
+    test('run a callback outside the ALS context', async (assert) => {
+      const app = await setupApp()
+      const server = new Server(app, encryption, serverConfig)
+
+      server.router.get('/', async (ctx) => {
+        return HttpContext.runOutsideContext(() => {
+          return {
+            enabled: HttpContext.usingAsyncLocalStorage,
+            get: HttpContext.get() === ctx,
+          }
+        })
+      })
+
+      server.optimize()
+
+      const httpServer = createServer(server.handle.bind(server))
+      const { body } = await supertest(httpServer).get('/').expect(200)
+      assert.deepStrictEqual(body, {
+        enabled: true,
+        get: false,
+      })
+    })
   } else {
     test('async HTTP context (disabled)', async (assert) => {
       const app = await setupApp()
@@ -1332,6 +1355,29 @@ test.group('Server | all', (group) => {
         text,
         'E_INVALID_ALS_ACCESS: HTTP context is not available. Set "useAsyncLocalStorage" to true inside "config/app.ts" file'
       )
+    })
+
+    test('run a callback outside the ALS context', async (assert) => {
+      const app = await setupApp()
+      const server = new Server(app, encryption, serverConfig)
+
+      server.router.get('/', async (ctx) => {
+        return HttpContext.runOutsideContext(() => {
+          return {
+            enabled: HttpContext.usingAsyncLocalStorage,
+            get: HttpContext.get() === ctx,
+          }
+        })
+      })
+
+      server.optimize()
+
+      const httpServer = createServer(server.handle.bind(server))
+      const { body } = await supertest(httpServer).get('/').expect(200)
+      assert.deepStrictEqual(body, {
+        enabled: false,
+        get: false,
+      })
     })
   }
 })

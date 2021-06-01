@@ -61,6 +61,12 @@ declare module '@ioc:Adonis/Core/HttpContext' {
     getOrFail(): HttpContextContract
 
     /**
+     * Run a method that doesn't have access to HTTP context from
+     * the async local storage.
+     */
+    runOutsideContext<T>(callback: (...args: any[]) => T, ...args: any[]): T
+
+    /**
      * Creates a new fake context instance for a given route.
      */
     create(

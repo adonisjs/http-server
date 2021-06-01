@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-/// <reference path="../../adonis-typings/index.ts" />
+/// <reference path="../../../adonis-typings/index.ts" />
 
 import { AsyncLocalStorage } from 'async_hooks'
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'

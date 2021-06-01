@@ -95,6 +95,14 @@ export class HttpContext extends Macroable implements HttpContextContract {
   }
 
   /**
+   * Run a method that doesn't have access to HTTP context from
+   * the async local storage.
+   */
+  public static runOutsideContext<T>(callback: (...args: any[]) => T, ...args: any[]): T {
+    return httpContextLocalStorage.exit(callback, ...args)
+  }
+
+  /**
    * A unique key for the current route
    */
   public routeKey: string
