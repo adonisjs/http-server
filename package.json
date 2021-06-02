@@ -1,6 +1,6 @@
 {
   "name": "@adonisjs/http-server",
-  "version": "5.4.0",
+  "version": "5.4.1",
   "description": "AdonisJS HTTP server with support packed with Routing and Cookies",
   "main": "build/providers/HttpServerProvider.js",
   "files": [
