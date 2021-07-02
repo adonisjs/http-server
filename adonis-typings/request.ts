@@ -205,7 +205,8 @@ declare module '@ioc:Adonis/Core/Request' {
      * Returns value for a given header key. The default value is
      * used when original value is `undefined`.
      */
-    header(key: string, defaultValue?: any): string | undefined
+    header(key: string): string | undefined
+    header<T>(key: string, defaultValue?: T): string | T
 
     /**
      * Returns the ip address of the user. This method is optimize to fetch
