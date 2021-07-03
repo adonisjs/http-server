@@ -108,6 +108,7 @@
     "pluralize": "^8.0.0",
     "proxy-addr": "^2.0.7",
     "qs": "^6.10.1",
+    "set-cookie-parser": "^2.4.8",
     "tmp-cache": "^1.1.0",
     "type-is": "^1.6.18",
     "vary": "^1.1.2"

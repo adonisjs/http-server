@@ -12,9 +12,7 @@ import cookie, { CookieSerializeOptions } from 'cookie'
 import { CookieOptions } from '@ioc:Adonis/Core/Response'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 
-import * as PlainCookie from '../Drivers/Plain'
-import * as SignedCookie from '../Drivers/Signed'
-import * as EncryptedCookie from '../Drivers/Encrypted'
+import { CookieClient } from '../Client'
 
 /**
  * Cookies serializer is used to serialize a value to be set on the `Set-Cookie`
@@ -22,6 +20,8 @@ import * as EncryptedCookie from '../Drivers/Encrypted'
  * and then set them individually using the `set-cookie` header.
  */
 export class CookieSerializer {
+  private client = new CookieClient(this.encryption)
+
   constructor(private encryption: EncryptionContract) {}
 
   /**
@@ -59,7 +59,7 @@ export class CookieSerializer {
    * ```
    */
   public encode(key: string, value: any, options?: Partial<CookieOptions>): string | null {
-    const packedValue = PlainCookie.pack(value)
+    const packedValue = this.client.encode(key, value)
     if (packedValue === null) {
       return null
     }
@@ -72,7 +72,7 @@ export class CookieSerializer {
    * has a verification hash attached to it to detect data tampering.
    */
   public sign(key: string, value: any, options?: Partial<CookieOptions>): string | null {
-    const packedValue = SignedCookie.pack(key, value, this.encryption)
+    const packedValue = this.client.sign(key, value)
     if (packedValue === null) {
       return null
     }
@@ -84,10 +84,11 @@ export class CookieSerializer {
    * Encrypts the value and returns it back as a url safe string.
    */
   public encrypt(key: string, value: any, options?: Partial<CookieOptions>): string | null {
-    const packedValue = EncryptedCookie.pack(key, value, this.encryption)
+    const packedValue = this.client.encrypt(key, value)
     if (packedValue === null) {
       return null
     }
+
     return this.serializeAsCookie(key, packedValue, options)
   }
 }

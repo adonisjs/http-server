@@ -13,8 +13,6 @@ import { ApplicationContract } from '@ioc:Adonis/Core/Application'
 export default class HttpServerProvider {
   constructor(protected application: ApplicationContract) {}
 
-  public static needsApplication = true
-
   /**
    * Validate server config to ensure we start with sane defaults
    */
@@ -91,6 +89,17 @@ export default class HttpServerProvider {
   }
 
   /**
+   * Registers the cookie client with the container
+   */
+  protected registerCookieClient() {
+    this.application.container.singleton('Adonis/Core/CookieClient', () => {
+      const { CookieClient } = require('../src/Cookie/Client')
+      const Encryption = this.application.container.resolveBinding('Adonis/Core/Encryption')
+      return new CookieClient(Encryption)
+    })
+  }
+
+  /**
    * Registering all bindings
    */
   public register() {
@@ -99,5 +108,6 @@ export default class HttpServerProvider {
     this.registerHttpServer()
     this.registerHTTPContext()
     this.registerRouter()
+    this.registerCookieClient()
   }
 }

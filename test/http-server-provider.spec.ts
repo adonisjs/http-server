@@ -15,6 +15,7 @@ import { Request } from '../src/Request'
 import { Response } from '../src/Response'
 import { fs, setupApp } from '../test-helpers'
 import { HttpContext } from '../src/HttpContext'
+import { CookieClient } from '../src/Cookie/Client'
 import { MiddlewareStore } from '../src/MiddlewareStore'
 
 test.group('Http Server Provider', (group) => {
@@ -29,6 +30,7 @@ test.group('Http Server Provider', (group) => {
     assert.deepEqual(app.container.use('Adonis/Core/Request'), Request)
     assert.deepEqual(app.container.use('Adonis/Core/Response'), Response)
     assert.instanceOf(app.container.use('Adonis/Core/Server'), Server)
+    assert.instanceOf(app.container.use('Adonis/Core/CookieClient'), CookieClient)
     assert.deepEqual(app.container.use('Adonis/Core/MiddlewareStore'), MiddlewareStore)
     assert.deepEqual(app.container.use('Adonis/Core/HttpContext'), HttpContext)
   })

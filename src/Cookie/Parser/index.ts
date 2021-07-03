@@ -10,9 +10,7 @@
 import cookie from 'cookie'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 
-import * as PlainCookie from '../Drivers/Plain'
-import * as SignedCookie from '../Drivers/Signed'
-import * as EncryptedCookie from '../Drivers/Encrypted'
+import { CookieClient } from '../Client'
 
 /**
  * Cookie parser parses the HTTP `cookie` header and collects all cookies
@@ -25,6 +23,8 @@ import * as EncryptedCookie from '../Drivers/Encrypted'
  * server.
  */
 export class CookieParser {
+  private client = new CookieClient(this.encryption)
+
   /**
    * A copy of cached cookies, they are cached during a request after
    * initial decoding, unsigning or decrypting.
@@ -96,7 +96,7 @@ export class CookieParser {
      * Attempt to unpack and cache it for future. The value is only
      * when value it is not null.
      */
-    const parsed = PlainCookie.canUnpack(value) ? PlainCookie.unpack(value) : null
+    const parsed = this.client.decode(key, value)
     if (parsed !== null) {
       cacheObject[key] = parsed
     }
@@ -135,10 +135,7 @@ export class CookieParser {
      * Attempt to unpack and cache it for future. The value is only
      * when value it is not null.
      */
-    const parsed = SignedCookie.canUnpack(value)
-      ? SignedCookie.unpack(key, value, this.encryption)
-      : null
-
+    const parsed = this.client.unsign(key, value)
     if (parsed !== null) {
       cacheObject[key] = parsed
     }
@@ -177,10 +174,7 @@ export class CookieParser {
      * Attempt to unpack and cache it for future. The value is only
      * when value it is not null.
      */
-    const parsed = EncryptedCookie.canUnpack(value)
-      ? EncryptedCookie.unpack(key, value, this.encryption)
-      : null
-
+    const parsed = this.client.decrypt(key, value)
     if (parsed !== null) {
       cacheObject[key] = parsed
     }
