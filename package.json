@@ -3,6 +3,7 @@
   "version": "5.5.0",
   "description": "AdonisJS HTTP server with support packed with Routing and Cookies",
   "main": "build/providers/HttpServerProvider.js",
+  "types": "./build/adonis-typings/index.d.ts",
   "files": [
     "build/adonis-typings",
     "build/providers",
