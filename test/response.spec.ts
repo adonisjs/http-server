@@ -569,6 +569,25 @@ test.group('Response', (group) => {
     assert.isUndefined(text)
   })
 
+  test('set HTTP status to 304 when cache is fresh and request is GET', async (assert) => {
+    await fs.add('hello.html', '<p> hello world </p>')
+
+    const server = createServer((req, res) => {
+      const response = new Response(req, res, encryption, responseConfig, router)
+      response.download(join(fs.basePath, 'hello.html'), true)
+      response.finish()
+    })
+
+    const stats = await fs.fsExtra.stat(join(fs.basePath, 'hello.html'))
+
+    const { text } = await supertest(server)
+      .get('/')
+      .set('if-none-match', etag(stats, { weak: true }))
+      .expect(304)
+
+    assert.equal(text, '')
+  })
+
   test('download file with correct content disposition', async (assert) => {
     await fs.add('hello.html', '<p> hello world </p>')
 
@@ -687,6 +706,21 @@ test.group('Response', (group) => {
 
     const responseEtag = etag(JSON.stringify({ username: 'virk' }))
     await supertest(server).get('/').expect('Etag', responseEtag)
+  })
+
+  test('set HTTP status to 304 when cache is fresh and request is GET', async (assert) => {
+    const server = createServer((req, res) => {
+      const response = new Response(req, res, encryption, responseConfig, router)
+      response.send({ username: 'virk' }, true)
+      response.finish()
+    })
+
+    const { text } = await supertest(server)
+      .get('/')
+      .set('if-none-match', etag(JSON.stringify({ username: 'virk' }), { weak: true }))
+      .expect(304)
+
+    assert.equal(text, '')
   })
 
   test('convert number to string when sending as response', async (assert) => {

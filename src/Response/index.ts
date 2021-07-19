@@ -312,7 +312,7 @@ export class Response extends Macroable implements ResponseContract {
       this.removeHeader('Content-Type')
       this.removeHeader('Content-Length')
       this.removeHeader('Transfer-Encoding')
-      this.endResponse()
+      this.endResponse(null, 304)
       return
     }
 
