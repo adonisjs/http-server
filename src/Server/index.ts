@@ -124,7 +124,6 @@ export class Server implements ServerContract {
       response,
       this.application.logger.child({
         request_id: request.id(),
-        serializers: {},
       }),
       profilerRow
     )
