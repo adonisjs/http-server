@@ -30,6 +30,19 @@ test.group('Middleware', () => {
     ])
   })
 
+  test('clear global middleware', (assert) => {
+    const middleware = new MiddlewareStore(new Ioc())
+    class GlobalMiddleware {
+      public async handle() {}
+    }
+
+    const handler = () => Promise.resolve({ default: GlobalMiddleware })
+
+    middleware.register([handler])
+    middleware.clear()
+    assert.deepEqual(middleware.get(), [])
+  })
+
   test('register named middleware', (assert) => {
     const middleware = new MiddlewareStore(new Ioc())
     class GlobalMiddleware {
@@ -42,6 +55,24 @@ test.group('Middleware', () => {
     assert.deepEqual(middleware['named'], {
       auth: { type: 'lazy-import', value: handler, args: [] },
     })
+  })
+
+  test('clear select or all named middleware', (assert) => {
+    const middleware = new MiddlewareStore(new Ioc())
+    class GlobalMiddleware {
+      public async handle() {}
+    }
+
+    const handler = () => Promise.resolve({ default: GlobalMiddleware })
+
+    middleware.registerNamed({ auth: handler, acl: handler })
+    middleware.clearNamed(['auth'])
+    assert.deepEqual(middleware['named'], {
+      acl: { type: 'lazy-import', value: handler, args: [] },
+    })
+
+    middleware.clearNamed()
+    assert.deepEqual(middleware['named'], {})
   })
 
   test('get named middleware', (assert) => {

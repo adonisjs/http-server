@@ -116,6 +116,24 @@ export class MiddlewareStore implements MiddlewareStoreContract {
   }
 
   /**
+   * Clears all the global middleware
+   */
+  public clear() {
+    this.list = []
+  }
+
+  /**
+   * Clears all/selected named middleware
+   */
+  public clearNamed(names?: string[]) {
+    if (names) {
+      names.forEach((name) => delete this.named[name])
+    } else {
+      this.named = {}
+    }
+  }
+
+  /**
    * Invokes a resolved middleware.
    */
   public async invokeMiddleware(

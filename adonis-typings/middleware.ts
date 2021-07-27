@@ -73,6 +73,16 @@ declare module '@ioc:Adonis/Core/Middleware' {
     get(): ResolvedMiddlewareHandler[]
 
     /**
+     * Removes all the global middleware
+     */
+    clear(): void
+
+    /**
+     * Removes all/select named middleware
+     */
+    clearNamed(names: string[]): void
+
+    /**
      * Returns a single middleware by it's name registered
      * using [[MiddlewareStore.registerNamed]] method.
      */
