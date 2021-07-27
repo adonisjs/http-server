@@ -2957,6 +2957,43 @@ test.group('Router | Make url', () => {
 
     assert.equal(url, '/article/1?name=virk')
   })
+
+  test('make url for a wildcard route', (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/*', async function handler() {})
+    router.commit()
+
+    assert.equal(router.makeUrl('/posts/*', { '*': ['1', 'foo'] })!, '/posts/1/foo')
+    assert.equal(router.makeUrl('/posts/*', ['1', 'foo'])!, '/posts/1/foo')
+  })
+
+  test('make url for a wildcard route after a named param', (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/:id/*', async function handler() {})
+    router.commit()
+
+    assert.equal(router.makeUrl('/posts/:id/*', ['1', 'foo'])!, '/posts/1/foo')
+    assert.equal(router.makeUrl('/posts/:id/*', { 'id': 1, '*': ['foo'] })!, '/posts/1/foo')
+  })
+
+  test('raise exception when wildcard params are missing', (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/*', async function handler() {})
+    router.commit()
+
+    assert.throw(
+      () => router.makeUrl('/posts/*', [])!,
+      'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
+    )
+    assert.throw(
+      () => router.makeUrl('/posts/*', {})!,
+      'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
+    )
+    assert.throw(
+      () => router.makeUrl('/posts/*', { '*': '' })!,
+      'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
+    )
+  })
 })
 
 test.group('Make signed url', () => {
@@ -3080,6 +3117,45 @@ test.group('Make signed url', () => {
 
     const qs = parse(url.split('?')[1])
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/article/1?name=virk')
+  })
+
+  test('make url for a wildcard route', (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/*', async function handler() {})
+    router.commit()
+
+    const url = router.makeSignedUrl('/posts/*', { '*': ['1', 'foo'] })!
+    const qs = parse(url.split('?')[1])
+    assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1/foo')
+  })
+
+  test('make url for a wildcard route after a named param', (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/:id/*', async function handler() {})
+    router.commit()
+
+    const url = router.makeSignedUrl('/posts/:id/*', { 'id': '1', '*': ['foo'] })!
+    const qs = parse(url.split('?')[1])
+    assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1/foo')
+  })
+
+  test('raise exception when wildcard params are missing', (assert) => {
+    const router = new Router(encryption)
+    router.get('posts/*', async function handler() {})
+    router.commit()
+
+    assert.throw(
+      () => router.makeSignedUrl('/posts/*', [])!,
+      'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
+    )
+    assert.throw(
+      () => router.makeSignedUrl('/posts/*', {})!,
+      'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
+    )
+    assert.throw(
+      () => router.makeSignedUrl('/posts/*', { '*': '' })!,
+      'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
+    )
   })
 })
 

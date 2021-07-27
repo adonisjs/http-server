@@ -45,46 +45,57 @@ export class UrlBuilder implements UrlBuilderContract {
    * Processes the pattern against the params
    */
   private processPattern(pattern: string): string {
-    let url = pattern
+    let url: string[] = []
     const isParamsAnArray = Array.isArray(this.routeParams)
 
-    if (url.indexOf(':') > -1) {
-      /*
-       * Split pattern when route has dynamic segments
+    /*
+     * Split pattern when route has dynamic segments
+     */
+    const tokens = pattern.split('/')
+    let paramsIndex = 0
+
+    for (const token of tokens) {
+      /**
+       * Expected wildcard param to be at the end always and hence
+       * we must break out from the loop
        */
-      const tokens = url.split('/')
-      let paramsIndex = 0
+      if (token === '*') {
+        const wildcardParams = isParamsAnArray
+          ? this.routeParams.slice(paramsIndex)
+          : this.routeParams['*']
 
-      /*
-       * Lookup over the route tokens and replace them the params values
+        if (!wildcardParams || !Array.isArray(wildcardParams) || !wildcardParams.length) {
+          throw RouterException.cannotMakeRoute('*', pattern)
+        }
+
+        url = url.concat(wildcardParams)
+        break
+      }
+
+      /**
+       * Token is a static value
        */
-      url = tokens
-        .map((token) => {
-          if (!token.startsWith(':')) {
-            return token
-          }
+      if (!token.startsWith(':')) {
+        url.push(token)
+      } else {
+        const isOptional = token.endsWith('?')
+        const paramName = token.replace(/^:/, '').replace(/\?$/, '')
+        const param = isParamsAnArray ? this.routeParams[paramsIndex] : this.routeParams[paramName]
 
-          const isOptional = token.endsWith('?')
-          const paramName = token.replace(/^:/, '').replace(/\?$/, '')
-          const param = isParamsAnArray
-            ? this.routeParams[paramsIndex]
-            : this.routeParams[paramName]
+        paramsIndex++
 
-          paramsIndex++
+        /*
+         * A required param is always required to make the complete URL
+         */
+        if (!param && !isOptional) {
+          throw RouterException.cannotMakeRoute(paramName, pattern)
+        }
 
-          /*
-           * A required param is always required to make the complete URL
-           */
-          if (!param && !isOptional) {
-            throw RouterException.cannotMakeRoute(paramName, pattern)
-          }
-
-          return param
-        })
-        .join('/')
+        url.push(param)
+      }
     }
 
-    return url
+    return url.join('/')
   }
 
   /**
@@ -163,6 +174,7 @@ export class UrlBuilder implements UrlBuilderContract {
     options?: { expiresIn?: string | number; purpose?: string }
   ) {
     const route = this.findRouteOrFail(identifier)
+    const url = this.processPattern(route.pattern)
 
     /*
      * Making the signature from the qualified url. We do not prefix the domain when
@@ -173,7 +185,7 @@ export class UrlBuilder implements UrlBuilderContract {
      * it later (when someone asks for it)
      */
     const signature = this.encryption.verifier.sign(
-      this.suffixQueryString(this.processPattern(route.pattern)),
+      this.suffixQueryString(url),
       options?.expiresIn,
       options?.purpose
     )
@@ -183,7 +195,6 @@ export class UrlBuilder implements UrlBuilderContract {
      */
     Object.assign(this.queryString, { signature })
 
-    const url = this.processPattern(route.pattern)
     return this.suffixQueryString(this.baseUrl ? `${this.baseUrl}${url}` : url)
   }
 }
