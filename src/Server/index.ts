@@ -192,18 +192,19 @@ export class Server implements ServerContract {
    * server
    */
   public async handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
-    /*
-     * Reset accept header when `forceContentNegotiationToJSON = true`
-     */
-    if (this.httpConfig.forceContentNegotiationTo) {
-      req.headers['accept'] = this.httpConfig.forceContentNegotiationTo
-    }
-
     const request = new Request(req, res, this.encryption, this.httpConfig)
     const response = new Response(req, res, this.encryption, this.httpConfig, this.router)
 
     const requestAction = this.getProfilerRow(request)
     const ctx = this.getContext(request, response, requestAction)
+
+    /*
+     * Reset accept header when `forceContentNegotiationTo` is defined
+     */
+    const accept = this.httpConfig.forceContentNegotiationTo
+    if (accept) {
+      req.headers['accept'] = typeof accept === 'function' ? accept(ctx) : accept
+    }
 
     if (usingAsyncLocalStorage) {
       return httpContextLocalStorage.run(ctx, () => this.handleRequest(ctx, requestAction, res))
