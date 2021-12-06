@@ -201,12 +201,9 @@ export class Server implements ServerContract {
     /*
      * Reset accept header when `forceContentNegotiationTo` is defined
      */
-    if (this.httpConfig.forceContentNegotiationTo) {
-      if (typeof this.httpConfig.forceContentNegotiationTo === 'function') {
-        ctx.request.request.headers['accept'] = this.httpConfig.forceContentNegotiationTo(ctx)
-      } else {
-        ctx.request.request.headers['accept'] = this.httpConfig.forceContentNegotiationTo
-      }
+    const accept = this.httpConfig.forceContentNegotiationTo
+    if (accept) {
+      req.headers['accept'] = typeof accept === 'function' ? accept(ctx) : accept
     }
 
     if (usingAsyncLocalStorage) {
