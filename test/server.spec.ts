@@ -1119,13 +1119,32 @@ test.group('Server | all', (group) => {
     assert.equal(text, 'virk')
   })
 
-  test('set accept header when forceContentNegotiationToJson is true', async (assert) => {
+  test('set accept header when forceContentNegotiationTo is a string', async (assert) => {
     const app = await setupApp()
     const server = new Server(
       app,
       encryption,
       Object.assign({}, serverConfig, {
         forceContentNegotiationTo: 'application/json',
+      })
+    )
+
+    const httpServer = createServer(server.handle.bind(server))
+
+    server.router.get('/', async ({ request, response }) => response.send(request.header('accept')))
+    server.optimize()
+
+    const { text } = await supertest(httpServer).get('/').expect(200)
+    assert.equal(text, 'application/json')
+  })
+
+  test('set accept header when forceContentNegotiationTo is a function', async (assert) => {
+    const app = await setupApp()
+    const server = new Server(
+      app,
+      encryption,
+      Object.assign({}, serverConfig, {
+        forceContentNegotiationTo: () => 'application/json',
       })
     )
 
