@@ -565,7 +565,7 @@ declare module '@ioc:Adonis/Core/Route' {
     /**
      * Enforce value to be formatted as uuid
      */
-    uuid(): { match: RegExp }
+    uuid(): { match: RegExp; cast: (value: string) => string }
 
     /**
      * Enforce value to be formatted as slug
