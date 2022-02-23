@@ -32,7 +32,7 @@ export class RouteMatchers extends Macroable implements RouteMatchersContract {
    */
   public uuid(): { match: RegExp; cast: (value: string) => string } {
     return {
-      match: /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/,
+      match: /^[0-9a-zA-F]{8}-[0-9a-zA-F]{4}-[0-9a-zA-F]{4}-[0-9a-zA-F]{4}-[0-9a-zA-F]{12}$/,
       cast: (value) => value.toLowerCase(),
     }
   }
