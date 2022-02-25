@@ -2737,6 +2737,30 @@ test.group('Router | match', () => {
       subdomains: {},
     })
   })
+
+  test('apply uuid matcher when matching route', (assert) => {
+    const router = new Router(encryption)
+
+    router.get('photos/:id', 'PhotosController.show').where('id', router.matchers.uuid())
+    router.commit()
+
+    assert.deepEqual(router.match('photos/78fee49A-3d79-43bc-b93f-1ac4ba9e925B', 'GET')!, {
+      params: {
+        id: '78fee49a-3d79-43bc-b93f-1ac4ba9e925b',
+      },
+      route: {
+        meta: {
+          namespace: undefined,
+        },
+        middleware: [],
+        pattern: '/photos/:id',
+        name: undefined,
+        handler: 'PhotosController.show',
+      },
+      routeKey: 'GET-/photos/:id',
+      subdomains: {},
+    })
+  })
 })
 
 test.group('Brisk route', () => {
