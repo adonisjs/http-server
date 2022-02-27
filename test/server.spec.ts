@@ -9,7 +9,7 @@
 
 /// <reference path="../adonis-typings/index.ts" />
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import 'reflect-metadata'
 import supertest from 'supertest'
 import { createServer } from 'http'
@@ -22,11 +22,11 @@ import { HttpContext } from '../src/HttpContext'
 import { serverConfig, fs, setupApp, encryption } from '../test-helpers'
 
 test.group('Server | Response handling', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('invoke router handler', async (assert) => {
+  test('invoke router handler', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
     const httpServer = createServer(server.handle.bind(server))
@@ -38,7 +38,7 @@ test.group('Server | Response handling', (group) => {
     assert.equal(text, 'handled')
   })
 
-  test('use route handler return value when response.send is not called', async (assert) => {
+  test('use route handler return value when response.send is not called', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
 
@@ -51,7 +51,7 @@ test.group('Server | Response handling', (group) => {
     assert.equal(text, 'handled')
   })
 
-  test('do not use return value when response.send is called', async (assert) => {
+  test('do not use return value when response.send is called', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
 
@@ -67,7 +67,7 @@ test.group('Server | Response handling', (group) => {
     assert.equal(text, 'handled')
   })
 
-  test('pre process cookie max age', async (assert) => {
+  test('pre process cookie max age', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(
       app,
@@ -90,7 +90,7 @@ test.group('Server | Response handling', (group) => {
     assert.equal(header['set-cookie'][0].split(';')[1].trim(), 'Max-Age=7200')
   })
 
-  test('redirect to given route with domain', async (assert) => {
+  test('redirect to given route with domain', async ({ assert }) => {
     assert.plan(1)
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
@@ -111,11 +111,11 @@ test.group('Server | Response handling', (group) => {
 })
 
 test.group('Server | middleware', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('execute global middleware before route handler', async (assert) => {
+  test('execute global middleware before route handler', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -157,7 +157,7 @@ test.group('Server | middleware', (group) => {
     assert.deepEqual(stack, ['fn1', 'fn2', 'handler'])
   })
 
-  test('execute global and route middleware before route handler', async (assert) => {
+  test('execute global and route middleware before route handler', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -204,7 +204,7 @@ test.group('Server | middleware', (group) => {
     assert.deepEqual(stack, ['fn1', 'fn2', 'route fn1', 'handler'])
   })
 
-  test('execute route middleware in the order they are defined', async (assert) => {
+  test('execute route middleware in the order they are defined', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -248,7 +248,7 @@ test.group('Server | middleware', (group) => {
     assert.deepEqual(stack, ['auth', 'acl', 'handler'])
   })
 
-  test('terminate request from global middleware', async (assert) => {
+  test('terminate request from global middleware', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -296,7 +296,7 @@ test.group('Server | middleware', (group) => {
     assert.equal(text, 'completed')
   })
 
-  test('terminate request from global middleware with exception', async (assert) => {
+  test('terminate request from global middleware with exception', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -344,7 +344,7 @@ test.group('Server | middleware', (group) => {
     assert.equal(text, 'Cannot process')
   })
 
-  test('terminate request from named middleware with exception', async (assert) => {
+  test('terminate request from named middleware with exception', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -391,7 +391,7 @@ test.group('Server | middleware', (group) => {
     assert.equal(text, 'Short circuit')
   })
 
-  test('terminate request from named middleware by not calling next', async (assert) => {
+  test('terminate request from named middleware by not calling next', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -439,7 +439,7 @@ test.group('Server | middleware', (group) => {
     assert.equal(text, 'Short circuit')
   })
 
-  test('middleware must profile in the request scope', async (assert) => {
+  test('middleware must profile in the request scope', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
 
@@ -472,7 +472,7 @@ test.group('Server | middleware', (group) => {
     assert.equal(hookPacket!.parent_id, requestPacket!.id)
   })
 
-  test('upstream middleware must profile in the request scope', async (assert) => {
+  test('upstream middleware must profile in the request scope', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
 
@@ -507,11 +507,11 @@ test.group('Server | middleware', (group) => {
 })
 
 test.group('Server | hooks', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('execute all before hooks', async (assert) => {
+  test('execute all before hooks', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -531,7 +531,7 @@ test.group('Server | hooks', (group) => {
     assert.deepEqual(stack, ['hook1', 'hook2'])
   })
 
-  test('do not execute next hook when first raises error', async (assert) => {
+  test('do not execute next hook when first raises error', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -554,7 +554,7 @@ test.group('Server | hooks', (group) => {
     assert.deepEqual(stack, ['hook1'])
   })
 
-  test('do not execute next hook when first writes the body', async (assert) => {
+  test('do not execute next hook when first writes the body', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -577,7 +577,9 @@ test.group('Server | hooks', (group) => {
     assert.deepEqual(stack, ['hook1'])
   })
 
-  test('do not execute next hook when first writes the body in non-explicit mode', async (assert) => {
+  test('do not execute next hook when first writes the body in non-explicit mode', async ({
+    assert,
+  }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -600,7 +602,7 @@ test.group('Server | hooks', (group) => {
     assert.deepEqual(stack, ['hook1'])
   })
 
-  test('execute after hooks before writing the response', async (assert) => {
+  test('execute after hooks before writing the response', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -632,7 +634,7 @@ test.group('Server | hooks', (group) => {
     assert.deepEqual(stack, ['hook1', 'hook2', 'handler', 'after hook1'])
   })
 
-  test('execute after hooks when route handler raises error', async (assert) => {
+  test('execute after hooks when route handler raises error', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -664,7 +666,7 @@ test.group('Server | hooks', (group) => {
     assert.deepEqual(stack, ['hook1', 'hook2', 'handler', 'after hook1'])
   })
 
-  test('execute after hooks when route is missing', async (assert) => {
+  test('execute after hooks when route is missing', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -691,7 +693,7 @@ test.group('Server | hooks', (group) => {
     assert.deepEqual(stack, ['hook1', 'hook2', 'after hook1'])
   })
 
-  test('execute after hooks when before hook raises error', async (assert) => {
+  test('execute after hooks when before hook raises error', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -719,7 +721,7 @@ test.group('Server | hooks', (group) => {
     assert.deepEqual(stack, ['hook1', 'after hook1'])
   })
 
-  test('execute after hooks when before hook writes response', async (assert) => {
+  test('execute after hooks when before hook writes response', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -748,7 +750,7 @@ test.group('Server | hooks', (group) => {
     assert.deepEqual(stack, ['hook1', 'after hook1'])
   })
 
-  test('catch after hook errors', async (assert) => {
+  test('catch after hook errors', async ({ assert }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -776,7 +778,9 @@ test.group('Server | hooks', (group) => {
     assert.deepEqual(stack, ['hook1', 'hook2', 'after hook1'])
   })
 
-  test('allow after hooks to set headers when route handler raises an exception', async (assert) => {
+  test('allow after hooks to set headers when route handler raises an exception', async ({
+    assert,
+  }) => {
     const stack: string[] = []
 
     const app = await setupApp()
@@ -809,7 +813,7 @@ test.group('Server | hooks', (group) => {
     assert.deepEqual(stack, ['hook1', 'hook2', 'after hook1'])
   })
 
-  test('after hooks must profile in the request scope', async (assert) => {
+  test('after hooks must profile in the request scope', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
 
@@ -842,11 +846,11 @@ test.group('Server | hooks', (group) => {
 })
 
 test.group('Server | error handler', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('pass before hook errors to error handler', async (assert) => {
+  test('pass before hook errors to error handler', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
 
@@ -866,7 +870,7 @@ test.group('Server | error handler', (group) => {
     assert.equal(text, 'handled by error handler')
   })
 
-  test('pass route handler errors to error handler', async (assert) => {
+  test('pass route handler errors to error handler', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
 
@@ -886,7 +890,7 @@ test.group('Server | error handler', (group) => {
     assert.equal(text, 'handled by error handler')
   })
 
-  test('pass middleware error to custom error handler', async (assert) => {
+  test('pass middleware error to custom error handler', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
 
@@ -912,7 +916,7 @@ test.group('Server | error handler', (group) => {
     assert.equal(text, 'handled by error handler')
   })
 
-  test('pass after hooks error to custom error handler', async (assert) => {
+  test('pass after hooks error to custom error handler', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
 
@@ -932,7 +936,7 @@ test.group('Server | error handler', (group) => {
     assert.equal(text, 'handled by error handler')
   })
 
-  test('pass missing route error to error handler', async (assert) => {
+  test('pass missing route error to error handler', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
 
@@ -948,7 +952,7 @@ test.group('Server | error handler', (group) => {
     assert.equal(text, 'handled by error handler')
   })
 
-  test('bind ioc container reference as error handler', async (assert) => {
+  test('bind ioc container reference as error handler', async ({ assert }) => {
     class Reporter {
       public getMessage() {
         return 'handled by error handler'
@@ -980,7 +984,7 @@ test.group('Server | error handler', (group) => {
     assert.equal(text, 'handled by error handler')
   })
 
-  test('call report method on the error handler', async (assert) => {
+  test('call report method on the error handler', async ({ assert }) => {
     assert.plan(2)
 
     class ErrorHandler {
@@ -1011,7 +1015,7 @@ test.group('Server | error handler', (group) => {
     assert.equal(text, 'handled by error handler')
   })
 
-  test('pass response toJSON error to error handler', async (assert) => {
+  test('pass response toJSON error to error handler', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
 
@@ -1036,17 +1040,17 @@ test.group('Server | error handler', (group) => {
 })
 
 test.group('Server | all', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  group.afterEach(() => {
+  group.each.teardown(() => {
     delete global[Symbol.for('ioc.use')]
     delete global[Symbol.for('ioc.call')]
     delete global[Symbol.for('ioc.make')]
   })
 
-  test('raise 404 when route is missing', async (assert) => {
+  test('raise 404 when route is missing', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(app, encryption, serverConfig)
 
@@ -1058,7 +1062,7 @@ test.group('Server | all', (group) => {
     assert.equal(text, 'E_ROUTE_NOT_FOUND: Cannot GET:/')
   })
 
-  test('execute IoC container controller binding by injecting dependencies', async (assert) => {
+  test('execute IoC container controller binding by injecting dependencies', async ({ assert }) => {
     class User {
       public username = 'virk'
     }
@@ -1083,7 +1087,7 @@ test.group('Server | all', (group) => {
     assert.equal(text, 'virk')
   })
 
-  test('execute IoC container middleware binding by injecting dependencies', async (assert) => {
+  test('execute IoC container middleware binding by injecting dependencies', async ({ assert }) => {
     class User {
       public username = 'virk'
     }
@@ -1119,7 +1123,7 @@ test.group('Server | all', (group) => {
     assert.equal(text, 'virk')
   })
 
-  test('set accept header when forceContentNegotiationTo is a string', async (assert) => {
+  test('set accept header when forceContentNegotiationTo is a string', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(
       app,
@@ -1138,7 +1142,7 @@ test.group('Server | all', (group) => {
     assert.equal(text, 'application/json')
   })
 
-  test('set accept header when forceContentNegotiationTo is a function', async (assert) => {
+  test('set accept header when forceContentNegotiationTo is a function', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(
       app,
@@ -1157,7 +1161,7 @@ test.group('Server | all', (group) => {
     assert.equal(text, 'application/json')
   })
 
-  test('pass routeKey to the context', async (assert) => {
+  test('pass routeKey to the context', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(
       app,
@@ -1175,7 +1179,7 @@ test.group('Server | all', (group) => {
     assert.equal(text, 'GET-/')
   })
 
-  test('find if the current request is for a given route pattern or not', async (assert) => {
+  test('find if the current request is for a given route pattern or not', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(
       app,
@@ -1197,7 +1201,9 @@ test.group('Server | all', (group) => {
     assert.deepEqual(body, { matchesRoute: true })
   })
 
-  test('find if the current request matches one of the given route pattern or not', async (assert) => {
+  test('find if the current request matches one of the given route pattern or not', async ({
+    assert,
+  }) => {
     const app = await setupApp()
     const server = new Server(
       app,
@@ -1219,7 +1225,7 @@ test.group('Server | all', (group) => {
     assert.deepEqual(body, { matchesRoute: true })
   })
 
-  test('find if the current request matches a given route name or not', async (assert) => {
+  test('find if the current request matches a given route name or not', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(
       app,
@@ -1246,7 +1252,7 @@ test.group('Server | all', (group) => {
   /**
    * Reproducing regression
    */
-  test('find if the signed url signature is valid', async (assert) => {
+  test('find if the signed url signature is valid', async ({ assert }) => {
     const app = await setupApp()
     const server = new Server(
       app,
@@ -1279,7 +1285,7 @@ test.group('Server | all', (group) => {
   })
 
   if (process.env.ASYNC_HOOKS) {
-    test('async HTTP context (enabled)', async (assert) => {
+    test('async HTTP context (enabled)', async ({ assert }) => {
       const app = await setupApp()
       const server = new Server(app, encryption, serverConfig)
 
@@ -1303,14 +1309,14 @@ test.group('Server | all', (group) => {
       )
 
       const { body } = await supertest(httpServer).get('/').expect(200)
-      assert.deepStrictEqual(body, {
+      assert.deepEqual(body, {
         enabled: true,
         get: true,
         getOrFail: true,
       })
     })
 
-    test('run a callback outside the ALS context', async (assert) => {
+    test('run a callback outside the ALS context', async ({ assert }) => {
       const app = await setupApp()
       const server = new Server(app, encryption, serverConfig)
 
@@ -1327,13 +1333,13 @@ test.group('Server | all', (group) => {
 
       const httpServer = createServer(server.handle.bind(server))
       const { body } = await supertest(httpServer).get('/').expect(200)
-      assert.deepStrictEqual(body, {
+      assert.deepEqual(body, {
         enabled: true,
         get: false,
       })
     })
   } else {
-    test('async HTTP context (disabled)', async (assert) => {
+    test('async HTTP context (disabled)', async ({ assert }) => {
       const app = await setupApp()
       const server = new Server(app, encryption, serverConfig)
 
@@ -1364,7 +1370,7 @@ test.group('Server | all', (group) => {
       )
 
       const { body } = await supertest(httpServer).get('/').expect(200)
-      assert.deepStrictEqual(body, {
+      assert.deepEqual(body, {
         enabled: false,
         get: true,
       })
@@ -1376,7 +1382,7 @@ test.group('Server | all', (group) => {
       )
     })
 
-    test('run a callback outside the ALS context', async (assert) => {
+    test('run a callback outside the ALS context', async ({ assert }) => {
       const app = await setupApp()
       const server = new Server(app, encryption, serverConfig)
 
@@ -1393,7 +1399,7 @@ test.group('Server | all', (group) => {
 
       const httpServer = createServer(server.handle.bind(server))
       const { body } = await supertest(httpServer).get('/').expect(200)
-      assert.deepStrictEqual(body, {
+      assert.deepEqual(body, {
         enabled: false,
         get: false,
       })

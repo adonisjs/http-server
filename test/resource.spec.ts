@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { RouteResource } from '../src/Router/Resource'
 
 test.group('Route Resource', () => {
-  test('add base resource routes', (assert) => {
+  test('add base resource routes', ({ assert }) => {
     const resource = new RouteResource('photos', 'PhotosController', {})
 
     assert.deepEqual(
@@ -105,7 +105,7 @@ test.group('Route Resource', () => {
     )
   })
 
-  test('add base nested resource routes', (assert) => {
+  test('add base nested resource routes', ({ assert }) => {
     const resource = new RouteResource('magazines.ads', 'AdsController', {}, false)
 
     assert.deepEqual(
@@ -199,7 +199,7 @@ test.group('Route Resource', () => {
     )
   })
 
-  test('add shallow nested resource routes', (assert) => {
+  test('add shallow nested resource routes', ({ assert }) => {
     const resource = new RouteResource('magazines.ads', 'AdsController', {}, true)
 
     assert.deepEqual(
@@ -293,7 +293,7 @@ test.group('Route Resource', () => {
     )
   })
 
-  test('mark non-api routes deleted', (assert) => {
+  test('mark non-api routes deleted', ({ assert }) => {
     const resource = new RouteResource('photos', 'PhotosController', {})
     resource.apiOnly()
 
@@ -301,7 +301,7 @@ test.group('Route Resource', () => {
     assert.isTrue(resource.routes.find((route) => route.name === 'photos.edit')!.deleted)
   })
 
-  test("mark all other routes as deleted except defined one's", (assert) => {
+  test("mark all other routes as deleted except defined one's", ({ assert }) => {
     const resource = new RouteResource('photos', 'PhotosController', {})
     resource.only(['index', 'show'])
 
@@ -314,7 +314,7 @@ test.group('Route Resource', () => {
     assert.isTrue(resource.routes.find((route) => route.name === 'photos.destroy')!.deleted)
   })
 
-  test('mark all defined as delete', (assert) => {
+  test('mark all defined as delete', ({ assert }) => {
     const resource = new RouteResource('photos', 'PhotosController', {})
     resource.except(['index', 'show'])
 
@@ -327,7 +327,7 @@ test.group('Route Resource', () => {
     assert.isFalse(resource.routes.find((route) => route.name === 'photos.destroy')!.deleted)
   })
 
-  test('define middleware on routes', (assert) => {
+  test('define middleware on routes', ({ assert }) => {
     const resource = new RouteResource('photos', 'PhotosController', {})
     resource.middleware({
       create: ['auth'],
@@ -370,7 +370,7 @@ test.group('Route Resource', () => {
     )
   })
 
-  test('define matcher for params', (assert) => {
+  test('define matcher for params', ({ assert }) => {
     const resource = new RouteResource('photos', 'PhotosController', {})
     resource.where('id', '[a-z]')
 
@@ -406,7 +406,7 @@ test.group('Route Resource', () => {
     )
   })
 
-  test('define namespace for all routes', (assert) => {
+  test('define namespace for all routes', ({ assert }) => {
     const resource = new RouteResource('photos', 'PhotosController', {})
     resource.namespace('Admin/Controllers')
 
@@ -424,7 +424,7 @@ test.group('Route Resource', () => {
     )
   })
 
-  test('normalize resource name by droping starting and ending slashes', (assert) => {
+  test('normalize resource name by droping starting and ending slashes', ({ assert }) => {
     const resource = new RouteResource('/photos/', 'PhotosController', {})
 
     assert.deepEqual(
@@ -518,7 +518,7 @@ test.group('Route Resource', () => {
     )
   })
 
-  test('create proper route name when resource name is in dash-case', (assert) => {
+  test('create proper route name when resource name is in dash-case', ({ assert }) => {
     const resource = new RouteResource('user-profile', 'ProfileController', {})
 
     assert.deepEqual(
@@ -612,7 +612,7 @@ test.group('Route Resource', () => {
     )
   })
 
-  test('create proper param name when nested resource name is in dash-case', (assert) => {
+  test('create proper param name when nested resource name is in dash-case', ({ assert }) => {
     const resource = new RouteResource('user-profile.comments', 'CommentsController', {})
 
     assert.deepEqual(
@@ -706,7 +706,7 @@ test.group('Route Resource', () => {
     )
   })
 
-  test('define middleware with wildcard', (assert) => {
+  test('define middleware with wildcard', ({ assert }) => {
     const resource = new RouteResource('photos', 'PhotosController', {})
     resource.middleware({ '*': ['auth'] })
 
@@ -726,7 +726,7 @@ test.group('Route Resource', () => {
     })
   })
 
-  test('define middleware with wildcard and for select routes', (assert) => {
+  test('define middleware with wildcard and for select routes', ({ assert }) => {
     const resource = new RouteResource('photos', 'PhotosController', {})
     resource.middleware({ '*': ['auth'], 'update': ['self'] })
 
@@ -746,7 +746,7 @@ test.group('Route Resource', () => {
     })
   })
 
-  test('define resource name', (assert) => {
+  test('define resource name', ({ assert }) => {
     const resource = new RouteResource('photos', 'PhotosController', {})
     resource.as('public-photos')
 
@@ -764,7 +764,7 @@ test.group('Route Resource', () => {
     )
   })
 
-  test('allow re-defining resource name for multiple times', (assert) => {
+  test('allow re-defining resource name for multiple times', ({ assert }) => {
     const resource = new RouteResource('main-photos', 'PhotosController', {})
     resource.as('public-photos').as('photos')
 

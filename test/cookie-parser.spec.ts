@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 
 import { encryption } from '../test-helpers'
 import { CookieParser } from '../src/Cookie/Parser'
@@ -16,7 +16,7 @@ import { CookieSerializer } from '../src/Cookie/Serializer'
 const serializer = new CookieSerializer(encryption)
 
 test.group('Cookie | parse', () => {
-  test('get signed cookies', (assert) => {
+  test('get signed cookies', ({ assert }) => {
     const serialized = serializer.sign('username', 'virk')!
     const parser = new CookieParser(serialized, encryption)
 
@@ -26,7 +26,7 @@ test.group('Cookie | parse', () => {
     assert.deepEqual(Object.keys(parser.list()), ['username'])
   })
 
-  test('parse encrypted cookies', (assert) => {
+  test('parse encrypted cookies', ({ assert }) => {
     const serialized = serializer.encrypt('username', 'virk')!
     const parser = new CookieParser(serialized, encryption)
 
@@ -36,7 +36,7 @@ test.group('Cookie | parse', () => {
     assert.deepEqual(Object.keys(parser.list()), ['username'])
   })
 
-  test('parse plain cookies', (assert) => {
+  test('parse plain cookies', ({ assert }) => {
     const serialized = serializer.encode('username', 'virk')!
     const parser = new CookieParser(serialized, encryption)
 
@@ -46,7 +46,7 @@ test.group('Cookie | parse', () => {
     assert.deepEqual(Object.keys(parser.list()), ['username'])
   })
 
-  test('handle case in which plain cookie is tricked into encrypted cookie', (assert) => {
+  test('handle case in which plain cookie is tricked into encrypted cookie', ({ assert }) => {
     const serialized = serializer.encode('username', 'virk')!
     const [key, value] = serialized.split('=')
     const forged = `${key}=e%${value}`
@@ -58,7 +58,7 @@ test.group('Cookie | parse', () => {
     assert.deepEqual(Object.keys(parser.list()), ['username'])
   })
 
-  test('handle case in which plain cookie is tricked into signed cookie', (assert) => {
+  test('handle case in which plain cookie is tricked into signed cookie', ({ assert }) => {
     const serialized = serializer.encode('username', 'virk')!
     const [key, value] = serialized.split('=')
     const forged = `${key}=s%${value}`
@@ -70,7 +70,7 @@ test.group('Cookie | parse', () => {
     assert.deepEqual(Object.keys(parser.list()), ['username'])
   })
 
-  test('handle case in which signed cookie is tricked into plain cookie', (assert) => {
+  test('handle case in which signed cookie is tricked into plain cookie', ({ assert }) => {
     const serialized = serializer.sign('username', 'virk')!
     const [key, value] = serialized.split('=')
     const forged = `${key}=${value.slice(2)}`
@@ -82,7 +82,7 @@ test.group('Cookie | parse', () => {
     assert.deepEqual(Object.keys(parser.list()), ['username'])
   })
 
-  test('handle case in which encrypted cookie is tricked into plain cookie', (assert) => {
+  test('handle case in which encrypted cookie is tricked into plain cookie', ({ assert }) => {
     const serialized = serializer.encrypt('username', 'virk')!
     const [key, value] = serialized.split('=')
     const forged = `${key}=${value.slice(2)}`
@@ -94,7 +94,7 @@ test.group('Cookie | parse', () => {
     assert.deepEqual(Object.keys(parser.list()), ['username'])
   })
 
-  test('handle cookie swap with encrypted cookies', (assert) => {
+  test('handle cookie swap with encrypted cookies', ({ assert }) => {
     const age = serializer.encrypt('age', 22)!.split('=')[1]
     const forged = new CookieParser(`username=${age}`, encryption)
     const original = new CookieParser(`age=${age}`, encryption)
@@ -110,7 +110,7 @@ test.group('Cookie | parse', () => {
     assert.deepEqual(Object.keys(original.list()), ['age'])
   })
 
-  test('handle cookie swap with signed cookies', (assert) => {
+  test('handle cookie swap with signed cookies', ({ assert }) => {
     const age = serializer.sign('age', 22)!.split('=')[1]
     const forged = new CookieParser(`username=${age}`, encryption)
     const original = new CookieParser(`age=${age}`, encryption)

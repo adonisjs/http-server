@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { Store } from '../src/Router/Store'
 
 test.group('Store | add', () => {
-  test('add route without explicit domain', (assert) => {
+  test('add route without explicit domain', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -62,7 +62,7 @@ test.group('Store | add', () => {
     })
   })
 
-  test('add route with custom domain', (assert) => {
+  test('add route with custom domain', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -114,7 +114,7 @@ test.group('Store | add', () => {
     })
   })
 
-  test('raise error when route has duplicate pattern', (assert) => {
+  test('raise error when route has duplicate pattern', ({ assert }) => {
     async function handler() {}
     const route = {
       pattern: '/',
@@ -130,10 +130,10 @@ test.group('Store | add', () => {
     store.add(route)
 
     const fn = () => store.add(route)
-    assert.throw(fn, 'E_DUPLICATE_ROUTE: Duplicate route "GET:/"')
+    assert.throws(fn, 'E_DUPLICATE_ROUTE: Duplicate route "GET:/"')
   })
 
-  test('raise error when two params have the same name', (assert) => {
+  test('raise error when two params have the same name', ({ assert }) => {
     async function handler() {}
     const route = {
       pattern: '/:id/:id',
@@ -147,13 +147,13 @@ test.group('Store | add', () => {
 
     const store = new Store()
     const fn = () => store.add(route)
-    assert.throw(
+    assert.throws(
       fn,
       'E_DUPLICATE_ROUTE_PARAM: The "id" param is mentioned twice in the route pattern "/:id/:id"'
     )
   })
 
-  test('allow static path name same as the param name', (assert) => {
+  test('allow static path name same as the param name', ({ assert }) => {
     async function handler() {}
     const route = {
       pattern: '/id/:id',
@@ -167,10 +167,10 @@ test.group('Store | add', () => {
 
     const store = new Store()
     const fn = () => store.add(route)
-    assert.doesNotThrow(fn)
+    assert.doesNotThrows(fn)
   })
 
-  test('work fine when pattern is same but method is different', (assert) => {
+  test('work fine when pattern is same but method is different', ({ assert }) => {
     async function handler() {}
     const route = {
       pattern: '/',
@@ -244,7 +244,7 @@ test.group('Store | add', () => {
     })
   })
 
-  test('work fine when pattern is same but domain is different', (assert) => {
+  test('work fine when pattern is same but domain is different', ({ assert }) => {
     async function handler() {}
     const route = {
       pattern: '/',
@@ -328,7 +328,7 @@ test.group('Store | add', () => {
     })
   })
 
-  test('add route for multiple methods', (assert) => {
+  test('add route for multiple methods', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -405,7 +405,7 @@ test.group('Store | add', () => {
 })
 
 test.group('Store | match', () => {
-  test('match url for given method', (assert) => {
+  test('match url for given method', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -431,7 +431,7 @@ test.group('Store | match', () => {
     })
   })
 
-  test('match url with params', (assert) => {
+  test('match url with params', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -459,7 +459,7 @@ test.group('Store | match', () => {
     })
   })
 
-  test('match url with optional params', (assert) => {
+  test('match url with optional params', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -499,7 +499,7 @@ test.group('Store | match', () => {
     })
   })
 
-  test('match routes from top to bottom', (assert) => {
+  test('match routes from top to bottom', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -536,7 +536,7 @@ test.group('Store | match', () => {
     })
   })
 
-  test('test url against matchers', (assert) => {
+  test('test url against matchers', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -577,7 +577,7 @@ test.group('Store | match', () => {
     })
   })
 
-  test('match domain for urls', (assert) => {
+  test('match domain for urls', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -622,7 +622,7 @@ test.group('Store | match', () => {
     )
   })
 
-  test('match for dynamic domains', (assert) => {
+  test('match for dynamic domains', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -660,7 +660,7 @@ test.group('Store | match', () => {
     )
   })
 
-  test('return empty array when unable to match the route domain', (assert) => {
+  test('return empty array when unable to match the route domain', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -677,7 +677,7 @@ test.group('Store | match', () => {
     assert.deepEqual(store.matchDomain('blog.adonisjs.com'), [])
   })
 
-  test('return null when unable to match the method', (assert) => {
+  test('return null when unable to match the method', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -693,7 +693,7 @@ test.group('Store | match', () => {
     assert.isNull(store.match('/1', 'POST'))
   })
 
-  test('return null when unable to match the route url', (assert) => {
+  test('return null when unable to match the route url', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -709,7 +709,7 @@ test.group('Store | match', () => {
     assert.isNull(store.match('/hello', 'GET'))
   })
 
-  test('do not execute regex when param is optional and missing', (assert) => {
+  test('do not execute regex when param is optional and missing', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -737,7 +737,7 @@ test.group('Store | match', () => {
     })
   })
 
-  test('do execute regex when param is optional and defined in url', (assert) => {
+  test('do execute regex when param is optional and defined in url', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -767,7 +767,7 @@ test.group('Store | match', () => {
     })
   })
 
-  test('cast params using route matchers', (assert) => {
+  test('cast params using route matchers', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -808,7 +808,7 @@ test.group('Store | match', () => {
     })
   })
 
-  test('do not cast optional params', (assert) => {
+  test('do not cast optional params', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()
@@ -847,7 +847,7 @@ test.group('Store | match', () => {
     })
   })
 
-  test('cast multiple params', (assert) => {
+  test('cast multiple params', ({ assert }) => {
     async function handler() {}
 
     const store = new Store()

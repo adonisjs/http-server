@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import etag from 'etag'
 import { join } from 'path'
 import supertest from 'supertest'
@@ -26,7 +26,7 @@ const router = new Router(encryption)
 const fs = new Filesystem()
 
 test.group('Response', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
@@ -43,7 +43,7 @@ test.group('Response', (group) => {
     await supertest(server).get('/').expect(200).expect('content-type', 'application/json')
   })
 
-  test('get recently set headers', async (assert) => {
+  test('get recently set headers', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
 
@@ -65,7 +65,7 @@ test.group('Response', (group) => {
     })
   })
 
-  test('append header to existing header', async (assert) => {
+  test('append header to existing header', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
 
@@ -79,7 +79,7 @@ test.group('Response', (group) => {
     assert.deepEqual(header['set-cookie'], ['username=virk', 'age=22'])
   })
 
-  test("add header via append when header doesn't exists already", async (assert) => {
+  test("add header via append when header doesn't exists already", async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
 
@@ -92,7 +92,7 @@ test.group('Response', (group) => {
     assert.deepEqual(header['set-cookie'], ['age=22'])
   })
 
-  test("append to the header value when it's an array", async (assert) => {
+  test("append to the header value when it's an array", async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
 
@@ -106,7 +106,7 @@ test.group('Response', (group) => {
     assert.deepEqual(header['set-cookie'], ['username=virk', 'age=22'])
   })
 
-  test('do not set header when value is non-existy', async (assert) => {
+  test('do not set header when value is non-existy', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
 
@@ -132,7 +132,7 @@ test.group('Response', (group) => {
     await supertest(server).get('/').expect('content-type', 'application/json')
   })
 
-  test('remove existing response header', async (assert) => {
+  test('remove existing response header', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
 
@@ -171,7 +171,7 @@ test.group('Response', (group) => {
       .expect('content-type', 'application/octet-stream; charset=utf-8')
   })
 
-  test('parse string and set correct response header', async (assert) => {
+  test('parse string and set correct response header', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.send('hello')
@@ -184,7 +184,7 @@ test.group('Response', (group) => {
     assert.equal(text, 'hello')
   })
 
-  test('parse HTML string and return correct response header', async (assert) => {
+  test('parse HTML string and return correct response header', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
 
@@ -198,7 +198,7 @@ test.group('Response', (group) => {
     assert.equal(text, '<p> hello </p>')
   })
 
-  test('parse array and set correct response type', async (assert) => {
+  test('parse array and set correct response type', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.send([1, 2])
@@ -211,7 +211,7 @@ test.group('Response', (group) => {
     assert.deepEqual(body, [1, 2])
   })
 
-  test('parse object and set correct response type', async (assert) => {
+  test('parse object and set correct response type', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.send({ username: 'virk' })
@@ -224,7 +224,7 @@ test.group('Response', (group) => {
     assert.deepEqual(body, { username: 'virk' })
   })
 
-  test('do not set content type for empty strings', async (assert) => {
+  test('do not set content type for empty strings', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.send('')
@@ -235,7 +235,7 @@ test.group('Response', (group) => {
     assert.deepEqual(text, '')
   })
 
-  test('do not set content-type for null', async (assert) => {
+  test('do not set content-type for null', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.send(null)
@@ -246,7 +246,9 @@ test.group('Response', (group) => {
     assert.deepEqual(text, '')
   })
 
-  test('do not write send body and headers unless finish is called explicitly', async (assert) => {
+  test('do not write send body and headers unless finish is called explicitly', async ({
+    assert,
+  }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
 
@@ -259,7 +261,7 @@ test.group('Response', (group) => {
     assert.equal(text, 'hello')
   })
 
-  test('write send body and headers when finish is called explicitly', async (assert) => {
+  test('write send body and headers when finish is called explicitly', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.send({ username: 'virk' })
@@ -274,7 +276,7 @@ test.group('Response', (group) => {
     assert.deepEqual(body, { username: 'virk' })
   })
 
-  test('do not write response twice if finish is called twice', async (assert) => {
+  test('do not write response twice if finish is called twice', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
 
@@ -291,7 +293,7 @@ test.group('Response', (group) => {
     assert.deepEqual(body, { username: 'virk' })
   })
 
-  test('hasLazyBody must return true after send has been called', async (assert) => {
+  test('hasLazyBody must return true after send has been called', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
 
@@ -303,7 +305,7 @@ test.group('Response', (group) => {
     assert.equal(text, 'true')
   })
 
-  test('write jsonp response', async (assert) => {
+  test('write jsonp response', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.jsonp({ username: 'virk' })
@@ -316,7 +318,7 @@ test.group('Response', (group) => {
     assert.equal(text, `/**/ typeof callback === 'function' && callback(${JSON.stringify(body)});`)
   })
 
-  test('use explicit value for callback name', async (assert) => {
+  test('use explicit value for callback name', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.jsonp({ username: 'virk' }, 'fn')
@@ -329,7 +331,9 @@ test.group('Response', (group) => {
     assert.equal(text, `/**/ typeof fn === 'function' && fn(${JSON.stringify(body)});`)
   })
 
-  test('use config value when explicit value is not defined and their is no query string', async (assert) => {
+  test('use config value when explicit value is not defined and their is no query string', async ({
+    assert,
+  }) => {
     const server = createServer((req, res) => {
       const config = Object.assign({}, responseConfig, { jsonpCallbackName: 'cb' })
       const response = new Response(req, res, encryption, config, router)
@@ -343,7 +347,7 @@ test.group('Response', (group) => {
     assert.equal(text, `/**/ typeof cb === 'function' && cb(${JSON.stringify(body)});`)
   })
 
-  test('stream response', async (assert) => {
+  test('stream response', async ({ assert }) => {
     await fs.add('hello.txt', 'hello world')
 
     const server = createServer((req, res) => {
@@ -356,7 +360,7 @@ test.group('Response', (group) => {
     assert.equal(text, 'hello world')
   })
 
-  test('raise error when we try to stream a non-existing file', async (assert) => {
+  test('raise error when we try to stream a non-existing file', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.stream(createReadStream(join(fs.basePath, 'i-dont-exist.txt')))
@@ -368,7 +372,7 @@ test.group('Response', (group) => {
     assert.equal(text, 'File not found')
   })
 
-  test('raise error when input is not a stream', async (assert) => {
+  test('raise error when input is not a stream', async ({ assert }) => {
     assert.plan(1)
 
     const server = createServer((req, res) => {
@@ -376,14 +380,14 @@ test.group('Response', (group) => {
 
       const stream = response.stream as any
       const fn = () => stream('hello')
-      assert.throw(fn, 'response.stream accepts a readable stream only')
+      assert.throws(fn, 'response.stream accepts a readable stream only')
       response.finish()
     })
 
     await supertest(server).get('/')
   })
 
-  test('raise error when input is a writable stream', async (assert) => {
+  test('raise error when input is a writable stream', async ({ assert }) => {
     assert.plan(1)
     await fs.ensureRoot()
 
@@ -393,7 +397,7 @@ test.group('Response', (group) => {
 
       const stream = response.stream as any
       const fn = () => stream(writeStream)
-      assert.throw(fn, 'response.stream accepts a readable stream only')
+      assert.throws(fn, 'response.stream accepts a readable stream only')
       writeStream.close()
       response.finish()
     })
@@ -416,7 +420,7 @@ test.group('Response', (group) => {
     await Promise.all(requests)
   })
 
-  test('raise error when stream raises one', async (assert) => {
+  test('raise error when stream raises one', async ({ assert }) => {
     await fs.add('hello.txt', 'hello world')
 
     const server = createServer(async (req, res) => {
@@ -439,7 +443,7 @@ test.group('Response', (group) => {
     assert.equal(text, 'Missing file')
   })
 
-  test('send stream errors vs raising them', async (assert) => {
+  test('send stream errors vs raising them', async ({ assert }) => {
     await fs.add('hello.txt', 'hello world')
 
     const server = createServer((req, res) => {
@@ -462,7 +466,7 @@ test.group('Response', (group) => {
     assert.equal(text, 'Cannot process file')
   })
 
-  test('download file with correct content type', async (assert) => {
+  test('download file with correct content type', async ({ assert }) => {
     await fs.add('hello.html', '<p> hello world </p>')
 
     const server = createServer((req, res) => {
@@ -479,7 +483,7 @@ test.group('Response', (group) => {
     assert.equal(text, '<p> hello world </p>')
   })
 
-  test('write errors as response when downloading folder', async (assert) => {
+  test('write errors as response when downloading folder', async ({ assert }) => {
     await fs.ensureRoot()
 
     const server = createServer((req, res) => {
@@ -492,7 +496,7 @@ test.group('Response', (group) => {
     assert.equal(text, 'Cannot process file')
   })
 
-  test('write errors as response when file is missing', async (assert) => {
+  test('write errors as response when file is missing', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.download(join(fs.basePath, 'hello.html'))
@@ -504,7 +508,7 @@ test.group('Response', (group) => {
     assert.equal(header['content-type'], 'text/plain; charset=utf-8')
   })
 
-  test('return custom message and status when file is missing', async (assert) => {
+  test('return custom message and status when file is missing', async ({ assert }) => {
     const server = createServer(async (req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
 
@@ -518,7 +522,7 @@ test.group('Response', (group) => {
     assert.equal(text, 'Missing file')
   })
 
-  test('do not stream file on HEAD calls', async (assert) => {
+  test('do not stream file on HEAD calls', async ({ assert }) => {
     await fs.add('hello.html', '<p> hello world </p>')
 
     const server = createServer((req, res) => {
@@ -531,7 +535,7 @@ test.group('Response', (group) => {
     assert.isUndefined(text)
   })
 
-  test('do not stream file when cache is fresh', async (assert) => {
+  test('do not stream file when cache is fresh', async ({ assert }) => {
     await fs.add('hello.html', '<p> hello world </p>')
 
     const server = createServer((req, res) => {
@@ -550,7 +554,7 @@ test.group('Response', (group) => {
     assert.equal(text, '')
   })
 
-  test('set HTTP status to 304 when cache is fresh and request is HEAD', async (assert) => {
+  test('set HTTP status to 304 when cache is fresh and request is HEAD', async ({ assert }) => {
     await fs.add('hello.html', '<p> hello world </p>')
 
     const server = createServer((req, res) => {
@@ -569,7 +573,7 @@ test.group('Response', (group) => {
     assert.isUndefined(text)
   })
 
-  test('set HTTP status to 304 when cache is fresh and request is GET', async (assert) => {
+  test('set HTTP status to 304 when cache is fresh and request is GET', async ({ assert }) => {
     await fs.add('hello.html', '<p> hello world </p>')
 
     const server = createServer((req, res) => {
@@ -588,7 +592,7 @@ test.group('Response', (group) => {
     assert.equal(text, '')
   })
 
-  test('download file with correct content disposition', async (assert) => {
+  test('download file with correct content disposition', async ({ assert }) => {
     await fs.add('hello.html', '<p> hello world </p>')
 
     const server = createServer((req, res) => {
@@ -606,7 +610,7 @@ test.group('Response', (group) => {
     assert.equal(text, '<p> hello world </p>')
   })
 
-  test('download file with custom file name', async (assert) => {
+  test('download file with custom file name', async ({ assert }) => {
     await fs.add('hello.html', '<p> hello world </p>')
 
     const server = createServer((req, res) => {
@@ -624,7 +628,7 @@ test.group('Response', (group) => {
     assert.equal(text, '<p> hello world </p>')
   })
 
-  test('download file with custom disposition', async (assert) => {
+  test('download file with custom disposition', async ({ assert }) => {
     await fs.add('hello.html', '<p> hello world </p>')
 
     const server = createServer((req, res) => {
@@ -683,7 +687,7 @@ test.group('Response', (group) => {
     await supertest(server).get('/').expect(200)
   })
 
-  test('remove previously set content headers when status code is 304', async (assert) => {
+  test('remove previously set content headers when status code is 304', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.header('Content-type', 'application/json')
@@ -708,7 +712,7 @@ test.group('Response', (group) => {
     await supertest(server).get('/').expect('Etag', responseEtag)
   })
 
-  test('set HTTP status to 304 when cache is fresh and request is GET', async (assert) => {
+  test('set HTTP status to 304 when cache is fresh and request is GET', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.send({ username: 'virk' }, true)
@@ -723,7 +727,7 @@ test.group('Response', (group) => {
     assert.equal(text, '')
   })
 
-  test('convert number to string when sending as response', async (assert) => {
+  test('convert number to string when sending as response', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.send(22)
@@ -734,7 +738,7 @@ test.group('Response', (group) => {
     assert.equal(text, '22')
   })
 
-  test('convert boolean to string when sending as response', async (assert) => {
+  test('convert boolean to string when sending as response', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.send(false)
@@ -745,7 +749,7 @@ test.group('Response', (group) => {
     assert.equal(text, 'false')
   })
 
-  test('convert date to string when sending as response', async (assert) => {
+  test('convert date to string when sending as response', async ({ assert }) => {
     const date = new Date()
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
@@ -757,7 +761,7 @@ test.group('Response', (group) => {
     assert.equal(text, date.toISOString())
   })
 
-  test('raise error when return type is not valid', async (assert) => {
+  test('raise error when return type is not valid', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
 
@@ -777,7 +781,7 @@ test.group('Response', (group) => {
     )
   })
 
-  test('convert serializable objects to JSON representation', async (assert) => {
+  test('convert serializable objects to JSON representation', async ({ assert }) => {
     class User {
       public toJSON() {
         return {
@@ -796,7 +800,9 @@ test.group('Response', (group) => {
     assert.deepEqual(body, { username: 'virk' })
   })
 
-  test('send response as 200 when request method is HEAD and cache is not fresh', async (assert) => {
+  test('send response as 200 when request method is HEAD and cache is not fresh', async ({
+    assert,
+  }) => {
     await fs.add('hello.html', '<p> hello world </p>')
 
     const server = createServer((req, res) => {
@@ -810,7 +816,7 @@ test.group('Response', (group) => {
     assert.isUndefined(text)
   })
 
-  test('stream the file when request method is GET and cache is not fresh', async (assert) => {
+  test('stream the file when request method is GET and cache is not fresh', async ({ assert }) => {
     await fs.add('hello.html', '<p> hello world </p>')
 
     const server = createServer((req, res) => {
@@ -824,7 +830,7 @@ test.group('Response', (group) => {
     assert.equal(text, '<p> hello world </p>')
   })
 
-  test('set response type with custom charset', async (assert) => {
+  test('set response type with custom charset', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.type('plain/text', 'ascii').send('done')
@@ -839,7 +845,7 @@ test.group('Response', (group) => {
     assert.equal(text, 'done')
   })
 
-  test('set signed cookie', async (assert) => {
+  test('set signed cookie', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.cookie('name', 'virk').send('done')
@@ -865,7 +871,7 @@ test.group('Response', (group) => {
     ])
   })
 
-  test('set plain cookie', async (assert) => {
+  test('set plain cookie', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.plainCookie('name', 'virk').send('done')
@@ -890,7 +896,7 @@ test.group('Response', (group) => {
     ])
   })
 
-  test('set cookie with custom domain', async (assert) => {
+  test('set cookie with custom domain', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.cookie('name', 'virk', { domain: 'foo.com' }).send('done')
@@ -916,7 +922,7 @@ test.group('Response', (group) => {
     ])
   })
 
-  test('clear cookie by setting expiry and maxAge in past', async (assert) => {
+  test('clear cookie by setting expiry and maxAge in past', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.clearCookie('name').send('done')
@@ -942,7 +948,7 @@ test.group('Response', (group) => {
     ])
   })
 
-  test('abort request by raising exception', async (assert) => {
+  test('abort request by raising exception', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       try {
@@ -958,7 +964,7 @@ test.group('Response', (group) => {
     assert.equal(text, 'E_HTTP_EXCEPTION: Bad request')
   })
 
-  test('abort request with json body', async (assert) => {
+  test('abort request with json body', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       try {
@@ -974,7 +980,7 @@ test.group('Response', (group) => {
     assert.deepEqual(body, { message: 'Bad request' })
   })
 
-  test('abort request with custom status code', async (assert) => {
+  test('abort request with custom status code', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       try {
@@ -990,7 +996,7 @@ test.group('Response', (group) => {
     assert.deepEqual(body, { message: 'Not allowed' })
   })
 
-  test('abortIf: abort request when condition is truthy', async (assert) => {
+  test('abortIf: abort request when condition is truthy', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       try {
@@ -1021,7 +1027,7 @@ test.group('Response', (group) => {
     await supertest(server).get('/').expect(200)
   })
 
-  test('abortUnless: abort request when condition is falsy', async (assert) => {
+  test('abortUnless: abort request when condition is falsy', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response: Response = new Response(req, res, encryption, responseConfig, router)
       try {
@@ -1052,7 +1058,7 @@ test.group('Response', (group) => {
     await supertest(server).get('/').expect(200)
   })
 
-  test('set appropriate status from the description methods', async (assert) => {
+  test('set appropriate status from the description methods', async ({ assert }) => {
     const req: any = {}
     const res: any = {
       statusCode: null,
@@ -1112,7 +1118,7 @@ test.group('Response', (group) => {
     })
   })
 
-  test('send null in body with an explicit http status code', async (assert) => {
+  test('send null in body with an explicit http status code', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.status(202).send(undefined)
@@ -1123,7 +1129,7 @@ test.group('Response', (group) => {
     assert.deepEqual(text, '')
   })
 
-  test('do not send body or calculate content-length for a 304 response', async (assert) => {
+  test('do not send body or calculate content-length for a 304 response', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new Response(req, res, encryption, responseConfig, router)
       response.notModified({ hello: 'world' })
@@ -1134,7 +1140,7 @@ test.group('Response', (group) => {
     assert.notProperty(header, 'content-length')
   })
 
-  test('get response body', async (assert) => {
+  test('get response body', async ({ assert }) => {
     assert.plan(1)
 
     const server = createServer((req, res) => {
@@ -1148,7 +1154,7 @@ test.group('Response', (group) => {
     await supertest(server).get('/')
   })
 
-  test('return null when body is a stream', async (assert) => {
+  test('return null when body is a stream', async ({ assert }) => {
     assert.plan(1)
     await fs.add('hello.txt', 'hello world')
 
@@ -1163,7 +1169,7 @@ test.group('Response', (group) => {
     await supertest(server).get('/')
   })
 
-  test('return response status when not defined explicitly', async (assert) => {
+  test('return response status when not defined explicitly', async ({ assert }) => {
     assert.plan(1)
 
     const server = createServer((req, res) => {
@@ -1176,7 +1182,7 @@ test.group('Response', (group) => {
     await supertest(server).get('/')
   })
 
-  test('return response status when defined explicitly', async (assert) => {
+  test('return response status when defined explicitly', async ({ assert }) => {
     assert.plan(1)
 
     const server = createServer((req, res) => {

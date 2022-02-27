@@ -7,14 +7,14 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { base64, MessageBuilder } from '@poppinss/utils/build/helpers'
 
 import { encryption } from '../test-helpers'
 import { CookieSerializer } from '../src/Cookie/Serializer'
 
 test.group('Cookie | serialize', () => {
-  test('serialize and sign cookie', (assert) => {
+  test('serialize and sign cookie', ({ assert }) => {
     const serializer = new CookieSerializer(encryption)
     const serialized = serializer.sign('username', 'virk')
 
@@ -22,7 +22,7 @@ test.group('Cookie | serialize', () => {
     assert.match(serialized!, /username=s%/)
   })
 
-  test('serialize and encrypt cookie', (assert) => {
+  test('serialize and encrypt cookie', ({ assert }) => {
     const serializer = new CookieSerializer(encryption)
     const serialized = serializer.encrypt('username', 'virk')
 
@@ -30,7 +30,7 @@ test.group('Cookie | serialize', () => {
     assert.match(serialized!, /username=e%/)
   })
 
-  test('serialize and base64 encode cookie', (assert) => {
+  test('serialize and base64 encode cookie', ({ assert }) => {
     const serializer = new CookieSerializer(encryption)
     const serialized = serializer.encode('username', 'virk')
 
@@ -38,7 +38,7 @@ test.group('Cookie | serialize', () => {
     assert.equal(base64.urlDecode(serialized!.split('=')[1]), '{"message":"virk"}')
   })
 
-  test('set cookie domain', (assert) => {
+  test('set cookie domain', ({ assert }) => {
     const serializer = new CookieSerializer(encryption)
     const serialized = serializer.encode('username', 'virk', { domain: 'adonisjs.com' })
 
@@ -46,7 +46,7 @@ test.group('Cookie | serialize', () => {
     assert.equal(serialized, `username=${expectedValue}; Domain=adonisjs.com`)
   })
 
-  test('set httponly flag', (assert) => {
+  test('set httponly flag', ({ assert }) => {
     const serializer = new CookieSerializer(encryption)
     const serialized = serializer.encode('username', 'virk', { httpOnly: true })
 
@@ -54,7 +54,7 @@ test.group('Cookie | serialize', () => {
     assert.equal(serialized, `username=${expectedValue}; HttpOnly`)
   })
 
-  test('invoke expires callback when defined as a function', (assert, done) => {
+  test('invoke expires callback when defined as a function', ({ assert }, done) => {
     const config = { expires: () => new Date() }
     const serializer = new CookieSerializer(encryption)
     const serialized = serializer.encode('username', 'virk', config)
@@ -64,9 +64,11 @@ test.group('Cookie | serialize', () => {
       assert.notEqual(serialized, serialized1)
       done()
     }, 1000 * 2)
-  }).timeout(1000 * 4)
+  })
+    .timeout(1000 * 4)
+    .waitForDone()
 
-  test('do not set expires when it is explicit undefined', (assert) => {
+  test('do not set expires when it is explicit undefined', ({ assert }) => {
     const config = { expires: undefined }
     const serializer = new CookieSerializer(encryption)
     const serialized = serializer.encode('username', 'virk', config)
@@ -75,7 +77,7 @@ test.group('Cookie | serialize', () => {
     assert.equal(serialized, `username=${expectedValue}`)
   })
 
-  test('do not set max age when it is explicit undefined', (assert) => {
+  test('do not set max age when it is explicit undefined', ({ assert }) => {
     const config = { maxAge: undefined }
     const serializer = new CookieSerializer(encryption)
     const serialized = serializer.encode('username', 'virk', config)

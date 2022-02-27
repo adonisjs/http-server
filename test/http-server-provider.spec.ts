@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 
 import { Router } from '../src/Router'
 import { Server } from '../src/Server'
@@ -19,11 +19,11 @@ import { CookieClient } from '../src/Cookie/Client'
 import { MiddlewareStore } from '../src/MiddlewareStore'
 
 test.group('Http Server Provider', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('register http server provider', async (assert) => {
+  test('register http server provider', async ({ assert }) => {
     const app = await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
 
     assert.instanceOf(app.container.use('Adonis/Core/Route'), Router)
@@ -37,11 +37,11 @@ test.group('Http Server Provider', (group) => {
 })
 
 test.group('Http Context', (group) => {
-  group.afterEach(async () => {
+  group.each.teardown(async () => {
     await fs.cleanup()
   })
 
-  test('create fake Http context instance', async (assert) => {
+  test('create fake Http context instance', async ({ assert }) => {
     await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
     const ctx = HttpContext.create('/', {})
 
@@ -50,7 +50,7 @@ test.group('Http Context', (group) => {
     assert.deepEqual(ctx.route!.middleware, [])
   })
 
-  test('compute request url from params', async (assert) => {
+  test('compute request url from params', async ({ assert }) => {
     await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
     const ctx = HttpContext.create('/:id', { id: '1' })
 
@@ -60,7 +60,7 @@ test.group('Http Context', (group) => {
     assert.deepEqual(ctx.params, { id: '1' })
   })
 
-  test('add macro to http context', async (assert) => {
+  test('add macro to http context', async ({ assert }) => {
     await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
     HttpContext.macro<HttpContext>('url', function url() {
       return `user/${this.params.id}`
@@ -73,7 +73,7 @@ test.group('Http Context', (group) => {
     assert.deepEqual(ctx.params, { id: '1' })
   })
 
-  test('pass ctx to request and response', async (assert) => {
+  test('pass ctx to request and response', async ({ assert }) => {
     await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
     const ctx = HttpContext.create('/', {})
     assert.deepEqual(ctx.request.ctx, ctx)

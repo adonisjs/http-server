@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { normalizeMakeUrlOptions, normalizeMakeSignedUrlOptions } from '../src/helpers'
 
 test.group('Helpers | normalizeMakeUrlOptions', () => {
-  test('use top level object as params', (assert) => {
+  test('use top level object as params', ({ assert }) => {
     assert.deepEqual(normalizeMakeUrlOptions({ id: 1, qs: { method: '_GET' } }), {
       params: { id: 1, qs: { method: '_GET' } },
       qs: { method: '_GET' },
@@ -20,7 +20,7 @@ test.group('Helpers | normalizeMakeUrlOptions', () => {
     })
   })
 
-  test('use top level params as params when defined explictly', (assert) => {
+  test('use top level params as params when defined explictly', ({ assert }) => {
     assert.deepEqual(normalizeMakeUrlOptions({ params: { id: 1 }, qs: { method: '_GET' } }), {
       params: { id: 1 },
       qs: { method: '_GET' },
@@ -29,7 +29,7 @@ test.group('Helpers | normalizeMakeUrlOptions', () => {
     })
   })
 
-  test('use qs from the options object', (assert) => {
+  test('use qs from the options object', ({ assert }) => {
     assert.deepEqual(
       normalizeMakeUrlOptions(
         { params: { id: 1 }, qs: { method: '_GET' } },
@@ -44,7 +44,7 @@ test.group('Helpers | normalizeMakeUrlOptions', () => {
     )
   })
 
-  test('use params when defined as an array', (assert) => {
+  test('use params when defined as an array', ({ assert }) => {
     assert.deepEqual(normalizeMakeUrlOptions([1], { qs: { method: 'POST' } }), {
       params: [1],
       qs: { method: 'POST' },
@@ -55,7 +55,7 @@ test.group('Helpers | normalizeMakeUrlOptions', () => {
 })
 
 test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
-  test('use top level object as params', (assert) => {
+  test('use top level object as params', ({ assert }) => {
     assert.deepEqual(normalizeMakeSignedUrlOptions({ id: 1, qs: { method: '_GET' } }), {
       params: { id: 1, qs: { method: '_GET' } },
       qs: { method: '_GET' },
@@ -66,7 +66,7 @@ test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
     })
   })
 
-  test('use top params as params when defined explictly', (assert) => {
+  test('use top params as params when defined explictly', ({ assert }) => {
     assert.deepEqual(normalizeMakeSignedUrlOptions({ params: { id: 1 }, qs: { method: '_GET' } }), {
       params: { id: 1 },
       qs: { method: '_GET' },
@@ -77,7 +77,7 @@ test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
     })
   })
 
-  test('return expiresIn value when defined', (assert) => {
+  test('return expiresIn value when defined', ({ assert }) => {
     assert.deepEqual(normalizeMakeSignedUrlOptions({ id: 1, expiresIn: '1min' }), {
       params: { id: 1, expiresIn: '1min' },
       qs: undefined,
@@ -88,7 +88,7 @@ test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
     })
   })
 
-  test('return purpose value when defined', (assert) => {
+  test('return purpose value when defined', ({ assert }) => {
     assert.deepEqual(normalizeMakeSignedUrlOptions({ id: 1, purpose: 'login' }), {
       params: { id: 1, purpose: 'login' },
       qs: undefined,
@@ -99,7 +99,7 @@ test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
     })
   })
 
-  test('use qs from the options object', (assert) => {
+  test('use qs from the options object', ({ assert }) => {
     assert.deepEqual(
       normalizeMakeSignedUrlOptions(
         { params: { id: 1 }, qs: { method: '_GET' } },
@@ -116,7 +116,7 @@ test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
     )
   })
 
-  test('use params when defined as an array', (assert) => {
+  test('use params when defined as an array', ({ assert }) => {
     assert.deepEqual(normalizeMakeSignedUrlOptions([1], { qs: { method: 'POST' } }), {
       params: [1],
       qs: { method: 'POST' },
