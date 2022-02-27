@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { Route } from '../src/Router/Route'
 
 test.group('Route', () => {
-  test('create a basic route', (assert) => {
+  test('create a basic route', ({ assert }) => {
     async function handler() {}
     const route = new Route('/', ['GET'], handler, {})
 
@@ -29,7 +29,7 @@ test.group('Route', () => {
     })
   })
 
-  test('prefix route', (assert) => {
+  test('prefix route', ({ assert }) => {
     async function handler() {}
     const route = new Route('/', ['GET'], handler, {})
     route.prefix('admin')
@@ -48,7 +48,7 @@ test.group('Route', () => {
     })
   })
 
-  test('handle leading slash in pattern', (assert) => {
+  test('handle leading slash in pattern', ({ assert }) => {
     async function handler() {}
     const route = new Route('/blog', ['GET'], handler, {})
 
@@ -66,7 +66,7 @@ test.group('Route', () => {
     })
   })
 
-  test('handle leading slash in pattern along with prefix', (assert) => {
+  test('handle leading slash in pattern along with prefix', ({ assert }) => {
     async function handler() {}
     const route = new Route('/blog', ['GET'], handler, {})
     route.prefix('admin')
@@ -85,7 +85,7 @@ test.group('Route', () => {
     })
   })
 
-  test('define matchers for params', (assert) => {
+  test('define matchers for params', ({ assert }) => {
     async function handler() {}
     const route = new Route('posts/:id', ['GET'], handler, {})
     route.where('id', '^[a-z]+$')
@@ -106,7 +106,7 @@ test.group('Route', () => {
     })
   })
 
-  test('define global matchers for params', (assert) => {
+  test('define global matchers for params', ({ assert }) => {
     async function handler() {}
     const route = new Route('posts/:id', ['GET'], handler, {
       id: { match: /^[a-z]+$/ },
@@ -128,7 +128,7 @@ test.group('Route', () => {
     })
   })
 
-  test('give preference to local matcher over global', (assert) => {
+  test('give preference to local matcher over global', ({ assert }) => {
     async function handler() {}
     const route = new Route('posts/:id', ['GET'], handler, {
       id: { match: /^[a-z]+$/ },
@@ -151,7 +151,7 @@ test.group('Route', () => {
     })
   })
 
-  test('define route domain', (assert) => {
+  test('define route domain', ({ assert }) => {
     async function handler() {}
     const route = new Route('posts/:id', ['GET'], handler, {})
     route.domain('foo.com')
@@ -170,7 +170,7 @@ test.group('Route', () => {
     })
   })
 
-  test('define an array of route middleware', (assert) => {
+  test('define an array of route middleware', ({ assert }) => {
     async function handler() {}
     const route = new Route('posts/:id', ['GET'], handler, {})
     route.middleware(['auth', 'acl:admin'])
@@ -189,7 +189,7 @@ test.group('Route', () => {
     })
   })
 
-  test('define route middleware as a string', (assert) => {
+  test('define route middleware as a string', ({ assert }) => {
     async function handler() {}
     const route = new Route('posts/:id', ['GET'], handler, {})
     route.middleware('auth')
@@ -208,7 +208,7 @@ test.group('Route', () => {
     })
   })
 
-  test('give name to the route', (assert) => {
+  test('give name to the route', ({ assert }) => {
     async function handler() {}
     const route = new Route('posts/:id', ['GET'], handler, {})
     route.as('showPost')
@@ -227,7 +227,7 @@ test.group('Route', () => {
     })
   })
 
-  test('define route namespace', (assert) => {
+  test('define route namespace', ({ assert }) => {
     async function handler() {}
     const route = new Route('posts/:id', ['GET'], handler, {})
     route.namespace('App/Controllers')

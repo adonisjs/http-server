@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { Router } from '../src/Router'
 import { Ioc } from '@adonisjs/fold'
 
@@ -17,7 +17,7 @@ import { PreCompiler } from '../src/Server/PreCompiler'
 import { encryption } from '../test-helpers'
 
 test.group('Route precompiler', () => {
-  test('process route by resolving function based middleware', (assert) => {
+  test('process route by resolving function based middleware', ({ assert }) => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
@@ -41,7 +41,7 @@ test.group('Route precompiler', () => {
     ])
   })
 
-  test('process route by resolving named middleware', (assert) => {
+  test('process route by resolving named middleware', ({ assert }) => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
@@ -72,7 +72,7 @@ test.group('Route precompiler', () => {
     ])
   })
 
-  test('process route by resolving middleware from container', (assert) => {
+  test('process route by resolving middleware from container', ({ assert }) => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
@@ -102,7 +102,7 @@ test.group('Route precompiler', () => {
     ])
   })
 
-  test('resolve function based route handler', (assert) => {
+  test('resolve function based route handler', ({ assert }) => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
@@ -120,7 +120,7 @@ test.group('Route precompiler', () => {
     })
   })
 
-  test('resolve route handler from the container', (assert) => {
+  test('resolve route handler from the container', ({ assert }) => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
@@ -143,7 +143,7 @@ test.group('Route precompiler', () => {
     })
   })
 
-  test('do not prepend namespace when absolute namespace is passed', (assert) => {
+  test('do not prepend namespace when absolute namespace is passed', ({ assert }) => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
@@ -166,7 +166,7 @@ test.group('Route precompiler', () => {
     })
   })
 
-  test('raise exception when binding is missing', (assert) => {
+  test('raise exception when binding is missing', ({ assert }) => {
     const ioc = new Ioc()
 
     const middlewareStore = new MiddlewareStore(ioc)
@@ -176,7 +176,7 @@ test.group('Route precompiler', () => {
     const route = router.get('/', '/UserController.store').toJSON()
     const fn = () => preCompiler.compileRoute(route)
 
-    assert.throw(
+    assert.throws(
       fn,
       'E_IOC_LOOKUP_FAILED: Cannot resolve "/UserController" namespace from the IoC Container'
     )

@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { BriskRoute } from '../src/Router/BriskRoute'
 
 test.group('Brisk Route', () => {
-  test('define handler for the route', (assert) => {
+  test('define handler for the route', ({ assert }) => {
     const brisk = new BriskRoute('/', {})
     async function handler() {}
 
@@ -30,14 +30,14 @@ test.group('Brisk Route', () => {
     })
   })
 
-  test('setting handler multiple times must result in error', (assert) => {
+  test('setting handler multiple times must result in error', ({ assert }) => {
     const brisk = new BriskRoute('/', {})
     async function handler() {}
 
     brisk.setHandler(handler, 'render')
     const fn = () => brisk.setHandler(handler, 'respond')
 
-    assert.throw(
+    assert.throws(
       fn,
       'E_MULTIPLE_BRISK_HANDLERS: `Route.respond` and `render` cannot be called together'
     )

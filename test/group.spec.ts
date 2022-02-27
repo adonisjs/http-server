@@ -7,14 +7,14 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { Route } from '../src/Router/Route'
 import { toRoutesJSON } from '../src/helpers'
 import { RouteGroup } from '../src/Router/Group'
 import { RouteResource } from '../src/Router/Resource'
 
 test.group('Route Group', () => {
-  test('add matcher for the given route', (assert) => {
+  test('add matcher for the given route', ({ assert }) => {
     async function handler() {}
 
     const group = new RouteGroup([new Route('/:id', ['GET'], handler, {})])
@@ -38,7 +38,7 @@ test.group('Route Group', () => {
     ])
   })
 
-  test('prepend middleware to existing route middleware', (assert) => {
+  test('prepend middleware to existing route middleware', ({ assert }) => {
     async function handler() {}
 
     const route = new Route('/:id', ['GET'], handler, {})
@@ -63,7 +63,7 @@ test.group('Route Group', () => {
     ])
   })
 
-  test('keep group own middleware in right order', (assert) => {
+  test('keep group own middleware in right order', ({ assert }) => {
     async function handler() {}
 
     const route = new Route('/:id', ['GET'], handler, {})
@@ -89,7 +89,7 @@ test.group('Route Group', () => {
     ])
   })
 
-  test('define middleware on nested group, route and resource', (assert) => {
+  test('define middleware on nested group, route and resource', ({ assert }) => {
     async function handler() {}
 
     const route = new Route('/:id', ['GET'], handler, {})
@@ -242,7 +242,7 @@ test.group('Route Group', () => {
     ])
   })
 
-  test('prepend name to the existing route names', (assert) => {
+  test('prepend name to the existing route names', ({ assert }) => {
     async function handler() {}
 
     const route = new Route('/:id', ['GET'], handler, {})
@@ -267,7 +267,7 @@ test.group('Route Group', () => {
     ])
   })
 
-  test('define routes prefix', (assert) => {
+  test('define routes prefix', ({ assert }) => {
     async function handler() {}
 
     const route = new Route('/:id', ['GET'], handler, {})
@@ -290,7 +290,7 @@ test.group('Route Group', () => {
     ])
   })
 
-  test('define routes domain', (assert) => {
+  test('define routes domain', ({ assert }) => {
     async function handler() {}
 
     const route = new Route('/:id', ['GET'], handler, {})
@@ -313,7 +313,7 @@ test.group('Route Group', () => {
     ])
   })
 
-  test('define resource inside the group', (assert) => {
+  test('define resource inside the group', ({ assert }) => {
     const resource = new RouteResource('photos', 'PhotosController', {})
     const group = new RouteGroup([resource])
 
@@ -405,7 +405,7 @@ test.group('Route Group', () => {
     ])
   })
 
-  test('prepend name to the route resource', (assert) => {
+  test('prepend name to the route resource', ({ assert }) => {
     const resource = new RouteResource('photos', 'PhotosController', {})
     const group = new RouteGroup([resource])
     group.as('v1')
@@ -498,7 +498,7 @@ test.group('Route Group', () => {
     ])
   })
 
-  test('define routes namespace', (assert) => {
+  test('define routes namespace', ({ assert }) => {
     async function handler() {}
 
     const route = new Route('/:id', ['GET'], handler, {})

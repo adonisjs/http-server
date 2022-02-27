@@ -7,12 +7,12 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { Ioc } from '@adonisjs/fold'
 import { MiddlewareStore } from '../src/MiddlewareStore'
 
 test.group('Middleware', () => {
-  test('register global middleware', (assert) => {
+  test('register global middleware', ({ assert }) => {
     const middleware = new MiddlewareStore(new Ioc())
     class GlobalMiddleware {
       public async handle() {}
@@ -30,7 +30,7 @@ test.group('Middleware', () => {
     ])
   })
 
-  test('clear global middleware', (assert) => {
+  test('clear global middleware', ({ assert }) => {
     const middleware = new MiddlewareStore(new Ioc())
     class GlobalMiddleware {
       public async handle() {}
@@ -43,7 +43,7 @@ test.group('Middleware', () => {
     assert.deepEqual(middleware.get(), [])
   })
 
-  test('register named middleware', (assert) => {
+  test('register named middleware', ({ assert }) => {
     const middleware = new MiddlewareStore(new Ioc())
     class GlobalMiddleware {
       public async handle() {}
@@ -57,7 +57,7 @@ test.group('Middleware', () => {
     })
   })
 
-  test('clear select or all named middleware', (assert) => {
+  test('clear select or all named middleware', ({ assert }) => {
     const middleware = new MiddlewareStore(new Ioc())
     class GlobalMiddleware {
       public async handle() {}
@@ -75,7 +75,7 @@ test.group('Middleware', () => {
     assert.deepEqual(middleware['named'], {})
   })
 
-  test('get named middleware', (assert) => {
+  test('get named middleware', ({ assert }) => {
     const middleware = new MiddlewareStore(new Ioc())
     class GlobalMiddleware {
       public async handle() {}
@@ -91,12 +91,12 @@ test.group('Middleware', () => {
     })
   })
 
-  test("return null when middleware doesn't exists", (assert) => {
+  test("return null when middleware doesn't exists", ({ assert }) => {
     const middleware = new MiddlewareStore(new Ioc())
     assert.isNull(middleware.getNamed('auth'))
   })
 
-  test('invoke resolved middleware', async (assert) => {
+  test('invoke resolved middleware', async ({ assert }) => {
     const stack: any[] = []
 
     class GlobalMiddleware {
@@ -113,7 +113,7 @@ test.group('Middleware', () => {
     assert.deepEqual(stack, ['middlewareFn'])
   })
 
-  test('invoke middleware by resolving them from IoC container', async (assert) => {
+  test('invoke middleware by resolving them from IoC container', async ({ assert }) => {
     const stack: any[] = []
 
     class Middleware {

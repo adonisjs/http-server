@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { parse } from 'querystring'
 import { Router } from '../src/Router'
 import { Route } from '../src/Router/Route'
@@ -18,7 +18,7 @@ import { RouteResource } from '../src/Router/Resource'
 import { encryption } from '../test-helpers'
 
 test.group('Router', () => {
-  test('add route class from the router instance', (assert) => {
+  test('add route class from the router instance', ({ assert }) => {
     const router = new Router(encryption)
 
     assert.deepEqual(router.BriskRoute, BriskRoute)
@@ -29,7 +29,7 @@ test.group('Router', () => {
 })
 
 test.group('Router | add', () => {
-  test('add routes', (assert) => {
+  test('add routes', ({ assert }) => {
     const router = new Router(encryption)
 
     const getRoute = router.get('/', 'HomeController.index')
@@ -118,17 +118,17 @@ test.group('Router | add', () => {
     })
   })
 
-  test('raise error when route name is duplicate', (assert) => {
+  test('raise error when route name is duplicate', ({ assert }) => {
     const router = new Router(encryption)
 
     router.get('/', async function handler() {}).as('home')
     router.get('home', async function handler() {}).as('home')
 
     const fn = () => router.commit()
-    assert.throw(fn, 'E_DUPLICATE_ROUTE_NAME: Duplicate route name "home"')
+    assert.throws(fn, 'E_DUPLICATE_ROUTE_NAME: Duplicate route name "home"')
   })
 
-  test('raise error when prefixing route name of route with undefined name', (assert) => {
+  test('raise error when prefixing route name of route with undefined name', ({ assert }) => {
     assert.plan(1)
 
     const router = new Router(encryption)
@@ -149,7 +149,7 @@ test.group('Router | add', () => {
     }
   })
 
-  test('raise error when prefixing brisk route name of route with undefined name', (assert) => {
+  test('raise error when prefixing brisk route name of route with undefined name', ({ assert }) => {
     assert.plan(1)
 
     const router = new Router(encryption)
@@ -170,7 +170,7 @@ test.group('Router | add', () => {
     }
   })
 
-  test('allow nested groups', (assert) => {
+  test('allow nested groups', ({ assert }) => {
     assert.plan(1)
 
     const router = new Router(encryption)
@@ -264,7 +264,7 @@ test.group('Router | add', () => {
     })
   })
 
-  test('apply middleware in nested groups', (assert) => {
+  test('apply middleware in nested groups', ({ assert }) => {
     assert.plan(1)
 
     const router = new Router(encryption)
@@ -346,7 +346,7 @@ test.group('Router | add', () => {
     })
   })
 
-  test('apply domain in nested groups', (assert) => {
+  test('apply domain in nested groups', ({ assert }) => {
     assert.plan(1)
 
     const router = new Router(encryption)
@@ -428,7 +428,7 @@ test.group('Router | add', () => {
     })
   })
 
-  test('apply namespace in nested groups', (assert) => {
+  test('apply namespace in nested groups', ({ assert }) => {
     assert.plan(1)
 
     const router = new Router(encryption)
@@ -510,7 +510,7 @@ test.group('Router | add', () => {
     })
   })
 
-  test('apply route matchers in nested groups', (assert) => {
+  test('apply route matchers in nested groups', ({ assert }) => {
     assert.plan(1)
 
     const router = new Router(encryption)
@@ -613,7 +613,7 @@ test.group('Router | add', () => {
     })
   })
 
-  test('apply route matchers using shorthand methods', (assert) => {
+  test('apply route matchers using shorthand methods', ({ assert }) => {
     assert.plan(1)
 
     const router = new Router(encryption)
@@ -627,7 +627,7 @@ test.group('Router | add', () => {
     assert.deepEqual(route.matchers.user_id.match, /^[0-9]+$/)
   })
 
-  test('test empty string param against the matcher', (assert) => {
+  test('test empty string param against the matcher', ({ assert }) => {
     const router = new Router(encryption)
     async function handler() {}
 
@@ -639,7 +639,7 @@ test.group('Router | add', () => {
     assert.isNotNull(router.match('/user/ ', 'GET')) // without matcher
   })
 
-  test('apply route names in group', (assert) => {
+  test('apply route names in group', ({ assert }) => {
     assert.plan(1)
 
     const router = new Router(encryption)
@@ -723,7 +723,7 @@ test.group('Router | add', () => {
 })
 
 test.group('Router | commit', () => {
-  test('commit routes to the store', (assert) => {
+  test('commit routes to the store', ({ assert }) => {
     const router = new Router(encryption)
 
     async function handler() {}
@@ -794,7 +794,7 @@ test.group('Router | commit', () => {
     })
   })
 
-  test('commit routes group to the store', (assert) => {
+  test('commit routes group to the store', ({ assert }) => {
     const router = new Router(encryption)
 
     async function handler() {}
@@ -870,7 +870,7 @@ test.group('Router | commit', () => {
     })
   })
 
-  test('define resource inside a group', (assert) => {
+  test('define resource inside a group', ({ assert }) => {
     const router = new Router(encryption)
 
     router
@@ -1291,7 +1291,7 @@ test.group('Router | commit', () => {
     })
   })
 
-  test('define resource inside nested groups', (assert) => {
+  test('define resource inside nested groups', ({ assert }) => {
     const router = new Router(encryption)
 
     router
@@ -1788,7 +1788,7 @@ test.group('Router | commit', () => {
     })
   })
 
-  test('define shallow resource', (assert) => {
+  test('define shallow resource', ({ assert }) => {
     const router = new Router(encryption)
 
     router.shallowResource('posts.comments', 'CommentsController')
@@ -2202,7 +2202,7 @@ test.group('Router | commit', () => {
     })
   })
 
-  test('do not commit route when deleted flag is set to true', (assert) => {
+  test('do not commit route when deleted flag is set to true', ({ assert }) => {
     const router = new Router(encryption)
 
     async function handler() {}
@@ -2217,7 +2217,7 @@ test.group('Router | commit', () => {
     })
   })
 
-  test('filter resource routes inside a named group', (assert) => {
+  test('filter resource routes inside a named group', ({ assert }) => {
     const router = new Router(encryption)
 
     router
@@ -2304,7 +2304,7 @@ test.group('Router | commit', () => {
     })
   })
 
-  test('process routes via pre processor if defined', (assert) => {
+  test('process routes via pre processor if defined', ({ assert }) => {
     const router = new Router(encryption, (routeJSON) => {
       routeJSON.meta.processed = true
     })
@@ -2378,7 +2378,7 @@ test.group('Router | commit', () => {
     })
   })
 
-  test('process resource via pre processor if defined', (assert) => {
+  test('process resource via pre processor if defined', ({ assert }) => {
     const router = new Router(encryption, (routeJSON) => {
       routeJSON.meta.processed = true
     })
@@ -2464,7 +2464,7 @@ test.group('Router | commit', () => {
     })
   })
 
-  test('process group routes via pre processor if defined', (assert) => {
+  test('process group routes via pre processor if defined', ({ assert }) => {
     const router = new Router(encryption, (routeJSON) => {
       routeJSON.meta.processed = true
     })
@@ -2540,7 +2540,7 @@ test.group('Router | commit', () => {
     })
   })
 
-  test('define global matchers', (assert) => {
+  test('define global matchers', ({ assert }) => {
     const router = new Router(encryption)
     router.where('id', '^[a-z]+')
 
@@ -2618,7 +2618,7 @@ test.group('Router | commit', () => {
 })
 
 test.group('Router | match', () => {
-  test('match route using URL', (assert) => {
+  test('match route using URL', ({ assert }) => {
     const router = new Router(encryption)
 
     router.resource('photos', 'PhotosController')
@@ -2738,7 +2738,7 @@ test.group('Router | match', () => {
     })
   })
 
-  test('apply uuid matcher when matching route', (assert) => {
+  test('apply uuid matcher when matching route', ({ assert }) => {
     const router = new Router(encryption)
 
     router.get('photos/:id', 'PhotosController.show').where('id', router.matchers.uuid())
@@ -2764,7 +2764,7 @@ test.group('Router | match', () => {
 })
 
 test.group('Brisk route', () => {
-  test('define brisk route', (assert) => {
+  test('define brisk route', ({ assert }) => {
     const router = new Router(encryption)
     async function handler() {}
 
@@ -2787,7 +2787,7 @@ test.group('Brisk route', () => {
     })
   })
 
-  test('define brisk route inside a group', (assert) => {
+  test('define brisk route inside a group', ({ assert }) => {
     const router = new Router(encryption)
     async function handler() {}
 
@@ -2816,7 +2816,7 @@ test.group('Brisk route', () => {
     })
   })
 
-  test('register brisk route to store', (assert) => {
+  test('register brisk route to store', ({ assert }) => {
     const router = new Router(encryption)
     async function handler() {}
 
@@ -2907,7 +2907,7 @@ test.group('Brisk route', () => {
 })
 
 test.group('Router | Make url', () => {
-  test('make url to a given route', (assert) => {
+  test('make url to a given route', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id', async function handler() {})
     router.commit()
@@ -2916,7 +2916,7 @@ test.group('Router | Make url', () => {
     assert.equal(url, '/posts/1')
   })
 
-  test("make url to a given route by it's name", (assert) => {
+  test("make url to a given route by it's name", ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id', async function handler() {}).as('showPost')
     router.commit()
@@ -2925,7 +2925,7 @@ test.group('Router | Make url', () => {
     assert.equal(url, '/posts/1')
   })
 
-  test("make url to a given route by it's controller method", (assert) => {
+  test("make url to a given route by it's controller method", ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id', 'PostsController.index').as('showPost')
     router.commit()
@@ -2934,7 +2934,7 @@ test.group('Router | Make url', () => {
     assert.equal(url, '/posts/1')
   })
 
-  test('make url using the builder', (assert) => {
+  test('make url using the builder', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id', 'PostsController.index').as('showPost')
     router.commit()
@@ -2943,7 +2943,7 @@ test.group('Router | Make url', () => {
     assert.equal(url, '/posts/1')
   })
 
-  test('add query string to the url', (assert) => {
+  test('add query string to the url', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id', 'PostsController.index').as('showPost')
     router.commit()
@@ -2952,7 +2952,7 @@ test.group('Router | Make url', () => {
     assert.equal(url, '/posts/1?name=virk')
   })
 
-  test('prefix url', (assert) => {
+  test('prefix url', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id', 'PostsController.index').as('showPost')
     router.commit()
@@ -2967,7 +2967,7 @@ test.group('Router | Make url', () => {
     assert.equal(url, 'http://blog.adonisjs.com/posts/1?name=virk')
   })
 
-  test('make url for a domain', (assert) => {
+  test('make url for a domain', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id', 'PostsController.index').as('showPost')
     router.get('article/:id', 'PostsController.index').domain(':blog.adonisjs.com')
@@ -2982,7 +2982,7 @@ test.group('Router | Make url', () => {
     assert.equal(url, '/article/1?name=virk')
   })
 
-  test('make url for a wildcard route', (assert) => {
+  test('make url for a wildcard route', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/*', async function handler() {})
     router.commit()
@@ -2991,7 +2991,7 @@ test.group('Router | Make url', () => {
     assert.equal(router.makeUrl('/posts/*', ['1', 'foo'])!, '/posts/1/foo')
   })
 
-  test('make url for a wildcard route after a named param', (assert) => {
+  test('make url for a wildcard route after a named param', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id/*', async function handler() {})
     router.commit()
@@ -3000,20 +3000,20 @@ test.group('Router | Make url', () => {
     assert.equal(router.makeUrl('/posts/:id/*', { 'id': 1, '*': ['foo'] })!, '/posts/1/foo')
   })
 
-  test('raise exception when wildcard params are missing', (assert) => {
+  test('raise exception when wildcard params are missing', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/*', async function handler() {})
     router.commit()
 
-    assert.throw(
+    assert.throws(
       () => router.makeUrl('/posts/*', [])!,
       'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
     )
-    assert.throw(
+    assert.throws(
       () => router.makeUrl('/posts/*', {})!,
       'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
     )
-    assert.throw(
+    assert.throws(
       () => router.makeUrl('/posts/*', { '*': '' })!,
       'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
     )
@@ -3021,7 +3021,7 @@ test.group('Router | Make url', () => {
 })
 
 test.group('Make signed url', () => {
-  test('make signed url to a given route', (assert) => {
+  test('make signed url to a given route', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id', async function handler() {})
     router.commit()
@@ -3031,7 +3031,7 @@ test.group('Make signed url', () => {
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
   })
 
-  test("make signed url to a given route by it's name", (assert) => {
+  test("make signed url to a given route by it's name", ({ assert }) => {
     const router = new Router(encryption)
 
     router.get('posts/:id', async function handler() {}).as('showPost')
@@ -3042,7 +3042,7 @@ test.group('Make signed url', () => {
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
   })
 
-  test("make signed url to a given route by it's controller method", (assert) => {
+  test("make signed url to a given route by it's controller method", ({ assert }) => {
     const router = new Router(encryption)
 
     router.get('posts/:id', 'PostsController.index').as('showPost')
@@ -3053,7 +3053,7 @@ test.group('Make signed url', () => {
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
   })
 
-  test('make signed url with expiry', (assert) => {
+  test('make signed url with expiry', ({ assert }) => {
     const router = new Router(encryption)
 
     router.get('posts/:id', 'PostsController.index')
@@ -3065,7 +3065,7 @@ test.group('Make signed url', () => {
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
   })
 
-  test('make signed url with custom query string', (assert) => {
+  test('make signed url with custom query string', ({ assert }) => {
     const router = new Router(encryption)
 
     router.get('posts/:id', 'PostsController.index')
@@ -3081,7 +3081,7 @@ test.group('Make signed url', () => {
     assert.equal(Number(qs.page), 1)
   })
 
-  test('make url using the builder', (assert) => {
+  test('make url using the builder', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id', 'PostsController.index').as('showPost')
     router.commit()
@@ -3092,7 +3092,7 @@ test.group('Make signed url', () => {
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
   })
 
-  test('add query string to the url', (assert) => {
+  test('add query string to the url', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id', 'PostsController.index').as('showPost')
     router.commit()
@@ -3107,7 +3107,7 @@ test.group('Make signed url', () => {
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1?name=virk')
   })
 
-  test('prefix url', (assert) => {
+  test('prefix url', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id', 'PostsController.index').as('showPost')
     router.commit()
@@ -3127,7 +3127,7 @@ test.group('Make signed url', () => {
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1?name=virk')
   })
 
-  test('make url for a domain', (assert) => {
+  test('make url for a domain', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id', 'PostsController.index').as('showPost')
     router.get('article/:id', 'PostsController.index').domain(':blog.adonisjs.com')
@@ -3143,7 +3143,7 @@ test.group('Make signed url', () => {
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/article/1?name=virk')
   })
 
-  test('make url for a wildcard route', (assert) => {
+  test('make url for a wildcard route', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/*', async function handler() {})
     router.commit()
@@ -3153,7 +3153,7 @@ test.group('Make signed url', () => {
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1/foo')
   })
 
-  test('make url for a wildcard route after a named param', (assert) => {
+  test('make url for a wildcard route after a named param', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/:id/*', async function handler() {})
     router.commit()
@@ -3163,20 +3163,20 @@ test.group('Make signed url', () => {
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1/foo')
   })
 
-  test('raise exception when wildcard params are missing', (assert) => {
+  test('raise exception when wildcard params are missing', ({ assert }) => {
     const router = new Router(encryption)
     router.get('posts/*', async function handler() {})
     router.commit()
 
-    assert.throw(
+    assert.throws(
       () => router.makeSignedUrl('/posts/*', [])!,
       'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
     )
-    assert.throw(
+    assert.throws(
       () => router.makeSignedUrl('/posts/*', {})!,
       'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
     )
-    assert.throw(
+    assert.throws(
       () => router.makeSignedUrl('/posts/*', { '*': '' })!,
       'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
     )
@@ -3184,7 +3184,7 @@ test.group('Make signed url', () => {
 })
 
 test.group('Regression', () => {
-  test('route where matchers should win over group domain', (assert) => {
+  test('route where matchers should win over group domain', ({ assert }) => {
     const router = new Router(encryption)
 
     router
@@ -3267,7 +3267,7 @@ test.group('Regression', () => {
     })
   })
 
-  test('apply prefixes in the correct order', (assert) => {
+  test('apply prefixes in the correct order', ({ assert }) => {
     const router = new Router(encryption)
 
     router
@@ -3370,7 +3370,7 @@ test.group('Regression', () => {
     })
   })
 
-  test('route domain should win over group domain', (assert) => {
+  test('route domain should win over group domain', ({ assert }) => {
     const router = new Router(encryption)
 
     router
@@ -3449,7 +3449,7 @@ test.group('Regression', () => {
     })
   })
 
-  test('apply route names in the right order', (assert) => {
+  test('apply route names in the right order', ({ assert }) => {
     const router = new Router(encryption)
 
     router
@@ -3528,7 +3528,7 @@ test.group('Regression', () => {
     })
   })
 
-  test('apply middleware in the right order', (assert) => {
+  test('apply middleware in the right order', ({ assert }) => {
     const router = new Router(encryption)
 
     router
@@ -3609,7 +3609,7 @@ test.group('Regression', () => {
     })
   })
 
-  test('route namespace should win', (assert) => {
+  test('route namespace should win', ({ assert }) => {
     const router = new Router(encryption)
 
     router

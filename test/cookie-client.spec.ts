@@ -7,12 +7,12 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import { encryption } from '../test-helpers'
 import { CookieClient } from '../src/Cookie/Client'
 
 test.group('Cookie Client', () => {
-  test('sign cookie using cookie client', async (assert) => {
+  test('sign cookie using cookie client', async ({ assert }) => {
     const client = new CookieClient(encryption)
     const signed = client.sign('user_id', 1)!
 
@@ -20,7 +20,7 @@ test.group('Cookie Client', () => {
     assert.equal(client.unsign('user_id', signed), 1)
   })
 
-  test('encrypt cookie using cookie client', async (assert) => {
+  test('encrypt cookie using cookie client', async ({ assert }) => {
     const client = new CookieClient(encryption)
     const encrypted = client.encrypt('user_id', 1)!
 
@@ -28,7 +28,7 @@ test.group('Cookie Client', () => {
     assert.equal(client.decrypt('user_id', encrypted), 1)
   })
 
-  test('encode cookie using cookie client', async (assert) => {
+  test('encode cookie using cookie client', async ({ assert }) => {
     const client = new CookieClient(encryption)
     const encoded = client.encode('user_id', 1)!
     assert.equal(client.decode('user_id', encoded), 1)

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
+import { test } from '@japa/runner'
 import supertest from 'supertest'
 import { createServer } from 'http'
 import { escape } from 'querystring'
@@ -21,7 +21,7 @@ import { encryption, requestConfig } from '../test-helpers'
 const serializer = new CookieSerializer(encryption)
 
 test.group('Request', () => {
-  test('get http request query string', async (assert) => {
+  test('get http request query string', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -32,7 +32,7 @@ test.group('Request', () => {
     assert.deepEqual(body, { username: 'virk', age: '22' })
   })
 
-  test('update request initial body', async (assert) => {
+  test('update request initial body', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       request.setInitialBody({ username: 'virk' })
@@ -54,7 +54,7 @@ test.group('Request', () => {
     })
   })
 
-  test('updating request body later must not impact the original body', async (assert) => {
+  test('updating request body later must not impact the original body', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       request.setInitialBody({ username: 'virk' })
@@ -78,7 +78,7 @@ test.group('Request', () => {
     })
   })
 
-  test('merge query string with all and original', async (assert) => {
+  test('merge query string with all and original', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       request.setInitialBody({ username: 'virk' })
@@ -102,7 +102,7 @@ test.group('Request', () => {
     })
   })
 
-  test('raise error when setInitialBody is called twice', async (assert) => {
+  test('raise error when setInitialBody is called twice', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       request.setInitialBody({})
@@ -121,7 +121,7 @@ test.group('Request', () => {
     })
   })
 
-  test('compute original and all even if body was never set', async (assert) => {
+  test('compute original and all even if body was never set', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -142,7 +142,7 @@ test.group('Request', () => {
     })
   })
 
-  test('compute all when query string is updated', async (assert) => {
+  test('compute all when query string is updated', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       request.updateQs({ age: '24' })
@@ -165,7 +165,7 @@ test.group('Request', () => {
     })
   })
 
-  test('read input value from request', async (assert) => {
+  test('read input value from request', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
 
@@ -179,7 +179,7 @@ test.group('Request', () => {
     })
   })
 
-  test('read nested input value from request', async (assert) => {
+  test('read nested input value from request', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
 
@@ -193,7 +193,7 @@ test.group('Request', () => {
     })
   })
 
-  test('read array input value from request', async (assert) => {
+  test('read array input value from request', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
 
@@ -207,7 +207,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get all except few keys', async (assert) => {
+  test('get all except few keys', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
 
@@ -221,7 +221,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get all except few keys from nested object', async (assert) => {
+  test('get all except few keys from nested object', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       request.setInitialBody({ user: { username: 'virk', age: 22 } })
@@ -238,7 +238,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get only few keys', async (assert) => {
+  test('get only few keys', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
 
@@ -252,7 +252,7 @@ test.group('Request', () => {
     })
   })
 
-  test('update request params', async (assert) => {
+  test('update request params', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       request.updateParams({ id: 1 })
@@ -270,7 +270,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get value for a given param', async (assert) => {
+  test('get value for a given param', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       request.updateParams({ id: 1 })
@@ -288,7 +288,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get only few keys from nested object', async (assert) => {
+  test('get only few keys from nested object', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       request.setInitialBody({ user: { username: 'virk', age: 22 } })
@@ -305,7 +305,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get request headers', async (assert) => {
+  test('get request headers', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
 
@@ -317,7 +317,7 @@ test.group('Request', () => {
     assert.includeMembers(Object.keys(body), ['host'])
   })
 
-  test('get value for a given request header', async (assert) => {
+  test('get value for a given request header', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
 
@@ -331,7 +331,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get ip address', async (assert) => {
+  test('get ip address', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
 
@@ -345,7 +345,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get ip addresses as an array', async (assert) => {
+  test('get ip addresses as an array', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
 
@@ -359,7 +359,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get request protocol', async (assert) => {
+  test('get request protocol', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
 
@@ -373,7 +373,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return boolean telling request is secure or not', async (assert, done) => {
+  test('return boolean telling request is secure or not', async ({ assert }, done) => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
     createCertificate({}, async (error, keys) => {
       if (error) {
@@ -393,9 +393,9 @@ test.group('Request', () => {
       })
       done()
     })
-  })
+  }).waitForDone()
 
-  test('get request hostname', async (assert) => {
+  test('get request hostname', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
 
@@ -409,7 +409,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return an array of subdomains', async (assert) => {
+  test('return an array of subdomains', async ({ assert }) => {
     const server = createServer((req, res) => {
       req.headers.host = 'beta.adonisjs.com'
 
@@ -424,7 +424,7 @@ test.group('Request', () => {
     })
   })
 
-  test('do not consider www a subdomain', async (assert) => {
+  test('do not consider www a subdomain', async ({ assert }) => {
     const server = createServer((req, res) => {
       req.headers.host = 'www.adonisjs.com'
 
@@ -439,7 +439,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return true for ajax when X-Requested-With is xmlhttprequest', async (assert) => {
+  test('return true for ajax when X-Requested-With is xmlhttprequest', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -452,7 +452,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return false for ajax when X-Requested-With header is missing', async (assert) => {
+  test('return false for ajax when X-Requested-With header is missing', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -465,7 +465,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return true for ajax when X-Pjax header is set', async (assert) => {
+  test('return true for ajax when X-Pjax header is set', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -478,7 +478,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return request url without query string', async (assert) => {
+  test('return request url without query string', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -491,7 +491,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return request url with query string', async (assert) => {
+  test('return request url with query string', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -504,7 +504,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return complete request url without query string', async (assert) => {
+  test('return complete request url without query string', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -519,7 +519,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return complete request url with query string', async (assert) => {
+  test('return complete request url with query string', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -534,7 +534,7 @@ test.group('Request', () => {
     })
   })
 
-  test('content negotiate the request content-type', async (assert) => {
+  test('content negotiate the request content-type', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -551,7 +551,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return null when request body is empty', async (assert) => {
+  test('return null when request body is empty', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -564,7 +564,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return all types from most to least preferred', async (assert) => {
+  test('return all types from most to least preferred', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -577,7 +577,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return the most relavant accept type', async (assert) => {
+  test('return the most relavant accept type', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -590,7 +590,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return all accept languages', async (assert) => {
+  test('return all accept languages', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -603,7 +603,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return the most relavant language', async (assert) => {
+  test('return the most relavant language', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -616,7 +616,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return all accept charsets', async (assert) => {
+  test('return all accept charsets', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -629,7 +629,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return most relevant charset', async (assert) => {
+  test('return most relevant charset', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -642,7 +642,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return all encodings', async (assert) => {
+  test('return all encodings', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -655,7 +655,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return matching encoding', async (assert) => {
+  test('return matching encoding', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -668,7 +668,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return false from hasBody when request has no body', async (assert) => {
+  test('return false from hasBody when request has no body', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -681,7 +681,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return true from hasBody when request has no body', async (assert) => {
+  test('return true from hasBody when request has no body', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -694,7 +694,9 @@ test.group('Request', () => {
     })
   })
 
-  test('return true from request.fresh when etag and if-match-none are same', async (assert) => {
+  test('return true from request.fresh when etag and if-match-none are same', async ({
+    assert,
+  }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.setHeader('etag', 'foo')
@@ -708,7 +710,9 @@ test.group('Request', () => {
     })
   })
 
-  test('return false from request.fresh when etag and if-match-none are same but method is POST', async (assert) => {
+  test('return false from request.fresh when etag and if-match-none are same but method is POST', async ({
+    assert,
+  }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.setHeader('etag', 'foo')
@@ -722,7 +726,9 @@ test.group('Request', () => {
     })
   })
 
-  test('return false from request.fresh when etag and if-match-none are same but statusCode is 301', async (assert) => {
+  test('return false from request.fresh when etag and if-match-none are same but statusCode is 301', async ({
+    assert,
+  }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.setHeader('etag', 'foo')
@@ -736,7 +742,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return request http method', async (assert) => {
+  test('return request http method', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -749,7 +755,7 @@ test.group('Request', () => {
     })
   })
 
-  test('return request spoofed http method when spoofing is enabled', async (assert) => {
+  test('return request spoofed http method when spoofing is enabled', async ({ assert }) => {
     const server = createServer((req, res) => {
       const config = Object.assign({}, requestConfig, { allowMethodSpoofing: true })
       const request = new Request(req, res, encryption, config)
@@ -763,7 +769,9 @@ test.group('Request', () => {
     })
   })
 
-  test('return original http method when spoofing is enabled but original method is GET', async (assert) => {
+  test('return original http method when spoofing is enabled but original method is GET', async ({
+    assert,
+  }) => {
     const server = createServer((req, res) => {
       const config = Object.assign({}, requestConfig, { allowMethodSpoofing: true })
       const request = new Request(req, res, encryption, config)
@@ -777,7 +785,7 @@ test.group('Request', () => {
     })
   })
 
-  test('call getIp method to return ip address when defined inside config', async (assert) => {
+  test('call getIp method to return ip address when defined inside config', async ({ assert }) => {
     const server = createServer((req, res) => {
       const config = Object.assign({}, requestConfig, {
         getIp(request: Request) {
@@ -796,7 +804,9 @@ test.group('Request', () => {
     })
   })
 
-  test('return false from request.stale when etag and if-match-none are same', async (assert) => {
+  test('return false from request.stale when etag and if-match-none are same', async ({
+    assert,
+  }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.setHeader('etag', 'foo')
@@ -810,7 +820,7 @@ test.group('Request', () => {
     })
   })
 
-  test('handle referer header spelling inconsistencies', async (assert) => {
+  test('handle referer header spelling inconsistencies', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
 
@@ -827,7 +837,7 @@ test.group('Request', () => {
     })
   })
 
-  test('update request raw body', async (assert) => {
+  test('update request raw body', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       request.updateRawBody(JSON.stringify({ username: 'virk' }))
@@ -839,7 +849,7 @@ test.group('Request', () => {
     assert.deepEqual(JSON.parse(text), { username: 'virk' })
   })
 
-  test('get null when request hostname is missing', async (assert) => {
+  test('get null when request hostname is missing', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       delete req.headers['host']
@@ -854,7 +864,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get empty array when for subdomains request hostname is missing', async (assert) => {
+  test('get empty array when for subdomains request hostname is missing', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       delete req.headers['host']
@@ -869,7 +879,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get all unsigned cookies via plainCookies', async (assert) => {
+  test('get all unsigned cookies via plainCookies', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -891,7 +901,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get all signed cookies', async (assert) => {
+  test('get all signed cookies', async ({ assert }) => {
     const config = requestConfig
 
     const server = createServer((req, res) => {
@@ -915,7 +925,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get value for a single cookie', async (assert) => {
+  test('get value for a single cookie', async ({ assert }) => {
     const config = requestConfig
 
     const server = createServer((req, res) => {
@@ -931,7 +941,7 @@ test.group('Request', () => {
     })
   })
 
-  test('use default value when actual value is missing', async (assert) => {
+  test('use default value when actual value is missing', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -944,7 +954,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get value for a single unsigned cookie', async (assert) => {
+  test('get value for a single unsigned cookie', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -958,7 +968,7 @@ test.group('Request', () => {
     })
   })
 
-  test('use default value when actual unsigned value is missing', async (assert) => {
+  test('use default value when actual unsigned value is missing', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -971,7 +981,7 @@ test.group('Request', () => {
     })
   })
 
-  test('get value for a single encrypted', async (assert) => {
+  test('get value for a single encrypted', async ({ assert }) => {
     const config = requestConfig
 
     const server = createServer((req, res) => {
@@ -987,7 +997,7 @@ test.group('Request', () => {
     })
   })
 
-  test('use default value when actual value is missing', async (assert) => {
+  test('use default value when actual value is missing', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -1000,7 +1010,7 @@ test.group('Request', () => {
     })
   })
 
-  test('set x-request-id header when id method is called', async (assert) => {
+  test('set x-request-id header when id method is called', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -1022,7 +1032,7 @@ test.group('Request', () => {
     assert.equal(body.id, body.reComputed)
   })
 
-  test('do not generate request id when generateRequestId is false', async (assert) => {
+  test('do not generate request id when generateRequestId is false', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(
         req,
@@ -1044,7 +1054,7 @@ test.group('Request', () => {
     assert.notExists(body.id)
   })
 
-  test('do not append ? when query string is empty', async (assert) => {
+  test('do not append ? when query string is empty', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -1059,7 +1069,7 @@ test.group('Request', () => {
 })
 
 test.group('Verify signed url', () => {
-  test('return false when signature query param is missing', async (assert) => {
+  test('return false when signature query param is missing', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -1072,7 +1082,7 @@ test.group('Verify signed url', () => {
     })
   })
 
-  test('return false when signature cannot be decrypted', async (assert) => {
+  test('return false when signature cannot be decrypted', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -1085,7 +1095,7 @@ test.group('Verify signed url', () => {
     })
   })
 
-  test('return true when signature is valid', async (assert) => {
+  test('return true when signature is valid', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -1101,7 +1111,7 @@ test.group('Verify signed url', () => {
     })
   })
 
-  test('return true when signature is valid without any querystring', async (assert) => {
+  test('return true when signature is valid without any querystring', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -1117,7 +1127,7 @@ test.group('Verify signed url', () => {
     })
   })
 
-  test('return false when signature is valid but expired', async (assert) => {
+  test('return false when signature is valid but expired', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -1133,7 +1143,7 @@ test.group('Verify signed url', () => {
     })
   })
 
-  test('return true when expiry is in future', async (assert) => {
+  test('return true when expiry is in future', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -1149,7 +1159,7 @@ test.group('Verify signed url', () => {
     })
   })
 
-  test('return false when purpose is different', async (assert) => {
+  test('return false when purpose is different', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new Request(req, res, encryption, requestConfig)
       res.writeHead(200, { 'content-type': 'application/json' })
