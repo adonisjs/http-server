@@ -27,34 +27,22 @@ declare module '@ioc:Adonis/Core/CookieClient' {
     /**
      * Parse the set-cookie header
      */
-    parse(setCookieHeader: string): {
-      name: string
-      value: any
-      encrypted: boolean
-      signed: boolean
-      path?: string
-      expires?: Date
-      maxAge?: number
-      domain?: string
-      secure?: boolean
-      httpOnly?: boolean
-      sameSite?: 'lax' | 'none' | 'strict'
-    }[]
+    parse(key: string, value: string): any | null
 
     /**
      * Unsign a signed cookie value
      */
-    unsign(key: string, value: string): any
+    unsign(key: string, value: string): any | null
 
     /**
      * Decrypt an encrypted cookie value
      */
-    decrypt(key: string, value: string): any
+    decrypt(key: string, value: string): any | null
 
     /**
      * Decode an encoded cookie value
      */
-    decode(key: string, value: string): any
+    decode(key: string, value: string): any | null
   }
 
   const CookieClient: CookieClientContract

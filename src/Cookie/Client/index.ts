@@ -9,7 +9,6 @@
 
 /// <reference path="../../../adonis-typings/index.ts" />
 
-import setCookieParser from 'set-cookie-parser'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
 import { CookieClientContract } from '@ioc:Adonis/Core/CookieClient'
 
@@ -69,43 +68,28 @@ export class CookieClient implements CookieClientContract {
   }
 
   /**
-   * Parses the set-cookie header and returns an
-   * array of parsed cookies
+   * Parse response cookie
    */
-  public parse(setCookieHeader: string) {
-    const cookies = setCookieParser(setCookieHeader)
+  public parse(key: string, value: any) {
+    /**
+     * Unsign signed cookie
+     */
+    if (SignedCookie.canUnpack(value)) {
+      return SignedCookie.unpack(key, value, this.encryption)
+    }
 
-    return cookies.map((cookie: any) => {
-      cookie.encrypted = false
-      cookie.signed = false
-      const value = cookie.value
+    /**
+     * Decrypted encrypted cookie
+     */
+    if (EncryptedCookie.canUnpack(value)) {
+      return EncryptedCookie.unpack(key, value, this.encryption)
+    }
 
-      /**
-       * Unsign signed cookie
-       */
-      if (SignedCookie.canUnpack(value)) {
-        cookie.value = SignedCookie.unpack(cookie.name, value, this.encryption)
-        cookie.signed = true
-        return cookie
-      }
-
-      /**
-       * Decrypted encrypted cookie
-       */
-      if (EncryptedCookie.canUnpack(value)) {
-        cookie.value = EncryptedCookie.unpack(cookie.name, value, this.encryption)
-        cookie.encrypted = true
-        return cookie
-      }
-
-      /**
-       * Decode encoded cookie
-       */
-      if (PlainCookie.canUnpack(value)) {
-        cookie.value = PlainCookie.unpack(value)
-      }
-
-      return cookie
-    })
+    /**
+     * Decode encoded cookie
+     */
+    if (PlainCookie.canUnpack(value)) {
+      return PlainCookie.unpack(value)
+    }
   }
 }

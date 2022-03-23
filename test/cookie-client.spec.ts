@@ -33,4 +33,26 @@ test.group('Cookie Client', () => {
     const encoded = client.encode('user_id', 1)!
     assert.equal(client.decode('user_id', encoded), 1)
   })
+
+  test('parse plain cookie', async ({ assert }) => {
+    const client = new CookieClient(encryption)
+    const encoded = client.encode('user_id', 1)!
+    assert.equal(client.parse('user_id', encoded), 1)
+  })
+
+  test('parse encrypted cookie using cookie client', async ({ assert }) => {
+    const client = new CookieClient(encryption)
+    const encrypted = client.encrypt('user_id', 1)!
+
+    assert.isTrue(encrypted.startsWith('e:'))
+    assert.equal(client.parse('user_id', encrypted), 1)
+  })
+
+  test('parse signed cookie using cookie client', async ({ assert }) => {
+    const client = new CookieClient(encryption)
+    const signed = client.sign('user_id', 1)!
+
+    assert.isTrue(signed.startsWith('s:'))
+    assert.equal(client.parse('user_id', signed), 1)
+  })
 })
