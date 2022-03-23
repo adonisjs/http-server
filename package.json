@@ -108,7 +108,7 @@
     "etag": "^1.8.1",
     "fresh": "^0.5.2",
     "haye": "^3.0.0",
-    "macroable": "^6.0.3",
+    "macroable": "^7.0.0",
     "mime-types": "^2.1.35",
     "ms": "^2.1.3",
     "on-finished": "^2.4.1",

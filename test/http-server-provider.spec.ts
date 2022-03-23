@@ -62,7 +62,7 @@ test.group('Http Context', (group) => {
 
   test('add macro to http context', async ({ assert }) => {
     await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
-    HttpContext.macro<HttpContext>('url', function url() {
+    HttpContext.macro('url', function url() {
       return `user/${this.params.id}`
     })
 
