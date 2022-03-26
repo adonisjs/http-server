@@ -129,7 +129,7 @@ export class Router implements RouterContract {
    * Define `GET` route
    */
   public get(pattern: string, handler: RouteHandler): Route {
-    return this.route(pattern, ['HEAD', 'GET'], handler)
+    return this.route(pattern, ['GET', 'HEAD'], handler)
   }
 
   /**

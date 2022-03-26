@@ -41,7 +41,7 @@ test.group('Router | add', () => {
 
     assert.deepEqual(getRoute.toJSON(), {
       pattern: '/',
-      methods: ['HEAD', 'GET'],
+      methods: ['GET', 'HEAD'],
       meta: {
         namespace: undefined,
       },
@@ -2777,7 +2777,7 @@ test.group('Brisk route', () => {
           name: undefined,
           pattern: '/',
           handler,
-          methods: ['HEAD', 'GET'],
+          methods: ['GET', 'HEAD'],
           middleware: [],
           meta: {
             namespace: undefined,
@@ -2810,7 +2810,7 @@ test.group('Brisk route', () => {
           meta: {
             namespace: undefined,
           },
-          methods: ['HEAD', 'GET'],
+          methods: ['GET', 'HEAD'],
         },
       ],
     })

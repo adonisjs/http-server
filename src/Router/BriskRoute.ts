@@ -63,7 +63,7 @@ export class BriskRoute extends Macroable implements BriskRouteContract {
       )
     }
 
-    this.route = new Route(this.pattern, methods || ['HEAD', 'GET'], handler, this.globalMatchers)
+    this.route = new Route(this.pattern, methods || ['GET', 'HEAD'], handler, this.globalMatchers)
     this.invokedBy = invokedBy
     return this.route
   }

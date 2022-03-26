@@ -140,7 +140,7 @@ test.group('Route Group', () => {
         meta: {
           namespace: undefined,
         },
-        methods: ['HEAD', 'GET'],
+        methods: ['GET', 'HEAD'],
         domain: 'root',
         middleware: ['auth', 'impersonate', 'limitter', 'acl', 'log', 'logGet'],
         handler: 'PostsController.index',
@@ -152,7 +152,7 @@ test.group('Route Group', () => {
         meta: {
           namespace: undefined,
         },
-        methods: ['HEAD', 'GET'],
+        methods: ['GET', 'HEAD'],
         domain: 'root',
         middleware: [
           'auth',
@@ -185,7 +185,7 @@ test.group('Route Group', () => {
         meta: {
           namespace: undefined,
         },
-        methods: ['HEAD', 'GET'],
+        methods: ['GET', 'HEAD'],
         domain: 'root',
         middleware: ['auth', 'impersonate', 'limitter', 'acl', 'log', 'logGet'],
         handler: 'PostsController.show',
@@ -197,7 +197,7 @@ test.group('Route Group', () => {
         meta: {
           namespace: undefined,
         },
-        methods: ['HEAD', 'GET'],
+        methods: ['GET', 'HEAD'],
         domain: 'root',
         middleware: ['auth', 'impersonate', 'limitter', 'acl', 'log'],
         handler: 'PostsController.edit',
@@ -324,7 +324,7 @@ test.group('Route Group', () => {
         meta: {
           namespace: undefined,
         },
-        methods: ['HEAD', 'GET'],
+        methods: ['GET', 'HEAD'],
         domain: 'root',
         middleware: [],
         handler: 'PhotosController.index',
@@ -336,7 +336,7 @@ test.group('Route Group', () => {
         meta: {
           namespace: undefined,
         },
-        methods: ['HEAD', 'GET'],
+        methods: ['GET', 'HEAD'],
         domain: 'root',
         middleware: [],
         handler: 'PhotosController.create',
@@ -360,7 +360,7 @@ test.group('Route Group', () => {
         meta: {
           namespace: undefined,
         },
-        methods: ['HEAD', 'GET'],
+        methods: ['GET', 'HEAD'],
         domain: 'root',
         middleware: [],
         handler: 'PhotosController.show',
@@ -372,7 +372,7 @@ test.group('Route Group', () => {
         meta: {
           namespace: undefined,
         },
-        methods: ['HEAD', 'GET'],
+        methods: ['GET', 'HEAD'],
         domain: 'root',
         middleware: [],
         handler: 'PhotosController.edit',
@@ -417,7 +417,7 @@ test.group('Route Group', () => {
         meta: {
           namespace: undefined,
         },
-        methods: ['HEAD', 'GET'],
+        methods: ['GET', 'HEAD'],
         domain: 'root',
         middleware: [],
         handler: 'PhotosController.index',
@@ -429,7 +429,7 @@ test.group('Route Group', () => {
         meta: {
           namespace: undefined,
         },
-        methods: ['HEAD', 'GET'],
+        methods: ['GET', 'HEAD'],
         domain: 'root',
         middleware: [],
         handler: 'PhotosController.create',
@@ -453,7 +453,7 @@ test.group('Route Group', () => {
         meta: {
           namespace: undefined,
         },
-        methods: ['HEAD', 'GET'],
+        methods: ['GET', 'HEAD'],
         domain: 'root',
         middleware: [],
         handler: 'PhotosController.show',
@@ -465,7 +465,7 @@ test.group('Route Group', () => {
         meta: {
           namespace: undefined,
         },
-        methods: ['HEAD', 'GET'],
+        methods: ['GET', 'HEAD'],
         domain: 'root',
         middleware: [],
         handler: 'PhotosController.edit',
