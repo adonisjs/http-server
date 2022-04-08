@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-declare module '@ioc:Adonis/Core/Route' {
+ declare module '@ioc:Adonis/Core/Route' {
   import { MacroableConstructorContract } from 'macroable'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
   import { ResolvedMiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
@@ -603,6 +603,12 @@ declare module '@ioc:Adonis/Core/Route' {
      * Append query string to the final URI
      */
     qs(qs?: Record<string, any>): this
+
+    /**
+     * Finds the route inside the list of registered routes and
+     * raises exception when unable to
+     */
+    findRouteOrFail(identifier: string)
 
     /**
      * Define required params to resolve the route

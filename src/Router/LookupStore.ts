@@ -99,22 +99,6 @@ export class UrlBuilder implements UrlBuilderContract {
   }
 
   /**
-   * Finds the route inside the list of registered routes and
-   * raises exception when unable to
-   */
-  private findRouteOrFail(identifier: string) {
-    const route = this.routes.find(({ name, pattern, handler }) => {
-      return name === identifier || pattern === identifier || handler === identifier
-    })
-
-    if (!route) {
-      throw RouterException.cannotLookupRoute(identifier)
-    }
-
-    return route
-  }
-
-  /**
    * Suffix the query string to the URL
    */
   private suffixQueryString(url: string): string {
@@ -124,6 +108,22 @@ export class UrlBuilder implements UrlBuilderContract {
     }
 
     return url
+  }
+
+  /**
+   * Finds the route inside the list of registered routes and
+   * raises exception when unable to
+   */
+  public findRouteOrFail(identifier: string) {
+    const route = this.routes.find(({ name, pattern, handler }) => {
+      return name === identifier || pattern === identifier || handler === identifier
+    })
+
+    if (!route) {
+      throw RouterException.cannotLookupRoute(identifier)
+    }
+
+    return route
   }
 
   /**
