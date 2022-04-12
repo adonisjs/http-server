@@ -419,6 +419,7 @@ declare module '@ioc:Adonis/Core/Route' {
     qs?: Record<string, any>
     domain?: string
     prefixUrl?: string
+    disableRouteLookup?: boolean
   } & Record<string, any>
 
   /**
@@ -613,6 +614,12 @@ declare module '@ioc:Adonis/Core/Route' {
      * Generate url for the given route
      */
     make(identifier: string): string
+
+    /**
+     * Disable route lookup and consider identifier
+     * as the route pattern
+     */
+    disableRouteLookup(): this
 
     /**
      * Generate signed url for the given route

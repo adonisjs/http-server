@@ -166,6 +166,7 @@ export function normalizeMakeUrlOptions(params?: any[] | MakeUrlOptions, options
   const qs = options.qs || params['qs']
   const domain = options.domain
   const prefixUrl = options.prefixUrl
+  const disableRouteLookup = options.disableRouteLookup || false
 
   /**
    * Using legacy options
@@ -177,7 +178,7 @@ export function normalizeMakeUrlOptions(params?: any[] | MakeUrlOptions, options
     )
   })
 
-  return { params: normalizedParams, qs, domain, prefixUrl }
+  return { params: normalizedParams, qs, domain, prefixUrl, disableRouteLookup }
 }
 
 /**
@@ -200,6 +201,7 @@ export function normalizeMakeSignedUrlOptions(
   const purpose = options.purpose || params['purpose']
   const domain = options.domain
   const prefixUrl = options.prefixUrl
+  const disableRouteLookup = options.disableRouteLookup || false
 
   /**
    * Using legacy options
@@ -215,7 +217,7 @@ export function normalizeMakeSignedUrlOptions(
     }
   )
 
-  return { params: normalizedParams, qs, domain, prefixUrl, expiresIn, purpose }
+  return { params: normalizedParams, qs, domain, prefixUrl, expiresIn, purpose, disableRouteLookup }
 }
 
 /**

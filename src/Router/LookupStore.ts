@@ -35,6 +35,12 @@ export class UrlBuilder implements UrlBuilderContract {
   private queryString: Record<string, any> = {}
 
   /**
+   * A boolean to know if the route should be looked
+   * up inside the route store or not
+   */
+  private lookupRoute = true
+
+  /**
    * A baseUrl to prefix to the endpoint
    */
   private baseUrl: string
@@ -135,6 +141,15 @@ export class UrlBuilder implements UrlBuilderContract {
   }
 
   /**
+   * Disable route lookup. Calling this method considers
+   * the "identifier" as the route pattern
+   */
+  public disableRouteLookup(): this {
+    this.lookupRoute = false
+    return this
+  }
+
+  /**
    * Append query string to the final URI
    */
   public qs(queryString?: Record<string, any>): this {
@@ -161,8 +176,14 @@ export class UrlBuilder implements UrlBuilderContract {
    * Generate url for the given route identifier
    */
   public make(identifier: string) {
-    const route = this.findRouteOrFail(identifier)
-    const url = this.processPattern(route.pattern)
+    let url: string
+
+    if (this.lookupRoute) {
+      const route = this.findRouteOrFail(identifier)
+      url = this.processPattern(route.pattern)
+    } else {
+      url = this.processPattern(identifier)
+    }
     return this.suffixQueryString(this.baseUrl ? `${this.baseUrl}${url}` : url)
   }
 
@@ -173,8 +194,14 @@ export class UrlBuilder implements UrlBuilderContract {
     identifier: string,
     options?: { expiresIn?: string | number; purpose?: string }
   ) {
-    const route = this.findRouteOrFail(identifier)
-    const url = this.processPattern(route.pattern)
+    let url: string
+
+    if (this.lookupRoute) {
+      const route = this.findRouteOrFail(identifier)
+      url = this.processPattern(route.pattern)
+    } else {
+      url = this.processPattern(identifier)
+    }
 
     /*
      * Making the signature from the qualified url. We do not prefix the domain when

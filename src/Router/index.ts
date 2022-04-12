@@ -392,6 +392,7 @@ export class Router implements RouterContract {
     normalizedOptions.params && builder.params(normalizedOptions.params)
     normalizedOptions.qs && builder.qs(normalizedOptions.qs)
     normalizedOptions.prefixUrl && builder.prefixUrl(normalizedOptions.prefixUrl)
+    normalizedOptions.disableRouteLookup && builder.disableRouteLookup()
 
     return builder.make(routeIdentifier)
   }
@@ -413,6 +414,7 @@ export class Router implements RouterContract {
     normalizedOptions.params && builder.params(normalizedOptions.params)
     normalizedOptions.qs && builder.qs(normalizedOptions.qs)
     normalizedOptions.prefixUrl && builder.prefixUrl(normalizedOptions.prefixUrl)
+    normalizedOptions.disableRouteLookup && builder.disableRouteLookup()
 
     return builder.makeSigned(routeIdentifier, normalizedOptions)
   }

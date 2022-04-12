@@ -3018,6 +3018,12 @@ test.group('Router | Make url', () => {
       'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
     )
   })
+
+  test('make url without performing route lookup', ({ assert }) => {
+    const router = new Router(encryption)
+    const url = router.makeUrl('/posts/:id', { id: 1 }, { disableRouteLookup: true })
+    assert.equal(url, '/posts/1')
+  })
 })
 
 test.group('Make signed url', () => {
@@ -3181,6 +3187,14 @@ test.group('Make signed url', () => {
       'E_CANNOT_MAKE_ROUTE_URL: "*" param is required to make URL for "/posts/*" route'
     )
   })
+
+  test('make signed url without performing route lookup', ({ assert }) => {
+    const router = new Router(encryption)
+
+    const url = router.makeSignedUrl('/posts/:id', { id: 1 }, { disableRouteLookup: true })!
+    const qs = parse(url.split('?')[1])
+    assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
+  }).pin()
 })
 
 test.group('Regression', () => {
