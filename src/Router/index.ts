@@ -393,7 +393,7 @@ export class Router implements RouterContract {
     normalizedOptions.qs && builder.qs(normalizedOptions.qs)
     normalizedOptions.prefixUrl && builder.prefixUrl(normalizedOptions.prefixUrl)
 
-    return builder.make(routeIdentifier)
+    return builder.make(routeIdentifier, options?.locale)
   }
 
   /**

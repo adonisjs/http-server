@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
- declare module '@ioc:Adonis/Core/Route' {
+declare module '@ioc:Adonis/Core/Route' {
   import { MacroableConstructorContract } from 'macroable'
   import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
   import { ResolvedMiddlewareHandler } from '@ioc:Adonis/Core/Middleware'
@@ -97,6 +97,11 @@
      * A unique name to lookup routes by name
      */
     name?: string
+
+    /**
+     * The locale of the route
+     */
+    locale?: string
   }
 
   /**
@@ -144,6 +149,7 @@
     methods: string[]
     pattern: string
     name?: string
+    locale?: string
   }
 
   /**
@@ -419,6 +425,7 @@
     qs?: Record<string, any>
     domain?: string
     prefixUrl?: string
+    locale?: string
   } & Record<string, any>
 
   /**
@@ -608,7 +615,7 @@
      * Finds the route inside the list of registered routes and
      * raises exception when unable to
      */
-    findRouteOrFail(identifier: string)
+    findRouteOrFail(identifier: string, locale?: string)
 
     /**
      * Define required params to resolve the route

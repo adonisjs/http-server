@@ -114,10 +114,20 @@ export class UrlBuilder implements UrlBuilderContract {
    * Finds the route inside the list of registered routes and
    * raises exception when unable to
    */
-  public findRouteOrFail(identifier: string) {
-    const route = this.routes.find(({ name, pattern, handler }) => {
-      return name === identifier || pattern === identifier || handler === identifier
-    })
+  public findRouteOrFail(identifier: string, localeQuery?: string) {
+    let route
+    if (localeQuery) {
+      route = this.routes.find(({ name, pattern, handler, locale }) => {
+        return (
+          (name === identifier || pattern === identifier || handler === identifier) &&
+          locale === localeQuery
+        )
+      })
+    } else {
+      route = this.routes.find(({ name, pattern, handler }) => {
+        return name === identifier || pattern === identifier || handler === identifier
+      })
+    }
 
     if (!route) {
       throw RouterException.cannotLookupRoute(identifier)
@@ -160,8 +170,8 @@ export class UrlBuilder implements UrlBuilderContract {
   /**
    * Generate url for the given route identifier
    */
-  public make(identifier: string) {
-    const route = this.findRouteOrFail(identifier)
+  public make(identifier: string, locale?: string) {
+    const route = this.findRouteOrFail(identifier, locale)
     const url = this.processPattern(route.pattern)
     return this.suffixQueryString(this.baseUrl ? `${this.baseUrl}${url}` : url)
   }

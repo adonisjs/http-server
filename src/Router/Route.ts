@@ -84,6 +84,11 @@ export class Route extends Macroable implements RouteContract {
    */
   public name: string
 
+  /**
+   * The locale of the route
+   */
+  public locale: string
+
   constructor(
     private pattern: string,
     private methods: string[],
@@ -224,6 +229,7 @@ export class Route extends Macroable implements RouteContract {
       handler: this.handler,
       methods: this.methods,
       middleware: this.routeMiddleware.flat(),
+      locale: this.locale,
     }
   }
 }

@@ -132,7 +132,7 @@ export class Store {
     const routeJSON = {} as RouteNode
     lodash.merge(
       routeJSON,
-      lodash.pick(route, ['pattern', 'handler', 'meta', 'middleware', 'name'])
+      lodash.pick(route, ['pattern', 'handler', 'meta', 'middleware', 'name', 'locale'])
     )
 
     /*
