@@ -46,7 +46,7 @@ import { LookupStore } from './LookupStore'
  * })
  * ```
  */
-export class Router implements RouterContract {
+export class Router extends LookupStore implements RouterContract {
   /**
    * Collection of routes, including route resource and route
    * group. To get a flat list of routes, call `router.toJSON()`
@@ -74,11 +74,6 @@ export class Router implements RouterContract {
   private paramMatchers: RouteMatchersNode = {}
 
   /**
-   * The lookup store instance
-   */
-  private lookupStore = new LookupStore(this.encryption)
-
-  /**
    * Store with tokenized routes
    */
   private store: Store = new Store()
@@ -93,10 +88,9 @@ export class Router implements RouterContract {
     return this.openedGroups[this.openedGroups.length - 1]
   }
 
-  constructor(
-    private encryption: EncryptionContract,
-    private routeProcessor?: (route: RouteNode) => void
-  ) {}
+  constructor(encryption: EncryptionContract, private routeProcessor?: (route: RouteNode) => void) {
+    super(encryption)
+  }
 
   /**
    * Add route for a given pattern and methods
@@ -269,7 +263,7 @@ export class Router implements RouterContract {
    * Returns a flat list of routes JSON
    */
   public toJSON() {
-    const lookupStoreRoutes = this.lookupStore.tree
+    const lookupStoreRoutes = this.tree
     const domains = Object.keys(lookupStoreRoutes)
 
     return domains.reduce<{ [domain: string]: (RouteNode & { methods: string[] })[] }>(
@@ -318,7 +312,7 @@ export class Router implements RouterContract {
       /**
        * Register the route with the lookup store
        */
-      this.lookupStore.register(route)
+      this.register(route)
       this.store.add(route)
     })
 
@@ -359,20 +353,6 @@ export class Router implements RouterContract {
     }
 
     return response
-  }
-
-  /**
-   * Access to the URL builder
-   */
-  public builder() {
-    return this.lookupStore.builder()
-  }
-
-  /**
-   * Access to the URL builder for a specific domain
-   */
-  public builderForDomain(domainPattern: string) {
-    return this.lookupStore.builderForDomain(domainPattern)
   }
 
   /**

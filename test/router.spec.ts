@@ -3702,3 +3702,69 @@ test.group('Regression', () => {
     })
   })
 })
+
+test.group('Router | find', () => {
+  test('find a route by its pattern', ({ assert }) => {
+    async function handler() {}
+
+    const router = new Router(encryption)
+    router.get('posts/:id', handler)
+    router.commit()
+
+    const route = router.find('/posts/:id')!
+    assert.deepEqual(route, {
+      domain: 'root',
+      pattern: '/posts/:id',
+      matchers: {},
+      meta: {
+        namespace: undefined,
+      },
+      name: undefined,
+      handler,
+      methods: ['GET', 'HEAD'],
+      middleware: [],
+    })
+  })
+
+  test("find a route by it's name", ({ assert }) => {
+    async function handler() {}
+
+    const router = new Router(encryption)
+    router.get('posts/:id', handler).as('showPost')
+    router.commit()
+
+    const route = router.find('showPost')!
+    assert.deepEqual(route, {
+      domain: 'root',
+      pattern: '/posts/:id',
+      matchers: {},
+      meta: {
+        namespace: undefined,
+      },
+      name: 'showPost',
+      handler,
+      methods: ['GET', 'HEAD'],
+      middleware: [],
+    })
+  })
+
+  test("find route by it's controller method", ({ assert }) => {
+    const router = new Router(encryption)
+    router.get('posts/:id', 'PostsController.index').as('showPost')
+    router.commit()
+
+    const route = router.find('PostsController.index')!
+    assert.deepEqual(route, {
+      domain: 'root',
+      pattern: '/posts/:id',
+      matchers: {},
+      meta: {
+        namespace: undefined,
+      },
+      name: 'showPost',
+      handler: 'PostsController.index',
+      methods: ['GET', 'HEAD'],
+      middleware: [],
+    })
+  })
+})
