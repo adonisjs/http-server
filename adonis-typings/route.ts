@@ -137,20 +137,10 @@ declare module '@ioc:Adonis/Core/Route' {
   }
 
   /**
-   * Shape of the identifier node of the URL builder
-   */
-  export type LookupStoreIdentifier = {
-    handler: RouteHandler
-    methods: string[]
-    pattern: string
-    name?: string
-  }
-
-  /**
    * Shape of the routes tree maintained by the UrlBuilder
    */
   export type LookupStoreTree = {
-    [domain: string]: LookupStoreIdentifier[]
+    [domain: string]: RouteJSON[]
   }
 
   /**
@@ -580,6 +570,24 @@ declare module '@ioc:Adonis/Core/Route' {
    * directly
    */
   export interface LookupStoreContract {
+    /**
+     * Find a route by indentifier. Optionally one can find routes inside
+     * a given domain
+     */
+    find(routeIdentifier: string, domainPattern?: string): RouteJSON | null
+
+    /**
+     * Find a route by indentifier or fail. Optionally one can find routes inside
+     * a given domain
+     */
+    findOrFail(routeIdentifier: string, domainPattern?: string): RouteJSON
+
+    /**
+     * Find if a route for given identifier exists. Optionally one can find routes inside
+     * a given domain
+     */
+    has(routeIdentifier: string, domainPattern?: string): boolean
+
     /**
      * Get the builder instance for the main domain
      */

@@ -3194,7 +3194,7 @@ test.group('Make signed url', () => {
     const url = router.makeSignedUrl('/posts/:id', { id: 1 }, { disableRouteLookup: true })!
     const qs = parse(url.split('?')[1])
     assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
-  }).pin()
+  })
 })
 
 test.group('Regression', () => {

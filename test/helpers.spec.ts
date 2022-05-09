@@ -17,6 +17,7 @@ test.group('Helpers | normalizeMakeUrlOptions', () => {
       qs: { method: '_GET' },
       prefixUrl: undefined,
       domain: undefined,
+      disableRouteLookup: false,
     })
   })
 
@@ -26,6 +27,7 @@ test.group('Helpers | normalizeMakeUrlOptions', () => {
       qs: { method: '_GET' },
       prefixUrl: undefined,
       domain: undefined,
+      disableRouteLookup: false,
     })
   })
 
@@ -40,6 +42,7 @@ test.group('Helpers | normalizeMakeUrlOptions', () => {
         qs: { method: 'POST' },
         prefixUrl: undefined,
         domain: undefined,
+        disableRouteLookup: false,
       }
     )
   })
@@ -50,6 +53,7 @@ test.group('Helpers | normalizeMakeUrlOptions', () => {
       qs: { method: 'POST' },
       prefixUrl: undefined,
       domain: undefined,
+      disableRouteLookup: false,
     })
   })
 })
@@ -63,6 +67,7 @@ test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
       purpose: undefined,
       prefixUrl: undefined,
       domain: undefined,
+      disableRouteLookup: false,
     })
   })
 
@@ -74,6 +79,7 @@ test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
       purpose: undefined,
       prefixUrl: undefined,
       domain: undefined,
+      disableRouteLookup: false,
     })
   })
 
@@ -85,6 +91,7 @@ test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
       purpose: undefined,
       prefixUrl: undefined,
       domain: undefined,
+      disableRouteLookup: false,
     })
   })
 
@@ -96,6 +103,7 @@ test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
       purpose: 'login',
       prefixUrl: undefined,
       domain: undefined,
+      disableRouteLookup: false,
     })
   })
 
@@ -112,6 +120,7 @@ test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
         purpose: undefined,
         prefixUrl: undefined,
         domain: undefined,
+        disableRouteLookup: false,
       }
     )
   })
@@ -124,6 +133,7 @@ test.group('Helpers | normalizeMakeSignedUrlOptions', () => {
       purpose: undefined,
       prefixUrl: undefined,
       domain: undefined,
+      disableRouteLookup: false,
     })
   })
 })

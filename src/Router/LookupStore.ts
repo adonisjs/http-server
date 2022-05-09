@@ -14,11 +14,49 @@ import {
   RouteJSON,
   LookupStoreTree,
   UrlBuilderContract,
-  LookupStoreIdentifier,
+  LookupStoreContract,
 } from '@ioc:Adonis/Core/Route'
-
 import { RouterException } from '../Exceptions/RouterException'
 import { EncryptionContract } from '@ioc:Adonis/Core/Encryption'
+
+/**
+ * A class to encapsulate finding routes
+ */
+class Routes {
+  constructor(private routes: RouteJSON[]) {}
+
+  /**
+   * Find a route by indentifier
+   */
+  public find(routeIdentifier: string): RouteJSON | null {
+    return (
+      this.routes.find(({ name, pattern, handler }) => {
+        return (
+          name === routeIdentifier || pattern === routeIdentifier || handler === routeIdentifier
+        )
+      }) || null
+    )
+  }
+
+  /**
+   * Find a route by indentifier or fail
+   */
+  public findOrFail(routeIdentifier: string): RouteJSON {
+    const route = this.find(routeIdentifier)
+    if (!route) {
+      throw RouterException.cannotLookupRoute(routeIdentifier)
+    }
+
+    return route
+  }
+
+  /**
+   * Find if a route exists
+   */
+  public has(routeIdentifier: string): boolean {
+    return !!this.find(routeIdentifier)
+  }
+}
 
 /**
  * Url builder is responsible for building the URLs
@@ -45,7 +83,7 @@ export class UrlBuilder implements UrlBuilderContract {
    */
   private baseUrl: string
 
-  constructor(private encryption: EncryptionContract, private routes: LookupStoreIdentifier[]) {}
+  constructor(private encryption: EncryptionContract, private routes: Routes) {}
 
   /**
    * Processes the pattern against the params
@@ -102,22 +140,6 @@ export class UrlBuilder implements UrlBuilderContract {
     }
 
     return url.join('/')
-  }
-
-  /**
-   * Finds the route inside the list of registered routes and
-   * raises exception when unable to
-   */
-  private findRouteOrFail(identifier: string) {
-    const route = this.routes.find(({ name, pattern, handler }) => {
-      return name === identifier || pattern === identifier || handler === identifier
-    })
-
-    if (!route) {
-      throw RouterException.cannotLookupRoute(identifier)
-    }
-
-    return route
   }
 
   /**
@@ -179,7 +201,7 @@ export class UrlBuilder implements UrlBuilderContract {
     let url: string
 
     if (this.lookupRoute) {
-      const route = this.findRouteOrFail(identifier)
+      const route = this.routes.findOrFail(identifier)
       url = this.processPattern(route.pattern)
     } else {
       url = this.processPattern(identifier)
@@ -197,7 +219,7 @@ export class UrlBuilder implements UrlBuilderContract {
     let url: string
 
     if (this.lookupRoute) {
-      const route = this.findRouteOrFail(identifier)
+      const route = this.routes.findOrFail(identifier)
       url = this.processPattern(route.pattern)
     } else {
       url = this.processPattern(identifier)
@@ -230,7 +252,7 @@ export class UrlBuilder implements UrlBuilderContract {
  * The look up store to make URLs for a given route by looking
  * it by its name, route handler or the pattern directly.
  */
-export class LookupStore {
+export class LookupStore implements LookupStoreContract {
   /**
    * Shape of the registered routes. Optimized for lookups
    */
@@ -244,12 +266,7 @@ export class LookupStore {
   public register(route: RouteJSON) {
     const domain = route.domain || 'root'
     this.tree[domain] = this.tree[domain] || []
-    this.tree[domain].push({
-      methods: route.methods,
-      name: route.name,
-      handler: route.handler,
-      pattern: route.pattern,
-    })
+    this.tree[domain].push(route)
   }
 
   /**
@@ -268,6 +285,33 @@ export class LookupStore {
       throw RouterException.cannotLookupDomain(domainPattern)
     }
 
-    return new UrlBuilder(this.encryption, domainRoutes || [])
+    return new UrlBuilder(this.encryption, new Routes(domainRoutes || []))
+  }
+
+  /**
+   * Find a route by indentifier. Optionally one can find routes inside
+   * a given domain
+   */
+  public find(routeIdentifier: string, domainPattern?: string): RouteJSON | null {
+    const routes = this.tree[domainPattern || 'root'] || []
+    return new Routes(routes || []).find(routeIdentifier)
+  }
+
+  /**
+   * Find a route by indentifier or fail. Optionally one can find routes inside
+   * a given domain
+   */
+  public findOrFail(routeIdentifier: string, domainPattern?: string): RouteJSON {
+    const routes = this.tree[domainPattern || 'root'] || []
+    return new Routes(routes || []).findOrFail(routeIdentifier)
+  }
+
+  /**
+   * Find if a route for given identifier exists. Optionally one can find routes inside
+   * a given domain
+   */
+  public has(routeIdentifier: string, domainPattern?: string): boolean {
+    const routes = this.tree[domainPattern || 'root'] || []
+    return new Routes(routes || []).has(routeIdentifier)
   }
 }
