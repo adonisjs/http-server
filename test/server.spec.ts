@@ -1405,4 +1405,65 @@ test.group('Server | all', (group) => {
       })
     })
   }
+
+  test('allow controller to provide method properties', async ({ assert }) => {
+    class User {
+      public username = 'virk'
+    }
+
+    class HomeController {
+      protected getHandlerArguments(ctx: HttpContextContract) {
+        return [ctx, new User()]
+      }
+
+      public async index(_ctx: HttpContextContract, user: User) {
+        return user.username
+      }
+    }
+
+    const app = await setupApp()
+    app.container.bind('App/Controllers/Http/HomeController', () => new HomeController())
+
+    const server = new Server(app, encryption, serverConfig)
+    server.router.get('/', 'HomeController.index')
+    server.optimize()
+
+    const httpServer = createServer(server.handle.bind(server))
+
+    const { text } = await supertest(httpServer).get('/')
+    assert.equal(text, 'virk')
+  })
+
+  test('custom method arguments should be used over inject decorator', async ({ assert }) => {
+    class User {
+      public username = 'virk'
+    }
+
+    class AnotherUser {
+      public username = 'nikk'
+    }
+
+    class HomeController {
+      protected getHandlerArguments(ctx: HttpContextContract) {
+        return [ctx, new AnotherUser()]
+      }
+
+      @inject()
+      public async index(_ctx: HttpContextContract, user: User) {
+        return user.username
+      }
+    }
+
+    const app = await setupApp()
+    app.container.bind('App/Controllers/Http/HomeController', () => new HomeController())
+
+    const server = new Server(app, encryption, serverConfig)
+    server.router.get('/', 'HomeController.index')
+    server.optimize()
+
+    const httpServer = createServer(server.handle.bind(server))
+
+    const { text } = await supertest(httpServer).get('/')
+    assert.equal(text, 'nikk')
+  })
 })

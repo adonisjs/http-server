@@ -45,7 +45,15 @@ export class PreCompiler {
     if (routeHandler.type === 'function') {
       returnValue = await routeHandler.handler(ctx)
     } else {
-      returnValue = await this.resolver.call(routeHandler, undefined, [ctx])
+      returnValue = await this.resolver.call(routeHandler, undefined, (controller) => {
+        /**
+         * Allowing controller to provide the controller method argument
+         */
+        if (typeof controller['getHandlerArguments'] === 'function') {
+          return controller['getHandlerArguments'](ctx)
+        }
+        return [ctx]
+      })
     }
 
     if (useReturnValue(returnValue, ctx)) {

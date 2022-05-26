@@ -36,7 +36,7 @@
   "author": "virk,adonisjs",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/application": "^5.2.4",
+    "@adonisjs/application": "^5.2.5",
     "@adonisjs/encryption": "^4.0.8",
     "@adonisjs/mrm-preset": "^5.0.3",
     "@adonisjs/require-ts": "^2.0.12",
