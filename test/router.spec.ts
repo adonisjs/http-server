@@ -225,6 +225,7 @@ test.group('Router | add', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -254,6 +255,7 @@ test.group('Router | add', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -313,6 +315,7 @@ test.group('Router | add', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: ['auth', 'admin:acl'],
                 name: undefined,
               },
@@ -336,6 +339,7 @@ test.group('Router | add', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: ['auth', 'admin:acl'],
                 name: undefined,
               },
@@ -395,6 +399,7 @@ test.group('Router | add', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -418,6 +423,7 @@ test.group('Router | add', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -477,6 +483,7 @@ test.group('Router | add', () => {
                 meta: {
                   namespace: 'User',
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -500,6 +507,7 @@ test.group('Router | add', () => {
                 meta: {
                   namespace: 'User',
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -570,6 +578,7 @@ test.group('Router | add', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['user_id', 'id'],
                 middleware: [],
                 name: undefined,
               },
@@ -603,6 +612,7 @@ test.group('Router | add', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['user_id', 'id'],
                 middleware: [],
                 name: undefined,
               },
@@ -688,6 +698,7 @@ test.group('Router | add', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'api.admin.home',
               },
@@ -711,6 +722,7 @@ test.group('Router | add', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'api.admin.home',
               },
@@ -761,6 +773,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -784,6 +797,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -837,6 +851,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -860,6 +875,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -988,6 +1004,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'posts.index',
               },
@@ -997,6 +1014,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'posts.create',
               },
@@ -1006,6 +1024,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.show',
               },
@@ -1015,6 +1034,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.edit',
               },
@@ -1114,6 +1134,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'posts.index',
               },
@@ -1123,6 +1144,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'posts.create',
               },
@@ -1132,6 +1154,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.show',
               },
@@ -1141,6 +1164,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.edit',
               },
@@ -1170,6 +1194,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'posts.store',
               },
@@ -1207,6 +1232,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.update',
               },
@@ -1244,6 +1270,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.update',
               },
@@ -1281,6 +1308,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.destroy',
               },
@@ -1437,6 +1465,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'posts.index',
               },
@@ -1446,6 +1475,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'posts.create',
               },
@@ -1455,6 +1485,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.show',
               },
@@ -1464,6 +1495,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.edit',
               },
@@ -1587,6 +1619,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'posts.index',
               },
@@ -1596,6 +1629,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'posts.create',
               },
@@ -1605,6 +1639,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.show',
               },
@@ -1614,6 +1649,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.edit',
               },
@@ -1649,6 +1685,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'posts.store',
               },
@@ -1692,6 +1729,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.update',
               },
@@ -1735,6 +1773,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.update',
               },
@@ -1778,6 +1817,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.destroy',
               },
@@ -1905,6 +1945,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['post_id'],
                 middleware: [],
                 name: 'posts.comments.index',
               },
@@ -1914,6 +1955,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['post_id'],
                 middleware: [],
                 name: 'posts.comments.create',
               },
@@ -1923,6 +1965,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.comments.show',
               },
@@ -1932,6 +1975,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.comments.edit',
               },
@@ -2035,6 +2079,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['post_id'],
                 middleware: [],
                 name: 'posts.comments.index',
               },
@@ -2044,6 +2089,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['post_id'],
                 middleware: [],
                 name: 'posts.comments.create',
               },
@@ -2053,7 +2099,9 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
+                params: ['id'],
                 name: 'posts.comments.show',
               },
               '/comments/:id/edit': {
@@ -2062,6 +2110,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.comments.edit',
               },
@@ -2099,6 +2148,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['post_id'],
                 middleware: [],
                 name: 'posts.comments.store',
               },
@@ -2130,6 +2180,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.comments.update',
               },
@@ -2161,6 +2212,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.comments.update',
               },
@@ -2192,6 +2244,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: 'posts.comments.destroy',
               },
@@ -2265,6 +2318,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'v1.photos.create',
               },
@@ -2294,6 +2348,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'v1.photos.create',
               },
@@ -2344,6 +2399,7 @@ test.group('Router | commit', () => {
                   processed: true,
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -2368,6 +2424,7 @@ test.group('Router | commit', () => {
                   processed: true,
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -2424,6 +2481,7 @@ test.group('Router | commit', () => {
                   processed: true,
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'photos.create',
               },
@@ -2454,6 +2512,7 @@ test.group('Router | commit', () => {
                   processed: true,
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'photos.create',
               },
@@ -2506,6 +2565,7 @@ test.group('Router | commit', () => {
                   processed: true,
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -2530,6 +2590,7 @@ test.group('Router | commit', () => {
                   processed: true,
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -2581,6 +2642,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: undefined,
               },
@@ -2606,6 +2668,7 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: undefined,
               },
@@ -2630,6 +2693,7 @@ test.group('Router | match', () => {
         meta: {
           namespace: undefined,
         },
+        params: [],
         middleware: [],
         pattern: '/photos',
         name: 'photos.index',
@@ -2645,6 +2709,7 @@ test.group('Router | match', () => {
         meta: {
           namespace: undefined,
         },
+        params: [],
         middleware: [],
         pattern: '/photos/create',
         name: 'photos.create',
@@ -2660,6 +2725,7 @@ test.group('Router | match', () => {
         meta: {
           namespace: undefined,
         },
+        params: [],
         middleware: [],
         pattern: '/photos',
         name: 'photos.store',
@@ -2677,6 +2743,7 @@ test.group('Router | match', () => {
         meta: {
           namespace: undefined,
         },
+        params: ['id'],
         middleware: [],
         pattern: '/photos/:id',
         name: 'photos.show',
@@ -2694,6 +2761,7 @@ test.group('Router | match', () => {
         meta: {
           namespace: undefined,
         },
+        params: ['id'],
         middleware: [],
         pattern: '/photos/:id/edit',
         name: 'photos.edit',
@@ -2711,6 +2779,7 @@ test.group('Router | match', () => {
         meta: {
           namespace: undefined,
         },
+        params: ['id'],
         middleware: [],
         pattern: '/photos/:id',
         name: 'photos.update',
@@ -2728,6 +2797,7 @@ test.group('Router | match', () => {
         meta: {
           namespace: undefined,
         },
+        params: ['id'],
         middleware: [],
         pattern: '/photos/:id',
         name: 'photos.destroy',
@@ -2752,6 +2822,7 @@ test.group('Router | match', () => {
         meta: {
           namespace: undefined,
         },
+        params: ['id'],
         middleware: [],
         pattern: '/photos/:id',
         name: undefined,
@@ -2778,6 +2849,7 @@ test.group('Brisk route', () => {
           pattern: '/',
           handler,
           methods: ['GET', 'HEAD'],
+          params: [],
           middleware: [],
           meta: {
             namespace: undefined,
@@ -2806,6 +2878,7 @@ test.group('Brisk route', () => {
           name: 'v1.root',
           pattern: '/api/v1',
           handler,
+          params: [],
           middleware: [],
           meta: {
             namespace: undefined,
@@ -2866,6 +2939,7 @@ test.group('Brisk route', () => {
                   namespace: undefined,
                 },
                 handler,
+                params: [],
                 middleware: [],
                 name: 'v1.root',
               },
@@ -2895,6 +2969,7 @@ test.group('Brisk route', () => {
                   namespace: undefined,
                 },
                 handler,
+                params: [],
                 middleware: [],
                 name: 'v1.root',
               },
@@ -3246,6 +3321,7 @@ test.group('Regression', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: undefined,
               },
@@ -3271,6 +3347,7 @@ test.group('Regression', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: ['id'],
                 middleware: [],
                 name: undefined,
               },
@@ -3339,6 +3416,7 @@ test.group('Regression', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -3374,6 +3452,7 @@ test.group('Regression', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -3430,6 +3509,7 @@ test.group('Regression', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -3453,6 +3533,7 @@ test.group('Regression', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -3509,6 +3590,7 @@ test.group('Regression', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'auth.admin.showById',
               },
@@ -3532,6 +3614,7 @@ test.group('Regression', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: [],
                 name: 'auth.admin.showById',
               },
@@ -3590,6 +3673,7 @@ test.group('Regression', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: ['group2Bar', 'group2Baz', 'group1Bar', 'group1Baz', 'bar', 'baz'],
                 name: undefined,
               },
@@ -3613,6 +3697,7 @@ test.group('Regression', () => {
                 meta: {
                   namespace: undefined,
                 },
+                params: [],
                 middleware: ['group2Bar', 'group2Baz', 'group1Bar', 'group1Baz', 'bar', 'baz'],
                 name: undefined,
               },
@@ -3669,6 +3754,7 @@ test.group('Regression', () => {
                 meta: {
                   namespace: 'Main',
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },
@@ -3692,6 +3778,7 @@ test.group('Regression', () => {
                 meta: {
                   namespace: 'Main',
                 },
+                params: [],
                 middleware: [],
                 name: undefined,
               },

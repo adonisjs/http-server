@@ -105,7 +105,7 @@ declare module '@ioc:Adonis/Core/Route' {
   export type MethodNode = {
     tokens: any[]
     routes: {
-      [pattern: string]: RouteNode
+      [pattern: string]: RouteNode & { params: string[] }
     }
   }
 
@@ -148,7 +148,7 @@ declare module '@ioc:Adonis/Core/Route' {
    * them as spread options to the context.
    */
   export type MatchedRoute = {
-    route: RouteNode
+    route: RouteNode & { params: string[] }
 
     /**
      * A unique key for the looked up route

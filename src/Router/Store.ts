@@ -129,7 +129,7 @@ export class Store {
      * since we create sub-trees for each method to make the lookups
      * fast.
      */
-    const routeJSON = {} as RouteNode
+    const routeJSON = {} as RouteNode & { params: string[] }
     lodash.merge(
       routeJSON,
       lodash.pick(route, ['pattern', 'handler', 'meta', 'middleware', 'name'])
@@ -162,6 +162,7 @@ export class Store {
       }
     }
 
+    routeJSON.params = new Array(...collectedParams)
     collectedParams.clear()
 
     route.methods.forEach((method) => {
