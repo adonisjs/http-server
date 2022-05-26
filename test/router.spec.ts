@@ -2099,9 +2099,8 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
-                params: [],
-                middleware: [],
                 params: ['id'],
+                middleware: [],
                 name: 'posts.comments.show',
               },
               '/comments/:id/edit': {
@@ -2582,9 +2581,8 @@ test.group('Router | commit', () => {
                 meta: {
                   namespace: undefined,
                 },
-                params: [],
-                middleware: [],
                 params: ['post_id', 'id'],
+                middleware: [],
                 name: 'posts.comments.show',
               },
               '/posts/:post_id/comments/:id/edit': {
