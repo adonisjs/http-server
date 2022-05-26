@@ -2255,6 +2255,531 @@ test.group('Router | commit', () => {
     })
   })
 
+  test('define nested resource', ({ assert }) => {
+    const router = new Router(encryption)
+
+    router.resource('posts.comments', 'CommentsController')
+    router.commit()
+
+    assert.deepEqual(router['store'].tree, {
+      tokens: [
+        [
+          {
+            old: 'root',
+            type: 0,
+            val: 'root',
+            end: '',
+          },
+        ],
+      ],
+      domains: {
+        root: {
+          HEAD: {
+            tokens: [
+              [
+                {
+                  old: '/posts/:post_id/comments',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments',
+                  type: 1,
+                  val: 'post_id',
+                  matcher: undefined,
+                  cast: undefined,
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments',
+                  type: 0,
+                  val: 'comments',
+                  end: '',
+                },
+              ],
+              [
+                {
+                  old: '/posts/:post_id/comments/create',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/create',
+                  type: 1,
+                  val: 'post_id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+                {
+                  old: '/posts/:post_id/comments/create',
+                  type: 0,
+                  val: 'comments',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/create',
+                  type: 0,
+                  val: 'create',
+                  end: '',
+                },
+              ],
+              [
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 1,
+                  val: 'post_id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 0,
+                  val: 'comments',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 1,
+                  val: 'id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+              ],
+              [
+                {
+                  old: '/posts/:post_id/comments/:id/edit',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id/edit',
+                  type: 1,
+                  val: 'post_id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+                {
+                  old: '/posts/:post_id/comments/:id/edit',
+                  type: 0,
+                  val: 'comments',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id/edit',
+                  type: 1,
+                  val: 'id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+                {
+                  old: '/posts/:post_id/comments/:id/edit',
+                  type: 0,
+                  val: 'edit',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/posts/:post_id/comments': {
+                pattern: '/posts/:post_id/comments',
+                handler: 'CommentsController.index',
+                meta: {
+                  namespace: undefined,
+                },
+                params: ['post_id'],
+                middleware: [],
+                name: 'posts.comments.index',
+              },
+              '/posts/:post_id/comments/create': {
+                pattern: '/posts/:post_id/comments/create',
+                handler: 'CommentsController.create',
+                meta: {
+                  namespace: undefined,
+                },
+                params: ['post_id'],
+                middleware: [],
+                name: 'posts.comments.create',
+              },
+              '/posts/:post_id/comments/:id': {
+                pattern: '/posts/:post_id/comments/:id',
+                handler: 'CommentsController.show',
+                meta: {
+                  namespace: undefined,
+                },
+                params: ['post_id', 'id'],
+                middleware: [],
+                name: 'posts.comments.show',
+              },
+              '/posts/:post_id/comments/:id/edit': {
+                pattern: '/posts/:post_id/comments/:id/edit',
+                handler: 'CommentsController.edit',
+                meta: {
+                  namespace: undefined,
+                },
+                params: ['post_id', 'id'],
+                middleware: [],
+                name: 'posts.comments.edit',
+              },
+            },
+          },
+          GET: {
+            tokens: [
+              [
+                {
+                  old: '/posts/:post_id/comments',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments',
+                  type: 1,
+                  val: 'post_id',
+                  matcher: undefined,
+                  cast: undefined,
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments',
+                  type: 0,
+                  val: 'comments',
+                  end: '',
+                },
+              ],
+              [
+                {
+                  old: '/posts/:post_id/comments/create',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/create',
+                  type: 1,
+                  val: 'post_id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+                {
+                  old: '/posts/:post_id/comments/create',
+                  type: 0,
+                  val: 'comments',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/create',
+                  type: 0,
+                  val: 'create',
+                  end: '',
+                },
+              ],
+              [
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 1,
+                  val: 'post_id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 0,
+                  val: 'comments',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 1,
+                  val: 'id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+              ],
+              [
+                {
+                  old: '/posts/:post_id/comments/:id/edit',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id/edit',
+                  type: 1,
+                  val: 'post_id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+                {
+                  old: '/posts/:post_id/comments/:id/edit',
+                  type: 0,
+                  val: 'comments',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id/edit',
+                  type: 1,
+                  val: 'id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+                {
+                  old: '/posts/:post_id/comments/:id/edit',
+                  type: 0,
+                  val: 'edit',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/posts/:post_id/comments': {
+                pattern: '/posts/:post_id/comments',
+                handler: 'CommentsController.index',
+                meta: {
+                  namespace: undefined,
+                },
+                params: ['post_id'],
+                middleware: [],
+                name: 'posts.comments.index',
+              },
+              '/posts/:post_id/comments/create': {
+                pattern: '/posts/:post_id/comments/create',
+                handler: 'CommentsController.create',
+                meta: {
+                  namespace: undefined,
+                },
+                params: ['post_id'],
+                middleware: [],
+                name: 'posts.comments.create',
+              },
+              '/posts/:post_id/comments/:id': {
+                pattern: '/posts/:post_id/comments/:id',
+                handler: 'CommentsController.show',
+                meta: {
+                  namespace: undefined,
+                },
+                params: [],
+                middleware: [],
+                params: ['post_id', 'id'],
+                name: 'posts.comments.show',
+              },
+              '/posts/:post_id/comments/:id/edit': {
+                pattern: '/posts/:post_id/comments/:id/edit',
+                handler: 'CommentsController.edit',
+                meta: {
+                  namespace: undefined,
+                },
+                params: ['post_id', 'id'],
+                middleware: [],
+                name: 'posts.comments.edit',
+              },
+            },
+          },
+          POST: {
+            tokens: [
+              [
+                {
+                  old: '/posts/:post_id/comments',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments',
+                  type: 1,
+                  val: 'post_id',
+                  matcher: undefined,
+                  cast: undefined,
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments',
+                  type: 0,
+                  val: 'comments',
+                  end: '',
+                },
+              ],
+            ],
+            routes: {
+              '/posts/:post_id/comments': {
+                pattern: '/posts/:post_id/comments',
+                handler: 'CommentsController.store',
+                meta: {
+                  namespace: undefined,
+                },
+                params: ['post_id'],
+                middleware: [],
+                name: 'posts.comments.store',
+              },
+            },
+          },
+          PUT: {
+            tokens: [
+              [
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 1,
+                  val: 'post_id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 0,
+                  val: 'comments',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 1,
+                  val: 'id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+              ],
+            ],
+            routes: {
+              '/posts/:post_id/comments/:id': {
+                pattern: '/posts/:post_id/comments/:id',
+                handler: 'CommentsController.update',
+                meta: {
+                  namespace: undefined,
+                },
+                params: ['post_id', 'id'],
+                middleware: [],
+                name: 'posts.comments.update',
+              },
+            },
+          },
+          PATCH: {
+            tokens: [
+              [
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 1,
+                  val: 'post_id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 0,
+                  val: 'comments',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 1,
+                  val: 'id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+              ],
+            ],
+            routes: {
+              '/posts/:post_id/comments/:id': {
+                pattern: '/posts/:post_id/comments/:id',
+                handler: 'CommentsController.update',
+                meta: {
+                  namespace: undefined,
+                },
+                params: ['post_id', 'id'],
+                middleware: [],
+                name: 'posts.comments.update',
+              },
+            },
+          },
+          DELETE: {
+            tokens: [
+              [
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 0,
+                  val: 'posts',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 1,
+                  val: 'post_id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 0,
+                  val: 'comments',
+                  end: '',
+                },
+                {
+                  old: '/posts/:post_id/comments/:id',
+                  type: 1,
+                  val: 'id',
+                  end: '',
+                  matcher: undefined,
+                  cast: undefined,
+                },
+              ],
+            ],
+            routes: {
+              '/posts/:post_id/comments/:id': {
+                pattern: '/posts/:post_id/comments/:id',
+                handler: 'CommentsController.destroy',
+                meta: {
+                  namespace: undefined,
+                },
+                params: ['post_id', 'id'],
+                middleware: [],
+                name: 'posts.comments.destroy',
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+
   test('do not commit route when deleted flag is set to true', ({ assert }) => {
     const router = new Router(encryption)
 
