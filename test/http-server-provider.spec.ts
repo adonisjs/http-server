@@ -60,6 +60,14 @@ test.group('Http Context', (group) => {
     assert.deepEqual(ctx.params, { id: '1' })
   })
 
+  test('collect params from route pattern', async ({ assert }) => {
+    await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
+    const ctx = HttpContext.create('/posts/:post/comments/:comment', { post: '1', comment: '1' })
+
+    assert.instanceOf(ctx, HttpContext)
+    assert.deepEqual(ctx.route!.params, ['post', 'comment'])
+  })
+
   test('add macro to http context', async ({ assert }) => {
     await setupApp(['@adonisjs/encryption', '../../providers/HttpServerProvider'])
     HttpContext.macro('url', function url() {

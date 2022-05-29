@@ -12,6 +12,7 @@
 import { Socket } from 'net'
 import { inspect } from 'util'
 import { Macroable } from 'macroable'
+import matchit from '@poppinss/matchit'
 import { Exception } from '@poppinss/utils'
 import { RouteNode } from '@ioc:Adonis/Core/Route'
 import { IncomingMessage, ServerResponse } from 'http'
@@ -121,7 +122,7 @@ export class HttpContext extends Macroable implements HttpContextContract {
    * Reference to the current route. Not available inside
    * server hooks
    */
-  public route?: RouteNode
+  public route?: RouteNode & { params: string[] }
 
   /**
    * Required by macroable
@@ -222,12 +223,16 @@ export class HttpContext extends Macroable implements HttpContextContract {
       middleware: [],
       handler: async () => 'handled',
       meta: {},
+      params: matchit
+        .parse(routePattern, {})
+        .filter((token) => [1, 3].includes(token.type))
+        .map((token) => token.val),
     }
 
     /*
      * Defining route key
      */
-    ctx.routeKey = `${request.method()}-${ctx.route.pattern}`
+    ctx.routeKey = `${request.method() || 'GET'}-${ctx.route.pattern}`
 
     /*
      * Attaching params to the ctx
