@@ -229,6 +229,16 @@ declare module '@ioc:Adonis/Core/Route' {
     namespace(namespace: string): this
 
     /**
+     * Get the route pattern
+     */
+    getPattern(): string
+
+    /**
+     * Update route pattern
+     */
+    setPattern(pattern: string): this
+
+    /**
      * Returns [[RouteDefinition]] that can be passed to the [[Store]] for
      * registering the route
      */
@@ -289,6 +299,11 @@ declare module '@ioc:Adonis/Core/Route' {
      * Define namespace for all the routes inside a given resource
      */
     namespace(namespace: string): this
+
+    /**
+     * Set the param name for a given resource
+     */
+    paramFor(resource: string, param: string): this
 
     /**
      * Prepend name to the routes names

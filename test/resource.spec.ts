@@ -424,7 +424,7 @@ test.group('Route Resource', () => {
     )
   })
 
-  test('normalize resource name by droping starting and ending slashes', ({ assert }) => {
+  test('normalize resource name by dropping starting and ending slashes', ({ assert }) => {
     const resource = new RouteResource('/photos/', 'PhotosController', {})
 
     assert.deepEqual(
@@ -778,6 +778,578 @@ test.group('Route Resource', () => {
         'photos.edit',
         'photos.update',
         'photos.destroy',
+      ]
+    )
+  })
+
+  test('rename the resource param', ({ assert }) => {
+    const resource = new RouteResource('photos', 'PhotosController', {})
+    resource.paramFor('photos', 'photo')
+
+    assert.deepEqual(
+      resource.routes.map((route) => route.toJSON()),
+      [
+        {
+          pattern: '/photos',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.index',
+          name: 'photos.index',
+        },
+        {
+          pattern: '/photos/create',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.create',
+          name: 'photos.create',
+        },
+        {
+          pattern: '/photos',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['POST'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.store',
+          name: 'photos.store',
+        },
+        {
+          pattern: '/photos/:photo',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.show',
+          name: 'photos.show',
+        },
+        {
+          pattern: '/photos/:photo/edit',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.edit',
+          name: 'photos.edit',
+        },
+        {
+          pattern: '/photos/:photo',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['PUT', 'PATCH'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.update',
+          name: 'photos.update',
+        },
+        {
+          pattern: '/photos/:photo',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['DELETE'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.destroy',
+          name: 'photos.destroy',
+        },
+      ]
+    )
+  })
+
+  test('renaming the resource param multiple times should work', ({ assert }) => {
+    const resource = new RouteResource('photos', 'PhotosController', {})
+    resource.paramFor('photos', 'photo')
+    resource.paramFor('photos', 'photo(slug)')
+
+    assert.deepEqual(
+      resource.routes.map((route) => route.toJSON()),
+      [
+        {
+          pattern: '/photos',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.index',
+          name: 'photos.index',
+        },
+        {
+          pattern: '/photos/create',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.create',
+          name: 'photos.create',
+        },
+        {
+          pattern: '/photos',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['POST'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.store',
+          name: 'photos.store',
+        },
+        {
+          pattern: '/photos/:photo(slug)',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.show',
+          name: 'photos.show',
+        },
+        {
+          pattern: '/photos/:photo(slug)/edit',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.edit',
+          name: 'photos.edit',
+        },
+        {
+          pattern: '/photos/:photo(slug)',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['PUT', 'PATCH'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.update',
+          name: 'photos.update',
+        },
+        {
+          pattern: '/photos/:photo(slug)',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['DELETE'],
+          domain: 'root',
+          middleware: [],
+          handler: 'PhotosController.destroy',
+          name: 'photos.destroy',
+        },
+      ]
+    )
+  })
+
+  test('define custom param name for nested resource', ({ assert }) => {
+    const resource = new RouteResource('magazines.ads', 'AdsController', {}, false)
+    resource.paramFor('magazines', 'mag')
+    resource.paramFor('ads', 'ad')
+
+    assert.deepEqual(
+      resource.routes.map((route) => route.toJSON()),
+      [
+        {
+          pattern: '/magazines/:mag/ads',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.index',
+          name: 'magazines.ads.index',
+        },
+        {
+          pattern: '/magazines/:mag/ads/create',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.create',
+          name: 'magazines.ads.create',
+        },
+        {
+          pattern: '/magazines/:mag/ads',
+          matchers: {},
+          methods: ['POST'],
+          domain: 'root',
+          meta: {
+            namespace: undefined,
+          },
+          middleware: [],
+          handler: 'AdsController.store',
+          name: 'magazines.ads.store',
+        },
+        {
+          pattern: '/magazines/:mag/ads/:ad',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.show',
+          name: 'magazines.ads.show',
+        },
+        {
+          pattern: '/magazines/:mag/ads/:ad/edit',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.edit',
+          name: 'magazines.ads.edit',
+        },
+        {
+          pattern: '/magazines/:mag/ads/:ad',
+          matchers: {},
+          methods: ['PUT', 'PATCH'],
+          domain: 'root',
+          meta: {
+            namespace: undefined,
+          },
+          middleware: [],
+          handler: 'AdsController.update',
+          name: 'magazines.ads.update',
+        },
+        {
+          pattern: '/magazines/:mag/ads/:ad',
+          matchers: {},
+          methods: ['DELETE'],
+          meta: {
+            namespace: undefined,
+          },
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.destroy',
+          name: 'magazines.ads.destroy',
+        },
+      ]
+    )
+  })
+
+  test('nested resource param renaming should not impact the parent resource', ({ assert }) => {
+    const mag = new RouteResource('magazines', 'MagazinesController', {}, false)
+    mag.paramFor('magazines', 'magazine')
+
+    const resource = new RouteResource('magazines.ads', 'AdsController', {}, false)
+    resource.paramFor('magazines', 'mag')
+    resource.paramFor('ads', 'ad')
+
+    assert.deepEqual(
+      mag.routes.map((route) => route.toJSON()),
+      [
+        {
+          pattern: '/magazines',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'MagazinesController.index',
+          name: 'magazines.index',
+        },
+        {
+          pattern: '/magazines/create',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'MagazinesController.create',
+          name: 'magazines.create',
+        },
+        {
+          pattern: '/magazines',
+          matchers: {},
+          methods: ['POST'],
+          domain: 'root',
+          meta: {
+            namespace: undefined,
+          },
+          middleware: [],
+          handler: 'MagazinesController.store',
+          name: 'magazines.store',
+        },
+        {
+          pattern: '/magazines/:magazine',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'MagazinesController.show',
+          name: 'magazines.show',
+        },
+        {
+          pattern: '/magazines/:magazine/edit',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'MagazinesController.edit',
+          name: 'magazines.edit',
+        },
+        {
+          pattern: '/magazines/:magazine',
+          matchers: {},
+          methods: ['PUT', 'PATCH'],
+          domain: 'root',
+          meta: {
+            namespace: undefined,
+          },
+          middleware: [],
+          handler: 'MagazinesController.update',
+          name: 'magazines.update',
+        },
+        {
+          pattern: '/magazines/:magazine',
+          matchers: {},
+          methods: ['DELETE'],
+          meta: {
+            namespace: undefined,
+          },
+          domain: 'root',
+          middleware: [],
+          handler: 'MagazinesController.destroy',
+          name: 'magazines.destroy',
+        },
+      ]
+    )
+
+    assert.deepEqual(
+      resource.routes.map((route) => route.toJSON()),
+      [
+        {
+          pattern: '/magazines/:mag/ads',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.index',
+          name: 'magazines.ads.index',
+        },
+        {
+          pattern: '/magazines/:mag/ads/create',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.create',
+          name: 'magazines.ads.create',
+        },
+        {
+          pattern: '/magazines/:mag/ads',
+          matchers: {},
+          methods: ['POST'],
+          domain: 'root',
+          meta: {
+            namespace: undefined,
+          },
+          middleware: [],
+          handler: 'AdsController.store',
+          name: 'magazines.ads.store',
+        },
+        {
+          pattern: '/magazines/:mag/ads/:ad',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.show',
+          name: 'magazines.ads.show',
+        },
+        {
+          pattern: '/magazines/:mag/ads/:ad/edit',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.edit',
+          name: 'magazines.ads.edit',
+        },
+        {
+          pattern: '/magazines/:mag/ads/:ad',
+          matchers: {},
+          methods: ['PUT', 'PATCH'],
+          domain: 'root',
+          meta: {
+            namespace: undefined,
+          },
+          middleware: [],
+          handler: 'AdsController.update',
+          name: 'magazines.ads.update',
+        },
+        {
+          pattern: '/magazines/:mag/ads/:ad',
+          matchers: {},
+          methods: ['DELETE'],
+          meta: {
+            namespace: undefined,
+          },
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.destroy',
+          name: 'magazines.ads.destroy',
+        },
+      ]
+    )
+  })
+
+  test('rename param name for a shallow resource', ({ assert }) => {
+    const resource = new RouteResource('magazines.ads', 'AdsController', {}, true)
+    resource.paramFor('magazines', 'mag')
+    resource.paramFor('ads', 'ad')
+
+    assert.deepEqual(
+      resource.routes.map((route) => route.toJSON()),
+      [
+        {
+          pattern: '/magazines/:mag/ads',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.index',
+          name: 'magazines.ads.index',
+        },
+        {
+          pattern: '/magazines/:mag/ads/create',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.create',
+          name: 'magazines.ads.create',
+        },
+        {
+          pattern: '/magazines/:mag/ads',
+          matchers: {},
+          methods: ['POST'],
+          meta: {
+            namespace: undefined,
+          },
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.store',
+          name: 'magazines.ads.store',
+        },
+        {
+          pattern: '/ads/:ad',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.show',
+          name: 'magazines.ads.show',
+        },
+        {
+          pattern: '/ads/:ad/edit',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.edit',
+          name: 'magazines.ads.edit',
+        },
+        {
+          pattern: '/ads/:ad',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['PUT', 'PATCH'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.update',
+          name: 'magazines.ads.update',
+        },
+        {
+          pattern: '/ads/:ad',
+          matchers: {},
+          meta: {
+            namespace: undefined,
+          },
+          methods: ['DELETE'],
+          domain: 'root',
+          middleware: [],
+          handler: 'AdsController.destroy',
+          name: 'magazines.ads.destroy',
+        },
       ]
     )
   })

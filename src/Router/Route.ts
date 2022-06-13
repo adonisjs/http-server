@@ -105,7 +105,7 @@ export class Route extends Macroable implements RouteContract {
   /**
    * Returns a normalized pattern string by prefixing the `prefix` (if defined).
    */
-  private getPattern(): string {
+  private computePattern(): string {
     const pattern = dropSlash(this.pattern)
     const prefix = this.prefixes
       .slice()
@@ -209,13 +209,28 @@ export class Route extends Macroable implements RouteContract {
   }
 
   /**
+   * Get the route pattern
+   */
+  public getPattern(): string {
+    return this.pattern
+  }
+
+  /**
+   * Set the route pattern
+   */
+  public setPattern(pattern: string): this {
+    this.pattern = pattern
+    return this
+  }
+
+  /**
    * Returns [[RouteDefinition]] that can be passed to the [[Store]] for
    * registering the route
    */
   public toJSON(): RouteJSON {
     return {
       domain: this.routeDomain,
-      pattern: this.getPattern(),
+      pattern: this.computePattern(),
       matchers: this.getMatchers(),
       meta: {
         namespace: this.routeNamespace,

@@ -38,6 +38,14 @@ export class RouteResource extends Macroable implements RouteResourceContract {
   protected static getters = {}
 
   /**
+   * The param names used to create the resource URLs.
+   *
+   * We need these later when someone explicitly wants to remap
+   * param name for a given resource using the "paramFor" method.
+   */
+  private resourceParamNames: Record<string, string> = {}
+
+  /**
    * A copy of routes that belongs to this resource
    */
   public routes: Route[] = []
@@ -79,8 +87,18 @@ export class RouteResource extends Macroable implements RouteResourceContract {
     const resourceTokens = this.resource.split('.')
     const mainResource = resourceTokens.pop()!
 
+    /**
+     * The main resource always uses ids
+     */
+    this.resourceParamNames[mainResource] = ':id'
+
     const fullUrl = `${resourceTokens
-      .map((token) => `${token}/:${string.snakeCase(singular(token))}_id`)
+      .map((token) => {
+        const paramName = `:${string.snakeCase(singular(token))}_id`
+        this.resourceParamNames[token] = paramName
+
+        return `${token}/${paramName}`
+      })
       .join('/')}/${mainResource}`
 
     this.makeRoute(fullUrl, ['GET', 'HEAD'], 'index')
@@ -170,6 +188,24 @@ export class RouteResource extends Macroable implements RouteResourceContract {
       route.namespace(namespace)
     })
 
+    return this
+  }
+
+  /**
+   * Set the param name for a given resource
+   */
+  public paramFor(resource: string, param: string): this {
+    const existingParam = this.resourceParamNames[resource]
+    this.resourceParamNames[resource] = `:${param}`
+
+    this.routes.forEach((route) => {
+      /**
+       * Update the pattern for the route with the new param name
+       */
+      route.setPattern(
+        route.getPattern().replace(`${resource}/${existingParam}`, `${resource}/:${param}`)
+      )
+    })
     return this
   }
 
