@@ -1219,4 +1219,9 @@ export class Response extends Macroable implements ResponseContract {
     this.status(505)
     return this.send(body, generateEtag)
   }
+
+  public imATeapot(body?: any, generateEtag?: boolean): void {
+    this.status(418)
+    return this.send(body, generateEtag)
+  }
 }

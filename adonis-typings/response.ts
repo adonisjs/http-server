@@ -433,6 +433,7 @@ declare module '@ioc:Adonis/Core/Response' {
     serviceUnavailable(body?: any, generateEtag?: boolean): void
     gatewayTimeout(body?: any, generateEtag?: boolean): void
     httpVersionNotSupported(body?: any, generateEtag?: boolean): void
+    imATeapot(body?: any, generateEtag?: boolean): void
   }
 
   /**

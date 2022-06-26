@@ -1108,6 +1108,7 @@ test.group('Response', (group) => {
       'serviceUnavailable',
       'gatewayTimeout',
       'httpVersionNotSupported',
+      'imATeapot',
     ]
 
     methods.forEach((method) => {
