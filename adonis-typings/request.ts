@@ -570,7 +570,7 @@ declare module '@ioc:Adonis/Core/Request' {
      * Returns value for a given key from unsigned cookies. Optional
      * defaultValue is returned when actual value is undefined.
      */
-    plainCookie(key: string, defaultValue?: any): any
+    plainCookie(key: string, defaultValue?: any, encoded?: boolean): any
 
     /**
      * Returns a boolean telling if a signed url as a valid signature

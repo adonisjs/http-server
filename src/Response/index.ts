@@ -951,7 +951,11 @@ export class Response extends Macroable implements ResponseContract {
    * Set unsigned cookie as the response header. The inline options overrides
    * all options from the config (means they are not merged)
    */
-  public plainCookie(key: string, value: any, options?: Partial<CookieOptions>): this {
+  public plainCookie(
+    key: string,
+    value: any,
+    options?: Partial<CookieOptions & { encode: boolean }>
+  ): this {
     options = Object.assign({}, this.config.cookie, options)
 
     const serialized = this.cookieSerializer.encode(key, value, options)

@@ -58,8 +58,12 @@ export class CookieSerializer {
    *  serializer.encode('name', 'virk')
    * ```
    */
-  public encode(key: string, value: any, options?: Partial<CookieOptions>): string | null {
-    const packedValue = this.client.encode(key, value)
+  public encode(
+    key: string,
+    value: any,
+    options?: Partial<CookieOptions & { encode: boolean }>
+  ): string | null {
+    const packedValue = !(options?.encode ?? true) ? value : this.client.encode(key, value)
     if (packedValue === null) {
       return null
     }
