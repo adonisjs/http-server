@@ -38,6 +38,15 @@ test.group('Cookie | serialize', () => {
     assert.equal(base64.urlDecode(serialized!.split('=')[1]), '{"message":"virk"}')
   })
 
+  test(`serialize and don't encode cookie`, ({ assert }) => {
+    const serializer = new CookieSerializer(encryption)
+    const serialized = serializer.encode('username', 'virk', { encode: false })
+
+    assert.isNotNull(serialized)
+    assert.equal(serialized!.split('=')[0], 'username')
+    assert.equal(serialized!.split('=')[1], 'virk')
+  })
+
   test('set cookie domain', ({ assert }) => {
     const serializer = new CookieSerializer(encryption)
     const serialized = serializer.encode('username', 'virk', { domain: 'adonisjs.com' })

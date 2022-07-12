@@ -981,6 +981,22 @@ test.group('Request', () => {
     })
   })
 
+  test('get value for a single not encoded cookie', async ({ assert }) => {
+    const config = requestConfig
+
+    const server = createServer((req, res) => {
+      const request = new Request(req, res, encryption, config)
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ name: request.plainCookie('name', undefined, false) }))
+    })
+
+    const cookies = serializer.encode('name', 'virk', { encode: false })!
+    const { body } = await supertest(server).get('/').set('cookie', cookies)
+    assert.deepEqual(body, {
+      name: 'virk',
+    })
+  })
+
   test('get value for a single encrypted', async ({ assert }) => {
     const config = requestConfig
 
