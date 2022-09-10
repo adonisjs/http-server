@@ -923,9 +923,9 @@ export class Request extends Macroable implements RequestContract {
    * Returns value for a given key from unsigned cookies. Optional
    * defaultValue is returned when actual value is undefined.
    */
-  public plainCookie(key: string, defaultValue?: string): any {
+  public plainCookie(key: string, defaultValue?: string, encoded?: boolean): any {
     this.initiateCookieParser()
-    return this.cookieParser.decode(key) || defaultValue
+    return this.cookieParser.decode(key, encoded) || defaultValue
   }
 
   /**

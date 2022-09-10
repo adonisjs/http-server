@@ -352,7 +352,11 @@ declare module '@ioc:Adonis/Core/Response' {
      * Set unsigned cookie as the response header. The inline options overrides
      * all options from the config (means they are not merged)
      */
-    plainCookie(key: string, value: any, options?: Partial<CookieOptions>): this
+    plainCookie(
+      key: string,
+      value: any,
+      options?: Partial<CookieOptions & { encoded: boolean }>
+    ): this
 
     /**
      * Set unsigned cookie as the response header. The inline options overrides

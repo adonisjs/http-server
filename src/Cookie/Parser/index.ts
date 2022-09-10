@@ -69,7 +69,7 @@ export class CookieParser {
    * you are assuming that the cookie was just encoded at the first
    * place and not signed or encrypted.
    */
-  public decode(key: string): any | null {
+  public decode(key: string, encoded = true): any | null {
     /*
      * Ignore when initial value is not defined or null
      */
@@ -96,7 +96,7 @@ export class CookieParser {
      * Attempt to unpack and cache it for future. The value is only
      * when value it is not null.
      */
-    const parsed = this.client.decode(key, value)
+    const parsed = encoded ? this.client.decode(key, value) : value
     if (parsed !== null) {
       cacheObject[key] = parsed
     }
