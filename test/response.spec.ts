@@ -800,6 +800,20 @@ test.group('Response', (group) => {
     assert.deepEqual(body, { username: 'virk' })
   })
 
+  test('convert Set to JSON representation', async ({ assert }) => {
+    const data = new Set()
+    data.add('virk')
+
+    const server = createServer((req, res) => {
+      const response = new Response(req, res, encryption, responseConfig, router)
+      response.send(data)
+      response.finish()
+    })
+
+    const { body } = await supertest(server).get('/')
+    assert.deepEqual(body, ['virk'])
+  })
+
   test('send response as 200 when request method is HEAD and cache is not fresh', async ({
     assert,
   }) => {
