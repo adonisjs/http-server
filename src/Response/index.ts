@@ -179,6 +179,13 @@ export class Response extends Macroable implements ResponseContract {
       return 'regexp'
     }
 
+    /**
+     * Set instance
+     */
+    if (content instanceof Set) {
+      return 'set'
+    }
+
     const dataType = typeof content
     if (
       dataType === 'number' ||
@@ -261,6 +268,8 @@ export class Response extends Macroable implements ResponseContract {
      */
     if (dataType === 'object') {
       content = safeStringify(content)
+    } else if (dataType === 'set') {
+      content = safeStringify(Array.from(content))
     } else if (
       dataType === 'number' ||
       dataType === 'boolean' ||
@@ -359,6 +368,7 @@ export class Response extends Macroable implements ResponseContract {
         case 'buffer':
           this.safeHeader('Content-Type', 'application/octet-stream; charset=utf-8')
           break
+        case 'set':
         case 'object':
           this.safeHeader('Content-Type', 'application/json; charset=utf-8')
           break
