@@ -504,6 +504,41 @@ test.group('Server | middleware', (group) => {
     assert.isDefined(hookPacket!.parent_id)
     assert.equal(hookPacket!.parent_id, requestPacket!.id)
   })
+
+  test('use same middleware twice with different args', async ({ assert }) => {
+    const stack: string[] = []
+
+    const app = await setupApp()
+    const server = new Server(app, encryption, serverConfig)
+
+    const httpServer = createServer(server.handle.bind(server))
+
+    server.middleware.registerNamed({
+      access: async function middlewareFn1() {
+        return {
+          default: class Middleware {
+            public async handle(_ctx: HttpContextContract, next: any, args: string[]) {
+              stack.push(args[0])
+              await next()
+            }
+          },
+        }
+      },
+    })
+
+    server.router
+      .get('/', async () => {
+        return 'done'
+      })
+      .middleware('access:client')
+      .middleware('access:site')
+
+    server.optimize()
+
+    const { text } = await supertest(httpServer).get('/').expect(200)
+    assert.deepEqual(stack, ['client', 'site'])
+    assert.equal(text, 'done')
+  })
 })
 
 test.group('Server | hooks', (group) => {

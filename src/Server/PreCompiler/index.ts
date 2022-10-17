@@ -132,8 +132,10 @@ export class PreCompiler {
         throw error
       }
 
-      resolvedMiddleware.args = args
-      return resolvedMiddleware
+      return {
+        ...resolvedMiddleware,
+        args,
+      }
     })
   }
 
