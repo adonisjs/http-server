@@ -2,32 +2,31 @@
   "name": "@adonisjs/http-server",
   "version": "5.12.0",
   "description": "AdonisJS HTTP server with support packed with Routing and Cookies",
-  "main": "build/providers/HttpServerProvider.js",
+  "main": "build/index.js",
+  "type": "module",
   "files": [
-    "build/adonis-typings",
-    "build/providers",
     "build/src",
-    "build/exceptions.json",
-    "build/standalone.d.ts",
-    "build/standalone.js"
+    "build/index.d.ts",
+    "build/index.js"
   ],
+  "exports": {
+    ".": "./build/index.js",
+    "./types": "./build/src/types.js"
+  },
   "scripts": {
-    "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
-    "test": "node -r ts-node/register/transpile-only bin/test.ts",
+    "test": "c8 npm run vscode:test",
     "clean": "del-cli build",
     "compile": "npm run lint && npm run clean && tsc",
     "build": "npm run compile",
     "benchmark": "ENV_SILENT=true node build/benchmarks/index.js",
-    "build:tmp": "npm run compile",
-    "commit": "git-cz",
-    "release": "np --message=\"chore(release): %s\"",
+    "release": "np",
     "version": "npm run build",
+    "format": "prettier --write .",
     "prepublishOnly": "npm run build",
     "lint": "eslint . --ext=.ts",
-    "format": "prettier --write .",
-    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json adonisjs/http-server",
-    "prepare": "husky install"
+    "sync-labels": "github-label-sync --labels .github/labels.json adonisjs/http-server",
+    "vscode:test": "node --loader=ts-node/esm bin/test.ts"
   },
   "keywords": [
     "http",
@@ -36,92 +35,38 @@
   "author": "virk,adonisjs",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/application": "^5.2.5",
-    "@adonisjs/encryption": "^4.0.8",
-    "@adonisjs/mrm-preset": "^5.0.3",
-    "@adonisjs/require-ts": "^2.0.13",
+    "@adonisjs/application": "^6.0.3-0",
+    "@adonisjs/encryption": "^5.0.0-0",
+    "@commitlint/cli": "^17.3.0",
+    "@commitlint/config-conventional": "^17.3.0",
     "@japa/assert": "^1.3.6",
     "@japa/run-failed-tests": "^1.1.0",
     "@japa/runner": "^2.2.2",
     "@japa/spec-reporter": "^1.3.2",
-    "@poppinss/dev-utils": "^2.0.3",
-    "@types/cookie": "^0.5.1",
-    "@types/ms": "^0.7.31",
-    "@types/node": "^18.11.0",
-    "@types/pluralize": "0.0.29",
-    "@types/proxy-addr": "^2.0.0",
+    "@swc/core": "^1.3.19",
+    "@types/encodeurl": "^1.0.0",
     "@types/qs": "^6.9.7",
-    "@types/supertest": "^2.0.12",
-    "autocannon": "^7.10.0",
-    "commitizen": "^4.2.5",
-    "cross-env": "^7.0.3",
-    "cz-conventional-changelog": "^3.3.0",
+    "c8": "^7.12.0",
     "del-cli": "^5.0.0",
-    "eslint": "^8.25.0",
+    "eslint": "^8.28.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-adonis": "^2.1.1",
+    "eslint-plugin-adonis": "^3.0.3",
     "eslint-plugin-prettier": "^4.2.1",
-    "fastify": "^4.9.0",
     "github-label-sync": "^2.2.0",
-    "http-status-codes": "^2.2.0",
-    "husky": "^8.0.1",
-    "middie": "^7.1.0",
-    "mrm": "^4.1.7",
+    "husky": "^8.0.2",
     "np": "^7.6.2",
-    "pem": "^1.14.6",
-    "prettier": "^2.7.1",
-    "reflect-metadata": "^0.1.13",
-    "supertest": "^6.3.0",
+    "prettier": "^2.8.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.4"
-  },
-  "peerDependencies": {
-    "@adonisjs/application": "^5.0.0",
-    "@adonisjs/encryption": "^4.0.0"
-  },
-  "nyc": {
-    "exclude": [
-      "test"
-    ],
-    "extension": [
-      ".ts"
-    ]
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
-  },
-  "np": {
-    "contents": ".",
-    "anyBranch": false
+    "typescript": "^4.9.3"
   },
   "dependencies": {
+    "@adonisjs/fold": "^9.3.1-0",
+    "@poppinss/macroable": "^1.0.0-0",
     "@poppinss/matchit": "^3.1.2",
-    "@poppinss/utils": "^5.0.0",
-    "accepts": "^1.3.8",
-    "co-compose": "^7.0.2",
-    "content-disposition": "^0.5.4",
-    "cookie": "^0.5.0",
-    "destroy": "^1.2.0",
+    "@poppinss/utils": "^6.0.1-0",
+    "@sindresorhus/is": "^5.3.0",
     "encodeurl": "^1.0.2",
-    "etag": "^1.8.1",
-    "fresh": "^0.5.2",
-    "haye": "^3.0.0",
-    "macroable": "^7.0.2",
-    "mime-types": "^2.1.35",
-    "ms": "^2.1.3",
-    "on-finished": "^2.4.1",
-    "pluralize": "^8.0.0",
-    "proxy-addr": "^2.0.7",
-    "qs": "^6.11.0",
-    "tmp-cache": "^1.1.0",
-    "type-is": "^1.6.18",
-    "vary": "^1.1.2"
-  },
-  "directories": {
-    "doc": "docs",
-    "test": "test"
+    "qs": "^6.11.0"
   },
   "repository": {
     "type": "git",
@@ -131,26 +76,6 @@
     "url": "https://github.com/adonisjs/http-server/issues"
   },
   "homepage": "https://github.com/adonisjs/http-server#readme",
-  "adonisjs": {
-    "exceptions": "./build/exceptions.json"
-  },
-  "publishConfig": {
-    "access": "public",
-    "tag": "latest"
-  },
-  "mrmConfig": {
-    "core": true,
-    "license": "MIT",
-    "services": [
-      "github-actions"
-    ],
-    "minNodeVersion": "14.15.4",
-    "probotApps": [
-      "stale",
-      "lock"
-    ],
-    "runGhActionsOnWindows": false
-  },
   "eslintConfig": {
     "extends": [
       "plugin:adonis/typescriptPackage",
@@ -169,7 +94,8 @@
     }
   },
   "eslintIgnore": [
-    "build"
+    "build",
+    "backup"
   ],
   "prettier": {
     "trailingComma": "es5",
@@ -180,5 +106,29 @@
     "bracketSpacing": true,
     "arrowParens": "always",
     "printWidth": 100
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "next"
+  },
+  "np": {
+    "message": "chore(release): %s",
+    "tag": "next",
+    "branch": "main",
+    "anyBranch": false
+  },
+  "c8": {
+    "reporter": [
+      "text",
+      "html"
+    ],
+    "exclude": [
+      "tests/**"
+    ]
   }
 }
