@@ -8,21 +8,18 @@
  */
 
 import { test } from '@japa/runner'
-import Encryption from '@adonisjs/encryption'
-import { Application } from '@adonisjs/application'
 
 import { Route } from '../../src/router/route.js'
+import { AppFactory } from '../../test_factories/app.js'
 import { MiddlewareStore } from '../../src/middleware/store.js'
 import { LookupStore } from '../../src/router/lookup_store/main.js'
-
-const SECRET = 'averylongrandomsecretkey'
-const BASE_URL = new URL('./app/', import.meta.url)
+import { EncryptionFactory } from '../../test_factories/encryption.js'
 
 test.group('URL builder', () => {
   test('create url for a route', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const encryption = new Encryption({ secret: SECRET })
     const lookupStore = new LookupStore(encryption)
 
     const route = new Route(app, middlewareStore, {
@@ -37,9 +34,9 @@ test.group('URL builder', () => {
   })
 
   test('create url for a route by its name', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const encryption = new Encryption({ secret: SECRET })
     const lookupStore = new LookupStore(encryption)
 
     const route = new Route(app, middlewareStore, {
@@ -55,9 +52,9 @@ test.group('URL builder', () => {
   })
 
   test('create url for a route by the handler name', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const encryption = new Encryption({ secret: SECRET })
     const lookupStore = new LookupStore(encryption)
 
     const route = new Route(app, middlewareStore, {
@@ -72,7 +69,7 @@ test.group('URL builder', () => {
   })
 
   test('raise error when unable to lookup route', ({ assert }) => {
-    const encryption = new Encryption({ secret: SECRET })
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
     assert.throws(
@@ -82,7 +79,7 @@ test.group('URL builder', () => {
   })
 
   test('create url without performing route lookup', ({ assert }) => {
-    const encryption = new Encryption({ secret: SECRET })
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
     assert.equal(
@@ -92,7 +89,7 @@ test.group('URL builder', () => {
   })
 
   test('define params as an object', ({ assert }) => {
-    const encryption = new Encryption({ secret: SECRET })
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
     assert.equal(
@@ -102,7 +99,7 @@ test.group('URL builder', () => {
   })
 
   test('do not overwriting existing params when undefined params are shared', ({ assert }) => {
-    const encryption = new Encryption({ secret: SECRET })
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
     assert.equal(
@@ -112,7 +109,7 @@ test.group('URL builder', () => {
   })
 
   test('raise error when one or params are missing', ({ assert }) => {
-    const encryption = new Encryption({ secret: SECRET })
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
     assert.throws(
@@ -122,14 +119,14 @@ test.group('URL builder', () => {
   })
 
   test('allow missing params when param is optional', ({ assert }) => {
-    const encryption = new Encryption({ secret: SECRET })
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
     assert.equal(lookupStore.builder().disableRouteLookup().make('/users/:id?'), '/users')
   })
 
   test('make route with wildcard params', ({ assert }) => {
-    const encryption = new Encryption({ secret: SECRET })
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
     assert.equal(
@@ -139,7 +136,7 @@ test.group('URL builder', () => {
   })
 
   test('define wildcard param is an object', ({ assert }) => {
-    const encryption = new Encryption({ secret: SECRET })
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
     assert.equal(
@@ -155,7 +152,7 @@ test.group('URL builder', () => {
   })
 
   test('raise error when wildcard params are missing', ({ assert }) => {
-    const encryption = new Encryption({ secret: SECRET })
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
     assert.throws(
@@ -165,7 +162,7 @@ test.group('URL builder', () => {
   })
 
   test('prefix url', ({ assert }) => {
-    const encryption = new Encryption({ secret: SECRET })
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
     assert.equal(
@@ -175,7 +172,7 @@ test.group('URL builder', () => {
   })
 
   test('define query string', ({ assert }) => {
-    const encryption = new Encryption({ secret: SECRET })
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
     assert.equal(

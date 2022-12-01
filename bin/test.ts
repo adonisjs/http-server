@@ -1,5 +1,6 @@
 import { assert } from '@japa/assert'
 import { pathToFileURL } from 'node:url'
+import { expectTypeOf } from '@japa/expect-type'
 import { specReporter } from '@japa/spec-reporter'
 import { runFailedTests } from '@japa/run-failed-tests'
 import { processCliArgs, configure, run } from '@japa/runner'
@@ -21,7 +22,16 @@ configure({
   ...processCliArgs(process.argv.slice(2)),
   ...{
     files: ['tests/**/*.spec.ts'],
-    plugins: [assert(), runFailedTests()],
+    plugins: [
+      assert(),
+      runFailedTests(),
+      expectTypeOf(),
+      (_, __, { TestContext }) => {
+        TestContext.macro('sleep', function (time: number) {
+          return new Promise((resolve) => setTimeout(resolve, time))
+        })
+      },
+    ],
     reporters: [specReporter()],
     importer: (filePath: string) => import(pathToFileURL(filePath).href),
   },

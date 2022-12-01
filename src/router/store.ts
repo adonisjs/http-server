@@ -1,4 +1,4 @@
-/**
+/*
  * @adonisjs/http-server
  *
  * (c) AdonisJS
@@ -48,7 +48,7 @@ export class RoutesStore {
    * A flag to know if routes for explicit domains
    * have been registered
    */
-  #hasDomainsRegistered: boolean = false
+  usingDomains: boolean = false
 
   /**
    * Tree of registered routes and their matchit tokens
@@ -73,7 +73,7 @@ export class RoutesStore {
   #getMethodNode(domain: string, method: string): StoreMethodNode {
     const domainNode = this.#getDomainNode(domain)
     if (!domainNode[method]) {
-      domainNode[method] = { tokens: [], routes: {} }
+      domainNode[method] = { tokens: [], routes: {}, routeKeys: {} }
     }
 
     return domainNode[method]
@@ -125,6 +125,8 @@ export class RoutesStore {
 
     methodRoutes.tokens.push(tokens)
     methodRoutes.routes[route.pattern] = route
+    methodRoutes.routeKeys[route.pattern] =
+      domain !== 'root' ? `${domain}-${method}-${route.pattern}` : `${method}-${route.pattern}`
   }
 
   /**
@@ -146,7 +148,7 @@ export class RoutesStore {
      * Set flag when a custom domain is used
      */
     if (route.domain !== 'root') {
-      this.#hasDomainsRegistered = true
+      this.usingDomains = true
     }
 
     /**
@@ -159,7 +161,7 @@ export class RoutesStore {
      */
     const routeNode: StoreRouteNode = lodash.merge(
       { meta: {} },
-      lodash.pick(route, ['pattern', 'handler', 'meta', 'middleware', 'name'])
+      lodash.pick(route, ['pattern', 'handler', 'meta', 'middleware', 'name', 'execute'])
     )
 
     /**
@@ -220,10 +222,7 @@ export class RoutesStore {
     const route = matchedMethod.routes[matchedRoute[0].old]
     return {
       route: route,
-      routeKey:
-        domainName !== 'root'
-          ? `${domainName}-${method}-${route.pattern}`
-          : `${method}-${route.pattern}`,
+      routeKey: matchedMethod.routeKeys[route.pattern],
       params: matchit.exec(url, matchedRoute),
       subdomains: domain?.hostname ? matchit.exec(domain.hostname, domain.tokens) : {},
     }
@@ -232,8 +231,8 @@ export class RoutesStore {
   /**
    * Match hostname against registered domains.
    */
-  matchDomain(hostname?: string): MatchItRouteToken[] {
-    if (!hostname || !this.#hasDomainsRegistered) {
+  matchDomain(hostname?: string | null): MatchItRouteToken[] {
+    if (!hostname || !this.usingDomains) {
       return []
     }
 

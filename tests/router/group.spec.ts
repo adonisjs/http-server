@@ -1,4 +1,4 @@
-/**
+/*
  * @adonisjs/http-server
  *
  * (c) AdonisJS
@@ -8,20 +8,18 @@
  */
 
 import { test } from '@japa/runner'
-import { Application } from '@adonisjs/application'
 
 import { Route } from '../../src/router/route.js'
 import { toRoutesJSON } from '../../src/helpers.js'
+import { BriskRoute } from '../../src/router/brisk.js'
 import { RouteGroup } from '../../src/router/group.js'
+import { AppFactory } from '../../test_factories/app.js'
 import { RouteResource } from '../../src/router/resource.js'
 import { MiddlewareStore } from '../../src/middleware/store.js'
-import { BriskRoute } from '../../src/router/brisk.js'
-
-const BASE_URL = new URL('./app/', import.meta.url)
 
 test.group('Route Group', () => {
   test('define resource inside the group', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
 
     const resource = new RouteResource(app, middlewareStore, {
@@ -40,7 +38,6 @@ test.group('Route Group', () => {
         meta: {},
         methods: ['GET', 'HEAD'],
         domain: 'root',
-        middleware: [],
         name: 'photos.index',
       },
       {
@@ -49,7 +46,6 @@ test.group('Route Group', () => {
         meta: {},
         methods: ['GET', 'HEAD'],
         domain: 'root',
-        middleware: [],
         name: 'photos.create',
       },
       {
@@ -58,7 +54,6 @@ test.group('Route Group', () => {
         meta: {},
         methods: ['POST'],
         domain: 'root',
-        middleware: [],
         name: 'photos.store',
       },
       {
@@ -67,7 +62,6 @@ test.group('Route Group', () => {
         meta: {},
         methods: ['GET', 'HEAD'],
         domain: 'root',
-        middleware: [],
         name: 'photos.show',
       },
       {
@@ -76,7 +70,6 @@ test.group('Route Group', () => {
         meta: {},
         methods: ['GET', 'HEAD'],
         domain: 'root',
-        middleware: [],
         name: 'photos.edit',
       },
       {
@@ -85,7 +78,6 @@ test.group('Route Group', () => {
         meta: {},
         methods: ['PUT', 'PATCH'],
         domain: 'root',
-        middleware: [],
         name: 'photos.update',
       },
       {
@@ -94,7 +86,6 @@ test.group('Route Group', () => {
         meta: {},
         methods: ['DELETE'],
         domain: 'root',
-        middleware: [],
         name: 'photos.destroy',
       },
     ])
@@ -103,7 +94,7 @@ test.group('Route Group', () => {
 
 test.group('Route group | prefix', () => {
   test('define routes prefix', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
@@ -116,14 +107,13 @@ test.group('Route group | prefix', () => {
     const group = new RouteGroup([route], middlewareStore)
     group.prefix('api/v1')
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    assert.containsSubset(toRoutesJSON(group.routes), [
       {
         pattern: '/api/v1/:id',
         matchers: {},
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         handler,
         name: undefined,
       },
@@ -131,7 +121,7 @@ test.group('Route group | prefix', () => {
   })
 
   test('define routes prefix in nested groups', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
@@ -148,14 +138,13 @@ test.group('Route group | prefix', () => {
     const apiGroup = new RouteGroup([group], middlewareStore)
     apiGroup.prefix('api')
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    assert.containsSubset(toRoutesJSON(group.routes), [
       {
         pattern: '/api/v1/:id',
         matchers: {},
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         handler,
         name: undefined,
       },
@@ -163,7 +152,7 @@ test.group('Route group | prefix', () => {
   })
 
   test('define routes prefix on resourceful routes', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
 
     const resource = new RouteResource(app, middlewareStore, {
@@ -186,7 +175,6 @@ test.group('Route group | prefix', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: 'app_posts.index',
       },
       {
@@ -195,7 +183,6 @@ test.group('Route group | prefix', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: 'app_posts.create',
       },
       {
@@ -204,7 +191,6 @@ test.group('Route group | prefix', () => {
         meta: {},
         methods: ['POST'],
         domain: 'root',
-        middleware: [],
         name: 'app_posts.store',
       },
       {
@@ -213,7 +199,6 @@ test.group('Route group | prefix', () => {
         meta: {},
         methods: ['POST'],
         domain: 'root',
-        middleware: [],
         name: 'app_posts.store',
       },
       {
@@ -222,7 +207,6 @@ test.group('Route group | prefix', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: 'app_posts.show',
       },
       {
@@ -231,7 +215,6 @@ test.group('Route group | prefix', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: 'app_posts.edit',
       },
       {
@@ -240,7 +223,6 @@ test.group('Route group | prefix', () => {
         meta: {},
         methods: ['PUT', 'PATCH'],
         domain: 'root',
-        middleware: [],
         name: 'app_posts.update',
       },
       {
@@ -249,14 +231,13 @@ test.group('Route group | prefix', () => {
         meta: {},
         methods: ['DELETE'],
         domain: 'root',
-        middleware: [],
         name: 'app_posts.destroy',
       },
     ])
   })
 
   test('define prefix on a brisk route', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
@@ -269,14 +250,13 @@ test.group('Route group | prefix', () => {
     const group = new RouteGroup([route], middlewareStore)
     group.prefix('api/v1')
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    assert.containsSubset(toRoutesJSON(group.routes), [
       {
         pattern: '/api/v1/:id',
         matchers: {},
         meta: {},
         methods: ['GET', 'HEAD'],
         domain: 'root',
-        middleware: [],
         handler,
         name: undefined,
       },
@@ -286,7 +266,7 @@ test.group('Route group | prefix', () => {
 
 test.group('Route group | as', () => {
   test('prepend name to the existing route names', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
@@ -301,14 +281,13 @@ test.group('Route group | as', () => {
     const group = new RouteGroup([route], middlewareStore)
     group.as('v1')
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    assert.containsSubset(toRoutesJSON(group.routes), [
       {
         pattern: '/:id',
         matchers: {},
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         handler,
         name: 'v1.list',
       },
@@ -316,7 +295,7 @@ test.group('Route group | as', () => {
   })
 
   test('prepend name inside nested groups', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
@@ -334,14 +313,13 @@ test.group('Route group | as', () => {
     const apiGroup = new RouteGroup([group], middlewareStore)
     apiGroup.as('api')
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    assert.containsSubset(toRoutesJSON(group.routes), [
       {
         pattern: '/:id',
         matchers: {},
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         handler,
         name: 'api.v1.list',
       },
@@ -349,7 +327,7 @@ test.group('Route group | as', () => {
   })
 
   test('prepend name to resourceful routes', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
 
     const resource = new RouteResource(app, middlewareStore, {
@@ -372,7 +350,6 @@ test.group('Route group | as', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: 'api.v1.posts.index',
       },
       {
@@ -381,7 +358,6 @@ test.group('Route group | as', () => {
         meta: {},
         methods: ['HEAD', 'GET'],
         domain: 'root',
-        middleware: [],
         name: 'api.v1.posts.create',
       },
       {
@@ -390,7 +366,6 @@ test.group('Route group | as', () => {
         meta: {},
         methods: ['POST'],
         domain: 'root',
-        middleware: [],
         name: 'api.v1.posts.store',
       },
       {
@@ -399,7 +374,6 @@ test.group('Route group | as', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: 'api.v1.posts.show',
       },
       {
@@ -408,7 +382,6 @@ test.group('Route group | as', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: 'api.v1.posts.edit',
       },
       {
@@ -417,7 +390,6 @@ test.group('Route group | as', () => {
         meta: {},
         methods: ['PUT', 'PATCH'],
         domain: 'root',
-        middleware: [],
         name: 'api.v1.posts.update',
       },
       {
@@ -426,14 +398,13 @@ test.group('Route group | as', () => {
         meta: {},
         methods: ['DELETE'],
         domain: 'root',
-        middleware: [],
         name: 'api.v1.posts.destroy',
       },
     ])
   })
 
   test('prepend name to the existing brisk route names', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
@@ -448,14 +419,13 @@ test.group('Route group | as', () => {
     const group = new RouteGroup([route], middlewareStore)
     group.as('v1')
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    assert.containsSubset(toRoutesJSON(group.routes), [
       {
         pattern: '/:id',
         matchers: {},
         meta: {},
         methods: ['GET', 'HEAD'],
         domain: 'root',
-        middleware: [],
         handler,
         name: 'v1.list',
       },
@@ -465,7 +435,7 @@ test.group('Route group | as', () => {
 
 test.group('Route group | middleware', () => {
   test('prepend middleware to existing route middleware', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
@@ -483,22 +453,25 @@ test.group('Route group | middleware', () => {
     const group = new RouteGroup([route], middlewareStore)
     group.middleware(limiterMiddleware)
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    const routesJSON = toRoutesJSON(group.routes)
+
+    assert.containsSubset(routesJSON, [
       {
         pattern: '/:id',
         matchers: {},
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [limiterMiddleware, authMiddleware],
         handler,
         name: undefined,
       },
     ])
+
+    assert.deepEqual(routesJSON[0].middleware.all(), new Set([limiterMiddleware, authMiddleware]))
   })
 
   test('keep group own middleware in right order', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
@@ -518,22 +491,28 @@ test.group('Route group | middleware', () => {
     group.middleware(limiterMiddleware)
     group.middleware(aclMiddleware)
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    const routesJSON = toRoutesJSON(group.routes)
+
+    assert.containsSubset(routesJSON, [
       {
         pattern: '/:id',
         matchers: {},
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [limiterMiddleware, aclMiddleware, authMiddleware],
         handler,
         name: undefined,
       },
     ])
+
+    assert.deepEqual(
+      routesJSON[0].middleware.all(),
+      new Set([limiterMiddleware, aclMiddleware, authMiddleware])
+    )
   })
 
   test('define nested group middleware in right order', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
@@ -557,41 +536,87 @@ test.group('Route group | middleware', () => {
     group1.middleware(aclMiddleware)
     group1.middleware(impersonateMiddleware)
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    const routesJSON = toRoutesJSON(group.routes)
+
+    assert.containsSubset(routesJSON, [
       {
         pattern: '/:id',
         matchers: {},
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [aclMiddleware, impersonateMiddleware, limiterMiddleware, authMiddleware],
         handler,
         name: undefined,
       },
     ])
+
+    assert.deepEqual(
+      routesJSON[0].middleware.all(),
+      new Set([aclMiddleware, impersonateMiddleware, limiterMiddleware, authMiddleware])
+    )
   })
 
   test('define middleware on nested group route and resource', ({ assert }) => {
-    const namedMiddleware = {
-      // @ts-expect-error
-      log: () => import('#middleware/log'),
-      // @ts-expect-error
-      logGet: () => import('#middleware/log'),
-      // @ts-expect-error
-      logForm: () => import('#middleware/log'),
-      // @ts-expect-error
-      logPost: () => import('#middleware/log'),
-      // @ts-expect-error
-      acl: () => import('#middleware/acl'),
-      // @ts-expect-error
-      limiter: () => import('#middleware/limiter'),
-      // @ts-expect-error
-      auth: () => import('#middleware/auth'),
-      // @ts-expect-error
-      impersonate: () => import('#middleware/impersonate'),
+    class LogMiddleware {
+      handle() {}
+    }
+    class AclMiddleware {
+      handle() {}
+    }
+    class AuthMiddleware {
+      handle() {}
+    }
+    class LimiterMiddleware {
+      handle() {}
+    }
+    class ImpersonateMiddleware {
+      handle() {}
     }
 
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const namedMiddleware = {
+      log: async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+      logGet: async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+      logForm: async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+      logPost: async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+      acl: async () => {
+        return {
+          default: AclMiddleware,
+        }
+      },
+      limiter: async () => {
+        return {
+          default: LimiterMiddleware,
+        }
+      },
+      auth: async () => {
+        return {
+          default: AuthMiddleware,
+        }
+      },
+      impersonate: async () => {
+        return {
+          default: ImpersonateMiddleware,
+        }
+      },
+    }
+
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], namedMiddleware)
     async function handler() {}
 
@@ -601,7 +626,7 @@ test.group('Route group | middleware', () => {
       handler,
       globalMatchers: {},
     })
-    route.middleware('log', [])
+    route.middleware('log')
 
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'posts',
@@ -609,23 +634,23 @@ test.group('Route group | middleware', () => {
       globalMatchers: {},
       shallow: false,
     })
-    resource.tap((r) => r.middleware('log', []))
+    resource.tap((r) => r.middleware('log'))
 
     resource.tap('create', (r) => {
-      r.middleware('logGet', [])
-      r.middleware('logForm', [])
+      r.middleware('logGet')
+      r.middleware('logForm')
     })
     resource.tap(['index', 'show'], (r) => {
-      r.middleware('logGet', [])
+      r.middleware('logGet')
     })
     resource.tap(['store'], (r) => {
-      r.middleware('logPost', [])
-      r.middleware('logForm', [])
+      r.middleware('logPost')
+      r.middleware('logForm')
     })
 
     const group = new RouteGroup([route, resource], middlewareStore)
-    group.middleware('limiter', [])
-    group.middleware('acl', [])
+    group.middleware('limiter')
+    group.middleware('acl')
 
     const route1 = new Route(app, middlewareStore, {
       pattern: '1/:id',
@@ -633,26 +658,21 @@ test.group('Route group | middleware', () => {
       handler,
       globalMatchers: {},
     })
-    route1.middleware('log', [])
+    route1.middleware('log')
 
     const outerGroup = new RouteGroup([group, route1], middlewareStore)
-    outerGroup.middleware('auth', [])
-    outerGroup.middleware('impersonate', [])
+    outerGroup.middleware('auth')
+    outerGroup.middleware('impersonate')
 
-    assert.containsSubset(toRoutesJSON(outerGroup.routes), [
+    const routesJSON = toRoutesJSON(outerGroup.routes)
+
+    assert.containsSubset(routesJSON, [
       {
         pattern: '/:id',
         matchers: {},
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [
-          { name: 'auth', args: [] },
-          { name: 'impersonate', args: [] },
-          { name: 'limiter', args: [] },
-          { name: 'acl', args: [] },
-          { name: 'log', args: [] },
-        ],
         handler,
         name: undefined,
       },
@@ -662,14 +682,6 @@ test.group('Route group | middleware', () => {
         meta: {},
         methods: ['GET', 'HEAD'],
         domain: 'root',
-        middleware: [
-          { name: 'auth', args: [] },
-          { name: 'impersonate', args: [] },
-          { name: 'limiter', args: [] },
-          { name: 'acl', args: [] },
-          { name: 'log', args: [] },
-          { name: 'logGet', args: [] },
-        ],
         name: 'posts.index',
       },
       {
@@ -678,15 +690,6 @@ test.group('Route group | middleware', () => {
         meta: {},
         methods: ['GET', 'HEAD'],
         domain: 'root',
-        middleware: [
-          { name: 'auth', args: [] },
-          { name: 'impersonate', args: [] },
-          { name: 'limiter', args: [] },
-          { name: 'acl', args: [] },
-          { name: 'log', args: [] },
-          { name: 'logGet', args: [] },
-          { name: 'logForm', args: [] },
-        ],
         name: 'posts.create',
       },
       {
@@ -695,15 +698,6 @@ test.group('Route group | middleware', () => {
         meta: {},
         methods: ['POST'],
         domain: 'root',
-        middleware: [
-          { name: 'auth', args: [] },
-          { name: 'impersonate', args: [] },
-          { name: 'limiter', args: [] },
-          { name: 'acl', args: [] },
-          { name: 'log', args: [] },
-          { name: 'logPost', args: [] },
-          { name: 'logForm', args: [] },
-        ],
         name: 'posts.store',
       },
       {
@@ -712,14 +706,6 @@ test.group('Route group | middleware', () => {
         meta: {},
         methods: ['GET', 'HEAD'],
         domain: 'root',
-        middleware: [
-          { name: 'auth', args: [] },
-          { name: 'impersonate', args: [] },
-          { name: 'limiter', args: [] },
-          { name: 'acl', args: [] },
-          { name: 'log', args: [] },
-          { name: 'logGet', args: [] },
-        ],
         name: 'posts.show',
       },
       {
@@ -728,13 +714,6 @@ test.group('Route group | middleware', () => {
         meta: {},
         methods: ['GET', 'HEAD'],
         domain: 'root',
-        middleware: [
-          { name: 'auth', args: [] },
-          { name: 'impersonate', args: [] },
-          { name: 'limiter', args: [] },
-          { name: 'acl', args: [] },
-          { name: 'log', args: [] },
-        ],
         name: 'posts.edit',
       },
       {
@@ -743,13 +722,6 @@ test.group('Route group | middleware', () => {
         meta: {},
         methods: ['PUT', 'PATCH'],
         domain: 'root',
-        middleware: [
-          { name: 'auth', args: [] },
-          { name: 'impersonate', args: [] },
-          { name: 'limiter', args: [] },
-          { name: 'acl', args: [] },
-          { name: 'log', args: [] },
-        ],
         name: 'posts.update',
       },
       {
@@ -758,13 +730,6 @@ test.group('Route group | middleware', () => {
         meta: {},
         methods: ['DELETE'],
         domain: 'root',
-        middleware: [
-          { name: 'auth', args: [] },
-          { name: 'impersonate', args: [] },
-          { name: 'limiter', args: [] },
-          { name: 'acl', args: [] },
-          { name: 'log', args: [] },
-        ],
         name: 'posts.destroy',
       },
       {
@@ -773,19 +738,109 @@ test.group('Route group | middleware', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [
-          { name: 'auth', args: [] },
-          { name: 'impersonate', args: [] },
-          { name: 'log', args: [] },
-        ],
         handler,
         name: undefined,
       },
     ])
+
+    assert.containsSubset(
+      routesJSON.map((r) => {
+        return {
+          middleware: [...r.middleware.all()],
+        }
+      }),
+      [
+        {
+          middleware: [
+            { name: 'auth', args: undefined },
+            { name: 'impersonate', args: undefined },
+            { name: 'limiter', args: undefined },
+            { name: 'acl', args: undefined },
+            { name: 'log', args: undefined },
+          ],
+        },
+        {
+          middleware: [
+            { name: 'auth', args: undefined },
+            { name: 'impersonate', args: undefined },
+            { name: 'limiter', args: undefined },
+            { name: 'acl', args: undefined },
+            { name: 'log', args: undefined },
+            { name: 'logGet', args: undefined },
+          ],
+        },
+        {
+          middleware: [
+            { name: 'auth', args: undefined },
+            { name: 'impersonate', args: undefined },
+            { name: 'limiter', args: undefined },
+            { name: 'acl', args: undefined },
+            { name: 'log', args: undefined },
+            { name: 'logGet', args: undefined },
+            { name: 'logForm', args: undefined },
+          ],
+        },
+        {
+          middleware: [
+            { name: 'auth', args: undefined },
+            { name: 'impersonate', args: undefined },
+            { name: 'limiter', args: undefined },
+            { name: 'acl', args: undefined },
+            { name: 'log', args: undefined },
+            { name: 'logPost', args: undefined },
+            { name: 'logForm', args: undefined },
+          ],
+        },
+        {
+          middleware: [
+            { name: 'auth', args: undefined },
+            { name: 'impersonate', args: undefined },
+            { name: 'limiter', args: undefined },
+            { name: 'acl', args: undefined },
+            { name: 'log', args: undefined },
+            { name: 'logGet', args: undefined },
+          ],
+        },
+        {
+          middleware: [
+            { name: 'auth', args: undefined },
+            { name: 'impersonate', args: undefined },
+            { name: 'limiter', args: undefined },
+            { name: 'acl', args: undefined },
+            { name: 'log', args: undefined },
+          ],
+        },
+        {
+          middleware: [
+            { name: 'auth', args: undefined },
+            { name: 'impersonate', args: undefined },
+            { name: 'limiter', args: undefined },
+            { name: 'acl', args: undefined },
+            { name: 'log', args: undefined },
+          ],
+        },
+        {
+          middleware: [
+            { name: 'auth', args: undefined },
+            { name: 'impersonate', args: undefined },
+            { name: 'limiter', args: undefined },
+            { name: 'acl', args: undefined },
+            { name: 'log', args: undefined },
+          ],
+        },
+        {
+          middleware: [
+            { name: 'auth', args: undefined },
+            { name: 'impersonate', args: undefined },
+            { name: 'log', args: undefined },
+          ],
+        },
+      ]
+    )
   })
 
   test('prepend middleware to existing brisk route middleware', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
@@ -803,24 +858,27 @@ test.group('Route group | middleware', () => {
     const group = new RouteGroup([route], middlewareStore)
     group.middleware(limiterMiddleware)
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    const routesJSON = toRoutesJSON(group.routes)
+
+    assert.containsSubset(routesJSON, [
       {
         pattern: '/:id',
         matchers: {},
         meta: {},
         methods: ['GET', 'HEAD'],
         domain: 'root',
-        middleware: [limiterMiddleware, authMiddleware],
         handler,
         name: undefined,
       },
     ])
+
+    assert.deepEqual(routesJSON[0].middleware.all(), new Set([limiterMiddleware, authMiddleware]))
   })
 })
 
 test.group('Route group | domain', () => {
   test('define routes domain', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
@@ -833,14 +891,13 @@ test.group('Route group | domain', () => {
     const group = new RouteGroup([route], middlewareStore)
     group.domain('blog.adonisjs.com')
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    assert.containsSubset(toRoutesJSON(group.routes), [
       {
         pattern: '/',
         matchers: {},
         meta: {},
         methods: ['GET'],
         domain: 'blog.adonisjs.com',
-        middleware: [],
         handler,
         name: undefined,
       },
@@ -848,7 +905,7 @@ test.group('Route group | domain', () => {
   })
 
   test('define route domain in nested groups', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
@@ -863,14 +920,13 @@ test.group('Route group | domain', () => {
     const apiGroup = new RouteGroup([group], middlewareStore)
     apiGroup.domain('blog.adonisjs.com')
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    assert.containsSubset(toRoutesJSON(group.routes), [
       {
         pattern: '/',
         matchers: {},
         meta: {},
         methods: ['GET'],
         domain: 'blog.adonisjs.com',
-        middleware: [],
         handler,
         name: undefined,
       },
@@ -878,7 +934,7 @@ test.group('Route group | domain', () => {
   })
 
   test('define domain on resourceful routes', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
 
     const resource = new RouteResource(app, middlewareStore, {
@@ -899,7 +955,6 @@ test.group('Route group | domain', () => {
         meta: {},
         methods: ['GET'],
         domain: 'blog.adonisjs.com',
-        middleware: [],
         name: 'app_posts.index',
       },
       {
@@ -908,7 +963,6 @@ test.group('Route group | domain', () => {
         meta: {},
         methods: ['GET'],
         domain: 'api.adonisjs.com',
-        middleware: [],
         name: 'app_posts.create',
       },
       {
@@ -917,7 +971,6 @@ test.group('Route group | domain', () => {
         meta: {},
         methods: ['POST'],
         domain: 'blog.adonisjs.com',
-        middleware: [],
         name: 'app_posts.store',
       },
       {
@@ -926,7 +979,6 @@ test.group('Route group | domain', () => {
         meta: {},
         methods: ['POST'],
         domain: 'blog.adonisjs.com',
-        middleware: [],
         name: 'app_posts.store',
       },
       {
@@ -935,7 +987,6 @@ test.group('Route group | domain', () => {
         meta: {},
         methods: ['GET'],
         domain: 'blog.adonisjs.com',
-        middleware: [],
         name: 'app_posts.show',
       },
       {
@@ -944,7 +995,6 @@ test.group('Route group | domain', () => {
         meta: {},
         methods: ['GET'],
         domain: 'blog.adonisjs.com',
-        middleware: [],
         name: 'app_posts.edit',
       },
       {
@@ -953,7 +1003,6 @@ test.group('Route group | domain', () => {
         meta: {},
         methods: ['PUT', 'PATCH'],
         domain: 'blog.adonisjs.com',
-        middleware: [],
         name: 'app_posts.update',
       },
       {
@@ -962,14 +1011,13 @@ test.group('Route group | domain', () => {
         meta: {},
         methods: ['DELETE'],
         domain: 'blog.adonisjs.com',
-        middleware: [],
         name: 'app_posts.destroy',
       },
     ])
   })
 
   test('define brisk route domain', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
@@ -982,14 +1030,13 @@ test.group('Route group | domain', () => {
     const group = new RouteGroup([route], middlewareStore)
     group.domain('blog.adonisjs.com')
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    assert.containsSubset(toRoutesJSON(group.routes), [
       {
         pattern: '/',
         matchers: {},
         meta: {},
         methods: ['GET', 'HEAD'],
         domain: 'blog.adonisjs.com',
-        middleware: [],
         handler,
         name: undefined,
       },
@@ -999,7 +1046,7 @@ test.group('Route group | domain', () => {
 
 test.group('Route group | matchers', () => {
   test('add matcher to group routes', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
@@ -1013,7 +1060,7 @@ test.group('Route group | matchers', () => {
     const group = new RouteGroup([route], middlewareStore)
     group.where('id', '[a-z]')
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    assert.containsSubset(toRoutesJSON(group.routes), [
       {
         pattern: '/:id',
         matchers: {
@@ -1022,7 +1069,6 @@ test.group('Route group | matchers', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: undefined,
         handler,
       },
@@ -1030,7 +1076,7 @@ test.group('Route group | matchers', () => {
   })
 
   test('add matcher to nested group routes', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
@@ -1047,7 +1093,7 @@ test.group('Route group | matchers', () => {
     const group1 = new RouteGroup([group], middlewareStore)
     group1.where('id', '[0-9]')
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    assert.containsSubset(toRoutesJSON(group.routes), [
       {
         pattern: '/:id',
         matchers: {
@@ -1056,7 +1102,6 @@ test.group('Route group | matchers', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: undefined,
         handler,
       },
@@ -1064,7 +1109,7 @@ test.group('Route group | matchers', () => {
   })
 
   test('do not overwrite matcher defined explicitly on the route', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
@@ -1082,7 +1127,7 @@ test.group('Route group | matchers', () => {
     const group1 = new RouteGroup([group], middlewareStore)
     group1.where('id', '[0-9]')
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    assert.containsSubset(toRoutesJSON(group.routes), [
       {
         pattern: '/:id',
         matchers: {
@@ -1091,7 +1136,6 @@ test.group('Route group | matchers', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: undefined,
         handler,
       },
@@ -1099,7 +1143,7 @@ test.group('Route group | matchers', () => {
   })
 
   test('add matcher resource routes', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
 
     const route = new RouteResource(app, middlewareStore, {
@@ -1123,7 +1167,6 @@ test.group('Route group | matchers', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: 'posts.index',
       },
       {
@@ -1136,7 +1179,6 @@ test.group('Route group | matchers', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: 'posts.create',
       },
       {
@@ -1149,7 +1191,6 @@ test.group('Route group | matchers', () => {
         meta: {},
         methods: ['POST'],
         domain: 'root',
-        middleware: [],
         name: 'posts.store',
       },
       {
@@ -1162,7 +1203,6 @@ test.group('Route group | matchers', () => {
         meta: {},
         methods: ['POST'],
         domain: 'root',
-        middleware: [],
         name: 'posts.store',
       },
       {
@@ -1175,7 +1215,6 @@ test.group('Route group | matchers', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: 'posts.show',
       },
       {
@@ -1188,7 +1227,6 @@ test.group('Route group | matchers', () => {
         meta: {},
         methods: ['GET'],
         domain: 'root',
-        middleware: [],
         name: 'posts.edit',
       },
       {
@@ -1201,7 +1239,6 @@ test.group('Route group | matchers', () => {
         meta: {},
         methods: ['PUT', 'PATCH'],
         domain: 'root',
-        middleware: [],
         name: 'posts.update',
       },
       {
@@ -1214,14 +1251,13 @@ test.group('Route group | matchers', () => {
         meta: {},
         methods: ['DELETE'],
         domain: 'root',
-        middleware: [],
         name: 'posts.destroy',
       },
     ])
   })
 
   test('add matcher to brisk routes in the group', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
@@ -1234,7 +1270,7 @@ test.group('Route group | matchers', () => {
     const group = new RouteGroup([route], middlewareStore)
     group.where('id', '[a-z]')
 
-    assert.deepEqual(toRoutesJSON(group.routes), [
+    assert.containsSubset(toRoutesJSON(group.routes), [
       {
         pattern: '/:id',
         matchers: {
@@ -1243,7 +1279,6 @@ test.group('Route group | matchers', () => {
         meta: {},
         methods: ['GET', 'HEAD'],
         domain: 'root',
-        middleware: [],
         name: undefined,
         handler,
       },

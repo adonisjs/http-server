@@ -10,20 +10,106 @@
 import { test } from '@japa/runner'
 import { Container } from '@adonisjs/fold'
 import { MiddlewareStore } from '../src/middleware/store.js'
+import { HttpContextFactory } from '../test_factories/http_context.js'
 
 test.group('Middleware store', () => {
-  test('get handle method object for a named middleware', async ({ assert }) => {
+  test('get handle method object for a named middleware', async ({ assert, expectTypeOf }) => {
+    const ctx = new HttpContextFactory().create()
+    const nextFn = () => {}
+
+    class AuthMiddleware {
+      handle() {
+        return this
+      }
+    }
+
     const middlewareStore = new MiddlewareStore([], {
-      // @ts-expect-error (import does not exists)
-      auth: () => import('#middleware/auth'),
+      auth: async () => {
+        return {
+          default: AuthMiddleware,
+        }
+      },
     })
 
-    const authMiddleware = middlewareStore.get('auth', [])
+    const authMiddleware = middlewareStore.get('auth')
+
+    expectTypeOf(middlewareStore.get).parameters.toEqualTypeOf<['auth', undefined?]>()
     assert.isFunction(authMiddleware.handle)
 
-    await assert.rejects(
-      () => authMiddleware.handle(new Container()),
-      /ERR_PACKAGE_IMPORT_NOT_DEFINED #middleware\/auth/
+    assert.instanceOf(
+      await authMiddleware.handle(new Container().createResolver(), [
+        ctx,
+        nextFn,
+        authMiddleware.args,
+      ]),
+      AuthMiddleware
+    )
+  })
+
+  test('infer handle method arguments', async ({ assert, expectTypeOf }) => {
+    const ctx = new HttpContextFactory().create()
+    const nextFn = () => {}
+
+    class AuthMiddleware {
+      handle(_: any, __: any, options: { guard: 'web' | 'api' }) {
+        return options
+      }
+    }
+
+    const middlewareStore = new MiddlewareStore([], {
+      auth: async () => {
+        return {
+          default: AuthMiddleware,
+        }
+      },
+    })
+
+    const authMiddleware = middlewareStore.get('auth', { guard: 'web' })
+    expectTypeOf(middlewareStore.get).parameters.toEqualTypeOf<['auth', { guard: 'web' | 'api' }]>()
+
+    assert.isFunction(authMiddleware.handle)
+    assert.deepEqual(
+      await authMiddleware.handle(new Container().createResolver(), [
+        ctx,
+        nextFn,
+        authMiddleware.args,
+      ]),
+      {
+        guard: 'web',
+      }
+    )
+  })
+
+  test('infer optional handle method arguments', async ({ assert, expectTypeOf }) => {
+    const ctx = new HttpContextFactory().create()
+    const nextFn = () => {}
+
+    class AuthMiddleware {
+      handle(_: any, __: any, options?: { guard: 'web' | 'api' }) {
+        return options
+      }
+    }
+
+    const middlewareStore = new MiddlewareStore([], {
+      auth: async () => {
+        return {
+          default: AuthMiddleware,
+        }
+      },
+    })
+
+    const authMiddleware = middlewareStore.get('auth')
+    expectTypeOf(middlewareStore.get).parameters.toEqualTypeOf<
+      ['auth', { guard: 'web' | 'api' }?]
+    >()
+
+    assert.isFunction(authMiddleware.handle)
+    assert.isUndefined(
+      await authMiddleware.handle(new Container().createResolver(), [
+        ctx,
+        nextFn,
+        authMiddleware.args,
+      ])
     )
   })
 
@@ -49,10 +135,31 @@ test.group('Middleware store', () => {
     assert.strictEqual(authMiddleware.handle, authMiddleware1.handle)
   })
 
-  test('resolve global middleware to handle method objects', async ({ assert }) => {
+  test('get handle method object for global middleware', async ({ assert }) => {
+    const ctx = new HttpContextFactory().create()
+    const nextFn = () => {}
+
+    class BodyParserMiddleware {
+      handle() {
+        return this
+      }
+    }
+
+    class SilentAuthMiddleware {
+      handle() {
+        return this
+      }
+    }
+
     const middlewareStore = new MiddlewareStore(
-      // @ts-expect-error (imports does not exists)
-      [() => import('#middleware/bodyparser'), () => import('#middleware/silent_auth')],
+      [
+        async () => {
+          return { default: BodyParserMiddleware }
+        },
+        async () => {
+          return { default: SilentAuthMiddleware }
+        },
+      ],
       {}
     )
 
@@ -62,14 +169,13 @@ test.group('Middleware store', () => {
     assert.isFunction(middleware[0].handle)
     assert.isFunction(middleware[1].handle)
 
-    await assert.rejects(
-      () => middleware[0].handle(new Container()),
-      /ERR_PACKAGE_IMPORT_NOT_DEFINED #middleware\/bodyparser/
+    assert.instanceOf(
+      await middleware[0].handle(new Container().createResolver(), [ctx, nextFn]),
+      BodyParserMiddleware
     )
-
-    await assert.rejects(
-      () => middleware[1].handle(new Container()),
-      /ERR_PACKAGE_IMPORT_NOT_DEFINED #middleware\/silent_auth/
+    assert.instanceOf(
+      await middleware[1].handle(new Container().createResolver(), [ctx, nextFn]),
+      SilentAuthMiddleware
     )
   })
 })

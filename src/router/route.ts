@@ -8,10 +8,13 @@
  */
 
 import is from '@sindresorhus/is'
+import Middleware from '@poppinss/middleware'
 import { Macroable } from '@poppinss/macroable'
 import { moduleExpression } from '@adonisjs/fold'
+import { RuntimeException } from '@poppinss/utils'
 import type { Application } from '@adonisjs/application'
 
+import { execute } from './executor.js'
 import { dropSlash } from '../helpers.js'
 import type { MiddlewareStore } from '../middleware/store.js'
 import type { LazyImport, UnWrapLazyImport } from '../types/base.js'
@@ -24,7 +27,6 @@ import type {
   StoreRouteHandler,
   StoreRouteMiddleware,
 } from '../types/route.js'
-import { CannotAssignRouteNamePrefix } from '../exceptions/cannot_assign_name_prefix.js'
 
 /**
  * The route class exposes the APIs for constructing a route using the
@@ -98,7 +100,7 @@ export class Route<
    * Middleware defined directly on the route or the route parent
    * routes. We mantain an array for each layer of the stack
    */
-  #routeMiddleware: StoreRouteMiddleware[][] = []
+  #middleware: StoreRouteMiddleware[][] = []
 
   constructor(
     app: Application,
@@ -216,17 +218,17 @@ export class Route<
    */
   middleware<Name extends keyof NamedMiddleware>(
     middleware: Name,
-    args: GetMiddlewareArgs<UnWrapLazyImport<NamedMiddleware[Name]>>
+    ...args: GetMiddlewareArgs<UnWrapLazyImport<NamedMiddleware[Name]>>
   ): this
   middleware(middleware: MiddlewareFn): this
   middleware(middleware: keyof NamedMiddleware | MiddlewareFn, args?: any): this {
     if (typeof middleware === 'string') {
-      this.#routeMiddleware.push([this.#middlewareStore.get(middleware, args)])
+      this.#middleware.push([this.#middlewareStore.get(middleware, args)])
       return this
     }
 
     if (typeof middleware === 'function') {
-      this.#routeMiddleware.push([middleware])
+      this.#middleware.push([middleware])
     }
 
     return this
@@ -241,7 +243,7 @@ export class Route<
   as(name: string, prepend = false): this {
     if (prepend) {
       if (!this.#name) {
-        throw new CannotAssignRouteNamePrefix(
+        throw new RuntimeException(
           `Routes inside a group must have names before calling "router.group.as"`
         )
       }
@@ -296,7 +298,20 @@ export class Route<
    * The value is shared by reference.
    */
   getMiddleware() {
-    return this.#routeMiddleware
+    return this.#middleware
+  }
+
+  /**
+   * Returns the middleware instance for persistence inside the
+   * store
+   */
+  #getMiddlewareForStore() {
+    const middleware = new Middleware<StoreRouteMiddleware>()
+
+    this.#middlewareStore.list().forEach((one) => middleware.add(one))
+    this.#middleware.flat().forEach((one) => middleware.add(one))
+
+    return middleware
   }
 
   /**
@@ -311,7 +326,8 @@ export class Route<
       name: this.#name,
       handler: this.#handler,
       methods: this.#methods,
-      middleware: this.#routeMiddleware.flat(),
+      middleware: this.#getMiddlewareForStore(),
+      execute: execute,
     }
   }
 }

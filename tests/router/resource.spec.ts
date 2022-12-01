@@ -8,16 +8,14 @@
  */
 
 import { test } from '@japa/runner'
-import { Application } from '@adonisjs/application'
 
+import { AppFactory } from '../../test_factories/app.js'
 import { RouteResource } from '../../src/router/resource.js'
 import { MiddlewareStore } from '../../src/middleware/store.js'
 
-const BASE_URL = new URL('./app/', import.meta.url)
-
 test.group('Route Resource', () => {
   test('define resource routes', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'photos',
@@ -35,7 +33,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.index',
         },
         {
@@ -44,7 +42,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.create',
         },
         {
@@ -53,7 +51,6 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['POST'],
           domain: 'root',
-          middleware: [],
           name: 'photos.store',
         },
         {
@@ -62,7 +59,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.show',
         },
         {
@@ -71,7 +68,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.edit',
         },
         {
@@ -80,7 +77,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['PUT', 'PATCH'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.update',
         },
         {
@@ -89,7 +86,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['DELETE'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.destroy',
         },
       ]
@@ -97,7 +94,7 @@ test.group('Route Resource', () => {
   })
 
   test('cleanup leading and trailing slashes', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: '/photos/',
@@ -115,7 +112,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.index',
         },
         {
@@ -124,7 +121,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.create',
         },
         {
@@ -133,7 +130,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['POST'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.store',
         },
         {
@@ -142,7 +139,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.show',
         },
         {
@@ -151,7 +148,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.edit',
         },
         {
@@ -160,7 +157,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['PUT', 'PATCH'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.update',
         },
         {
@@ -169,7 +166,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['DELETE'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.destroy',
         },
       ]
@@ -177,7 +174,7 @@ test.group('Route Resource', () => {
   })
 
   test('define resource with a parent path', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'v1/photos',
@@ -195,7 +192,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'v_1_photos.index',
         },
         {
@@ -204,7 +201,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'v_1_photos.create',
         },
         {
@@ -213,7 +210,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['POST'],
           domain: 'root',
-          middleware: [],
+
           name: 'v_1_photos.store',
         },
         {
@@ -222,7 +219,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'v_1_photos.show',
         },
         {
@@ -231,7 +228,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'v_1_photos.edit',
         },
         {
@@ -240,7 +237,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['PUT', 'PATCH'],
           domain: 'root',
-          middleware: [],
+
           name: 'v_1_photos.update',
         },
         {
@@ -249,7 +246,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['DELETE'],
           domain: 'root',
-          middleware: [],
+
           name: 'v_1_photos.destroy',
         },
       ]
@@ -257,7 +254,7 @@ test.group('Route Resource', () => {
   })
 
   test('raise error when resource name is a slash', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
 
     assert.throws(
@@ -273,7 +270,7 @@ test.group('Route Resource', () => {
   })
 
   test('define nested resource routes', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'magazines.ads',
@@ -291,7 +288,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.index',
         },
         {
@@ -300,7 +297,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.create',
         },
         {
@@ -309,7 +306,7 @@ test.group('Route Resource', () => {
           methods: ['POST'],
           domain: 'root',
           meta: {},
-          middleware: [],
+
           name: 'magazines.ads.store',
         },
         {
@@ -318,7 +315,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.show',
         },
         {
@@ -327,7 +324,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.edit',
         },
         {
@@ -336,7 +333,7 @@ test.group('Route Resource', () => {
           methods: ['PUT', 'PATCH'],
           domain: 'root',
           meta: {},
-          middleware: [],
+
           name: 'magazines.ads.update',
         },
         {
@@ -345,7 +342,7 @@ test.group('Route Resource', () => {
           methods: ['DELETE'],
           meta: {},
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.destroy',
         },
       ]
@@ -353,7 +350,7 @@ test.group('Route Resource', () => {
   })
 
   test('add shallow nested resource routes', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'magazines.ads',
@@ -371,7 +368,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.index',
         },
         {
@@ -380,7 +377,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.create',
         },
         {
@@ -389,7 +386,7 @@ test.group('Route Resource', () => {
           methods: ['POST'],
           meta: {},
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.store',
         },
         {
@@ -398,7 +395,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.show',
         },
         {
@@ -407,7 +404,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.edit',
         },
         {
@@ -416,7 +413,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['PUT', 'PATCH'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.update',
         },
         {
@@ -425,7 +422,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['DELETE'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.destroy',
         },
       ]
@@ -433,7 +430,7 @@ test.group('Route Resource', () => {
   })
 
   test('mark non-api routes deleted', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'photos',
@@ -449,7 +446,7 @@ test.group('Route Resource', () => {
   })
 
   test("mark all routes as deleted except the defined one's", ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'photos',
@@ -471,7 +468,7 @@ test.group('Route Resource', () => {
   })
 
   test('mark routes for defined actions as deleted', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'photos',
@@ -499,7 +496,7 @@ test.group('Route Resource', () => {
   test('tap into route by action name', ({ assert }) => {
     assert.plan(1)
 
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'photos',
@@ -516,7 +513,7 @@ test.group('Route Resource', () => {
   test('tap into multiple routes by action names', ({ assert }) => {
     assert.plan(2)
 
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'photos',
@@ -531,7 +528,7 @@ test.group('Route Resource', () => {
   })
 
   test('define matcher for params', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'photos',
@@ -592,7 +589,7 @@ test.group('Route Resource', () => {
   })
 
   test('create snake_case route names when resource name is in dash case', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'user-profile',
@@ -610,7 +607,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.index',
         },
         {
@@ -619,7 +616,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.create',
         },
         {
@@ -628,7 +625,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['POST'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.store',
         },
         {
@@ -637,7 +634,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.show',
         },
         {
@@ -646,7 +643,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.edit',
         },
         {
@@ -655,7 +652,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['PUT', 'PATCH'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.update',
         },
         {
@@ -664,7 +661,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['DELETE'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.destroy',
         },
       ]
@@ -674,7 +671,7 @@ test.group('Route Resource', () => {
   test('create snake_case param and route names when nested resource name is in dash-case', ({
     assert,
   }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'user-profile.comments',
@@ -692,7 +689,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.comments.index',
         },
         {
@@ -701,7 +698,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.comments.create',
         },
         {
@@ -710,7 +707,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['POST'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.comments.store',
         },
         {
@@ -719,7 +716,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.comments.show',
         },
         {
@@ -728,7 +725,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.comments.edit',
         },
         {
@@ -737,7 +734,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['PUT', 'PATCH'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.comments.update',
         },
         {
@@ -746,7 +743,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['DELETE'],
           domain: 'root',
-          middleware: [],
+
           name: 'user_profile.comments.destroy',
         },
       ]
@@ -754,7 +751,7 @@ test.group('Route Resource', () => {
   })
 
   test('define base prefix for resource route names', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'photos',
@@ -780,7 +777,7 @@ test.group('Route Resource', () => {
   })
 
   test('allow re-defining resource name for multiple times', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'main-photos',
@@ -831,7 +828,7 @@ test.group('Route Resource', () => {
   })
 
   test('rename the resource param', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'photos',
@@ -851,7 +848,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.index',
         },
         {
@@ -860,7 +857,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.create',
         },
         {
@@ -869,7 +866,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['POST'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.store',
         },
         {
@@ -878,7 +875,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.show',
         },
         {
@@ -887,7 +884,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.edit',
         },
         {
@@ -896,7 +893,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['PUT', 'PATCH'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.update',
         },
         {
@@ -905,7 +902,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['DELETE'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.destroy',
         },
       ]
@@ -913,7 +910,7 @@ test.group('Route Resource', () => {
   })
 
   test('rename the resource param multiple times', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'photos',
@@ -934,7 +931,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.index',
         },
         {
@@ -943,7 +940,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.create',
         },
         {
@@ -952,7 +949,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['POST'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.store',
         },
         {
@@ -961,7 +958,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.show',
         },
         {
@@ -970,7 +967,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.edit',
         },
         {
@@ -979,7 +976,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['PUT', 'PATCH'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.update',
         },
         {
@@ -988,7 +985,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['DELETE'],
           domain: 'root',
-          middleware: [],
+
           name: 'photos.destroy',
         },
       ]
@@ -996,7 +993,7 @@ test.group('Route Resource', () => {
   })
 
   test('define custom param name for nested resource', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'magazines.ads',
@@ -1016,7 +1013,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.index',
         },
         {
@@ -1025,7 +1022,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.create',
         },
         {
@@ -1034,7 +1031,7 @@ test.group('Route Resource', () => {
           methods: ['POST'],
           domain: 'root',
           meta: {},
-          middleware: [],
+
           name: 'magazines.ads.store',
         },
         {
@@ -1043,7 +1040,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.show',
         },
         {
@@ -1052,7 +1049,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.edit',
         },
         {
@@ -1061,7 +1058,7 @@ test.group('Route Resource', () => {
           methods: ['PUT', 'PATCH'],
           domain: 'root',
           meta: {},
-          middleware: [],
+
           name: 'magazines.ads.update',
         },
         {
@@ -1070,7 +1067,7 @@ test.group('Route Resource', () => {
           methods: ['DELETE'],
           meta: {},
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.destroy',
         },
       ]
@@ -1078,7 +1075,7 @@ test.group('Route Resource', () => {
   })
 
   test('rename param name for a shallow resource', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
     const resource = new RouteResource(app, middlewareStore, {
       resource: 'magazines.ads',
@@ -1098,7 +1095,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.index',
         },
         {
@@ -1107,7 +1104,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.create',
         },
         {
@@ -1116,7 +1113,6 @@ test.group('Route Resource', () => {
           methods: ['POST'],
           meta: {},
           domain: 'root',
-          middleware: [],
         },
         {
           pattern: '/ads/:ad',
@@ -1124,7 +1120,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.show',
         },
         {
@@ -1133,7 +1129,7 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-          middleware: [],
+
           name: 'magazines.ads.edit',
         },
         {
@@ -1142,7 +1138,6 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['PUT', 'PATCH'],
           domain: 'root',
-          middleware: [],
           name: 'magazines.ads.update',
         },
         {
@@ -1151,7 +1146,6 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['DELETE'],
           domain: 'root',
-          middleware: [],
           name: 'magazines.ads.destroy',
         },
       ]

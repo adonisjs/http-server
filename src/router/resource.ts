@@ -9,13 +9,13 @@
 
 import string from '@poppinss/utils/string'
 import { Macroable } from '@poppinss/macroable'
+import { RuntimeException } from '@poppinss/utils'
 import type { Application } from '@adonisjs/application'
 
 import { Route } from './route.js'
 import type { LazyImport } from '../types/base.js'
 import type { MiddlewareStore } from '../middleware/store.js'
 import type { MiddlewareAsClass } from '../types/middleware.js'
-import { InvalidResourceNameException } from '../exceptions/invalid_resource_name.js'
 import type { ResourceActionNames, RouteMatcher, RouteMatchers } from '../types/route.js'
 
 /**
@@ -110,7 +110,7 @@ export class RouteResource<
    */
   #validateResourceName(resource: string) {
     if (!resource || resource === '/') {
-      throw new InvalidResourceNameException(`Invalid resource name "${resource}"`)
+      throw new RuntimeException(`Invalid resource name "${resource}"`)
     }
   }
 
@@ -126,9 +126,9 @@ export class RouteResource<
   }
 
   /**
-   * Add a new route for the given pattern, methods and controller action
+   * Create a new route for the given pattern, methods and controller action
    */
-  #makeRoute(pattern: string, methods: string[], action: ResourceActionNames) {
+  #createRoute(pattern: string, methods: string[], action: ResourceActionNames) {
     const route = new Route(this.#app, this.#middlewareStore, {
       pattern,
       methods,
@@ -170,13 +170,13 @@ export class RouteResource<
       })
       .join('/')}/${mainResource}`
 
-    this.#makeRoute(baseURI, ['GET', 'HEAD'], 'index')
-    this.#makeRoute(`${baseURI}/create`, ['GET', 'HEAD'], 'create')
-    this.#makeRoute(baseURI, ['POST'], 'store')
-    this.#makeRoute(`${this.#shallow ? mainResource : baseURI}/:id`, ['GET', 'HEAD'], 'show')
-    this.#makeRoute(`${this.#shallow ? mainResource : baseURI}/:id/edit`, ['GET', 'HEAD'], 'edit')
-    this.#makeRoute(`${this.#shallow ? mainResource : baseURI}/:id`, ['PUT', 'PATCH'], 'update')
-    this.#makeRoute(`${this.#shallow ? mainResource : baseURI}/:id`, ['DELETE'], 'destroy')
+    this.#createRoute(baseURI, ['GET', 'HEAD'], 'index')
+    this.#createRoute(`${baseURI}/create`, ['GET', 'HEAD'], 'create')
+    this.#createRoute(baseURI, ['POST'], 'store')
+    this.#createRoute(`${this.#shallow ? mainResource : baseURI}/:id`, ['GET', 'HEAD'], 'show')
+    this.#createRoute(`${this.#shallow ? mainResource : baseURI}/:id/edit`, ['GET', 'HEAD'], 'edit')
+    this.#createRoute(`${this.#shallow ? mainResource : baseURI}/:id`, ['PUT', 'PATCH'], 'update')
+    this.#createRoute(`${this.#shallow ? mainResource : baseURI}/:id`, ['DELETE'], 'destroy')
   }
 
   /**

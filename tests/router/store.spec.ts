@@ -1,4 +1,4 @@
-/**
+/*
  * @adonisjs/http-server
  *
  * (c) AdonisJS
@@ -8,6 +8,8 @@
  */
 
 import { test } from '@japa/runner'
+import Middleware from '@poppinss/middleware'
+import { execute } from '../../src/router/executor.js'
 import { RoutesStore } from '../../src/router/store.js'
 
 test.group('Store | add', () => {
@@ -21,7 +23,8 @@ test.group('Store | add', () => {
       handler: handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       domain: 'root',
     })
 
@@ -39,6 +42,9 @@ test.group('Store | add', () => {
       domains: {
         root: {
           GET: {
+            routeKeys: {
+              '/': 'GET-/',
+            },
             tokens: [
               [
                 {
@@ -56,7 +62,8 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                middleware: [],
+                execute,
+                middleware: new Middleware<any>(),
               },
             },
           },
@@ -76,7 +83,8 @@ test.group('Store | add', () => {
       handler: handler,
       matchers: {},
       domain: 'foo.com',
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
     })
 
     assert.deepEqual(store.tree, {
@@ -93,6 +101,9 @@ test.group('Store | add', () => {
       domains: {
         'foo.com': {
           GET: {
+            routeKeys: {
+              '/': 'foo.com-GET-/',
+            },
             tokens: [
               [
                 {
@@ -110,7 +121,8 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                middleware: [],
+                execute,
+                middleware: new Middleware<any>(),
               },
             },
           },
@@ -128,7 +140,8 @@ test.group('Store | add', () => {
       matchers: {},
       meta: {},
       domain: 'foo.com',
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
     }
 
     const store = new RoutesStore()
@@ -146,7 +159,8 @@ test.group('Store | add', () => {
       matchers: {},
       meta: {},
       domain: 'foo.com',
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
     }
 
     const store = new RoutesStore()
@@ -162,7 +176,8 @@ test.group('Store | add', () => {
       matchers: {},
       meta: {},
       domain: 'foo.com',
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
     }
 
     const store = new RoutesStore()
@@ -178,7 +193,8 @@ test.group('Store | add', () => {
       matchers: {},
       meta: {},
       domain: 'foo.com',
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
     }
 
     const store = new RoutesStore()
@@ -199,6 +215,9 @@ test.group('Store | add', () => {
       domains: {
         'foo.com': {
           GET: {
+            routeKeys: {
+              '/': 'foo.com-GET-/',
+            },
             tokens: [
               [
                 {
@@ -216,11 +235,15 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                middleware: [],
+                execute,
+                middleware: new Middleware<any>(),
               },
             },
           },
           POST: {
+            routeKeys: {
+              '/': 'foo.com-POST-/',
+            },
             tokens: [
               [
                 {
@@ -238,7 +261,8 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                middleware: [],
+                execute,
+                middleware: new Middleware<any>(),
               },
             },
           },
@@ -256,7 +280,8 @@ test.group('Store | add', () => {
       matchers: {},
       meta: {},
       domain: 'foo.com',
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
     }
 
     const store = new RoutesStore()
@@ -285,6 +310,9 @@ test.group('Store | add', () => {
       domains: {
         'foo.com': {
           GET: {
+            routeKeys: {
+              '/': 'foo.com-GET-/',
+            },
             tokens: [
               [
                 {
@@ -302,13 +330,17 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                middleware: [],
+                execute,
+                middleware: new Middleware<any>(),
               },
             },
           },
         },
         'root': {
           GET: {
+            routeKeys: {
+              '/': 'GET-/',
+            },
             tokens: [
               [
                 {
@@ -326,7 +358,8 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                middleware: [],
+                execute,
+                middleware: new Middleware<any>(),
               },
             },
           },
@@ -345,7 +378,8 @@ test.group('Store | add', () => {
       handler: handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       domain: 'root',
     })
 
@@ -363,6 +397,9 @@ test.group('Store | add', () => {
       domains: {
         root: {
           GET: {
+            routeKeys: {
+              '/:id': 'GET-/:id',
+            },
             tokens: [
               [
                 {
@@ -382,11 +419,15 @@ test.group('Store | add', () => {
                   params: ['id'],
                 },
                 handler,
-                middleware: [],
+                execute,
+                middleware: new Middleware<any>(),
               },
             },
           },
           POST: {
+            routeKeys: {
+              '/:id': 'POST-/:id',
+            },
             tokens: [
               [
                 {
@@ -406,7 +447,8 @@ test.group('Store | add', () => {
                   params: ['id'],
                 },
                 handler,
-                middleware: [],
+                execute,
+                middleware: new Middleware<any>(),
               },
             },
           },
@@ -425,7 +467,8 @@ test.group('Store | add', () => {
       handler: handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       domain: 'root',
     })
     store.add({
@@ -434,7 +477,8 @@ test.group('Store | add', () => {
       handler: handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       domain: 'root',
     })
 
@@ -452,6 +496,10 @@ test.group('Store | add', () => {
       domains: {
         root: {
           GET: {
+            routeKeys: {
+              'users': 'GET-users',
+              'users/:id': 'GET-users/:id',
+            },
             tokens: [
               [
                 {
@@ -485,7 +533,8 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                middleware: [],
+                execute,
+                middleware: new Middleware<any>(),
               },
               'users/:id': {
                 pattern: 'users/:id',
@@ -493,7 +542,8 @@ test.group('Store | add', () => {
                   params: ['id'],
                 },
                 handler,
-                middleware: [],
+                execute,
+                middleware: new Middleware<any>(),
               },
             },
           },
@@ -513,7 +563,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -522,7 +573,8 @@ test.group('Store | match', () => {
       route: {
         pattern: '/',
         handler,
-        middleware: [],
+        execute,
+        middleware: new Middleware<any>(),
         meta: {
           params: [],
         },
@@ -542,7 +594,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -551,7 +604,8 @@ test.group('Store | match', () => {
       route: {
         pattern: '/:username',
         handler,
-        middleware: [],
+        execute,
+        middleware: new Middleware<any>(),
         meta: {
           params: ['username'],
         },
@@ -573,7 +627,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -585,7 +640,8 @@ test.group('Store | match', () => {
         meta: {
           params: ['username'],
         },
-        middleware: [],
+        execute,
+        middleware: new Middleware<any>(),
       },
       params: {
         username: 'virk',
@@ -598,7 +654,8 @@ test.group('Store | match', () => {
       route: {
         pattern: '/:username?',
         handler,
-        middleware: [],
+        execute,
+        middleware: new Middleware<any>(),
         meta: {
           params: ['username'],
         },
@@ -618,7 +675,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -628,7 +686,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -637,7 +696,8 @@ test.group('Store | match', () => {
       route: {
         pattern: '/:username',
         handler,
-        middleware: [],
+        execute,
+        middleware: new Middleware<any>(),
         meta: {
           params: ['username'],
         },
@@ -661,7 +721,8 @@ test.group('Store | match', () => {
       matchers: {
         username: { match: new RegExp(/[a-z]+/) },
       },
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -673,7 +734,8 @@ test.group('Store | match', () => {
       matchers: {
         id: { match: new RegExp(/[0-9]+/) },
       },
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -685,7 +747,8 @@ test.group('Store | match', () => {
         meta: {
           params: ['id'],
         },
-        middleware: [],
+        execute,
+        middleware: new Middleware<any>(),
       },
       params: {
         id: '1',
@@ -704,7 +767,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       domain: 'foo.com',
       methods: ['GET'],
     })
@@ -729,7 +793,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       domain: ':tenant.foo.com',
       methods: ['GET'],
     })
@@ -756,7 +821,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -773,7 +839,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'foo.adonisjs.com',
     })
@@ -790,7 +857,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -800,7 +868,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       domain: 'foo.com',
       methods: ['GET'],
     })
@@ -818,7 +887,8 @@ test.group('Store | match', () => {
           meta: {
             params: ['id'],
           },
-          middleware: [],
+          execute,
+          middleware: new Middleware<any>(),
         },
         params: {
           id: '1',
@@ -838,7 +908,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       domain: ':subdomain.adonisjs.com',
       methods: ['GET'],
     })
@@ -856,7 +927,8 @@ test.group('Store | match', () => {
           meta: {
             params: ['id'],
           },
-          middleware: [],
+          execute,
+          middleware: new Middleware<any>(),
         },
         params: {
           id: '1',
@@ -878,7 +950,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -895,7 +968,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -917,7 +991,8 @@ test.group('Store | match', () => {
       handler,
       matchers: {},
       meta: {},
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -936,7 +1011,8 @@ test.group('Store | match', () => {
       matchers: {
         id: { match: new RegExp(/^[0-9]+$/) },
       },
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -948,7 +1024,8 @@ test.group('Store | match', () => {
         meta: {
           params: ['id'],
         },
-        middleware: [],
+        execute,
+        middleware: new Middleware<any>(),
       },
       params: {},
       subdomains: {},
@@ -967,7 +1044,8 @@ test.group('Store | match', () => {
       matchers: {
         id: { match: new RegExp(/^[0-9]+$/) },
       },
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -979,7 +1057,8 @@ test.group('Store | match', () => {
         meta: {
           params: ['id'],
         },
-        middleware: [],
+        execute,
+        middleware: new Middleware<any>(),
       },
       params: {
         id: '1',
@@ -1000,7 +1079,8 @@ test.group('Store | match', () => {
       matchers: {
         username: { match: new RegExp(/[a-z]+/) },
       },
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -1012,7 +1092,8 @@ test.group('Store | match', () => {
       matchers: {
         id: { match: new RegExp(/[0-9]+/), cast: (value) => Number(value) },
       },
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -1024,7 +1105,8 @@ test.group('Store | match', () => {
         meta: {
           params: ['id'],
         },
-        middleware: [],
+        execute,
+        middleware: new Middleware<any>(),
       },
       params: {
         id: 1,
@@ -1045,7 +1127,8 @@ test.group('Store | match', () => {
       matchers: {
         id: { match: new RegExp(/[0-9]+/), cast: (value) => Number(value) },
       },
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -1057,7 +1140,8 @@ test.group('Store | match', () => {
         meta: {
           params: ['id'],
         },
-        middleware: [],
+        execute,
+        middleware: new Middleware<any>(),
       },
       params: {},
       subdomains: {},
@@ -1077,7 +1161,8 @@ test.group('Store | match', () => {
         id: { match: new RegExp(/[0-9]+/), cast: (value) => Number(value) },
         slug: { cast: (value) => value.toLowerCase() },
       },
-      middleware: [],
+      execute,
+      middleware: new Middleware<any>(),
       methods: ['GET'],
       domain: 'root',
     })
@@ -1089,7 +1174,8 @@ test.group('Store | match', () => {
         meta: {
           params: ['id', 'slug'],
         },
-        middleware: [],
+        execute,
+        middleware: new Middleware<any>(),
       },
       params: {
         id: 1,

@@ -7,10 +7,15 @@
  * file that was distributed with this source code.
  */
 
-import { type Container, type ContainerResolver, moduleImporter } from '@adonisjs/fold'
+import { moduleImporter } from '@adonisjs/fold'
+import { RuntimeException } from '@poppinss/utils'
 
 import type { LazyImport, UnWrapLazyImport } from '../types/base.js'
-import type { GetMiddlewareArgs, MiddlewareAsClass } from '../types/middleware.js'
+import type {
+  GetMiddlewareArgs,
+  MiddlewareAsClass,
+  ParsedGlobalMiddleware,
+} from '../types/middleware.js'
 
 /**
  * Middleware store is used to register middleware as lazy imports and resolve
@@ -22,40 +27,47 @@ export class MiddlewareStore<
   /**
    * Named middleware is an object of key-value pair
    */
-  #namedMiddleware: NamedMiddleware
+  #namedMiddleware?: NamedMiddleware
 
   /**
    * An array of global middleware
    */
-  #middleware: LazyImport<MiddlewareAsClass>[]
+  #middleware: ParsedGlobalMiddleware[]
 
   /**
    * Cache of resolved middleware. This is done to avoid creating too many
    * functions for a single lazily imported module.
    */
-  #resolvedMiddleware: Map<
-    keyof NamedMiddleware,
-    { handle: (container: Container<any> | ContainerResolver<any>, ...args: any[]) => any }
-  > = new Map()
+  #resolvedMiddleware: Map<keyof NamedMiddleware, ParsedGlobalMiddleware> = new Map()
 
-  constructor(middleware: LazyImport<MiddlewareAsClass>[], namedMiddleware: NamedMiddleware) {
-    this.#middleware = middleware
+  constructor(middleware: LazyImport<MiddlewareAsClass>[], namedMiddleware?: NamedMiddleware) {
+    this.#middleware = middleware.map((one) => moduleImporter(one, 'handle').toHandleMethod())
     this.#namedMiddleware = namedMiddleware
   }
 
   /**
    * Returns the handle method object for a given named middleware
    */
-  get<Name extends keyof NamedMiddleware>(
+  get<
+    Name extends keyof NamedMiddleware,
+    Args extends GetMiddlewareArgs<UnWrapLazyImport<NamedMiddleware[Name]>>
+  >(
     name: Name,
-    args: GetMiddlewareArgs<UnWrapLazyImport<NamedMiddleware[Name]>>
-  ) {
+    ...args: Args
+  ): {
+    name: Name
+    args: any
+  } & ParsedGlobalMiddleware {
     if (this.#resolvedMiddleware.has(name)) {
       return {
         name,
-        args,
+        args: args[0],
         ...this.#resolvedMiddleware.get(name)!,
       }
+    }
+
+    if (!this.#namedMiddleware || !this.#namedMiddleware[name]) {
+      throw new RuntimeException(`Cannot resolve "${String(name)}" middleware`)
     }
 
     const handler = moduleImporter(this.#namedMiddleware[name], 'handle').toHandleMethod()
@@ -63,18 +75,16 @@ export class MiddlewareStore<
 
     return {
       name,
-      args,
+      args: args[0],
       ...handler,
     }
   }
 
   /**
-   * Returns an array of functions to resolved and invoke global
+   * Returns an array of functions to resolve and invoke global
    * middleware
    */
   list() {
-    return this.#middleware.map((middleware) =>
-      moduleImporter(middleware, 'handle').toHandleMethod()
-    )
+    return this.#middleware
   }
 }

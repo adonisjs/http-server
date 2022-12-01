@@ -228,7 +228,7 @@ export class RouteGroup<
    */
   middleware<Name extends keyof NamedMiddleware>(
     middleware: Name,
-    args: GetMiddlewareArgs<UnWrapLazyImport<NamedMiddleware[Name]>>
+    ...args: GetMiddlewareArgs<UnWrapLazyImport<NamedMiddleware[Name]>>
   ): this
   middleware(middleware: MiddlewareFn): this
   middleware(middleware: keyof NamedMiddleware | MiddlewareFn, args?: any): this {

@@ -23,7 +23,7 @@
     "types": ["@types/node"]
   },
   "include": ["./**/*"],
-  "exclude": ["./node_modules", "./build"],
+  "exclude": ["./node_modules", "./build", "./backup"],
   "ts-node": {
     "swc": true
   }

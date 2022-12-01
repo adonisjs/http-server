@@ -10,10 +10,10 @@
 import { Exception } from '@poppinss/utils'
 
 /**
- * The exception is raised when unable to find a route by
- * its name, route pattern or the controller.method name
+ * The exception is raised when unable to serialize the outgoing
+ * HTTP response
  */
-export class CannotAssignRouteNamePrefix extends Exception {
+export class InvalidResponseDataTypeException extends Exception {
   static status = 500
-  static code = 'E_ASSIGN_ROUTE_NAME_PREFIX'
+  static code = 'E_INVALID_RESPONSE_DATA_TYPE'
 }

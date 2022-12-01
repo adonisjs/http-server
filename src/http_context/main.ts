@@ -8,77 +8,79 @@
  */
 
 import { inspect } from 'node:util'
+import type { Logger } from '@adonisjs/logger'
 import { Macroable } from '@poppinss/macroable'
-import type { StoreRouteNode } from '../types.js'
+import { RuntimeException } from '@poppinss/utils'
+
+import type { Request } from '../request.js'
+import type { Response } from '../response.js'
+import { asyncLocalStorage } from './local_storage.js'
+import type { StoreRouteNode } from '../types/route.js'
 
 /**
- * Http context is passed to all route handlers, middleware,
- * error handler and server hooks.
+ * Http context encapsulates properties for a given HTTP request. The
+ * context class can be extended using macros and getters.
  */
 export class HttpContext extends Macroable {
   /**
    * Find if async localstorage is enabled for HTTP requests
    * or not
    */
-  // static get usingAsyncLocalStorage() {
-  //   return usingAsyncLocalStorage
-  // }
+  static get usingAsyncLocalStorage() {
+    return asyncLocalStorage.isEnabled
+  }
 
   /**
    * Get access to the HTTP context. Available only when
    * "usingAsyncLocalStorage" is true
    */
-  // static get(): HttpContext | null {
-  //   if (!this.usingAsyncLocalStorage) {
-  //     return null
-  //   }
+  static get(): HttpContext | null {
+    if (!this.usingAsyncLocalStorage || !asyncLocalStorage.storage) {
+      return null
+    }
 
-  //   return httpContextLocalStorage.getStore() || null
-  // }
+    return asyncLocalStorage.storage.getStore() || null
+  }
 
   /**
    * Get the HttpContext instance or raise an exception if not
    * available
    */
-  // static getOrFail(): HttpContext {
-  //   /**
-  //    * Localstorage is not enabled
-  //    */
-  //   if (!this.usingAsyncLocalStorage) {
-  //     const error = new Exception(
-  //       E_INVALID_ALS_ACCESS.message,
-  //       E_INVALID_ALS_ACCESS.status,
-  //       E_INVALID_ALS_ACCESS.code
-  //     )
-  //     error.help = E_INVALID_ALS_ACCESS.help.join('\n')
-  //     throw error
-  //   }
+  static getOrFail(): HttpContext {
+    /**
+     * Localstorage is not enabled
+     */
+    if (!this.usingAsyncLocalStorage || !asyncLocalStorage.storage) {
+      throw new RuntimeException(
+        'HTTP context is not available. Enable "useAsyncLocalStorage" inside "config/app.ts" file'
+      )
+    }
 
-  //   const store = this.get()
+    const store = this.get()
+    if (!store) {
+      throw new RuntimeException('Http context is not available outside of an HTTP request')
+    }
 
-  //   /**
-  //    * Store is not accessible
-  //    */
-  //   if (!store) {
-  //     const error = new Exception(
-  //       E_INVALID_ALS_SCOPE.message,
-  //       E_INVALID_ALS_SCOPE.status,
-  //       E_INVALID_ALS_SCOPE.code
-  //     )
-  //     error.help = E_INVALID_ALS_SCOPE.help.join('\n')
-  //     throw error
-  //   }
-
-  //   return store
-  // }
+    return store
+  }
 
   /**
    * Run a method that doesn't have access to HTTP context from
    * the async local storage.
    */
-  // static runOutsideContext<T>(callback: (...args: any[]) => T, ...args: any[]): T {
-  //   return httpContextLocalStorage.exit(callback, ...args)
-  // }
+  static runOutsideContext<T>(callback: (...args: any[]) => T, ...args: any[]): T {
+    if (!asyncLocalStorage.storage) {
+      return callback(...args)
+    }
+
+    return asyncLocalStorage.storage.exit(callback, ...args)
+  }
+
+  /**
+   * Reference to the current route. Not available inside
+   * server middleware
+   */
+  route?: StoreRouteNode
 
   /**
    * A unique key for the current route
@@ -95,13 +97,7 @@ export class HttpContext extends Macroable {
    */
   subdomains: Record<string, any> = {}
 
-  /**
-   * Reference to the current route. Not available inside
-   * server middleware
-   */
-  route?: StoreRouteNode & { params: string[] }
-
-  constructor(public request: any, public response: any, public logger: any, public profiler: any) {
+  constructor(public request: Request, public response: Response, public logger: Logger) {
     super()
 
     /*

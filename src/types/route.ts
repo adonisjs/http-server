@@ -1,4 +1,4 @@
-/**
+/*
  * @adonisjs/http-server
  *
  * (c) AdonisJS
@@ -7,9 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import type { MiddlewareFn } from './middleware.js'
+import type Middleware from '@poppinss/middleware'
+import type { ContainerResolver } from '@adonisjs/fold'
+
 import type { HttpContext } from '../http_context/main.js'
-import type { ContainerResolver, Container } from '@adonisjs/fold'
+import type { MiddlewareFn, ParsedGlobalMiddleware } from './middleware.js'
 
 /**
  * Route token stored by matchit library
@@ -33,11 +35,7 @@ export type StoreRouteHandler =
   | RouteFn
   | {
       name: string
-      handle: (
-        container: Container<any> | ContainerResolver<any>,
-        ctx: HttpContext,
-        ...args: any[]
-      ) => any
+      handle: (resolver: ContainerResolver, args: [ctx: HttpContext, ...injections: any[]]) => any
     }
 
 /**
@@ -45,21 +43,18 @@ export type StoreRouteHandler =
  */
 export type StoreRouteMiddleware =
   | MiddlewareFn
-  | {
-      name: string
-      args: any[]
-      handle: (
-        container: Container<any> | ContainerResolver<any>,
-        ctx: HttpContext,
-        next: Promise<any>,
-        args?: any
-      ) => any
-    }
+  | ({ name?: string; args?: any[] } & ParsedGlobalMiddleware)
 
 /**
  * Route node persisted within the routes store
  */
 export type StoreRouteNode = {
+  /**
+   * The execute function to execute the route middleware
+   * and the handler
+   */
+  execute: (route: StoreRouteNode, resolver: ContainerResolver, ctx: HttpContext) => any
+
   /**
    * A unique name for the route
    */
@@ -78,7 +73,7 @@ export type StoreRouteNode = {
   /**
    * Route middleware
    */
-  middleware: StoreRouteMiddleware[]
+  middleware: Middleware<StoreRouteMiddleware>
 
   /**
    * Additional metadata associated with the route
@@ -91,6 +86,9 @@ export type StoreRouteNode = {
  */
 export type StoreMethodNode = {
   tokens: MatchItRouteToken[][]
+  routeKeys: {
+    [pattern: string]: string
+  }
   routes: {
     [pattern: string]: StoreRouteNode
   }

@@ -19,8 +19,9 @@ import { RouteMatchers as Matchers } from './matchers.js'
 import { DuplicateRouteNameException } from '../exceptions/duplicate_route_name.js'
 
 import type Encryption from '@adonisjs/encryption'
-import type { LazyImport } from '../types/base.js'
 import type { Application } from '@adonisjs/application'
+
+import type { LazyImport } from '../types/base.js'
 import { MiddlewareStore } from '../middleware/store.js'
 import type { MiddlewareAsClass } from '../types/middleware.js'
 import type {
@@ -65,7 +66,7 @@ export class Router<
   /**
    * Middleware store to be shared with the routes
    */
-  #middlewareStore?: MiddlewareStore<NamedMiddleware>
+  #middlewareStore: MiddlewareStore<NamedMiddleware>
 
   /**
    * A boolean to tell the router that a group is in
@@ -85,25 +86,24 @@ export class Router<
   )[] = []
 
   /**
+   * A flag to know if routes for explicit domains have been registered.
+   * The boolean is computed after calling the "commit" method.
+   */
+  usingDomains: boolean = false
+
+  /**
    * Shortcut methods for commonly used route matchers
    */
   matchers = new Matchers()
 
-  constructor(app: Application, encryption: Encryption) {
+  constructor(
+    app: Application,
+    encryption: Encryption,
+    middlewareStore: MiddlewareStore<NamedMiddleware>
+  ) {
     super(encryption)
     this.#app = app
-  }
-
-  /**
-   * Raises exception when middleware store is not registered with the
-   * router.
-   */
-  #ensureHasMiddlewareStore(
-    middlewareStore?: MiddlewareStore<NamedMiddleware>
-  ): asserts middlewareStore {
-    if (!middlewareStore) {
-      throw new TypeError(`Cannot register routes without registering middleware first`)
-    }
+    this.#middlewareStore = middlewareStore
   }
 
   /**
@@ -127,20 +127,9 @@ export class Router<
   }
 
   /**
-   * Register a list of global middleware and a collection of named
-   * middleware with the router.
-   */
-  use(globalMiddleware: LazyImport<MiddlewareAsClass>[], namedMiddleware: NamedMiddleware): this {
-    this.#middlewareStore = new MiddlewareStore(globalMiddleware, namedMiddleware)
-    return this
-  }
-
-  /**
    * Add route for a given pattern and methods
    */
   route(pattern: string, methods: string[], handler: string | RouteFn) {
-    this.#ensureHasMiddlewareStore(this.#middlewareStore)
-
     const route = new Route(this.#app, this.#middlewareStore, {
       pattern,
       methods,
@@ -203,8 +192,6 @@ export class Router<
    * to routes in bulk
    */
   group(callback: () => void) {
-    this.#ensureHasMiddlewareStore(this.#middlewareStore)
-
     /*
      * Create a new group with empty set of routes
      */
@@ -239,8 +226,6 @@ export class Router<
    * Registers a route resource with conventional set of routes
    */
   resource(resource: string, controller: string) {
-    this.#ensureHasMiddlewareStore(this.#middlewareStore)
-
     const resourceInstance = new RouteResource(this.#app, this.#middlewareStore, {
       resource,
       controller,
@@ -256,8 +241,6 @@ export class Router<
    * Register a route resource with shallow nested routes.
    */
   shallowResource(resource: string, controller: string) {
-    this.#ensureHasMiddlewareStore(this.#middlewareStore)
-
     const resourceInstance = new RouteResource(this.#app, this.#middlewareStore, {
       resource,
       controller,
@@ -273,8 +256,6 @@ export class Router<
    * Returns a brisk route instance for a given URL pattern
    */
   on(pattern: string) {
-    this.#ensureHasMiddlewareStore(this.#middlewareStore)
-
     const briskRoute = new BriskRoute(this.#app, this.#middlewareStore, {
       pattern,
       globalMatchers: this.#globalMatchers,
@@ -339,6 +320,8 @@ export class Router<
     })
 
     routeNamesByDomain.clear()
+
+    this.usingDomains = this.#store.usingDomains
     this.routes = []
     this.#globalMatchers = {}
   }
@@ -346,7 +329,7 @@ export class Router<
   /**
    * Find route for a given URL, method and optionally domain
    */
-  match(url: string, method: string, hostname?: string): null | MatchedRoute {
+  match(url: string, method: string, hostname?: string | null): null | MatchedRoute {
     const matchingDomain = this.#store.matchDomain(hostname)
 
     return matchingDomain.length

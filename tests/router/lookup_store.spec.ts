@@ -8,22 +8,19 @@
  */
 
 import { test } from '@japa/runner'
-import Encryption from '@adonisjs/encryption'
-import { Application } from '@adonisjs/application'
 
 import { Route } from '../../src/router/route.js'
+import { AppFactory } from '../../test_factories/app.js'
 import { MiddlewareStore } from '../../src/middleware/store.js'
 import { LookupStore } from '../../src/router/lookup_store/main.js'
-
-const SECRET = 'averylongrandomsecretkey'
-const BASE_URL = new URL('./app/', import.meta.url)
+import { EncryptionFactory } from '../../test_factories/encryption.js'
 
 test.group('Lookup store | find', () => {
   test('find a route by route pattern', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const middlewareStore = new MiddlewareStore([], {})
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
+    const middlewareStore = new MiddlewareStore([], {})
 
     const route = new Route(app, middlewareStore, {
       pattern: '/users/:id',
@@ -40,14 +37,13 @@ test.group('Lookup store | find', () => {
       matchers: {},
       domain: 'root',
       name: undefined,
-      middleware: [],
     })
   })
 
   test('find a route by route name', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const encryption = new Encryption({ secret: SECRET })
     const lookupStore = new LookupStore(encryption)
 
     const route = new Route(app, middlewareStore, {
@@ -66,14 +62,13 @@ test.group('Lookup store | find', () => {
       matchers: {},
       domain: 'root',
       name: 'users.show',
-      middleware: [],
     })
   })
 
   test('find a route by route controller name', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const encryption = new Encryption({ secret: SECRET })
     const lookupStore = new LookupStore(encryption)
 
     const route = new Route(app, middlewareStore, {
@@ -91,21 +86,20 @@ test.group('Lookup store | find', () => {
       matchers: {},
       domain: 'root',
       name: undefined,
-      middleware: [],
     })
   })
 
   test('return null when unable to find route', ({ assert }) => {
-    const encryption = new Encryption({ secret: SECRET })
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
     assert.isNull(lookupStore.find('/users/:id'))
   })
 
   test('do not match route handler name when it is defined as function', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const encryption = new Encryption({ secret: SECRET })
     const lookupStore = new LookupStore(encryption)
 
     const route = new Route(app, middlewareStore, {
@@ -123,9 +117,9 @@ test.group('Lookup store | find', () => {
 
 test.group('Lookup store | findByOrFail', () => {
   test('find a route by route pattern', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const encryption = new Encryption({ secret: SECRET })
     const lookupStore = new LookupStore(encryption)
 
     const route = new Route(app, middlewareStore, {
@@ -143,14 +137,13 @@ test.group('Lookup store | findByOrFail', () => {
       matchers: {},
       domain: 'root',
       name: undefined,
-      middleware: [],
     })
   })
 
   test('find a route by route name', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const encryption = new Encryption({ secret: SECRET })
     const lookupStore = new LookupStore(encryption)
 
     const route = new Route(app, middlewareStore, {
@@ -169,14 +162,13 @@ test.group('Lookup store | findByOrFail', () => {
       matchers: {},
       domain: 'root',
       name: 'users.show',
-      middleware: [],
     })
   })
 
   test('find a route by route controller name', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const encryption = new Encryption({ secret: SECRET })
     const lookupStore = new LookupStore(encryption)
 
     const route = new Route(app, middlewareStore, {
@@ -194,12 +186,11 @@ test.group('Lookup store | findByOrFail', () => {
       matchers: {},
       domain: 'root',
       name: undefined,
-      middleware: [],
     })
   })
 
   test('raise error when unable to lookup route', ({ assert }) => {
-    const encryption = new Encryption({ secret: SECRET })
+    const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
     assert.throws(() => lookupStore.findOrFail('/users/:id'), 'Cannot lookup route "/users/:id"')
@@ -208,9 +199,9 @@ test.group('Lookup store | findByOrFail', () => {
 
 test.group('Lookup store | has', () => {
   test('check if a route exists', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const encryption = new Encryption({ secret: SECRET })
     const lookupStore = new LookupStore(encryption)
 
     const route = new Route(app, middlewareStore, {

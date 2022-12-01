@@ -1,4 +1,4 @@
-/**
+/*
  * @adonisjs/http-server
  *
  * (c) AdonisJS
@@ -7,24 +7,41 @@
  * file that was distributed with this source code.
  */
 
+import type { NextFn } from '@poppinss/middleware/types'
+
 import type { Constructor } from './base.js'
+import type { ContainerResolver } from '@adonisjs/fold'
 import type { HttpContext } from '../http_context/main.js'
 
 /**
  * Middleware represented as a class
  */
 export type MiddlewareAsClass = Constructor<{
-  handle: (ctx: HttpContext, next: Promise<any>, args?: any) => any
+  handle: (ctx: HttpContext, next: NextFn, args?: any) => any
 }>
+
+/**
+ * Check if a union has undefined or null
+ */
+type HasUndefined<T> = T extends NonNullable<T> ? true : false
 
 /**
  * Returns the arguments accepted by the middleware's handle method
  */
-export type GetMiddlewareArgs<Middleware extends MiddlewareAsClass> = Parameters<
-  InstanceType<Middleware>['handle']
->[2]
+export type GetMiddlewareArgs<Middleware extends MiddlewareAsClass> = HasUndefined<
+  Parameters<InstanceType<Middleware>['handle']>[2]
+> extends true
+  ? [Parameters<InstanceType<Middleware>['handle']>[2]]
+  : [Parameters<InstanceType<Middleware>['handle']>[2]?]
 
 /**
  * The middleware defined as a function on the router or the server
  */
-export type MiddlewareFn = (ctx: HttpContext, next: Promise<any>) => any
+export type MiddlewareFn = (ctx: HttpContext, next: NextFn) => any
+
+/**
+ * Parsed global middleware
+ */
+export type ParsedGlobalMiddleware = {
+  handle: (resolver: ContainerResolver, args: [ctx: HttpContext, next: NextFn, params?: any]) => any
+}

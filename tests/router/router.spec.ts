@@ -1,4 +1,4 @@
-/**
+/*
  * @adonisjs/http-server
  *
  * (c) AdonisJS
@@ -9,21 +9,18 @@
 
 import { test } from '@japa/runner'
 import { parse } from 'node:querystring'
-import Encryption from '@adonisjs/encryption'
-import { Application } from '@adonisjs/application'
 
 import { Router } from '../../src/router/main.js'
-
-const SECRET = 'averylongrandomsecretkey'
-const BASE_URL = new URL('./app/', import.meta.url)
+import { AppFactory } from '../../test_factories/app.js'
+import { MiddlewareStore } from '../../src/middleware/store.js'
+import { EncryptionFactory } from '../../test_factories/encryption.js'
 
 test.group('Router | add', () => {
   test('add routes', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     const getRoute = router.get('/', '#controllers/home.index')
     const postRoute = router.post('/', '#controllers/home.store')
@@ -38,7 +35,6 @@ test.group('Router | add', () => {
       meta: {},
       matchers: {},
       domain: 'root',
-      middleware: [],
       name: undefined,
     })
 
@@ -48,7 +44,6 @@ test.group('Router | add', () => {
       meta: {},
       matchers: {},
       domain: 'root',
-      middleware: [],
       name: undefined,
     })
 
@@ -58,7 +53,6 @@ test.group('Router | add', () => {
       meta: {},
       matchers: {},
       domain: 'root',
-      middleware: [],
       name: undefined,
     })
 
@@ -68,7 +62,6 @@ test.group('Router | add', () => {
       meta: {},
       matchers: {},
       domain: 'root',
-      middleware: [],
       name: undefined,
     })
 
@@ -78,7 +71,6 @@ test.group('Router | add', () => {
       meta: {},
       matchers: {},
       domain: 'root',
-      middleware: [],
       name: undefined,
     })
 
@@ -88,36 +80,15 @@ test.group('Router | add', () => {
       meta: {},
       matchers: {},
       domain: 'root',
-      middleware: [],
       name: undefined,
     })
   })
 
-  test('raise error when creating routes without registering middleware', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
-
-    const router = new Router(app, encryption)
-    assert.throws(
-      () => router.get('/', () => {}),
-      'Cannot register routes without registering middleware'
-    )
-    assert.throws(
-      () => router.resource('posts', '#controllers/posts'),
-      'Cannot register routes without registering middleware'
-    )
-    assert.throws(
-      () => router.group(() => {}),
-      'Cannot register routes without registering middleware'
-    )
-  })
-
   test('raise error when route name is duplicate', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('/', async function handler() {}).as('home')
     router.get('home', async function handler() {}).as('home')
@@ -127,11 +98,10 @@ test.group('Router | add', () => {
   })
 
   test('create nested groups', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     async function handler() {}
 
@@ -159,19 +129,33 @@ test.group('Router | add', () => {
   })
 
   test('apply middleware in nested groups', ({ assert }) => {
-    const middleware = {
-      // @ts-expect-error
-      acl: () => import('#middleware/acl'),
-      // @ts-expect-error
-      auth: () => import('#middleware/auth'),
+    class AclMiddleware {
+      async handle(_: any, __: any, options: { role: 'admin' | 'editor' }) {
+        return options
+      }
     }
 
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    class AuthMiddleware {
+      async handle() {}
+    }
 
-    const router = new Router<typeof middleware>(app, encryption)
-    router.use([], middleware)
+    const middleware = {
+      acl: async () => {
+        return {
+          default: AclMiddleware,
+        }
+      },
+      auth: async () => {
+        return {
+          default: AuthMiddleware,
+        }
+      },
+    }
 
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
+
+    const router = new Router(app, encryption, new MiddlewareStore([], middleware))
     async function handler() {}
 
     router
@@ -182,38 +166,43 @@ test.group('Router | add', () => {
           })
           .middleware('acl', { role: 'admin' })
       })
-      .middleware('auth', [])
+      .middleware('auth')
 
     router.commit()
-    assert.containsSubset(router.toJSON(), {
+
+    const routeJSON = router.toJSON()
+    assert.containsSubset(routeJSON, {
       root: [
         {
           domain: 'root',
           handler,
-          middleware: [
-            {
-              name: 'auth',
-              args: [],
-            },
-            {
-              name: 'acl',
-              args: { role: 'admin' },
-            },
-          ],
           pattern: '/',
         },
       ],
     })
+
+    assert.containsSubset(
+      [...routeJSON.root[0].middleware.all()],
+      [
+        {
+          name: 'auth',
+          args: undefined,
+        },
+        {
+          name: 'acl',
+          args: { role: 'admin' },
+        },
+      ]
+    )
   })
 
   test('apply domain in nested groups', ({ assert }) => {
     assert.plan(1)
 
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     async function handler() {}
 
@@ -243,11 +232,10 @@ test.group('Router | add', () => {
   test('apply route matchers on nested groups', ({ assert }) => {
     assert.plan(1)
 
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     async function handler() {}
 
@@ -282,11 +270,10 @@ test.group('Router | add', () => {
   test('apply route matchers using shorthand methods', ({ assert }) => {
     assert.plan(1)
 
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     async function handler() {}
 
@@ -299,11 +286,10 @@ test.group('Router | add', () => {
   })
 
   test('test empty string param against the matcher', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     async function handler() {}
 
@@ -316,11 +302,10 @@ test.group('Router | add', () => {
   })
 
   test('apply route names in group', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     async function handler() {}
 
@@ -350,11 +335,10 @@ test.group('Router | add', () => {
   })
 
   test('define global matcher as a string', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.where('id', '^[0-9]$')
 
@@ -381,11 +365,10 @@ test.group('Router | add', () => {
   })
 
   test('define global matcher as a regex', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.where('id', /^[0-9]$/)
 
@@ -412,11 +395,10 @@ test.group('Router | add', () => {
   })
 
   test('define global matcher as an object', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.where('id', {
       match: /^[0-9]$/,
@@ -448,25 +430,23 @@ test.group('Router | add', () => {
 
 test.group('Router | commit', () => {
   test('commit routes to the store', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     async function handler() {}
     router.get('/', handler)
     router.commit()
 
     assert.deepEqual(router.routes, [])
-    assert.deepEqual(router.match('/', 'GET'), {
+    assert.containsSubset(router.match('/', 'GET'), {
       params: {},
       route: {
         handler,
         meta: {
           params: [],
         },
-        middleware: [],
         name: undefined,
         pattern: '/',
       },
@@ -476,11 +456,10 @@ test.group('Router | commit', () => {
   })
 
   test('commit routes group to the store', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     async function handler() {}
 
@@ -493,14 +472,13 @@ test.group('Router | commit', () => {
     router.commit()
 
     assert.deepEqual(router.routes, [])
-    assert.deepEqual(router.match('/api', 'GET'), {
+    assert.containsSubset(router.match('/api', 'GET'), {
       params: {},
       route: {
         handler,
         meta: {
           params: [],
         },
-        middleware: [],
         name: undefined,
         pattern: '/api',
       },
@@ -510,11 +488,10 @@ test.group('Router | commit', () => {
   })
 
   test('define resource inside a group', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router
       .group(() => {
@@ -531,7 +508,6 @@ test.group('Router | commit', () => {
         meta: {
           params: [],
         },
-        middleware: [],
         name: 'posts.index',
         pattern: '/api/posts',
       },
@@ -541,11 +517,10 @@ test.group('Router | commit', () => {
   })
 
   test('define resource inside nested groups', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router
       .group(() => {
@@ -566,7 +541,6 @@ test.group('Router | commit', () => {
         meta: {
           params: [],
         },
-        middleware: [],
         name: 'posts.index',
         pattern: '/api/v1/posts',
       },
@@ -576,11 +550,10 @@ test.group('Router | commit', () => {
   })
 
   test('define shallow resource', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.shallowResource('posts.comments', 'CommentsController')
     router.commit()
@@ -594,7 +567,6 @@ test.group('Router | commit', () => {
         meta: {
           params: ['id'],
         },
-        middleware: [],
         name: 'posts.comments.show',
         pattern: '/comments/:id',
       },
@@ -604,11 +576,10 @@ test.group('Router | commit', () => {
   })
 
   test('define nested resource', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.resource('posts.comments', 'CommentsController')
 
@@ -623,7 +594,6 @@ test.group('Router | commit', () => {
         meta: {
           params: ['post_id', 'id'],
         },
-        middleware: [],
         name: 'posts.comments.show',
         pattern: '/posts/:post_id/comments/:id',
       },
@@ -633,11 +603,10 @@ test.group('Router | commit', () => {
   })
 
   test('do not commit route when deleted flag is set to true', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     async function handler() {}
     const route = router.get('/', handler)
@@ -651,11 +620,10 @@ test.group('Router | commit', () => {
 
 test.group('Router | match', () => {
   test('match route using URL', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.resource('photos', 'PhotosController')
     router.commit()
@@ -666,7 +634,6 @@ test.group('Router | match', () => {
         meta: {
           params: [],
         },
-        middleware: [],
         pattern: '/photos',
         name: 'photos.index',
       },
@@ -680,7 +647,6 @@ test.group('Router | match', () => {
         meta: {
           params: [],
         },
-        middleware: [],
         pattern: '/photos/create',
         name: 'photos.create',
       },
@@ -694,7 +660,6 @@ test.group('Router | match', () => {
         meta: {
           params: [],
         },
-        middleware: [],
         pattern: '/photos',
         name: 'photos.store',
       },
@@ -710,7 +675,6 @@ test.group('Router | match', () => {
         meta: {
           params: ['id'],
         },
-        middleware: [],
         pattern: '/photos/:id',
         name: 'photos.show',
       },
@@ -726,7 +690,6 @@ test.group('Router | match', () => {
         meta: {
           params: ['id'],
         },
-        middleware: [],
         pattern: '/photos/:id/edit',
         name: 'photos.edit',
       },
@@ -742,7 +705,6 @@ test.group('Router | match', () => {
         meta: {
           params: ['id'],
         },
-        middleware: [],
         pattern: '/photos/:id',
         name: 'photos.update',
       },
@@ -758,7 +720,6 @@ test.group('Router | match', () => {
         meta: {
           params: ['id'],
         },
-        middleware: [],
         pattern: '/photos/:id',
         name: 'photos.destroy',
       },
@@ -768,11 +729,10 @@ test.group('Router | match', () => {
   })
 
   test('apply uuid matcher when matching route', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('photos/:id', '#controllers/photos.show').where('id', router.matchers.uuid())
     router.commit()
@@ -786,7 +746,6 @@ test.group('Router | match', () => {
         meta: {
           params: ['id'],
         },
-        middleware: [],
         pattern: '/photos/:id',
         name: undefined,
       },
@@ -796,11 +755,10 @@ test.group('Router | match', () => {
   })
 
   test('match route for a specific domain', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router
       .group(() => {
@@ -816,7 +774,6 @@ test.group('Router | match', () => {
         meta: {
           params: [],
         },
-        middleware: [],
         pattern: '/photos',
         name: 'photos.index',
       },
@@ -830,18 +787,17 @@ test.group('Router | match', () => {
 
 test.group('Brisk route', () => {
   test('define brisk route', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     async function handler() {}
 
     router.on('/').setHandler(handler)
     router.commit()
 
-    assert.deepEqual(router.toJSON(), {
+    assert.containsSubset(router.toJSON(), {
       root: [
         {
           domain: 'root',
@@ -850,7 +806,6 @@ test.group('Brisk route', () => {
           pattern: '/',
           handler,
           methods: ['GET', 'HEAD'],
-          middleware: [],
           meta: {},
         },
       ],
@@ -858,11 +813,10 @@ test.group('Brisk route', () => {
   })
 
   test('define brisk route inside a group', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     async function handler() {}
 
@@ -875,7 +829,7 @@ test.group('Brisk route', () => {
 
     router.commit()
 
-    assert.deepEqual(router.toJSON(), {
+    assert.containsSubset(router.toJSON(), {
       root: [
         {
           name: 'v1.root',
@@ -883,7 +837,6 @@ test.group('Brisk route', () => {
           domain: 'root',
           pattern: '/api/v1',
           handler,
-          middleware: [],
           meta: {},
           methods: ['GET', 'HEAD'],
         },
@@ -892,11 +845,10 @@ test.group('Brisk route', () => {
   })
 
   test('register brisk route to store', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     async function handler() {}
 
@@ -909,14 +861,13 @@ test.group('Brisk route', () => {
 
     router.commit()
 
-    assert.deepEqual(router.match('/api/v1', 'GET'), {
+    assert.containsSubset(router.match('/api/v1', 'GET'), {
       params: {},
       route: {
         handler,
         meta: {
           params: [],
         },
-        middleware: [],
         name: 'v1.root',
         pattern: '/api/v1',
       },
@@ -928,11 +879,10 @@ test.group('Brisk route', () => {
 
 test.group('Router | Make url', () => {
   test('make url to a given route', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('posts/:id', async function handler() {})
     router.commit()
@@ -942,11 +892,10 @@ test.group('Router | Make url', () => {
   })
 
   test("make url to a given route by it's name", ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('posts/:id', async function handler() {}).as('showPost')
     router.commit()
@@ -956,11 +905,10 @@ test.group('Router | Make url', () => {
   })
 
   test("make url to a given route by it's controller method", ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('posts/:id', '#controllers/posts.index').as('showPost')
     router.commit()
@@ -970,11 +918,10 @@ test.group('Router | Make url', () => {
   })
 
   test('make url for a specific domain', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('posts/:id', '#controllers/posts.index').as('showPost')
     router
@@ -994,11 +941,10 @@ test.group('Router | Make url', () => {
   })
 
   test('prefix url', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('posts/:id', async function handler() {}).as('showPost')
     router.commit()
@@ -1008,11 +954,10 @@ test.group('Router | Make url', () => {
   })
 
   test('disable routes lookup', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.commit()
 
@@ -1027,11 +972,10 @@ test.group('Router | Make url', () => {
 
 test.group('Make signed url', () => {
   test('make signed url to a given route', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('posts/:id', async function handler() {})
     router.commit()
@@ -1042,11 +986,10 @@ test.group('Make signed url', () => {
   })
 
   test("make signed url to a given route by it's name", ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('posts/:id', async function handler() {}).as('showPost')
     router.commit()
@@ -1057,11 +1000,10 @@ test.group('Make signed url', () => {
   })
 
   test("make signed url to a given route by it's controller method", ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('posts/:id', '#controllers/posts.index').as('showPost')
     router.commit()
@@ -1072,11 +1014,10 @@ test.group('Make signed url', () => {
   })
 
   test('make url for a specific domain', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('posts/:id', '#controllers/posts.index').as('showPost')
     router
@@ -1098,11 +1039,10 @@ test.group('Make signed url', () => {
   })
 
   test('make signed url with expiry', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('posts/:id', 'PostsController.index')
     router.commit()
@@ -1114,11 +1054,10 @@ test.group('Make signed url', () => {
   })
 
   test('make signed url with custom query string', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('posts/:id', 'PostsController.index')
     router.commit()
@@ -1133,11 +1072,10 @@ test.group('Make signed url', () => {
   })
 
   test('prefix url', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router.get('posts/:id', async function handler() {}).as('showPost')
     router.commit()
@@ -1152,11 +1090,10 @@ test.group('Make signed url', () => {
   })
 
   test('disable route lookup', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     const url = router.makeSignedUrl(
       '/posts/:id',
@@ -1170,11 +1107,10 @@ test.group('Make signed url', () => {
 
 test.group('Regression', () => {
   test('route where matchers should win over group matchers', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router
       .group(() => {
@@ -1200,11 +1136,10 @@ test.group('Regression', () => {
   })
 
   test('apply prefixes in the correct order', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router
       .group(() => {
@@ -1227,11 +1162,10 @@ test.group('Regression', () => {
   })
 
   test('route domain should win over group domain', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router
       .group(() => {
@@ -1255,11 +1189,10 @@ test.group('Regression', () => {
   })
 
   test('apply route names in the right order', ({ assert }) => {
-    const app = new Application(BASE_URL, { environment: 'web' })
-    const encryption = new Encryption({ secret: SECRET })
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
 
-    const router = new Router(app, encryption)
-    router.use([], {})
+    const router = new Router(app, encryption, new MiddlewareStore([], {}))
 
     router
       .group(() => {
