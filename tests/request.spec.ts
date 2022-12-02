@@ -404,7 +404,9 @@ test.group('Request', () => {
       })
       done()
     })
-  }).waitForDone()
+  })
+    .waitForDone()
+    .skip(!!process.env.CI, 'Needs OpenSSL to run')
 
   test('get request hostname', async ({ assert }) => {
     const server = createServer((req, res) => {
