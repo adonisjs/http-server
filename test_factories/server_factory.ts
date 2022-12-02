@@ -48,7 +48,7 @@ export class ServerFactory<
       etag: false,
       jsonpCallbackName: 'callback',
       cookie: {
-        maxAge: 90,
+        maxAge: '1 hour',
         path: '/',
         httpOnly: true,
         sameSite: false,

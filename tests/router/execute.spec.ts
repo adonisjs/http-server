@@ -67,9 +67,9 @@ test.group('Route | execute', () => {
 
     routeJSON.handler = {
       name: '#controllers/home',
-      handle(container, args) {
+      handle(container, ctx) {
         assert.strictEqual(container, resolver)
-        assert.strictEqual(args[0], context)
+        assert.strictEqual(ctx, context)
         stack.push('controller')
       },
     }

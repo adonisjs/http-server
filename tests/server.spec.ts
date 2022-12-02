@@ -66,7 +66,7 @@ test.group('Server | Response handling', () => {
   })
 
   test('redirect to given route', async ({ assert }) => {
-    assert.plan(1)
+    assert.plan(2)
 
     const app = new AppFactory().create()
     const server = new ServerFactory().merge({ app }).create()
@@ -84,7 +84,80 @@ test.group('Server | Response handling', () => {
     server.router!.on('/docs/:doc').redirect('guides')
     await server.boot()
 
-    await supertest(httpServer).get('/docs/introduction').redirects(1)
+    const { redirects } = await supertest(httpServer).get('/docs/introduction').redirects(1)
+
+    assert.deepEqual(
+      redirects.map((url) => new URL(url).pathname),
+      ['/guides/introduction']
+    )
+  })
+
+  test('redirect to given path', async ({ assert }) => {
+    assert.plan(2)
+
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([], [], {})
+    server
+      .router!.get('/guides/:doc', async ({ params }) => {
+        assert.deepEqual(params, { doc: 'introduction' })
+      })
+      .as('guides')
+
+    server.router!.on('/docs/:doc').redirectToPath('/guides/introduction')
+    await server.boot()
+
+    const { redirects } = await supertest(httpServer).get('/docs/introduction').redirects(1)
+    assert.deepEqual(
+      redirects.map((url) => new URL(url).pathname),
+      ['/guides/introduction']
+    )
+  })
+
+  test('invoke a domain specific router handler', async ({ assert }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([], [], {})
+
+    server
+      .router!.get('/', async ({ response }) => response.send('handled'))
+      .domain(':tenant.adonisjs.com')
+
+    await server.boot()
+
+    const { text } = await supertest(httpServer)
+      .get('/')
+      .set('X-Forwarded-Host', 'blog.adonisjs.com')
+      .expect(200)
+
+    assert.equal(text, 'handled')
+  })
+
+  test('return 404 when route for a top level domain does not exists', async ({ assert }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([], [], {})
+
+    server
+      .router!.get('/', async ({ response }) => response.send('handled'))
+      .domain(':tenant.adonisjs.com')
+
+    await server.boot()
+
+    const { text } = await supertest(httpServer).get('/').expect(404)
+    assert.equal(text, 'Cannot GET:/')
   })
 })
 

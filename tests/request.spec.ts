@@ -11,13 +11,13 @@ import supertest from 'supertest'
 import { test } from '@japa/runner'
 import { createCertificate } from 'pem'
 import { createServer } from 'node:http'
-import { escape } from 'node:querystring'
 import { createServer as httpsServer } from 'node:https'
 
 import { RequestFactory } from '../test_factories/request.js'
 import { CookieSerializer } from '../src/cookies/serializer.js'
 import { EncryptionFactory } from '../test_factories/encryption.js'
 import { HttpContextFactory } from '../test_factories/http_context.js'
+import { UrlBuilder } from '../src/router/lookup_store/url_builder.js'
 
 const encryption = new EncryptionFactory().create()
 const serializer = new CookieSerializer(encryption)
@@ -255,10 +255,13 @@ test.group('Request', () => {
     })
   })
 
-  test('update request params', async ({ assert }) => {
+  test('get request params', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
-      request.updateParams({ id: 1 })
+
+      const ctx = new HttpContextFactory().merge({ request }).create()
+      ctx.params = { id: 1 }
+      request.ctx = ctx
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
@@ -277,7 +280,10 @@ test.group('Request', () => {
   test('get value for a given param', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
-      request.updateParams({ id: 1 })
+
+      const ctx = new HttpContextFactory().merge({ request }).create()
+      ctx.params = { id: 1 }
+      request.ctx = ctx
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
@@ -565,6 +571,20 @@ test.group('Request', () => {
     })
   })
 
+  test('return default value when referer header does not exists', async ({ assert }) => {
+    const server = createServer((req, res) => {
+      const request = new RequestFactory().merge({ req, res, encryption }).create()
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ referrer: request.header('referrer', 'foo.com') }))
+    })
+
+    const { body } = await supertest(server).get('/')
+    assert.deepEqual(body, {
+      referrer: 'foo.com',
+    })
+  })
+
   test('handle referer header spelling inconsistencies', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
@@ -580,6 +600,17 @@ test.group('Request', () => {
       referrer: 'foo.com',
       referer: 'foo.com',
     })
+  })
+
+  test('return raw body as null when does not exists', async ({ assert }) => {
+    const server = createServer((req, res) => {
+      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      res.writeHead(200, { 'content-type': 'text/plain' })
+      res.end(request.raw())
+    })
+
+    const { text } = await supertest(server).get('/')
+    assert.equal(text, '')
   })
 
   test('update request raw body', async ({ assert }) => {
@@ -1263,7 +1294,7 @@ test.group('Request | Cookies', () => {
 })
 
 test.group('Verify signed url', () => {
-  test('return false when signature query param is missing', async ({ assert }) => {
+  test('return false when signature is not defined', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -1296,10 +1327,12 @@ test.group('Verify signed url', () => {
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const url = '/?name=virk'
-    const signature = escape(encryption.verifier.sign(url))
+    const url = new UrlBuilder(encryption, {} as any)
+      .params({ name: 'virk' })
+      .disableRouteLookup()
+      .makeSigned('/')
 
-    const { body } = await supertest(server).get(`${url}&signature=${signature}`)
+    const { body } = await supertest(server).get(url)
     assert.deepEqual(body, {
       hasValidSignature: true,
     })
@@ -1312,10 +1345,9 @@ test.group('Verify signed url', () => {
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const url = '/'
-    const signature = escape(encryption.verifier.sign(url))
+    const url = new UrlBuilder(encryption, {} as any).disableRouteLookup().makeSigned('/')
 
-    const { body } = await supertest(server).get(`${url}?signature=${signature}`)
+    const { body } = await supertest(server).get(url)
     assert.deepEqual(body, {
       hasValidSignature: true,
     })
@@ -1328,10 +1360,11 @@ test.group('Verify signed url', () => {
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const url = '/'
-    const signature = escape(encryption.verifier.sign(url, -100))
+    const url = new UrlBuilder(encryption, {} as any).disableRouteLookup().makeSigned('/', {
+      expiresIn: -100,
+    })
 
-    const { body } = await supertest(server).get(`${url}&signature=${signature}`)
+    const { body } = await supertest(server).get(url)
     assert.deepEqual(body, {
       hasValidSignature: false,
     })
@@ -1344,10 +1377,11 @@ test.group('Verify signed url', () => {
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const url = '/'
-    const signature = escape(encryption.verifier.sign(url, '1 hour'))
+    const url = new UrlBuilder(encryption, {} as any).disableRouteLookup().makeSigned('/', {
+      expiresIn: '1 hour',
+    })
 
-    const { body } = await supertest(server).get(`${url}?signature=${signature}`)
+    const { body } = await supertest(server).get(url)
     assert.deepEqual(body, {
       hasValidSignature: true,
     })
@@ -1360,10 +1394,11 @@ test.group('Verify signed url', () => {
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature('login') }))
     })
 
-    const url = '/'
-    const signature = escape(encryption.verifier.sign(url, 1000, 'register'))
+    const url = new UrlBuilder(encryption, {} as any).disableRouteLookup().makeSigned('/', {
+      purpose: 'register',
+    })
 
-    const { body } = await supertest(server).get(`${url}?signature=${signature}`)
+    const { body } = await supertest(server).get(url)
     assert.deepEqual(body, {
       hasValidSignature: false,
     })

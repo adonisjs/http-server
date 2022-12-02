@@ -22,7 +22,7 @@ export class HttpException extends Exception {
   static invoke(body: any, status: number, code: string = 'E_HTTP_EXCEPTION'): HttpException {
     if (body === null || body === undefined) {
       const error = new this('HTTP Exception', { status, code })
-      error.body = 'Server error'
+      error.body = 'Internal server error'
       return error
     }
 

@@ -35,7 +35,10 @@ export type StoreRouteHandler =
   | RouteFn
   | {
       name: string
-      handle: (resolver: ContainerResolver, args: [ctx: HttpContext, ...injections: any[]]) => any
+      handle: (
+        resolver: ContainerResolver,
+        ...args: [ctx: HttpContext, ...injections: any[]]
+      ) => any
     }
 
 /**

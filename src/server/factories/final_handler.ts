@@ -30,7 +30,6 @@ export function finalHandler(router: Router, resolver: ContainerResolver, ctx: H
       ctx.subdomains = route.subdomains
       ctx.route = route.route
       ctx.routeKey = route.routeKey
-      ctx.request.updateParams(ctx.params)
       return route.route.execute(route.route, resolver, ctx)
     }
 

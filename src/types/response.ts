@@ -30,8 +30,24 @@ export type CastableHeader = string | number | boolean | string[] | number[] | b
  * Config accepted by response the class
  */
 export type ResponseConfig = {
+  /**
+   * Whether or not to generate etags for responses. Etags can be
+   * enabled/disabled when sending response as well.
+   *
+   * Defaults to false
+   */
   etag: boolean
+
+  /**
+   * The callback name for the JSONP response.
+   *
+   * Defaults to 'callback'
+   */
   jsonpCallbackName: string
+
+  /**
+   * Options to set cookies
+   */
   cookie: Partial<CookieOptions>
 }
 

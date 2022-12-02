@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
+import { parse } from 'qs'
 import { test } from '@japa/runner'
-import { parse } from 'node:querystring'
 
 import { Router } from '../../src/router/main.js'
 import { AppFactory } from '../../test_factories/app.js'

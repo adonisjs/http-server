@@ -37,11 +37,12 @@ test.group('Middleware store', () => {
     assert.isFunction(authMiddleware.handle)
 
     assert.instanceOf(
-      await authMiddleware.handle(new Container().createResolver(), [
+      await authMiddleware.handle(
+        new Container().createResolver(),
         ctx,
         nextFn,
-        authMiddleware.args,
-      ]),
+        authMiddleware.args
+      ),
       AuthMiddleware
     )
   })
@@ -69,11 +70,12 @@ test.group('Middleware store', () => {
 
     assert.isFunction(authMiddleware.handle)
     assert.deepEqual(
-      await authMiddleware.handle(new Container().createResolver(), [
+      await authMiddleware.handle(
+        new Container().createResolver(),
         ctx,
         nextFn,
-        authMiddleware.args,
-      ]),
+        authMiddleware.args
+      ),
       {
         guard: 'web',
       }
@@ -105,11 +107,12 @@ test.group('Middleware store', () => {
 
     assert.isFunction(authMiddleware.handle)
     assert.isUndefined(
-      await authMiddleware.handle(new Container().createResolver(), [
+      await authMiddleware.handle(
+        new Container().createResolver(),
         ctx,
         nextFn,
-        authMiddleware.args,
-      ])
+        authMiddleware.args
+      )
     )
   })
 
@@ -170,12 +173,24 @@ test.group('Middleware store', () => {
     assert.isFunction(middleware[1].handle)
 
     assert.instanceOf(
-      await middleware[0].handle(new Container().createResolver(), [ctx, nextFn]),
+      await middleware[0].handle(new Container().createResolver(), ctx, nextFn),
       BodyParserMiddleware
     )
     assert.instanceOf(
-      await middleware[1].handle(new Container().createResolver(), [ctx, nextFn]),
+      await middleware[1].handle(new Container().createResolver(), ctx, nextFn),
       SilentAuthMiddleware
+    )
+  })
+
+  test('raise erorr when resolving a named middleware without registering it', async ({
+    assert,
+  }) => {
+    const middlewareStore = new MiddlewareStore([], {})
+
+    assert.throws(
+      // @ts-expect-error
+      () => middlewareStore.get('auth'),
+      'Cannot resolve "auth" middleware. Make sure the middleware is registered before using it'
     )
   })
 })

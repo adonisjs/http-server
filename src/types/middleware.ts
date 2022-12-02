@@ -7,10 +7,10 @@
  * file that was distributed with this source code.
  */
 
+import type { ContainerResolver } from '@adonisjs/fold'
 import type { NextFn } from '@poppinss/middleware/types'
 
 import type { Constructor } from './base.js'
-import type { ContainerResolver } from '@adonisjs/fold'
 import type { HttpContext } from '../http_context/main.js'
 
 /**
@@ -43,5 +43,8 @@ export type MiddlewareFn = (ctx: HttpContext, next: NextFn) => any
  * Parsed global middleware
  */
 export type ParsedGlobalMiddleware = {
-  handle: (resolver: ContainerResolver, args: [ctx: HttpContext, next: NextFn, params?: any]) => any
+  handle: (
+    resolver: ContainerResolver,
+    ...args: [ctx: HttpContext, next: NextFn, params?: any]
+  ) => any
 }

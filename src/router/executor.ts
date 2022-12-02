@@ -23,13 +23,13 @@ export function execute(route: StoreRouteNode, resolver: ContainerResolver, ctx:
         return route.handler(ctx)
       }
 
-      return route.handler.handle(resolver, [ctx])
+      return route.handler.handle(resolver, ctx)
     })
-    .run((one, next) => {
-      if (typeof one === 'function') {
-        return one(ctx, next)
+    .run((middleware, next) => {
+      if (typeof middleware === 'function') {
+        return middleware(ctx, next)
       }
 
-      return one.handle(resolver, [ctx, next, one.args])
+      return middleware.handle(resolver, ctx, next, middleware.args)
     })
 }

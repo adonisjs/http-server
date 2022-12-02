@@ -7,16 +7,14 @@
  * file that was distributed with this source code.
  */
 
-import { HttpContext } from '../http_context/main.js'
-import { Constructor } from './base.js'
-
-export type ServerErrorFn = (error: any, ctx: HttpContext) => any
+import type { Constructor } from './base.js'
+import type { HttpContext } from '../http_context/main.js'
 
 /**
- * Resolved server middleware
+ * Error handler to handle HTTP errors
  */
 export type ServerErrorHandler = {
-  handle: ServerErrorFn
+  handle: (error: any, ctx: HttpContext) => any
 }
 
 /**

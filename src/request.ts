@@ -13,7 +13,9 @@ import fresh from 'fresh'
 import typeIs from 'type-is'
 import accepts from 'accepts'
 import { isIP } from 'node:net'
+import encodeUrl from 'encodeurl'
 import proxyaddr from 'proxy-addr'
+import { safeEqual } from '@poppinss/utils'
 import lodash from '@poppinss/utils/lodash'
 import { Macroable } from '@poppinss/macroable'
 import type Encryption from '@adonisjs/encryption'
@@ -39,11 +41,6 @@ export class Request extends Macroable {
    * Request body set using `setBody` method
    */
   #requestBody: Record<string, any> = {}
-
-  /**
-   * Route params
-   */
-  #routeParams: Record<string, any> = {}
 
   /**
    * A merged copy of `request body` and `querystring`
@@ -193,17 +190,10 @@ export class Request extends Macroable {
   }
 
   /**
-   * Update route params
-   */
-  updateParams(data: Record<string, any>) {
-    this.#routeParams = data
-  }
-
-  /**
    * Returns route params
    */
   params(): Record<string, any> {
-    return this.#routeParams
+    return this.ctx?.params || {}
   }
 
   /**
@@ -274,7 +264,7 @@ export class Request extends Macroable {
    * ```
    */
   param(key: string, defaultValue?: any): any {
-    return lodash.get(this.#routeParams, key, defaultValue)
+    return lodash.get(this.params(), key, defaultValue)
   }
 
   /**
@@ -488,7 +478,7 @@ export class Request extends Macroable {
      * Use X-Fowarded-Host when we trust the proxy header and it
      * exists
      */
-    if (!trustProxy(this.request.socket.remoteAddress!, this.config.trustProxy)) {
+    if (trustProxy(this.request.socket.remoteAddress!, this.config.trustProxy)) {
       host = this.header('X-Forwarded-Host') || host
     }
 
@@ -923,7 +913,10 @@ export class Request extends Macroable {
     }
 
     const queryString = qs.stringify(rest)
-    return queryString ? `${this.url()}?${queryString}` === signedUrl : this.url() === signedUrl
+
+    return queryString
+      ? safeEqual(signedUrl, `${this.url()}?${encodeUrl(queryString)}`)
+      : safeEqual(signedUrl, this.url())
   }
 
   /**

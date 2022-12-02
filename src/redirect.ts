@@ -9,12 +9,13 @@
 
 import qs from 'qs'
 import { parse } from 'node:url'
-import encodeurl from 'encodeurl'
+import encodeUrl from 'encodeurl'
 import type { IncomingMessage } from 'node:http'
 
+import debug from './debug.js'
 import type { Response } from './response.js'
 import type { Router } from './router/main.js'
-import { MakeUrlOptions } from './types/route.js'
+import type { MakeUrlOptions } from './types/route.js'
 
 /**
  * Exposes the API to construct redirect routes
@@ -52,7 +53,9 @@ export class Redirect {
     const stringified = qs.stringify(query)
 
     url = stringified ? `${url}?${stringified}` : url
-    this.#response.location(encodeurl(url))
+    debug('redirecting to url "%s"', url)
+
+    this.#response.location(encodeUrl(url))
     this.#response.safeStatus(this.#statusCode)
     this.#response.type('text/plain; charset=utf-8')
     this.#response.send(`Redirecting to ${url}`)
@@ -113,7 +116,11 @@ export class Redirect {
   back() {
     let query: Record<string, any> = {}
 
-    const url = parse(this.#getReferrerUrl())
+    const referrerUrl = this.#getReferrerUrl()
+    const url = parse(referrerUrl)
+
+    debug('referrer url "%s"', referrerUrl)
+    debug('referrer base url "%s"', url.pathname)
 
     /**
      * Parse query string from the referrer url

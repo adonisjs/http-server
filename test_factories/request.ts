@@ -17,6 +17,8 @@ import { EncryptionFactory } from './encryption.js'
 import { RequestConfig } from '../src/types/request.js'
 
 type FactoryParameters = {
+  url: string
+  method: string
   req: IncomingMessage
   res: ServerResponse
   encryption: Encryption
@@ -48,7 +50,16 @@ export class RequestFactory {
    * Returns the HTTP req object
    */
   #createRequest() {
-    return this.#parameters.req || new IncomingMessage(new Socket())
+    const req = this.#parameters.req || new IncomingMessage(new Socket())
+    if (this.#parameters.url) {
+      req.url = this.#parameters.url
+    }
+
+    if (this.#parameters.method) {
+      req.method = this.#parameters.method
+    }
+
+    return req
   }
 
   /**

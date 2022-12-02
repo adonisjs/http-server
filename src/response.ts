@@ -18,6 +18,7 @@ import { promisify } from 'node:util'
 import json from '@poppinss/utils/json'
 import { Macroable } from '@poppinss/macroable'
 import { createReadStream, stat } from 'node:fs'
+import { RuntimeException } from '@poppinss/utils'
 import type Encryption from '@adonisjs/encryption'
 import contentDisposition from 'content-disposition'
 import { ServerResponse, IncomingMessage, OutgoingHttpHeaders } from 'node:http'
@@ -27,7 +28,6 @@ import type { Router } from './router/main.js'
 import type { HttpContext } from './http_context/main.js'
 import { CookieSerializer } from './cookies/serializer.js'
 import { AbortException } from './exceptions/abort_exception.js'
-import { InvalidResponseDataTypeException } from './exceptions/invalid_response_data_type.js'
 import type {
   CastableHeader,
   CookieOptions,
@@ -205,7 +205,7 @@ export class Response extends Macroable {
       return 'object'
     }
 
-    throw new InvalidResponseDataTypeException(`Cannot serialize "${dataType}" to HTTP response`)
+    throw new RuntimeException(`Cannot serialize "${dataType}" to HTTP response`)
   }
 
   /**
@@ -386,6 +386,7 @@ export class Response extends Macroable {
        * stream
        */
       body.on('error', (error: NodeJS.ErrnoException) => {
+        /* c8 ignore next 3 */
         if (finished) {
           return
         }
@@ -541,10 +542,11 @@ export class Response extends Macroable {
    * ```
    */
   header(key: string, value: CastableHeader): this {
-    if (value) {
-      this.#headers[key.toLowerCase()] = this.#castHeaderValue(value)
+    if (value === null || value === undefined) {
+      return this
     }
 
+    this.#headers[key.toLowerCase()] = this.#castHeaderValue(value)
     return this
   }
 
@@ -560,7 +562,7 @@ export class Response extends Macroable {
    * ```
    */
   append(key: string, value: CastableHeader): this {
-    if (!value) {
+    if (value === null || value === undefined) {
       return this
     }
 
@@ -739,7 +741,7 @@ export class Response extends Macroable {
   /**
    * Alias of [[send]]
    */
-  json(body: any, generateEtag?: boolean): void {
+  json(body: any, generateEtag: boolean = this.#config.etag): void {
     return this.send(body, generateEtag)
   }
 
@@ -908,7 +910,11 @@ export class Response extends Macroable {
    * Abort the request with custom body and a status code when
    * passed condition returns `true`
    */
-  abortIf(condition: any, body: any, status?: number): void {
+  abortIf(
+    condition: unknown,
+    body: any,
+    status?: number
+  ): asserts condition is undefined | null | false {
     if (condition) {
       this.abort(body, status)
     }
@@ -918,7 +924,11 @@ export class Response extends Macroable {
    * Abort the request with custom body and a status code when
    * passed condition returns `false`
    */
-  abortUnless(condition: any, body: any, status?: number): void {
+  abortUnless<T>(
+    condition: T,
+    body: any,
+    status?: number
+  ): asserts condition is Exclude<T, undefined | null | false> {
     if (!condition) {
       this.abort(body, status)
     }
@@ -1000,6 +1010,11 @@ export class Response extends Macroable {
       return
     }
 
+    if (this.lazyBody.content) {
+      this.writeBody(...this.lazyBody.content)
+      return
+    }
+
     if (this.lazyBody.stream) {
       this.streamBody(...this.lazyBody.stream)
       return
@@ -1010,219 +1025,340 @@ export class Response extends Macroable {
       return
     }
 
-    if (this.lazyBody.content) {
-      this.writeBody(...this.lazyBody.content)
-      return
-    }
-
     this.#endResponse()
   }
 
+  /**
+   * Shorthand method to finish request with "100" status code
+   */
   continue(): void {
     this.status(100)
     return this.send(null, false)
   }
 
+  /**
+   * Shorthand method to finish request with "101" status code
+   */
   switchingProtocols(): void {
     this.status(101)
     return this.send(null, false)
   }
 
+  /**
+   * Shorthand method to finish request with "200" status code
+   */
   ok(body: any, generateEtag?: boolean): void {
     this.status(200)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "201" status code
+   */
   created(body?: any, generateEtag?: boolean): void {
     this.status(201)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "202" status code
+   */
   accepted(body: any, generateEtag?: boolean): void {
     this.status(202)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "203" status code
+   */
   nonAuthoritativeInformation(body: any, generateEtag?: boolean): void {
     this.status(203)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "204" status code
+   */
   noContent(): void {
     this.status(204)
     return this.send(null, false)
   }
 
+  /**
+   * Shorthand method to finish request with "205" status code
+   */
   resetContent(): void {
     this.status(205)
     return this.send(null, false)
   }
 
+  /**
+   * Shorthand method to finish request with "206" status code
+   */
   partialContent(body: any, generateEtag?: boolean): void {
     this.status(206)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "300" status code
+   */
   multipleChoices(body?: any, generateEtag?: boolean): void {
     this.status(300)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "301" status code
+   */
   movedPermanently(body?: any, generateEtag?: boolean): void {
     this.status(301)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "302" status code
+   */
   movedTemporarily(body?: any, generateEtag?: boolean): void {
     this.status(302)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "303" status code
+   */
   seeOther(body?: any, generateEtag?: boolean): void {
     this.status(303)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "304" status code
+   */
   notModified(body?: any, generateEtag?: boolean): void {
     this.status(304)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "305" status code
+   */
   useProxy(body?: any, generateEtag?: boolean): void {
     this.status(305)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "307" status code
+   */
   temporaryRedirect(body?: any, generateEtag?: boolean): void {
     this.status(307)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "400" status code
+   */
   badRequest(body?: any, generateEtag?: boolean): void {
     this.status(400)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "401" status code
+   */
   unauthorized(body?: any, generateEtag?: boolean): void {
     this.status(401)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "402" status code
+   */
   paymentRequired(body?: any, generateEtag?: boolean): void {
     this.status(402)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "403" status code
+   */
   forbidden(body?: any, generateEtag?: boolean): void {
     this.status(403)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "404" status code
+   */
   notFound(body?: any, generateEtag?: boolean): void {
     this.status(404)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "405" status code
+   */
   methodNotAllowed(body?: any, generateEtag?: boolean): void {
     this.status(405)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "406" status code
+   */
   notAcceptable(body?: any, generateEtag?: boolean): void {
     this.status(406)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "407" status code
+   */
   proxyAuthenticationRequired(body?: any, generateEtag?: boolean): void {
     this.status(407)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "408" status code
+   */
   requestTimeout(body?: any, generateEtag?: boolean): void {
     this.status(408)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "409" status code
+   */
   conflict(body?: any, generateEtag?: boolean): void {
     this.status(409)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "401" status code
+   */
   gone(body?: any, generateEtag?: boolean): void {
     this.status(410)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "411" status code
+   */
   lengthRequired(body?: any, generateEtag?: boolean): void {
     this.status(411)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "412" status code
+   */
   preconditionFailed(body?: any, generateEtag?: boolean): void {
     this.status(412)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "413" status code
+   */
   requestEntityTooLarge(body?: any, generateEtag?: boolean): void {
     this.status(413)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "414" status code
+   */
   requestUriTooLong(body?: any, generateEtag?: boolean): void {
     this.status(414)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "415" status code
+   */
   unsupportedMediaType(body?: any, generateEtag?: boolean): void {
     this.status(415)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "416" status code
+   */
   requestedRangeNotSatisfiable(body?: any, generateEtag?: boolean): void {
     this.status(416)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "417" status code
+   */
   expectationFailed(body?: any, generateEtag?: boolean): void {
     this.status(417)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "422" status code
+   */
   unprocessableEntity(body?: any, generateEtag?: boolean): void {
     this.status(422)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "429" status code
+   */
   tooManyRequests(body?: any, generateEtag?: boolean): void {
     this.status(429)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "500" status code
+   */
   internalServerError(body?: any, generateEtag?: boolean): void {
     this.status(500)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "501" status code
+   */
   notImplemented(body?: any, generateEtag?: boolean): void {
     this.status(501)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "502" status code
+   */
   badGateway(body?: any, generateEtag?: boolean): void {
     this.status(502)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "503" status code
+   */
   serviceUnavailable(body?: any, generateEtag?: boolean): void {
     this.status(503)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "504" status code
+   */
   gatewayTimeout(body?: any, generateEtag?: boolean): void {
     this.status(504)
     return this.send(body, generateEtag)
   }
 
+  /**
+   * Shorthand method to finish request with "505" status code
+   */
   httpVersionNotSupported(body?: any, generateEtag?: boolean): void {
     this.status(505)
     return this.send(body, generateEtag)

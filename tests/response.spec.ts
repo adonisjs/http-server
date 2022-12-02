@@ -23,6 +23,7 @@ import { CookieParser } from '../src/cookies/parser.js'
 import { RouterFactory } from '../test_factories/router.js'
 import { ResponseFactory } from '../test_factories/response.js'
 import { EncryptionFactory } from '../test_factories/encryption.js'
+import { Response } from '../src/response.js'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 const BASE_PATH = fileURLToPath(BASE_URL)
@@ -42,6 +43,19 @@ test.group('Response', (group) => {
 
       response.header('status', 200)
       response.header('content-type', 'application/json')
+
+      /**
+       * Ignore null values
+       */
+      // @ts-expect-error
+      response.header('content-type', null)
+
+      /**
+       * Ignore undefined values
+       */
+      // @ts-expect-error
+      response.header('content-type', undefined)
+
       response.flushHeaders()
       res.end()
     })
@@ -126,6 +140,19 @@ test.group('Response', (group) => {
 
       response.header('set-cookie', 'username=virk')
       response.append('set-cookie', 'age=22')
+
+      /**
+       * Ignore null values
+       */
+      // @ts-expect-error
+      response.append('set-cookie', null)
+
+      /**
+       * Ignore undefined values
+       */
+      // @ts-expect-error
+      response.append('set-cookie', undefined)
+
       response.flushHeaders()
       res.end()
     })
@@ -159,19 +186,6 @@ test.group('Response', (group) => {
 
     const { header } = await supertest(server).get('/')
     assert.deepEqual(header['set-cookie'], ['username=virk', 'age=22'])
-  })
-
-  test('do not set header when value is non-existy', async ({ assert }) => {
-    const server = createServer((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
-
-      response.header('set-cookie', '')
-      response.flushHeaders()
-      res.end()
-    })
-
-    const { header } = await supertest(server).get('/')
-    assert.isUndefined(header['set-cookie'])
   })
 
   test('do not set header when already exists', async () => {
@@ -1193,11 +1207,20 @@ test.group('Response', (group) => {
     assert.deepEqual(body, { message: 'Not allowed' })
   })
 
-  test('abortIf: abort request when condition is truthy', async ({ assert }) => {
+  test('abortIf: abort request when condition is truthy', async ({ assert, expectTypeOf }) => {
     const server = createServer((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response: Response = new ResponseFactory()
+        .merge({ req, res, encryption, router })
+        .create()
+
+      function isUserGuest(): boolean {
+        return true
+      }
+
       try {
-        response.abortIf(true, { message: 'Not allowed' }, 401)
+        const isGuest = isUserGuest()
+        response.abortIf(isGuest, { message: 'Not allowed' }, 401)
+        expectTypeOf(isGuest).toEqualTypeOf<false>()
       } catch (error) {
         error.handle(error, { response })
       }
@@ -1209,11 +1232,20 @@ test.group('Response', (group) => {
     assert.deepEqual(body, { message: 'Not allowed' })
   })
 
-  test('abortIf: do not abort request when condition is falsy', async () => {
+  test('abortIf: do not abort request when condition is falsy', async ({ expectTypeOf }) => {
     const server = createServer((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response: Response = new ResponseFactory()
+        .merge({ req, res, encryption, router })
+        .create()
+
+      function isUserGuest(): boolean {
+        return false
+      }
+
       try {
-        response.abortIf(false, { message: 'Not allowed' }, 401)
+        const isGuest = isUserGuest()
+        response.abortIf(isGuest, { message: 'Not allowed' }, 401)
+        expectTypeOf(isGuest).toEqualTypeOf<false>()
       } catch (error) {
         error.handle(error, { response })
       }
@@ -1224,12 +1256,20 @@ test.group('Response', (group) => {
     await supertest(server).get('/').expect(200)
   })
 
-  test('abortUnless: abort request when condition is falsy', async ({ assert }) => {
+  test('abortUnless: abort request when condition is falsy', async ({ assert, expectTypeOf }) => {
     const server = createServer((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response: Response = new ResponseFactory()
+        .merge({ req, res, encryption, router })
+        .create()
+
+      function isUserGuest(): boolean {
+        return false
+      }
 
       try {
-        response.abortUnless(false, { message: 'Not allowed' }, 401)
+        const isGuest = isUserGuest()
+        response.abortUnless(isGuest, { message: 'Not allowed' }, 401)
+        expectTypeOf(isGuest).toEqualTypeOf<true>()
       } catch (error) {
         error.handle(error, { response })
       }
@@ -1241,12 +1281,20 @@ test.group('Response', (group) => {
     assert.deepEqual(body, { message: 'Not allowed' })
   })
 
-  test('abortUnless: do not abort request when condition is truthy', async () => {
+  test('abortUnless: do not abort request when condition is truthy', async ({ expectTypeOf }) => {
     const server = createServer((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response: Response = new ResponseFactory()
+        .merge({ req, res, encryption, router })
+        .create()
+
+      function isUserGuest(): boolean {
+        return true
+      }
 
       try {
-        response.abortUnless(true, { message: 'Not allowed' }, 401)
+        const isGuest = isUserGuest()
+        response.abortUnless(isGuest, { message: 'Not allowed' }, 401)
+        expectTypeOf(isGuest).toEqualTypeOf<true>()
       } catch (error) {
         error.handle(error, { response })
       }

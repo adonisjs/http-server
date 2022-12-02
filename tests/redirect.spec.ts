@@ -186,6 +186,19 @@ test.group('Redirect', () => {
     assert.equal(header.location, '/')
   })
 
+  test('redirect back to root (/) when referrer header is empty', async ({ assert }) => {
+    const server = createServer((req, res) => {
+      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+
+      response.redirect('back')
+      response.finish()
+    })
+
+    const { header } = await supertest(server).get('/').set('referer', '').redirects(1)
+
+    assert.equal(header.location, '/')
+  })
+
   test('redirect to given route', async ({ assert }) => {
     const route = new RouterFactory().merge({ app, encryption }).create()
     route.get('posts', 'PostsController.index').as('posts.index')

@@ -67,7 +67,11 @@ export class MiddlewareStore<
     }
 
     if (!this.#namedMiddleware || !this.#namedMiddleware[name]) {
-      throw new RuntimeException(`Cannot resolve "${String(name)}" middleware`)
+      throw new RuntimeException(
+        `Cannot resolve "${String(
+          name
+        )}" middleware. Make sure the middleware is registered before using it`
+      )
     }
 
     const handler = moduleImporter(this.#namedMiddleware[name], 'handle').toHandleMethod()

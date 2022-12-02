@@ -14,6 +14,7 @@ import { AppFactory } from '../../test_factories/app.js'
 import { MiddlewareStore } from '../../src/middleware/store.js'
 import { LookupStore } from '../../src/router/lookup_store/main.js'
 import { EncryptionFactory } from '../../test_factories/encryption.js'
+import { RequestFactory } from '../../test_factories/request.js'
 
 test.group('URL builder', () => {
   test('create url for a route', ({ assert }) => {
@@ -171,7 +172,7 @@ test.group('URL builder', () => {
     )
   })
 
-  test('define query string', ({ assert }) => {
+  test('define query string with arrays', ({ assert }) => {
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption)
 
@@ -184,11 +185,46 @@ test.group('URL builder', () => {
           fields: ['username', 'email'],
         })
         .make('/users'),
-      '/users?sort=id&fields[0]=username&fields[1]=email'
+      '/users?sort=id&fields%5B0%5D=username&fields%5B1%5D=email'
     )
-  }).fails('maybe the query string should not get encoded')
+  })
 
-  test('create and verify signed URLs')
+  test('create and verify signed URLs', async ({ assert }) => {
+    const encryption = new EncryptionFactory().create()
+    const lookupStore = new LookupStore(encryption)
 
-  test('create and verify signed URLs with query string')
+    const signedUrl = lookupStore.builder().disableRouteLookup().makeSigned('/users')
+
+    const request = new RequestFactory()
+      .merge({
+        encryption,
+        url: signedUrl,
+      })
+      .create()
+
+    assert.isTrue(request.hasValidSignature())
+  })
+
+  test('create and verify signed URLs with query string', async ({ assert }) => {
+    const encryption = new EncryptionFactory().create()
+    const lookupStore = new LookupStore(encryption)
+
+    const signedUrl = lookupStore
+      .builder()
+      .disableRouteLookup()
+      .qs({
+        sort: 'id',
+        fields: ['username', 'email'],
+      })
+      .makeSigned('/users')
+
+    const request = new RequestFactory()
+      .merge({
+        encryption,
+        url: signedUrl,
+      })
+      .create()
+
+    assert.isTrue(request.hasValidSignature())
+  })
 })

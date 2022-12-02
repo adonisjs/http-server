@@ -20,6 +20,7 @@ import type { ResponseConfig } from '../types/response.js'
 import type { ErrorHandlerAsAClass, ServerErrorHandler } from '../types/server.js'
 import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.js'
 
+import debug from '../debug.js'
 import { Request } from '../request.js'
 import { Response } from '../response.js'
 import { Router } from '../router/main.js'
@@ -90,6 +91,8 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
     this.#config = config
     this.#preProcessCookieMaxAge()
     this.#createAsyncLocalStore()
+
+    debug('server config: %O', this.#config)
   }
 
   /**
@@ -110,6 +113,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
    */
   #createAsyncLocalStore() {
     if (this.#config.useAsyncLocalStorage) {
+      debug('creating http context async local storage')
       asyncLocalStorage.create()
     } else {
       asyncLocalStorage.destroy()
@@ -172,9 +176,14 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
    * - Resolve and construct the error handler.
    */
   async boot() {
+    debug('booting HTTP server')
     this.router!.commit()
 
     if (this.#errorHandler) {
+      if (debug.enabled) {
+        debug('using custom error handler "%s"', this.#errorHandler)
+      }
+
       const moduleExports = await this.#errorHandler()
       this.#resolvedErrorHandler = await this.#app.container.make(moduleExports.default)
     }

@@ -113,6 +113,7 @@ export class HttpContext extends Macroable {
   /**
    * A helper to see top level properties on the context object
    */
+  /* c8 ignore next 3 */
   inspect() {
     return inspect(this, false, 1, true)
   }

@@ -18,6 +18,6 @@ import { ParsedGlobalMiddleware } from '../../types/middleware.js'
  */
 export function middlewareHandler(resolver: ContainerResolver, ctx: HttpContext) {
   return function (fn: ParsedGlobalMiddleware, next: NextFn) {
-    return fn.handle(resolver, [ctx, next])
+    return fn.handle(resolver, ctx, next)
   }
 }

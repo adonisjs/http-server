@@ -8,6 +8,7 @@
  */
 
 import { stringify } from 'qs'
+import encodeUrl from 'encodeurl'
 import type Encryption from '@adonisjs/encryption'
 import type { RouteFinder } from './route_finder.js'
 import { CannotMakeURLException } from '../../exceptions/cannot_make_url.js'
@@ -131,8 +132,7 @@ export class UrlBuilder {
   #suffixQueryString(url: string, qs?: Record<string, any>): string {
     if (qs) {
       const queryString = stringify(qs)
-      // encodeurl(queryString)
-      url = queryString ? `${url}?${queryString}` : url
+      url = queryString ? `${url}?${encodeUrl(queryString)}` : url
     }
 
     return url
