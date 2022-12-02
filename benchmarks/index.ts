@@ -14,7 +14,7 @@ import autocannon from 'autocannon'
 import { getDirname } from '@poppinss/utils'
 
 function coolOff() {
-  return new Promise((resolve) => setTimeout(resolve, 2000))
+  return new Promise((resolve) => setTimeout(resolve, 5000))
 }
 
 function autocannonRun(opts: any): Promise<void> {
@@ -72,4 +72,4 @@ async function fastifyRun() {
   console.log('Completed')
 }
 
-adonisRun().then(coolOff).then(fastifyRun)
+fastifyRun().then(coolOff).then(adonisRun)
