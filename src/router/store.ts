@@ -10,8 +10,7 @@
 // @ts-expect-error
 import matchit from '@poppinss/matchit'
 import lodash from '@poppinss/utils/lodash'
-import { DuplicateRouteException } from '../exceptions/duplicate_route.js'
-import { DuplicateRouteParamException } from '../exceptions/duplicate_route_param.js'
+import { RuntimeException } from '@poppinss/utils'
 import type {
   RouteJSON,
   MatchedRoute,
@@ -88,9 +87,7 @@ export class RoutesStore {
     for (let token of tokens) {
       if ([1, 3].includes(token.type)) {
         if (collectedParams.has(token.val)) {
-          throw new DuplicateRouteParamException(
-            `Duplicate param "${token.val}" found in "${route.pattern}"`
-          )
+          throw new RuntimeException(`Duplicate param "${token.val}" found in "${route.pattern}"`)
         } else {
           collectedParams.add(token.val)
         }
@@ -118,7 +115,7 @@ export class RoutesStore {
      * Check for duplicate route for the same domain and method
      */
     if (methodRoutes.routes[route.pattern]) {
-      throw new DuplicateRouteException(
+      throw new RuntimeException(
         `Duplicate route found. "${method}: ${route.pattern}" route already exists`
       )
     }

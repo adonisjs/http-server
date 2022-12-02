@@ -9,9 +9,9 @@
 
 import { stringify } from 'qs'
 import encodeUrl from 'encodeurl'
+import { RuntimeException } from '@poppinss/utils'
 import type Encryption from '@adonisjs/encryption'
 import type { RouteFinder } from './route_finder.js'
-import { CannotMakeURLException } from '../../exceptions/cannot_make_url.js'
 
 /**
  * URL builder class is used to create URIs for pre-registered
@@ -69,7 +69,7 @@ export class UrlBuilder {
    */
   #ensureHasWildCardValues(pattern: string, values?: string[]) {
     if (!values || !Array.isArray(values) || !values.length) {
-      throw new CannotMakeURLException(
+      throw new RuntimeException(
         `Cannot make URL for "${pattern}" route. Invalid value provided for wildcard param`
       )
     }
@@ -80,7 +80,7 @@ export class UrlBuilder {
    */
   #ensureHasParamValue(pattern: string, param: string, value: string) {
     if (value === undefined || value === null) {
-      throw new CannotMakeURLException(
+      throw new RuntimeException(
         `Cannot make URL for "${pattern}" route. Missing value for "${param}" param`
       )
     }

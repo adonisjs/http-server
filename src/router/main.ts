@@ -8,6 +8,10 @@
  */
 
 import is from '@sindresorhus/is'
+import type Encryption from '@adonisjs/encryption'
+import { RuntimeException } from '@poppinss/utils'
+import type { Application } from '@adonisjs/application'
+
 import { Route } from './route.js'
 import { RouteGroup } from './group.js'
 import { BriskRoute } from './brisk.js'
@@ -16,10 +20,6 @@ import { toRoutesJSON } from '../helpers.js'
 import { RouteResource } from './resource.js'
 import { LookupStore } from './lookup_store/main.js'
 import { RouteMatchers as Matchers } from './matchers.js'
-import { DuplicateRouteNameException } from '../exceptions/duplicate_route_name.js'
-
-import type Encryption from '@adonisjs/encryption'
-import type { Application } from '@adonisjs/application'
 
 import type { LazyImport } from '../types/base.js'
 import { MiddlewareStore } from '../middleware/store.js'
@@ -300,7 +300,7 @@ export class Router<
        * to ensure that only one route is returned during lookup.
        */
       if (route.name && routeNames.has(route.name)) {
-        throw new DuplicateRouteNameException(
+        throw new RuntimeException(
           `Route with duplicate name found. A route with name "${route.name}" already exists`
         )
       }

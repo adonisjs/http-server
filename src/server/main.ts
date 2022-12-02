@@ -29,8 +29,8 @@ import { HttpContext } from '../http_context/main.js'
 import { MiddlewareStore } from '../middleware/store.js'
 import { finalHandler } from './factories/final_handler.js'
 import { writeResponse } from './factories/write_response.js'
-import { middlewareHandler } from './factories/middleware_handler.js'
 import { asyncLocalStorage } from '../http_context/local_storage.js'
+import { middlewareHandler } from './factories/middleware_handler.js'
 
 /**
  * The HTTP server implementation to handle incoming requests and respond using the
