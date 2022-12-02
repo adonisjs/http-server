@@ -9,6 +9,7 @@
 
 import string from '@poppinss/utils/string'
 import Middleware from '@poppinss/middleware'
+import { RuntimeException } from '@poppinss/utils'
 import type Encryption from '@adonisjs/encryption'
 import type { ContainerResolver } from '@adonisjs/fold'
 import type { Application } from '@adonisjs/application'
@@ -24,11 +25,11 @@ import debug from '../debug.js'
 import { Request } from '../request.js'
 import { Response } from '../response.js'
 import { Router } from '../router/main.js'
-import { shouldUseReturnValue } from '../helpers.js'
 import { HttpContext } from '../http_context/main.js'
 import { MiddlewareStore } from '../middleware/store.js'
 import { finalHandler } from './factories/final_handler.js'
 import { writeResponse } from './factories/write_response.js'
+import { useReturnValue } from './factories/use_return_value.js'
 import { asyncLocalStorage } from '../http_context/local_storage.js'
 import { middlewareHandler } from './factories/middleware_handler.js'
 
@@ -177,8 +178,24 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
    */
   async boot() {
     debug('booting HTTP server')
-    this.router!.commit()
 
+    /**
+     * Ensure middleware are registered
+     */
+    if (!this.router) {
+      throw new RuntimeException(
+        'Cannot boot HTTP server. Register middleware using "server.use" first'
+      )
+    }
+
+    /**
+     * Commit routes
+     */
+    this.router.commit()
+
+    /**
+     * Register custom error handler
+     */
     if (this.#errorHandler) {
       if (debug.enabled) {
         debug('using custom error handler "%s"', this.#errorHandler)
@@ -196,11 +213,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
     return this.#serverMiddlewareStack!.runner()
       .finalHandler(finalHandler(this.router!, resolver, ctx))
       .run(middlewareHandler(resolver, ctx))
-      .then((value) => {
-        if (shouldUseReturnValue(value, ctx)) {
-          ctx.response.send(value)
-        }
-      })
+      .then(useReturnValue(ctx))
       .catch((error) => this.#resolvedErrorHandler.handle(error, ctx))
       .finally(writeResponse(ctx))
   }
