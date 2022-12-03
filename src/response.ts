@@ -23,6 +23,7 @@ import type Encryption from '@adonisjs/encryption'
 import contentDisposition from 'content-disposition'
 import { ServerResponse, IncomingMessage, OutgoingHttpHeaders } from 'node:http'
 
+import type { Qs } from './qs.js'
 import { Redirect } from './redirect.js'
 import type { Router } from './router/main.js'
 import type { HttpContext } from './http_context/main.js'
@@ -43,6 +44,11 @@ const CACHEABLE_HTTP_METHODS = ['GET', 'HEAD']
  * streamlining the process of writing response body and automatically setting up appropriate headers.
  */
 export class Response extends Macroable {
+  /**
+   * Query string parser
+   */
+  #qs: Qs
+
   /**
    * Outgoing headers
    */
@@ -106,9 +112,12 @@ export class Response extends Macroable {
     public response: ServerResponse,
     encryption: Encryption,
     config: ResponseConfig,
-    router: Router
+    router: Router,
+    qs: Qs
   ) {
     super()
+
+    this.#qs = qs
     this.#config = config
     this.#router = router
     this.#cookieSerializer = new CookieSerializer(encryption)
@@ -881,7 +890,7 @@ export class Response extends Macroable {
     forwardQueryString: boolean = false,
     statusCode: number = 302
   ): Redirect | void {
-    const handler = new Redirect(this.request, this, this.#router)
+    const handler = new Redirect(this.request, this, this.#router, this.#qs)
 
     if (forwardQueryString) {
       handler.withQs()

@@ -31,11 +31,19 @@ export function defineConfig(config: Partial<ServerConfig>): ServerConfig {
       sameSite: false,
     },
     qs: {
-      depth: 5,
-      parameterLimit: 1000,
-      allowSparse: false,
-      arrayLimit: 20,
-      comma: true,
+      parse: {
+        depth: 5,
+        parameterLimit: 1000,
+        allowSparse: false,
+        arrayLimit: 20,
+        comma: true,
+      },
+      stringify: {
+        encode: true,
+        encodeValuesOnly: false,
+        arrayFormat: 'indices' as const,
+        skipNulls: false,
+      },
     },
     ...config,
   }

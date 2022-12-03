@@ -14,6 +14,7 @@ import { AppFactory } from './app.js'
 import { Router } from '../src/router/main.js'
 import { EncryptionFactory } from './encryption.js'
 import type { LazyImport } from '../src/types/base.js'
+import { QsParserFactory } from './qs_parser_factory.js'
 import { MiddlewareStore } from '../src/middleware/store.js'
 import type { MiddlewareAsClass } from '../src/types/middleware.js'
 
@@ -69,7 +70,8 @@ export class RouterFactory<
     return new Router<NamedMiddleware>(
       this.#getApp(),
       this.#createEncryption(),
-      this.#createMiddlewareStore()
+      this.#createMiddlewareStore(),
+      new QsParserFactory().create()
     )
   }
 }

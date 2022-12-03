@@ -7,7 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import proxyAddr from 'proxy-addr'
 import type Encryption from '@adonisjs/encryption'
 import type { Application } from '@adonisjs/application'
 
@@ -15,6 +14,7 @@ import { AppFactory } from './app.js'
 import { Server } from '../src/server/main.js'
 import { EncryptionFactory } from './encryption.js'
 
+import { defineConfig } from '../src/define_config.js'
 import type { LazyImport } from '../src/types/base.js'
 import type { ServerConfig } from '../src/types/server.js'
 import type { MiddlewareAsClass } from '../src/types/middleware.js'
@@ -38,23 +38,7 @@ export class ServerFactory<
    * Returns the config for the server class
    */
   #getConfig() {
-    return {
-      allowMethodSpoofing: false,
-      trustProxy: proxyAddr.compile('loopback'),
-      subdomainOffset: 2,
-      generateRequestId: true,
-      useAsyncLocalStorage: Boolean(process.env.ASYNC_HOOKS),
-      etag: false,
-      jsonpCallbackName: 'callback',
-      cookie: {
-        maxAge: '1 hour',
-        path: '/',
-        httpOnly: true,
-        sameSite: false,
-        secure: false,
-      },
-      ...this.#parameters.config,
-    }
+    return defineConfig(this.#parameters.config || {})
   }
 
   /**

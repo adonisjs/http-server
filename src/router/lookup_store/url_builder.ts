@@ -7,10 +7,10 @@
  * file that was distributed with this source code.
  */
 
-import { stringify } from 'qs'
-import encodeUrl from 'encodeurl'
 import { RuntimeException } from '@poppinss/utils'
 import type Encryption from '@adonisjs/encryption'
+
+import type { Qs } from '../../qs.js'
 import type { RouteFinder } from './route_finder.js'
 
 /**
@@ -27,6 +27,11 @@ import type { RouteFinder } from './route_finder.js'
  * ```
  */
 export class UrlBuilder {
+  /**
+   * Query string parser
+   */
+  #qsParser: Qs
+
   /**
    * The parameters to apply on the route
    */
@@ -58,7 +63,8 @@ export class UrlBuilder {
    */
   #routeFinder: RouteFinder
 
-  constructor(encryption: Encryption, routeFinder: RouteFinder) {
+  constructor(encryption: Encryption, routeFinder: RouteFinder, qsParser: Qs) {
+    this.#qsParser = qsParser
     this.#encryption = encryption
     this.#routeFinder = routeFinder
   }
@@ -131,8 +137,8 @@ export class UrlBuilder {
    */
   #suffixQueryString(url: string, qs?: Record<string, any>): string {
     if (qs) {
-      const queryString = stringify(qs)
-      url = queryString ? `${url}?${encodeUrl(queryString)}` : url
+      const queryString = this.#qsParser.stringify(qs)
+      url = queryString ? `${url}?${queryString}` : url
     }
 
     return url

@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import proxyaddr from 'proxy-addr'
 import { createServer } from 'node:http'
 import Encryption from '@adonisjs/encryption'
 import { Application } from '@adonisjs/application'
 
+import { defineConfig } from '../index.js'
 import { Server } from '../src/server/main.js'
 
 const app = new Application(new URL('./', import.meta.url), { environment: 'web' })
@@ -19,15 +19,7 @@ await app.init()
 
 const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
 
-const server = new Server(app, encryption, {
-  etag: false,
-  jsonpCallbackName: 'callback',
-  cookie: {},
-  subdomainOffset: 2,
-  generateRequestId: false,
-  trustProxy: proxyaddr.compile('loopback'),
-  allowMethodSpoofing: false,
-})
+const server = new Server(app, encryption, defineConfig({}))
 
 server.use([], [], {})
 

@@ -15,6 +15,7 @@ import { IncomingMessage, ServerResponse } from 'node:http'
 import { Request } from '../src/request.js'
 import { EncryptionFactory } from './encryption.js'
 import { RequestConfig } from '../src/types/request.js'
+import { QsParserFactory } from './qs_parser_factory.js'
 
 type FactoryParameters = {
   url: string
@@ -41,7 +42,6 @@ export class RequestFactory {
       trustProxy: proxyAddr.compile('loopback'),
       subdomainOffset: 2,
       generateRequestId: true,
-      useAsyncLocalStorage: Boolean(process.env.ASYNC_HOOKS),
       ...this.#parameters.config,
     }
   }
@@ -90,6 +90,12 @@ export class RequestFactory {
    */
   create() {
     const req = this.#createRequest()
-    return new Request(req, this.#createResponse(req), this.#createEncryption(), this.#getConfig())
+    return new Request(
+      req,
+      this.#createResponse(req),
+      this.#createEncryption(),
+      this.#getConfig(),
+      new QsParserFactory().create()
+    )
   }
 }

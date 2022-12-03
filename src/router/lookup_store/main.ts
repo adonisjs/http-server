@@ -9,6 +9,7 @@
 
 import type Encryption from '@adonisjs/encryption'
 
+import type { Qs } from '../../qs.js'
 import { UrlBuilder } from './url_builder.js'
 import { RouteFinder } from './route_finder.js'
 import type { RouteJSON } from '../../types/route.js'
@@ -22,10 +23,20 @@ export class LookupStore {
    * List of routes grouped by domain
    */
   #routes: { [domain: string]: RouteJSON[] } = {}
+
+  /**
+   * Encryption for making URLs
+   */
   #encryption: Encryption
 
-  constructor(encryption: Encryption) {
+  /**
+   * Query string parser for making URLs
+   */
+  #qsParser: Qs
+
+  constructor(encryption: Encryption, qsParser: Qs) {
     this.#encryption = encryption
+    this.#qsParser = qsParser
   }
 
   /**
@@ -50,7 +61,7 @@ export class LookupStore {
    */
   builderForDomain(domain: string) {
     const routes = this.#routes[domain]
-    return new UrlBuilder(this.#encryption, new RouteFinder(routes || []))
+    return new UrlBuilder(this.#encryption, new RouteFinder(routes || []), this.#qsParser)
   }
 
   /**

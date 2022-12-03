@@ -7,12 +7,12 @@
  * file that was distributed with this source code.
  */
 
-import qs from 'qs'
 import { parse } from 'node:url'
 import encodeUrl from 'encodeurl'
 import type { IncomingMessage } from 'node:http'
 
 import debug from './debug.js'
+import type { Qs } from './qs.js'
 import type { Response } from './response.js'
 import type { Router } from './router/main.js'
 import type { MakeUrlOptions } from './types/route.js'
@@ -39,18 +39,20 @@ export class Redirect {
   #request: IncomingMessage
   #response: Response
   #router: Router
+  #qs: Qs
 
-  constructor(request: IncomingMessage, response: Response, router: Router) {
+  constructor(request: IncomingMessage, response: Response, router: Router, qs: Qs) {
     this.#request = request
     this.#response = response
     this.#router = router
+    this.#qs = qs
   }
 
   /**
    * Sends response by setting require headers
    */
   #sendResponse(url: string, query: Record<string, any>) {
-    const stringified = qs.stringify(query)
+    const stringified = this.#qs.stringify(query)
 
     url = stringified ? `${url}?${stringified}` : url
     debug('redirecting to url "%s"', url)
@@ -126,7 +128,7 @@ export class Redirect {
      * Parse query string from the referrer url
      */
     if (this.#forwardQueryString) {
-      query = qs.parse(url.query || '')
+      query = this.#qs.parse(url.query || '')
     }
 
     /**
@@ -163,7 +165,7 @@ export class Redirect {
      * Extract query string from the current URL
      */
     if (this.#forwardQueryString) {
-      query = qs.parse(parse(this.#request.url!).query || '')
+      query = this.#qs.parse(parse(this.#request.url!).query || '')
     }
 
     /**

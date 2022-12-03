@@ -11,6 +11,7 @@ import type { Constructor } from './base.js'
 import type { RequestConfig } from './request.js'
 import type { ResponseConfig } from './response.js'
 import type { HttpContext } from '../http_context/main.js'
+import { QSParserConfig } from './qs.js'
 
 /**
  * Error handler to handle HTTP errors
@@ -35,5 +36,10 @@ export type ServerConfig = RequestConfig &
      *
      * Defaults to false
      */
-    useAsyncLocalStorage?: boolean
+    useAsyncLocalStorage: boolean
+
+    /**
+     * Config for query string parser
+     */
+    qs: QSParserConfig
   }

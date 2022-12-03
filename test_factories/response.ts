@@ -16,6 +16,7 @@ import { Response } from '../src/response.js'
 import { Router } from '../src/router/main.js'
 import { EncryptionFactory } from './encryption.js'
 import { ResponseConfig } from '../src/types/response.js'
+import { QsParserFactory } from './qs_parser_factory.js'
 
 type FactoryParameters = {
   req: IncomingMessage
@@ -98,7 +99,8 @@ export class ResponseFactory {
       this.#createResponse(req),
       this.#createEncryption(),
       this.#getConfig(),
-      this.#createRouter()
+      this.#createRouter(),
+      new QsParserFactory().create()
     )
   }
 }

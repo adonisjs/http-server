@@ -14,12 +14,13 @@ import { AppFactory } from '../../test_factories/app.js'
 import { MiddlewareStore } from '../../src/middleware/store.js'
 import { LookupStore } from '../../src/router/lookup_store/main.js'
 import { EncryptionFactory } from '../../test_factories/encryption.js'
+import { QsParserFactory } from '../../test_factories/qs_parser_factory.js'
 
 test.group('Lookup store | find', () => {
   test('find a route by route pattern', ({ assert }) => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-    const lookupStore = new LookupStore(encryption)
+    const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
     const middlewareStore = new MiddlewareStore([], {})
 
     const route = new Route(app, middlewareStore, {
@@ -44,7 +45,7 @@ test.group('Lookup store | find', () => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const lookupStore = new LookupStore(encryption)
+    const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, middlewareStore, {
       pattern: '/users/:id',
@@ -69,7 +70,7 @@ test.group('Lookup store | find', () => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const lookupStore = new LookupStore(encryption)
+    const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, middlewareStore, {
       pattern: '/users/:id',
@@ -91,7 +92,7 @@ test.group('Lookup store | find', () => {
 
   test('return null when unable to find route', ({ assert }) => {
     const encryption = new EncryptionFactory().create()
-    const lookupStore = new LookupStore(encryption)
+    const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     assert.isNull(lookupStore.find('/users/:id'))
   })
@@ -100,7 +101,7 @@ test.group('Lookup store | find', () => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const lookupStore = new LookupStore(encryption)
+    const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, middlewareStore, {
       pattern: '/users/:id',
@@ -120,7 +121,7 @@ test.group('Lookup store | findByOrFail', () => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const lookupStore = new LookupStore(encryption)
+    const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, middlewareStore, {
       pattern: '/users/:id',
@@ -144,7 +145,7 @@ test.group('Lookup store | findByOrFail', () => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const lookupStore = new LookupStore(encryption)
+    const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, middlewareStore, {
       pattern: '/users/:id',
@@ -169,7 +170,7 @@ test.group('Lookup store | findByOrFail', () => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const lookupStore = new LookupStore(encryption)
+    const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, middlewareStore, {
       pattern: '/users/:id',
@@ -191,7 +192,7 @@ test.group('Lookup store | findByOrFail', () => {
 
   test('raise error when unable to lookup route', ({ assert }) => {
     const encryption = new EncryptionFactory().create()
-    const lookupStore = new LookupStore(encryption)
+    const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     assert.throws(() => lookupStore.findOrFail('/users/:id'), 'Cannot lookup route "/users/:id"')
   })
@@ -202,7 +203,7 @@ test.group('Lookup store | has', () => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
     const middlewareStore = new MiddlewareStore([], {})
-    const lookupStore = new LookupStore(encryption)
+    const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, middlewareStore, {
       pattern: '/users/:id',

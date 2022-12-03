@@ -12,6 +12,7 @@ import type Encryption from '@adonisjs/encryption'
 import { RuntimeException } from '@poppinss/utils'
 import type { Application } from '@adonisjs/application'
 
+import type { Qs } from '../qs.js'
 import { Route } from './route.js'
 import { RouteGroup } from './group.js'
 import { BriskRoute } from './brisk.js'
@@ -99,9 +100,10 @@ export class Router<
   constructor(
     app: Application,
     encryption: Encryption,
-    middlewareStore: MiddlewareStore<NamedMiddleware>
+    middlewareStore: MiddlewareStore<NamedMiddleware>,
+    qsParser: Qs
   ) {
-    super(encryption)
+    super(encryption, qsParser)
     this.#app = app
     this.#middlewareStore = middlewareStore
   }

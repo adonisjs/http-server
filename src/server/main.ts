@@ -19,6 +19,7 @@ import type { LazyImport } from '../types/base.js'
 import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.js'
 import type { ErrorHandlerAsAClass, ServerConfig, ServerErrorHandler } from '../types/server.js'
 
+import { Qs } from '../qs.js'
 import debug from '../debug.js'
 import { Request } from '../request.js'
 import { Response } from '../response.js'
@@ -67,6 +68,11 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
   #config: ServerConfig
 
   /**
+   * Query string parser used by the server
+   */
+  #qsParser: Qs
+
+  /**
    * Server middleware stack runs on every incoming HTTP request
    */
   #serverMiddlewareStack?: Middleware<ParsedGlobalMiddleware>
@@ -92,6 +98,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
     this.#app = app
     this.#encryption = encryption
     this.#config = config
+    this.#qsParser = new Qs(this.#config.qs)
     this.#createAsyncLocalStore()
 
     debug('server config: %O', this.#config)
@@ -113,7 +120,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
    * Creates an instance of the router
    */
   #createRouter(middlewareStore: MiddlewareStore<NamedMiddleware>) {
-    this.#router = new Router(this.#app, this.#encryption, middlewareStore)
+    this.#router = new Router(this.#app, this.#encryption, middlewareStore, this.#qsParser)
   }
 
   /**
@@ -130,8 +137,15 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
    * request
    */
   #createContext(req: IncomingMessage, res: ServerResponse) {
-    const request = new Request(req, res, this.#encryption, this.#config)
-    const response = new Response(req, res, this.#encryption, this.#config, this.#router!)
+    const request = new Request(req, res, this.#encryption, this.#config, this.#qsParser)
+    const response = new Response(
+      req,
+      res,
+      this.#encryption,
+      this.#config,
+      this.#router!,
+      this.#qsParser
+    )
     return new HttpContext(request, response, this.#app.logger.child({}))
   }
 

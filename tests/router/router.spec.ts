@@ -10,17 +10,13 @@
 import { parse } from 'qs'
 import { test } from '@japa/runner'
 
-import { Router } from '../../src/router/main.js'
-import { AppFactory } from '../../test_factories/app.js'
+import { RouterFactory } from '../../test_factories/router.js'
 import { MiddlewareStore } from '../../src/middleware/store.js'
 import { EncryptionFactory } from '../../test_factories/encryption.js'
 
 test.group('Router | add', () => {
   test('add routes', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     const getRoute = router.get('/', '#controllers/home.index')
     const postRoute = router.post('/', '#controllers/home.store')
@@ -85,10 +81,7 @@ test.group('Router | add', () => {
   })
 
   test('raise error when route name is duplicate', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.get('/', async function handler() {}).as('home')
     router.get('home', async function handler() {}).as('home')
@@ -98,10 +91,7 @@ test.group('Router | add', () => {
   })
 
   test('create nested groups', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     async function handler() {}
 
@@ -152,10 +142,10 @@ test.group('Router | add', () => {
       },
     }
 
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
+    const router = new RouterFactory<typeof middleware>()
+      .merge({ middlewareStore: new MiddlewareStore([], middleware) })
+      .create()
 
-    const router = new Router(app, encryption, new MiddlewareStore([], middleware))
     async function handler() {}
 
     router
@@ -199,10 +189,7 @@ test.group('Router | add', () => {
   test('apply domain in nested groups', ({ assert }) => {
     assert.plan(1)
 
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     async function handler() {}
 
@@ -232,10 +219,7 @@ test.group('Router | add', () => {
   test('apply route matchers on nested groups', ({ assert }) => {
     assert.plan(1)
 
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     async function handler() {}
 
@@ -270,10 +254,7 @@ test.group('Router | add', () => {
   test('apply route matchers using shorthand methods', ({ assert }) => {
     assert.plan(1)
 
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     async function handler() {}
 
@@ -286,10 +267,7 @@ test.group('Router | add', () => {
   })
 
   test('test empty string param against the matcher', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     async function handler() {}
 
@@ -302,10 +280,7 @@ test.group('Router | add', () => {
   })
 
   test('apply route names in group', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     async function handler() {}
 
@@ -335,11 +310,7 @@ test.group('Router | add', () => {
   })
 
   test('define global matcher as a string', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
-
+    const router = new RouterFactory().create()
     router.where('id', '^[0-9]$')
 
     async function handler() {}
@@ -365,10 +336,7 @@ test.group('Router | add', () => {
   })
 
   test('define global matcher as a regex', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.where('id', /^[0-9]$/)
 
@@ -395,10 +363,7 @@ test.group('Router | add', () => {
   })
 
   test('define global matcher as an object', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.where('id', {
       match: /^[0-9]$/,
@@ -430,10 +395,7 @@ test.group('Router | add', () => {
 
 test.group('Router | commit', () => {
   test('commit routes to the store', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     async function handler() {}
     router.get('/', handler)
@@ -456,10 +418,7 @@ test.group('Router | commit', () => {
   })
 
   test('commit routes group to the store', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     async function handler() {}
 
@@ -488,10 +447,7 @@ test.group('Router | commit', () => {
   })
 
   test('define resource inside a group', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router
       .group(() => {
@@ -517,10 +473,7 @@ test.group('Router | commit', () => {
   })
 
   test('define resource inside nested groups', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router
       .group(() => {
@@ -550,10 +503,7 @@ test.group('Router | commit', () => {
   })
 
   test('define shallow resource', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.shallowResource('posts.comments', 'CommentsController')
     router.commit()
@@ -576,10 +526,7 @@ test.group('Router | commit', () => {
   })
 
   test('define nested resource', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.resource('posts.comments', 'CommentsController')
 
@@ -603,10 +550,7 @@ test.group('Router | commit', () => {
   })
 
   test('do not commit route when deleted flag is set to true', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     async function handler() {}
     const route = router.get('/', handler)
@@ -620,10 +564,7 @@ test.group('Router | commit', () => {
 
 test.group('Router | match', () => {
   test('match route using URL', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.resource('photos', 'PhotosController')
     router.commit()
@@ -729,10 +670,7 @@ test.group('Router | match', () => {
   })
 
   test('apply uuid matcher when matching route', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.get('photos/:id', '#controllers/photos.show').where('id', router.matchers.uuid())
     router.commit()
@@ -755,10 +693,7 @@ test.group('Router | match', () => {
   })
 
   test('match route for a specific domain', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router
       .group(() => {
@@ -787,10 +722,7 @@ test.group('Router | match', () => {
 
 test.group('Brisk route', () => {
   test('define brisk route', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     async function handler() {}
 
@@ -813,10 +745,7 @@ test.group('Brisk route', () => {
   })
 
   test('define brisk route inside a group', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     async function handler() {}
 
@@ -845,10 +774,7 @@ test.group('Brisk route', () => {
   })
 
   test('register brisk route to store', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     async function handler() {}
 
@@ -879,10 +805,7 @@ test.group('Brisk route', () => {
 
 test.group('Router | Make url', () => {
   test('make url to a given route', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.get('posts/:id', async function handler() {})
     router.commit()
@@ -892,10 +815,7 @@ test.group('Router | Make url', () => {
   })
 
   test("make url to a given route by it's name", ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.get('posts/:id', async function handler() {}).as('showPost')
     router.commit()
@@ -905,10 +825,7 @@ test.group('Router | Make url', () => {
   })
 
   test("make url to a given route by it's controller method", ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.get('posts/:id', '#controllers/posts.index').as('showPost')
     router.commit()
@@ -918,10 +835,7 @@ test.group('Router | Make url', () => {
   })
 
   test('make url for a specific domain', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.get('posts/:id', '#controllers/posts.index').as('showPost')
     router
@@ -941,10 +855,7 @@ test.group('Router | Make url', () => {
   })
 
   test('prefix url', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.get('posts/:id', async function handler() {}).as('showPost')
     router.commit()
@@ -954,10 +865,7 @@ test.group('Router | Make url', () => {
   })
 
   test('disable routes lookup', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.commit()
 
@@ -972,10 +880,8 @@ test.group('Router | Make url', () => {
 
 test.group('Make signed url', () => {
   test('make signed url to a given route', ({ assert }) => {
-    const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().merge({ encryption }).create()
 
     router.get('posts/:id', async function handler() {})
     router.commit()
@@ -986,10 +892,8 @@ test.group('Make signed url', () => {
   })
 
   test("make signed url to a given route by it's name", ({ assert }) => {
-    const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().merge({ encryption }).create()
 
     router.get('posts/:id', async function handler() {}).as('showPost')
     router.commit()
@@ -1000,10 +904,8 @@ test.group('Make signed url', () => {
   })
 
   test("make signed url to a given route by it's controller method", ({ assert }) => {
-    const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().merge({ encryption }).create()
 
     router.get('posts/:id', '#controllers/posts.index').as('showPost')
     router.commit()
@@ -1014,10 +916,8 @@ test.group('Make signed url', () => {
   })
 
   test('make url for a specific domain', ({ assert }) => {
-    const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().merge({ encryption }).create()
 
     router.get('posts/:id', '#controllers/posts.index').as('showPost')
     router
@@ -1039,10 +939,8 @@ test.group('Make signed url', () => {
   })
 
   test('make signed url with expiry', ({ assert }) => {
-    const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().merge({ encryption }).create()
 
     router.get('posts/:id', 'PostsController.index')
     router.commit()
@@ -1054,10 +952,8 @@ test.group('Make signed url', () => {
   })
 
   test('make signed url with custom query string', ({ assert }) => {
-    const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().merge({ encryption }).create()
 
     router.get('posts/:id', 'PostsController.index')
     router.commit()
@@ -1072,10 +968,7 @@ test.group('Make signed url', () => {
   })
 
   test('prefix url', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router.get('posts/:id', async function handler() {}).as('showPost')
     router.commit()
@@ -1090,10 +983,7 @@ test.group('Make signed url', () => {
   })
 
   test('disable route lookup', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     const url = router.makeSignedUrl(
       '/posts/:id',
@@ -1107,10 +997,7 @@ test.group('Make signed url', () => {
 
 test.group('Regression', () => {
   test('route where matchers should win over group matchers', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router
       .group(() => {
@@ -1136,10 +1023,7 @@ test.group('Regression', () => {
   })
 
   test('apply prefixes in the correct order', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router
       .group(() => {
@@ -1162,10 +1046,7 @@ test.group('Regression', () => {
   })
 
   test('route domain should win over group domain', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router
       .group(() => {
@@ -1189,10 +1070,7 @@ test.group('Regression', () => {
   })
 
   test('apply route names in the right order', ({ assert }) => {
-    const app = new AppFactory().create()
-    const encryption = new EncryptionFactory().create()
-
-    const router = new Router(app, encryption, new MiddlewareStore([], {}))
+    const router = new RouterFactory().create()
 
     router
       .group(() => {

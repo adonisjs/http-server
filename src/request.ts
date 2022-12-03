@@ -7,13 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import qs from 'qs'
 import cuid from 'cuid'
 import fresh from 'fresh'
 import typeIs from 'type-is'
 import accepts from 'accepts'
 import { isIP } from 'node:net'
-import encodeUrl from 'encodeurl'
 import proxyaddr from 'proxy-addr'
 import { safeEqual } from '@poppinss/utils'
 import lodash from '@poppinss/utils/lodash'
@@ -22,6 +20,7 @@ import type Encryption from '@adonisjs/encryption'
 import { parse, UrlWithStringQuery } from 'node:url'
 import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'node:http'
 
+import type { Qs } from './qs.js'
 import { trustProxy } from './helpers.js'
 import { CookieParser } from './cookies/parser.js'
 import { RequestConfig } from './types/request.js'
@@ -37,6 +36,11 @@ import type { HttpContext } from './http_context/main.js'
  * using `request.request` property.
  */
 export class Request extends Macroable {
+  /**
+   * Query string parser
+   */
+  #qsParser: Qs
+
   /**
    * Encryption module to verify signed URLs and unsign/decrypt
    * cookies
@@ -102,10 +106,12 @@ export class Request extends Macroable {
     public request: IncomingMessage,
     public response: ServerResponse,
     encryption: Encryption,
-    config: RequestConfig
+    config: RequestConfig,
+    qsParser: Qs
   ) {
     super()
 
+    this.#qsParser = qsParser
     this.#config = config
     this.#encryption = encryption
     this.parsedUrl = parse(this.request.url!, false)
@@ -117,7 +123,7 @@ export class Request extends Macroable {
    */
   #parseQueryString() {
     if (this.parsedUrl.query) {
-      this.updateQs(qs.parse(this.parsedUrl.query, this.#config.qs))
+      this.updateQs(this.#qsParser.parse(this.parsedUrl.query))
       this.#originalRequestData = { ...this.#requestData }
     }
   }
@@ -925,10 +931,10 @@ export class Request extends Macroable {
       return false
     }
 
-    const queryString = qs.stringify(rest)
+    const queryString = this.#qsParser.stringify(rest)
 
     return queryString
-      ? safeEqual(signedUrl, `${this.url()}?${encodeUrl(queryString)}`)
+      ? safeEqual(signedUrl, `${this.url()}?${queryString}`)
       : safeEqual(signedUrl, this.url())
   }
 
