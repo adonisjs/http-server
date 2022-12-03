@@ -11,10 +11,73 @@ import 'reflect-metadata'
 import supertest from 'supertest'
 import { test } from '@japa/runner'
 import { createServer } from 'node:http'
+import type { NextFn } from '@poppinss/middleware/types'
+
+import { Router } from '../src/router/main.js'
 import { AppFactory } from '../test_factories/app.js'
 import { HttpContext } from '../src/http_context/main.js'
-import type { NextFn } from '@poppinss/middleware/types'
 import { ServerFactory } from '../test_factories/server_factory.js'
+
+test.group('Server', () => {
+  test('fail when booting without defining middleware', ({ assert }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+
+    assert.rejects(
+      () => server.boot(),
+      'Cannot boot HTTP server. Register middleware using "server.use" first'
+    )
+  })
+
+  test('get router instance used by the server', ({ assert }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    server.use([], [], {})
+
+    assert.instanceOf(server.getRouter(), Router)
+  })
+
+  test('store http server instance', ({ assert }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    server.use([], [], {})
+
+    const httpServer = createServer(() => {})
+    server.setNodeServer(httpServer)
+
+    assert.strictEqual(server.getNodeServer(), httpServer)
+  })
+
+  test('close node server ', async ({ assert }) => {
+    assert.plan(1)
+
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    server.use([], [], {})
+
+    const httpServer = createServer(() => {}).listen(3000)
+    server.setNodeServer(httpServer)
+
+    httpServer.on('close', () => {
+      assert.isFalse(httpServer.listening)
+    })
+
+    await server.close()
+  })
+
+  test('noop when http server is not listening or not set', async ({ assert }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    server.use([], [], {})
+
+    assert.doesNotRejects(() => server.close())
+
+    const httpServer = createServer(() => {})
+    server.setNodeServer(httpServer)
+
+    assert.doesNotRejects(() => server.close())
+  })
+})
 
 test.group('Server | Response handling', () => {
   test('invoke router handler', async ({ assert }) => {

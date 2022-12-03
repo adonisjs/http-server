@@ -16,14 +16,13 @@ import { Server } from '../src/server/main.js'
 import { EncryptionFactory } from './encryption.js'
 
 import type { LazyImport } from '../src/types/base.js'
-import type { RequestConfig } from '../src/types/request.js'
-import type { ResponseConfig } from '../src/types/response.js'
+import type { ServerConfig } from '../src/types/server.js'
 import type { MiddlewareAsClass } from '../src/types/middleware.js'
 
 type FactoryParameters = {
   app: Application
   encryption: Encryption
-  config: Partial<RequestConfig & ResponseConfig>
+  config: Partial<ServerConfig>
 }
 
 /**

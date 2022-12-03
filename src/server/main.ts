@@ -209,7 +209,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
   /**
    * Set the HTTP server instance used to listen for requests.
    */
-  setServer(server: HttpServer | HttpsServer) {
+  setNodeServer(server: HttpServer | HttpsServer) {
     this.#underlyingHttpServer = server
   }
 
@@ -218,7 +218,13 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
    */
   close() {
     return new Promise<void>((resolve, reject) => {
-      this.#underlyingHttpServer?.close((error) => {
+      if (!this.#underlyingHttpServer || !this.#underlyingHttpServer.listening) {
+        resolve()
+        return
+      }
+
+      this.#underlyingHttpServer.close((error) => {
+        /* c8 ignore next 3 */
         if (error) {
           return reject(error)
         }
@@ -232,7 +238,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
    * Returns reference to the underlying HTTP server
    * in use
    */
-  getServer() {
+  getNodeServer() {
     return this.#underlyingHttpServer
   }
 
