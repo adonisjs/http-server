@@ -8,6 +8,8 @@
  */
 
 import type { Constructor } from './base.js'
+import type { RequestConfig } from './request.js'
+import type { ResponseConfig } from './response.js'
 import type { HttpContext } from '../http_context/main.js'
 
 /**
@@ -21,3 +23,17 @@ export type ServerErrorHandler = {
  * Error handler represented as a class
  */
 export type ErrorHandlerAsAClass = Constructor<ServerErrorHandler>
+
+/**
+ * Config accepted by the HTTP server
+ */
+export type ServerConfig = RequestConfig &
+  ResponseConfig & {
+    /**
+     * Whether or not to create an async local storage store for
+     * the HTTP context.
+     *
+     * Defaults to false
+     */
+    useAsyncLocalStorage?: boolean
+  }

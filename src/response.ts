@@ -64,7 +64,7 @@ export class Response extends Macroable {
   #router: Router
 
   /**
-   * Response defaults
+   * Response config
    */
   #config: ResponseConfig
 

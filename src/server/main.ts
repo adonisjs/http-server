@@ -7,7 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import string from '@poppinss/utils/string'
 import Middleware from '@poppinss/middleware'
 import { RuntimeException } from '@poppinss/utils'
 import type Encryption from '@adonisjs/encryption'
@@ -17,10 +16,8 @@ import type { Server as HttpsServer } from 'node:https'
 import type { ServerResponse, IncomingMessage, Server as HttpServer } from 'node:http'
 
 import type { LazyImport } from '../types/base.js'
-import type { RequestConfig } from '../types/request.js'
-import type { ResponseConfig } from '../types/response.js'
-import type { ErrorHandlerAsAClass, ServerErrorHandler } from '../types/server.js'
 import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.js'
+import type { ErrorHandlerAsAClass, ServerConfig, ServerErrorHandler } from '../types/server.js'
 
 import debug from '../debug.js'
 import { Request } from '../request.js'
@@ -67,7 +64,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
   /**
    * Server config
    */
-  #config: RequestConfig & ResponseConfig
+  #config: ServerConfig
 
   /**
    * Server middleware stack runs on every incoming HTTP request
@@ -91,27 +88,13 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
     return asyncLocalStorage.isEnabled
   }
 
-  constructor(app: Application, encryption: Encryption, config: RequestConfig & ResponseConfig) {
+  constructor(app: Application, encryption: Encryption, config: ServerConfig) {
     this.#app = app
     this.#encryption = encryption
     this.#config = config
-    this.#preProcessCookieMaxAge()
     this.#createAsyncLocalStore()
 
     debug('server config: %O', this.#config)
-  }
-
-  /**
-   * Pre-processing cookie maxAge property to avoid re-parsing on
-   * every request
-   */
-  #preProcessCookieMaxAge() {
-    /*
-     * Pre process config to convert max age string to seconds.
-     */
-    if (this.#config.cookie.maxAge && typeof this.#config.cookie.maxAge === 'string') {
-      this.#config.cookie.maxAge = string.seconds.parse(this.#config.cookie.maxAge)
-    }
   }
 
   /**

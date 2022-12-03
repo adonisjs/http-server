@@ -47,12 +47,4 @@ export type RequestConfig = {
    * the `proxy-addr` package to compute this value.
    */
   trustProxy: (address: string, distance: number) => boolean
-
-  /**
-   * Whether or not to create an async local storage store for
-   * the HTTP context.
-   *
-   * Defaults to false
-   */
-  useAsyncLocalStorage?: boolean
 }

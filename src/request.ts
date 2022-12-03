@@ -38,6 +38,17 @@ import type { HttpContext } from './http_context/main.js'
  */
 export class Request extends Macroable {
   /**
+   * Encryption module to verify signed URLs and unsign/decrypt
+   * cookies
+   */
+  #encryption: Encryption
+
+  /**
+   * Request config
+   */
+  #config: RequestConfig
+
+  /**
    * Request body set using `setBody` method
    */
   #requestBody: Record<string, any> = {}
@@ -90,11 +101,13 @@ export class Request extends Macroable {
   constructor(
     public request: IncomingMessage,
     public response: ServerResponse,
-    private encryption: Encryption,
-    private config: RequestConfig
+    encryption: Encryption,
+    config: RequestConfig
   ) {
     super()
 
+    this.#config = config
+    this.#encryption = encryption
     this.parsedUrl = parse(this.request.url!, false)
     this.#parseQueryString()
   }
@@ -114,7 +127,7 @@ export class Request extends Macroable {
    */
   #initiateCookieParser() {
     if (!this.#cookieParser) {
-      this.#cookieParser = new CookieParser(this.header('cookie')!, this.encryption)
+      this.#cookieParser = new CookieParser(this.header('cookie')!, this.#encryption)
     }
   }
 
@@ -133,7 +146,7 @@ export class Request extends Macroable {
    */
   id(): string | undefined {
     let requestId = this.header('x-request-id')
-    if (!requestId && this.config.generateRequestId) {
+    if (!requestId && this.#config.generateRequestId) {
       requestId = cuid()
       this.request.headers['x-request-id'] = requestId
     }
@@ -320,7 +333,7 @@ export class Request extends Macroable {
    * ```
    */
   method(): string {
-    if (this.config.allowMethodSpoofing && this.intended() === 'POST') {
+    if (this.#config.allowMethodSpoofing && this.intended() === 'POST') {
       return this.input('_method', this.intended()).toUpperCase()
     }
     return this.intended()
@@ -382,12 +395,12 @@ export class Request extends Macroable {
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
    */
   ip(): string {
-    const ipFn = this.config.getIp
+    const ipFn = this.#config.getIp
     if (typeof ipFn === 'function') {
       return ipFn(this)
     }
 
-    return proxyaddr(this.request, this.config.trustProxy)
+    return proxyaddr(this.request, this.#config.trustProxy)
   }
 
   /**
@@ -409,7 +422,7 @@ export class Request extends Macroable {
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
    */
   ips(): string[] {
-    return proxyaddr.all(this.request, this.config.trustProxy)
+    return proxyaddr.all(this.request, this.#config.trustProxy)
   }
 
   /**
@@ -437,7 +450,7 @@ export class Request extends Macroable {
       return 'https'
     }
 
-    if (!trustProxy(this.request.socket.remoteAddress!, this.config.trustProxy)) {
+    if (!trustProxy(this.request.socket.remoteAddress!, this.#config.trustProxy)) {
       return this.parsedUrl.protocol || 'http'
     }
 
@@ -478,7 +491,7 @@ export class Request extends Macroable {
      * Use X-Fowarded-Host when we trust the proxy header and it
      * exists
      */
-    if (trustProxy(this.request.socket.remoteAddress!, this.config.trustProxy)) {
+    if (trustProxy(this.request.socket.remoteAddress!, this.#config.trustProxy)) {
       host = this.header('X-Forwarded-Host') || host
     }
 
@@ -540,7 +553,7 @@ export class Request extends Macroable {
       return []
     }
 
-    const offset = this.config.subdomainOffset
+    const offset = this.#config.subdomainOffset
     const subdomains = hostname.split('.').reverse().slice(offset)
 
     /*
@@ -907,7 +920,7 @@ export class Request extends Macroable {
     /*
      * Return false when signature fails
      */
-    const signedUrl = this.encryption.verifier.unsign(signature, purpose)
+    const signedUrl = this.#encryption.verifier.unsign(signature, purpose)
     if (!signedUrl) {
       return false
     }

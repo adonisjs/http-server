@@ -8,16 +8,14 @@
  */
 
 import proxyAddr from 'proxy-addr'
-import type { RequestConfig } from './types/request.js'
-import type { ResponseConfig } from './types/response.js'
+import string from '@poppinss/utils/string'
+import type { ServerConfig } from './types/server.js'
 
 /**
  * Define configuration for the HTTP server
  */
-export function defineConfig(
-  config: Partial<RequestConfig & ResponseConfig>
-): RequestConfig & ResponseConfig {
-  return {
+export function defineConfig(config: Partial<ServerConfig>): ServerConfig {
+  const normalizedConfig = {
     allowMethodSpoofing: false,
     trustProxy: proxyAddr.compile('loopback'),
     subdomainOffset: 2,
@@ -34,4 +32,10 @@ export function defineConfig(
     },
     ...config,
   }
+
+  if (normalizedConfig.cookie.maxAge) {
+    normalizedConfig.cookie.maxAge = string.seconds.parse(normalizedConfig.cookie.maxAge)
+  }
+
+  return normalizedConfig
 }
