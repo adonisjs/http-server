@@ -31,7 +31,7 @@ const server = new Server(app, encryption, {
 
 server.use([], [], {})
 
-server.router!.get('/', async (ctx) => {
+server.getRouter()!.get('/', async (ctx) => {
   return ctx.response.send({ hello: 'world' })
 })
 await server.boot()

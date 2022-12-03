@@ -25,7 +25,7 @@ test.group('Server | Response handling', () => {
     await app.init()
 
     server.use([], [], {})
-    server.router!.get('/', async ({ response }) => response.send('handled'))
+    server.getRouter()!.get('/', async ({ response }) => response.send('handled'))
     await server.boot()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -40,7 +40,7 @@ test.group('Server | Response handling', () => {
     await app.init()
 
     server.use([], [], {})
-    server.router!.get('/', async () => 'handled')
+    server.getRouter()!.get('/', async () => 'handled')
     await server.boot()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -55,7 +55,7 @@ test.group('Server | Response handling', () => {
     await app.init()
 
     server.use([], [], {})
-    server.router!.get('/', async ({ response }) => {
+    server.getRouter()!.get('/', async ({ response }) => {
       response.send('handled')
       return 'done'
     })
@@ -76,12 +76,13 @@ test.group('Server | Response handling', () => {
 
     server.use([], [], {})
     server
-      .router!.get('/guides/:doc', async ({ params }) => {
+      .getRouter()!
+      .get('/guides/:doc', async ({ params }) => {
         assert.deepEqual(params, { doc: 'introduction' })
       })
       .as('guides')
 
-    server.router!.on('/docs/:doc').redirect('guides')
+    server.getRouter()!.on('/docs/:doc').redirect('guides')
     await server.boot()
 
     const { redirects } = await supertest(httpServer).get('/docs/introduction').redirects(1)
@@ -103,12 +104,13 @@ test.group('Server | Response handling', () => {
 
     server.use([], [], {})
     server
-      .router!.get('/guides/:doc', async ({ params }) => {
+      .getRouter()!
+      .get('/guides/:doc', async ({ params }) => {
         assert.deepEqual(params, { doc: 'introduction' })
       })
       .as('guides')
 
-    server.router!.on('/docs/:doc').redirectToPath('/guides/introduction')
+    server.getRouter()!.on('/docs/:doc').redirectToPath('/guides/introduction')
     await server.boot()
 
     const { redirects } = await supertest(httpServer).get('/docs/introduction').redirects(1)
@@ -128,7 +130,8 @@ test.group('Server | Response handling', () => {
     server.use([], [], {})
 
     server
-      .router!.get('/', async ({ response }) => response.send('handled'))
+      .getRouter()!
+      .get('/', async ({ response }) => response.send('handled'))
       .domain(':tenant.adonisjs.com')
 
     await server.boot()
@@ -151,7 +154,8 @@ test.group('Server | Response handling', () => {
     server.use([], [], {})
 
     server
-      .router!.get('/', async ({ response }) => response.send('handled'))
+      .getRouter()!
+      .get('/', async ({ response }) => response.send('handled'))
       .domain(':tenant.adonisjs.com')
 
     await server.boot()
@@ -202,7 +206,7 @@ test.group('Server | middleware', () => {
       {}
     )
 
-    server.router!.get('/', async () => {
+    server.getRouter()!.get('/', async () => {
       stack.push('handler')
       return 'done'
     })
@@ -253,7 +257,8 @@ test.group('Server | middleware', () => {
     )
 
     server
-      .router!.get('/', async () => {
+      .getRouter()!
+      .get('/', async () => {
         stack.push('handler')
         return 'done'
       })
@@ -308,7 +313,8 @@ test.group('Server | middleware', () => {
     )
 
     server
-      .router!.get('/', async () => {
+      .getRouter()!
+      .get('/', async () => {
         stack.push('handler')
         return 'done'
       })
@@ -364,7 +370,8 @@ test.group('Server | middleware', () => {
     )
 
     server
-      .router!.get('/', async () => {
+      .getRouter()!
+      .get('/', async () => {
         stack.push('handler')
         return 'done'
       })
@@ -420,7 +427,8 @@ test.group('Server | middleware', () => {
     )
 
     server
-      .router!.get('/', async () => {
+      .getRouter()!
+      .get('/', async () => {
         stack.push('handler')
         return 'done'
       })
@@ -518,7 +526,7 @@ test.group('Server | error handler', () => {
       }
     })
 
-    server.router!.get('/', () => {})
+    server.getRouter()!.get('/', () => {})
     await server.boot()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -560,7 +568,10 @@ test.group('Server | error handler', () => {
       }
     })
 
-    server.router!.get('/', () => {}).middleware('auth')
+    server
+      .getRouter()!
+      .get('/', () => {})
+      .middleware('auth')
     await server.boot()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -588,7 +599,7 @@ test.group('Server | error handler', () => {
       }
     })
 
-    server.router!.get('/', () => {
+    server.getRouter()!.get('/', () => {
       throw new Error('Something went wrong')
     })
     await server.boot()
@@ -604,7 +615,7 @@ test.group('Server | error handler', () => {
     await app.init()
 
     server.use([], [], {})
-    server.router!.get('/', async () => {
+    server.getRouter()!.get('/', async () => {
       return {
         toJSON() {
           throw new Error('blowup')
@@ -642,7 +653,7 @@ test.group('Server | force content negotiation', () => {
     server.use([], [], {})
     await server.boot()
 
-    server.router!.get('/', async ({ request, response }) => {
+    server.getRouter()!.get('/', async ({ request, response }) => {
       response.send(request.header('accept'))
     })
     await server.boot()
@@ -660,7 +671,8 @@ test.group('Server | force content negotiation', () => {
     server.use([], [], {})
 
     server
-      .router!.get('/users/:id', async ({ request }) => {
+      .getRouter()!
+      .get('/users/:id', async ({ request }) => {
         return {
           hasValidSignature: request.hasValidSignature(),
         }
@@ -672,7 +684,7 @@ test.group('Server | force content negotiation', () => {
     /**
      * Make a signed url
      */
-    const url = server.router!.makeSignedUrl('showUser', [1], {
+    const url = server.getRouter()!.makeSignedUrl('showUser', [1], {
       qs: { site: 1, db: 'pg', dbUser: 1 },
     })
 
@@ -696,7 +708,7 @@ test.group('Server | force content negotiation', () => {
 
     server.use([], [], {})
 
-    server.router!.get('/', async (ctx) => {
+    server.getRouter()!.get('/', async (ctx) => {
       return {
         enabled: HttpContext.usingAsyncLocalStorage,
         get: HttpContext.get() === ctx,
@@ -737,7 +749,7 @@ test.group('Server | force content negotiation', () => {
 
     server.use([], [], {})
 
-    server.router!.get('/', async (ctx) => {
+    server.getRouter()!.get('/', async (ctx) => {
       return HttpContext.runOutsideContext(() => {
         return {
           enabled: HttpContext.usingAsyncLocalStorage,
@@ -771,14 +783,14 @@ test.group('Server | force content negotiation', () => {
 
     server.use([], [], {})
 
-    server.router!.get('/', async () => {
+    server.getRouter()!.get('/', async () => {
       return {
         enabled: HttpContext.usingAsyncLocalStorage,
         get: HttpContext.get() === null,
       }
     })
 
-    server.router!.get('/fail', async () => {
+    server.getRouter()!.get('/fail', async () => {
       return HttpContext.getOrFail()
     })
 
@@ -820,7 +832,7 @@ test.group('Server | force content negotiation', () => {
 
     server.use([], [], {})
 
-    server.router!.get('/', async (ctx) => {
+    server.getRouter()!.get('/', async (ctx) => {
       return HttpContext.runOutsideContext(() => {
         return {
           enabled: HttpContext.usingAsyncLocalStorage,
