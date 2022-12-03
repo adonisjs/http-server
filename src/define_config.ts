@@ -30,6 +30,13 @@ export function defineConfig(config: Partial<ServerConfig>): ServerConfig {
       secure: false,
       sameSite: false,
     },
+    qs: {
+      depth: 5,
+      parameterLimit: 1000,
+      allowSparse: false,
+      arrayLimit: 20,
+      comma: true,
+    },
     ...config,
   }
 

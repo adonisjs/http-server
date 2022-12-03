@@ -45,6 +45,50 @@ export type RequestConfig = {
   /**
    * A callback function to trust proxy ip addresses. You must use
    * the `proxy-addr` package to compute this value.
+   *
+   * Defaults to: "proxyAddr.compile('loopback')"
    */
   trustProxy: (address: string, distance: number) => boolean
+
+  /**
+   * Options to control query string parsing
+   */
+  qs: {
+    /**
+     * Nesting depth till the parameters should be parsed.
+     *
+     * Defaults to 5
+     */
+    depth: number
+
+    /**
+     * Number of parameters to parse.
+     *
+     * Defaults to 1000
+     */
+    parameterLimit: number
+
+    /**
+     * Allow sparse elements in an array.
+     *
+     * Defaults to false
+     */
+    allowSparse: boolean
+
+    /**
+     * The max limimit for the array indices. After the given limit
+     * the array indices will be converted to an object, where the
+     * index is the key.
+     *
+     * Defaults to 20
+     */
+    arrayLimit: number
+
+    /**
+     * Join comma seperated query string values to an array
+     *
+     * Defaults to false
+     */
+    comma: boolean
+  }
 }

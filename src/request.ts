@@ -117,7 +117,7 @@ export class Request extends Macroable {
    */
   #parseQueryString() {
     if (this.parsedUrl.query) {
-      this.updateQs(qs.parse(this.parsedUrl.query))
+      this.updateQs(qs.parse(this.parsedUrl.query, this.#config.qs))
       this.#originalRequestData = { ...this.#requestData }
     }
   }
