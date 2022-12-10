@@ -8,9 +8,8 @@
  */
 
 import type { ContainerResolver } from '@adonisjs/fold'
-import type { NextFn } from '@poppinss/middleware/types'
 
-import type { Constructor } from './base.js'
+import type { Constructor, NextFn } from './base.js'
 import type { HttpContext } from '../http_context/main.js'
 
 /**

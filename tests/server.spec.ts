@@ -47,36 +47,6 @@ test.group('Server', () => {
 
     assert.strictEqual(server.getNodeServer(), httpServer)
   })
-
-  test('close node server ', async ({ assert }) => {
-    assert.plan(1)
-
-    const app = new AppFactory().create()
-    const server = new ServerFactory().merge({ app }).create()
-    server.use([], [], {})
-
-    const httpServer = createServer(() => {}).listen(3000)
-    server.setNodeServer(httpServer)
-
-    httpServer.on('close', () => {
-      assert.isFalse(httpServer.listening)
-    })
-
-    await server.close()
-  })
-
-  test('noop when http server is not listening or not set', async ({ assert }) => {
-    const app = new AppFactory().create()
-    const server = new ServerFactory().merge({ app }).create()
-    server.use([], [], {})
-
-    assert.doesNotRejects(() => server.close())
-
-    const httpServer = createServer(() => {})
-    server.setNodeServer(httpServer)
-
-    assert.doesNotRejects(() => server.close())
-  })
 })
 
 test.group('Server | Response handling', () => {

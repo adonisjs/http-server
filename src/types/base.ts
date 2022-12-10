@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 
+export type { NextFn } from '@poppinss/middleware/types'
+
 /**
  * Class constructor type
  */

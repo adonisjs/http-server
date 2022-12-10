@@ -228,27 +228,6 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
   }
 
   /**
-   * Close the underlying HTTP server
-   */
-  close() {
-    return new Promise<void>((resolve, reject) => {
-      if (!this.#underlyingHttpServer || !this.#underlyingHttpServer.listening) {
-        resolve()
-        return
-      }
-
-      this.#underlyingHttpServer.close((error) => {
-        /* c8 ignore next 3 */
-        if (error) {
-          return reject(error)
-        }
-
-        resolve()
-      })
-    })
-  }
-
-  /**
    * Returns reference to the underlying HTTP server
    * in use
    */
