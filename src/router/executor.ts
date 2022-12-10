@@ -15,7 +15,7 @@ import type { HttpContext } from '../http_context/main.js'
  * Executor to execute the route middleware pipeline the route
  * handler
  */
-export function execute(route: StoreRouteNode, resolver: ContainerResolver, ctx: HttpContext) {
+export function execute(route: StoreRouteNode, resolver: ContainerResolver<any>, ctx: HttpContext) {
   return route.middleware
     .runner()
     .finalHandler(() => {

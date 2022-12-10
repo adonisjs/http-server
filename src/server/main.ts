@@ -9,7 +9,7 @@
 
 import Middleware from '@poppinss/middleware'
 import { RuntimeException } from '@poppinss/utils'
-import type Encryption from '@adonisjs/encryption'
+import type { Encryption } from '@adonisjs/encryption'
 import type { ContainerResolver } from '@adonisjs/fold'
 import type { Application } from '@adonisjs/application'
 import type { Server as HttpsServer } from 'node:https'
@@ -55,7 +55,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
   /**
    * The application instance to be shared with the router
    */
-  #app: Application
+  #app: Application<any, any, any>
 
   /**
    * The encryption instance to be shared with the router
@@ -94,7 +94,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
     return asyncLocalStorage.isEnabled
   }
 
-  constructor(app: Application, encryption: Encryption, config: ServerConfig) {
+  constructor(app: Application<any, any, any>, encryption: Encryption, config: ServerConfig) {
     this.#app = app
     this.#encryption = encryption
     this.#config = config
@@ -211,7 +211,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
   /**
    * Handles the HTTP request
    */
-  #handleRequest(ctx: HttpContext, resolver: ContainerResolver) {
+  #handleRequest(ctx: HttpContext, resolver: ContainerResolver<any>) {
     return this.#serverMiddlewareStack!.runner()
       .finalHandler(finalHandler(this.#router!, resolver, ctx))
       .run(middlewareHandler(resolver, ctx))

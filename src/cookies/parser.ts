@@ -8,7 +8,7 @@
  */
 
 import cookie from 'cookie'
-import type Encryption from '@adonisjs/encryption'
+import type { Encryption } from '@adonisjs/encryption'
 
 import { CookieClient } from './client.js'
 

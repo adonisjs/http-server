@@ -8,7 +8,7 @@
  */
 
 import { RuntimeException } from '@poppinss/utils'
-import type Encryption from '@adonisjs/encryption'
+import type { Encryption } from '@adonisjs/encryption'
 
 import type { Qs } from '../../qs.js'
 import type { RouteFinder } from './route_finder.js'

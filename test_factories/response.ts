@@ -8,7 +8,7 @@
  */
 
 import { Socket } from 'node:net'
-import type Encryption from '@adonisjs/encryption'
+import type { Encryption } from '@adonisjs/encryption'
 import { IncomingMessage, ServerResponse } from 'node:http'
 
 import { RouterFactory } from './router.js'

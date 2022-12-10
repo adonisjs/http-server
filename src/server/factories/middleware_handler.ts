@@ -16,7 +16,7 @@ import { ParsedGlobalMiddleware } from '../../types/middleware.js'
 /**
  * The middleware handler invokes the middleware functions.
  */
-export function middlewareHandler(resolver: ContainerResolver, ctx: HttpContext) {
+export function middlewareHandler(resolver: ContainerResolver<any>, ctx: HttpContext) {
   return function (fn: ParsedGlobalMiddleware, next: NextFn) {
     return fn.handle(resolver, ctx, next)
   }

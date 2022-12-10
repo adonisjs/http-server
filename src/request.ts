@@ -16,7 +16,7 @@ import proxyaddr from 'proxy-addr'
 import { safeEqual } from '@poppinss/utils'
 import lodash from '@poppinss/utils/lodash'
 import { Macroable } from '@poppinss/macroable'
-import type Encryption from '@adonisjs/encryption'
+import type { Encryption } from '@adonisjs/encryption'
 import { parse, UrlWithStringQuery } from 'node:url'
 import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'node:http'
 

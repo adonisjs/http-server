@@ -8,7 +8,7 @@
  */
 
 import { createServer } from 'node:http'
-import Encryption from '@adonisjs/encryption'
+import { Encryption } from '@adonisjs/encryption'
 import { Application } from '@adonisjs/application'
 
 import { defineConfig } from '../index.js'

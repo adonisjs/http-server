@@ -36,7 +36,7 @@ export type StoreRouteHandler =
   | {
       name: string
       handle: (
-        resolver: ContainerResolver,
+        resolver: ContainerResolver<any>,
         ...args: [ctx: HttpContext, ...injections: any[]]
       ) => any
     }
@@ -56,7 +56,7 @@ export type StoreRouteNode = {
    * The execute function to execute the route middleware
    * and the handler
    */
-  execute: (route: StoreRouteNode, resolver: ContainerResolver, ctx: HttpContext) => any
+  execute: (route: StoreRouteNode, resolver: ContainerResolver<any>, ctx: HttpContext) => any
 
   /**
    * A unique name for the route

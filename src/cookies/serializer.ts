@@ -9,7 +9,7 @@
 
 import cookie from 'cookie'
 import string from '@poppinss/utils/string'
-import type Encryption from '@adonisjs/encryption'
+import type { Encryption } from '@adonisjs/encryption'
 
 import { CookieClient } from './client.js'
 import type { CookieOptions } from '../types/response.js'

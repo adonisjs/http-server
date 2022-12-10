@@ -9,7 +9,7 @@
 
 import { Socket } from 'node:net'
 import proxyAddr from 'proxy-addr'
-import type Encryption from '@adonisjs/encryption'
+import type { Encryption } from '@adonisjs/encryption'
 import { IncomingMessage, ServerResponse } from 'node:http'
 
 import { Request } from '../src/request.js'

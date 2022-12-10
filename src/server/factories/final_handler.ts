@@ -18,7 +18,7 @@ import { RouteNotFoundException } from '../../exceptions/route_not_found.js'
  * It looks for a matching route and executes the route middleware
  * stack.
  */
-export function finalHandler(router: Router, resolver: ContainerResolver, ctx: HttpContext) {
+export function finalHandler(router: Router, resolver: ContainerResolver<any>, ctx: HttpContext) {
   return function () {
     const url = ctx.request.url()
     const method = ctx.request.method()

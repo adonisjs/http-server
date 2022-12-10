@@ -44,7 +44,7 @@ export type MiddlewareFn = (ctx: HttpContext, next: NextFn) => any
  */
 export type ParsedGlobalMiddleware = {
   handle: (
-    resolver: ContainerResolver,
+    resolver: ContainerResolver<any>,
     ...args: [ctx: HttpContext, next: NextFn, params?: any]
   ) => any
 }

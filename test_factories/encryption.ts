@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import Encryption from '@adonisjs/encryption'
+import { Encryption } from '@adonisjs/encryption'
 import { EncryptionOptions } from '@adonisjs/encryption/types'
 
 /**

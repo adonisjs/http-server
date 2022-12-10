@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import type Encryption from '@adonisjs/encryption'
+import type { Encryption } from '@adonisjs/encryption'
 
 /**
  * Signs a value to be shared as a cookie. The signed output has a

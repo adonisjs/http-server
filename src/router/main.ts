@@ -8,8 +8,8 @@
  */
 
 import is from '@sindresorhus/is'
-import type Encryption from '@adonisjs/encryption'
 import { RuntimeException } from '@poppinss/utils'
+import type { Encryption } from '@adonisjs/encryption'
 import type { Application } from '@adonisjs/application'
 
 import type { Qs } from '../qs.js'
@@ -52,7 +52,7 @@ export class Router<
   /**
    * Application is needed to resolve string based controller expressions
    */
-  #app: Application
+  #app: Application<any, any, any>
 
   /**
    * Store with tokenized routes
@@ -98,7 +98,7 @@ export class Router<
   matchers = new Matchers()
 
   constructor(
-    app: Application,
+    app: Application<any, any, any>,
     encryption: Encryption,
     middlewareStore: MiddlewareStore<NamedMiddleware>,
     qsParser: Qs
