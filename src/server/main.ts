@@ -80,7 +80,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
   /**
    * Reference to the router used by the server
    */
-  #router?: Router
+  #router?: Router<NamedMiddleware>
 
   /**
    * Reference to the underlying HTTP server in use
@@ -260,7 +260,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
    * Returns reference to the router instance used
    * by the server.
    */
-  getRouter() {
+  getRouter(): Router<NamedMiddleware> | undefined {
     return this.#router
   }
 
