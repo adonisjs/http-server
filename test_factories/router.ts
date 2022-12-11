@@ -19,7 +19,7 @@ import { MiddlewareStore } from '../src/middleware/store.js'
 import type { MiddlewareAsClass } from '../src/types/middleware.js'
 
 type FactoryParameters<NamedMiddleware extends Record<string, LazyImport<MiddlewareAsClass>>> = {
-  app: Application<any, any, any>
+  app: Application<any, any>
   encryption: Encryption
   middlewareStore: MiddlewareStore<NamedMiddleware>
 }

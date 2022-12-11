@@ -52,7 +52,7 @@ export class Router<
   /**
    * Application is needed to resolve string based controller expressions
    */
-  #app: Application<any, any, any>
+  #app: Application<any, any>
 
   /**
    * Store with tokenized routes
@@ -98,7 +98,7 @@ export class Router<
   matchers = new Matchers()
 
   constructor(
-    app: Application<any, any, any>,
+    app: Application<any, any>,
     encryption: Encryption,
     middlewareStore: MiddlewareStore<NamedMiddleware>,
     qsParser: Qs

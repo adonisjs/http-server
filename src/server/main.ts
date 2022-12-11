@@ -55,7 +55,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
   /**
    * The application instance to be shared with the router
    */
-  #app: Application<any, any, any>
+  #app: Application<any, any>
 
   /**
    * The encryption instance to be shared with the router
@@ -94,7 +94,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
     return asyncLocalStorage.isEnabled
   }
 
-  constructor(app: Application<any, any, any>, encryption: Encryption, config: ServerConfig) {
+  constructor(app: Application<any, any>, encryption: Encryption, config: ServerConfig) {
     this.#app = app
     this.#encryption = encryption
     this.#config = config

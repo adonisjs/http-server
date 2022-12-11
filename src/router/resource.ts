@@ -49,7 +49,7 @@ export class RouteResource<
   /**
    * Reference to the AdonisJS application
    */
-  #app: Application<any, any, any>
+  #app: Application<any, any>
 
   /**
    * Middleware store to resolve middleware
@@ -75,7 +75,7 @@ export class RouteResource<
   routes: Route[] = []
 
   constructor(
-    app: Application<any, any, any>,
+    app: Application<any, any>,
     middlewareStore: MiddlewareStore<NamedMiddleware>,
     options: {
       resource: string

@@ -20,7 +20,7 @@ import type { ServerConfig } from '../src/types/server.js'
 import type { MiddlewareAsClass } from '../src/types/middleware.js'
 
 type FactoryParameters = {
-  app: Application<any, any, any>
+  app: Application<any, any>
   encryption: Encryption
   config: Partial<ServerConfig>
 }

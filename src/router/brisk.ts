@@ -41,7 +41,7 @@ export class BriskRoute<
   /**
    * Reference to the AdonisJS application
    */
-  #app: Application<any, any, any>
+  #app: Application<any, any>
 
   /**
    * Middleware store to resolve middleware
@@ -54,7 +54,7 @@ export class BriskRoute<
   route: null | Route<NamedMiddleware> = null
 
   constructor(
-    app: Application<any, any, any>,
+    app: Application<any, any>,
     middlewareStore: MiddlewareStore<NamedMiddleware>,
     options: {
       pattern: string
