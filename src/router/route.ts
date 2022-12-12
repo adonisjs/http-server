@@ -216,9 +216,16 @@ export class Route extends Macroable {
    * Named middleware can be referenced using the name registered with
    * the router middleware store.
    */
-  middleware(middleware: MiddlewareFn | ParsedNamedMiddleware): this {
+  use(middleware: MiddlewareFn | ParsedNamedMiddleware): this {
     this.#middleware.push([middleware])
     return this
+  }
+
+  /**
+   * @alias use
+   */
+  middleware(middleware: MiddlewareFn | ParsedNamedMiddleware): this {
+    return this.use(middleware)
   }
 
   /**

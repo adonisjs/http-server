@@ -204,16 +204,15 @@ export class RouteGroup extends Macroable {
     this.routes.forEach((route) => this.#updateRouteName(route, name))
     return this
   }
-
   /**
    * Prepend an array of middleware to all routes middleware.
    *
    * ```ts
    * Route.group(() => {
-   * }).middleware(['auth'])
+   * }).use(middleware.auth())
    * ```
    */
-  middleware(middleware: MiddlewareFn | ParsedNamedMiddleware): this {
+  use(middleware: MiddlewareFn | ParsedNamedMiddleware): this {
     /**
      * Register middleware with children. We share the group middleware
      * array by reference, therefore have to register it only for the
@@ -225,5 +224,12 @@ export class RouteGroup extends Macroable {
 
     this.#middleware.push(middleware)
     return this
+  }
+
+  /**
+   * @alias use
+   */
+  middleware(middleware: MiddlewareFn | ParsedNamedMiddleware): this {
+    return this.use(middleware)
   }
 }
