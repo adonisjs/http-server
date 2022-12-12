@@ -20,12 +20,10 @@ await app.init()
 const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
 
 const server = new Server(app, encryption, defineConfig({}))
-
-server.use([], [], {})
-
-server.getRouter()!.get('/', async (ctx) => {
+server.getRouter().get('/', async (ctx) => {
   return ctx.response.send({ hello: 'world' })
 })
+
 await server.boot()
 
 createServer(server.handle.bind(server)).listen(4000, () => {
