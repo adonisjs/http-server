@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import { Container } from '@adonisjs/fold'
 import type { Logger } from '@adonisjs/logger'
 
 import { LoggerFactory } from './logger.js'
@@ -62,6 +63,11 @@ export class HttpContextFactory {
    * Create request
    */
   create() {
-    return new HttpContext(this.#createRequest(), this.#createResponse(), this.#createLogger())
+    return new HttpContext(
+      this.#createRequest(),
+      this.#createResponse(),
+      this.#createLogger(),
+      new Container().createResolver()
+    )
   }
 }

@@ -11,6 +11,7 @@ import { inspect } from 'node:util'
 import type { Logger } from '@adonisjs/logger'
 import { Macroable } from '@poppinss/macroable'
 import { RuntimeException } from '@poppinss/utils'
+import { ContainerResolver } from '@adonisjs/fold'
 
 import type { Request } from '../request.js'
 import type { Response } from '../response.js'
@@ -97,7 +98,12 @@ export class HttpContext extends Macroable {
    */
   subdomains: Record<string, any> = {}
 
-  constructor(public request: Request, public response: Response, public logger: Logger) {
+  constructor(
+    public request: Request,
+    public response: Response,
+    public logger: Logger,
+    public containerResolver: ContainerResolver<any>
+  ) {
     super()
 
     /*

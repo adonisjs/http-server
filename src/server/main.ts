@@ -134,7 +134,7 @@ export class Server {
    * Creates an instance of the HTTP context for the current
    * request
    */
-  #createContext(req: IncomingMessage, res: ServerResponse) {
+  #createContext(req: IncomingMessage, res: ServerResponse, resolver: ContainerResolver<any>) {
     const request = new Request(req, res, this.#encryption, this.#config, this.#qsParser)
     const response = new Response(
       req,
@@ -145,7 +145,7 @@ export class Server {
       this.#qsParser
     )
 
-    return new HttpContext(request, response, this.#app.logger.child({}))
+    return new HttpContext(request, response, this.#app.logger.child({}), resolver)
   }
 
   /**
@@ -241,8 +241,8 @@ export class Server {
    * Handle request
    */
   handle(req: IncomingMessage, res: ServerResponse) {
-    const ctx = this.#createContext(req, res)
     const resolver = this.#app.container.createResolver()
+    const ctx = this.#createContext(req, res, resolver)
 
     if (this.usingAsyncLocalStorage) {
       return asyncLocalStorage.storage!.run(ctx, () => this.#handleRequest(ctx, resolver))
