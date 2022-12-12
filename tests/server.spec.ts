@@ -846,3 +846,28 @@ test.group('Server | force content negotiation', () => {
     })
   })
 })
+
+test.group('Server | synchronous hooks', () => {
+  test('register synchronous hooks', async ({ assert }) => {
+    assert.plan(1)
+
+    let stack: any[] = []
+
+    const app = new AppFactory().create()
+    await app.init()
+
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    server.onRequest((ctx) => {
+      stack.push(ctx)
+    })
+
+    server.getRouter().get('/', async (ctx) => {
+      assert.deepEqual(stack[0], ctx)
+    })
+    await server.boot()
+
+    await supertest(httpServer).get('/').expect(200)
+  })
+})

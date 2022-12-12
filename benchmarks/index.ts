@@ -72,4 +72,4 @@ async function fastifyRun() {
   console.log('Completed')
 }
 
-fastifyRun().then(coolOff).then(adonisRun)
+adonisRun().then(coolOff).then(fastifyRun)

@@ -36,6 +36,11 @@ import { middlewareHandler } from './factories/middleware_handler.js'
  */
 export class Server {
   /**
+   * Collection of synchronous request hooks
+   */
+  #requestHooks: Set<(ctx: HttpContext) => void> = new Set()
+
+  /**
    * Registered error handler (if any)
    */
   #errorHandler?: LazyImport<ErrorHandlerAsAClass>
@@ -131,21 +136,15 @@ export class Server {
   }
 
   /**
-   * Creates an instance of the HTTP context for the current
-   * request
+   * Handles the HTTP request
    */
-  #createContext(req: IncomingMessage, res: ServerResponse, resolver: ContainerResolver<any>) {
-    const request = new Request(req, res, this.#encryption, this.#config, this.#qsParser)
-    const response = new Response(
-      req,
-      res,
-      this.#encryption,
-      this.#config,
-      this.#router,
-      this.#qsParser
-    )
-
-    return new HttpContext(request, response, this.#app.logger.child({}), resolver)
+  #handleRequest(ctx: HttpContext, resolver: ContainerResolver<any>) {
+    return this.#serverMiddlewareStack!.runner()
+      .finalHandler(finalHandler(this.#router!, resolver, ctx))
+      .run(middlewareHandler(resolver, ctx))
+      .then(useReturnValue(ctx))
+      .catch((error) => this.#resolvedErrorHandler.handle(error, ctx))
+      .finally(writeResponse(ctx))
   }
 
   /**
@@ -203,18 +202,6 @@ export class Server {
   }
 
   /**
-   * Handles the HTTP request
-   */
-  #handleRequest(ctx: HttpContext, resolver: ContainerResolver<any>) {
-    return this.#serverMiddlewareStack!.runner()
-      .finalHandler(finalHandler(this.#router!, resolver, ctx))
-      .run(middlewareHandler(resolver, ctx))
-      .then(useReturnValue(ctx))
-      .catch((error) => this.#resolvedErrorHandler.handle(error, ctx))
-      .finally(writeResponse(ctx))
-  }
-
-  /**
    * Set the HTTP server instance used to listen for requests.
    */
   setNodeServer(server: HttpServer | HttpsServer) {
@@ -238,11 +225,38 @@ export class Server {
   }
 
   /**
+   * Synchronous hooks to get notified everytime a new HTTP request comes
+   */
+  onRequest(callback: (ctx: HttpContext) => void) {
+    this.#requestHooks.add(callback)
+    return this
+  }
+
+  /**
    * Handle request
    */
   handle(req: IncomingMessage, res: ServerResponse) {
+    /**
+     * Creating essential instances
+     */
     const resolver = this.#app.container.createResolver()
-    const ctx = this.#createContext(req, res, resolver)
+    const request = new Request(req, res, this.#encryption, this.#config, this.#qsParser)
+    const response = new Response(
+      req,
+      res,
+      this.#encryption,
+      this.#config,
+      this.#router,
+      this.#qsParser
+    )
+    const ctx = new HttpContext(request, response, this.#app.logger.child({}), resolver)
+
+    /**
+     * Invoking synchronous hooks
+     */
+    for (let hook of this.#requestHooks) {
+      hook(ctx)
+    }
 
     if (this.usingAsyncLocalStorage) {
       return asyncLocalStorage.storage!.run(ctx, () => this.#handleRequest(ctx, resolver))
