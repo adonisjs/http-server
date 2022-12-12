@@ -11,7 +11,6 @@ import { parse } from 'qs'
 import { test } from '@japa/runner'
 
 import { RouterFactory } from '../../test_factories/router.js'
-import { MiddlewareStore } from '../../src/middleware/store.js'
 import { EncryptionFactory } from '../../test_factories/encryption.js'
 
 test.group('Router | add', () => {
@@ -129,7 +128,8 @@ test.group('Router | add', () => {
       async handle() {}
     }
 
-    const middleware = {
+    const router = new RouterFactory().create()
+    const middleware = router.named({
       acl: async () => {
         return {
           default: AclMiddleware,
@@ -140,11 +140,7 @@ test.group('Router | add', () => {
           default: AuthMiddleware,
         }
       },
-    }
-
-    const router = new RouterFactory<typeof middleware>()
-      .merge({ middlewareStore: new MiddlewareStore([], middleware) })
-      .create()
+    })
 
     async function handler() {}
 
@@ -154,9 +150,9 @@ test.group('Router | add', () => {
           .group(() => {
             router.get('/', handler)
           })
-          .middleware('acl', { role: 'admin' })
+          .middleware(middleware.acl({ role: 'admin' }))
       })
-      .middleware('auth')
+      .middleware(middleware.auth())
 
     router.commit()
 
@@ -1091,5 +1087,30 @@ test.group('Regression', () => {
         },
       ],
     })
+  })
+})
+
+test.group('Named middleware', () => {
+  test('create a collection of named middleware factories', ({ assert, expectTypeOf }) => {
+    const router = new RouterFactory().create()
+    class AuthMiddleware {
+      handle() {}
+    }
+
+    const namedMiddleware = router.named({
+      auth: async () => {
+        return {
+          default: AuthMiddleware,
+        }
+      },
+    })
+
+    expectTypeOf(namedMiddleware).toHaveProperty('auth')
+    expectTypeOf(namedMiddleware.auth).parameters.toEqualTypeOf<[]>()
+    expectTypeOf(namedMiddleware.auth()).toMatchTypeOf<{ name: 'auth'; args: undefined }>()
+
+    assert.isObject(namedMiddleware)
+    assert.property(namedMiddleware, 'auth')
+    assert.containsSubset(namedMiddleware.auth(), { name: 'auth', args: undefined })
   })
 })

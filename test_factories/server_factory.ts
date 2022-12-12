@@ -15,9 +15,7 @@ import { Server } from '../src/server/main.js'
 import { EncryptionFactory } from './encryption.js'
 
 import { defineConfig } from '../src/define_config.js'
-import type { LazyImport } from '../src/types/base.js'
 import type { ServerConfig } from '../src/types/server.js'
-import type { MiddlewareAsClass } from '../src/types/middleware.js'
 
 type FactoryParameters = {
   app: Application<any, any>
@@ -29,9 +27,7 @@ type FactoryParameters = {
  * Server factory is used to generate server class instances for
  * testing
  */
-export class ServerFactory<
-  NamedMiddleware extends Record<string, LazyImport<MiddlewareAsClass>> = any
-> {
+export class ServerFactory {
   #parameters: Partial<FactoryParameters> = {}
 
   /**
@@ -68,6 +64,6 @@ export class ServerFactory<
    * Create server instance
    */
   create() {
-    return new Server<NamedMiddleware>(this.#getApp(), this.#createEncryption(), this.#getConfig())
+    return new Server(this.#getApp(), this.#createEncryption(), this.#getConfig())
   }
 }

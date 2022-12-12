@@ -8,18 +8,17 @@
  */
 
 import { test } from '@japa/runner'
+import { defineNamedMiddleware } from '../../src/define_middleware.js'
 
 import { Route } from '../../src/router/route.js'
 import { AppFactory } from '../../test_factories/app.js'
-import { MiddlewareStore } from '../../src/middleware/store.js'
 
 test.group('Route', () => {
   test('create a route instance', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/',
       methods: ['GET'],
       handler,
@@ -39,10 +38,9 @@ test.group('Route', () => {
 
   test('prefix route', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/',
       methods: ['GET'],
       handler,
@@ -63,10 +61,9 @@ test.group('Route', () => {
 
   test('apply multiple prefixes in reverse order', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/',
       methods: ['GET'],
       handler,
@@ -88,10 +85,9 @@ test.group('Route', () => {
 
   test('handle leading slash in pattern', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/blog',
       methods: ['GET'],
       handler,
@@ -111,10 +107,9 @@ test.group('Route', () => {
 
   test('handle leading slash in pattern along with prefix', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/blog',
       methods: ['GET'],
       handler,
@@ -135,10 +130,9 @@ test.group('Route', () => {
 
   test('define matcher for param as a string', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,
@@ -161,10 +155,9 @@ test.group('Route', () => {
 
   test('define matcher for param as a regular expression', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,
@@ -187,7 +180,6 @@ test.group('Route', () => {
 
   test('define match and cast methods for a param', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
     const matcher = {
@@ -195,7 +187,7 @@ test.group('Route', () => {
       cast: (id: string) => Number(id),
     }
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,
@@ -219,10 +211,9 @@ test.group('Route', () => {
 
   test('do not overwrite existing params', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,
@@ -247,10 +238,9 @@ test.group('Route', () => {
 
   test('define global matchers for params', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,
@@ -274,10 +264,9 @@ test.group('Route', () => {
 
   test('give preference to local matcher over global', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,
@@ -303,10 +292,9 @@ test.group('Route', () => {
 
   test('define route domain', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,
@@ -328,10 +316,9 @@ test.group('Route', () => {
 
   test('do not overwrite route domain unless explicitly stated', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,
@@ -364,12 +351,11 @@ test.group('Route', () => {
     })
   })
 
-  test('define a function as a route middleware', ({ assert }) => {
+  test('use function as a route middleware', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,
@@ -401,25 +387,23 @@ test.group('Route', () => {
       handle() {}
     }
 
-    const namedMiddleware = {
+    const namedMiddleware = defineNamedMiddleware({
       auth: async () => {
         return {
           default: AuthMiddleware,
         }
       },
-    }
-
-    const middlewareStore = new MiddlewareStore([], namedMiddleware)
+    })
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,
       globalMatchers: {},
     })
 
-    route.middleware('auth')
+    route.middleware(namedMiddleware.auth())
     const middleware = [...route.toJSON().middleware.all()]
 
     assert.isArray(middleware)
@@ -430,10 +414,9 @@ test.group('Route', () => {
 
   test('give name to the route', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,
@@ -456,10 +439,9 @@ test.group('Route', () => {
 
   test('prefix to the route name', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,
@@ -483,10 +465,9 @@ test.group('Route', () => {
 
   test('throw error when prefix without an existing name', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,
@@ -501,10 +482,9 @@ test.group('Route', () => {
 
   test('update route pattern', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: 'posts/:id',
       methods: ['GET'],
       handler,

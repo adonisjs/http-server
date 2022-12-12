@@ -11,7 +11,6 @@ import { test } from '@japa/runner'
 
 import { Route } from '../../src/router/route.js'
 import { AppFactory } from '../../test_factories/app.js'
-import { MiddlewareStore } from '../../src/middleware/store.js'
 import { RequestFactory } from '../../test_factories/request.js'
 import { LookupStore } from '../../src/router/lookup_store/main.js'
 import { EncryptionFactory } from '../../test_factories/encryption.js'
@@ -21,10 +20,9 @@ test.group('URL builder', () => {
   test('create url for a route', ({ assert }) => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/users/:id',
       globalMatchers: {},
       handler: () => {},
@@ -38,10 +36,9 @@ test.group('URL builder', () => {
   test('create url for a route by its name', ({ assert }) => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/users/:id',
       globalMatchers: {},
       handler: () => {},
@@ -56,10 +53,9 @@ test.group('URL builder', () => {
   test('create url for a route by the handler name', ({ assert }) => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/users/:id',
       globalMatchers: {},
       handler: '#controllers/posts',

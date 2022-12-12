@@ -8,13 +8,14 @@
  */
 
 import { test } from '@japa/runner'
+import { moduleImporter } from '@adonisjs/fold'
 import type { NextFn } from '@poppinss/middleware/types'
 
 import { Route } from '../../src/router/route.js'
 import { AppFactory } from '../../test_factories/app.js'
-import { MiddlewareStore } from '../../src/middleware/store.js'
 import type { HttpContext } from '../../src/http_context/main.js'
 import { HttpContextFactory } from '../../test_factories/http_context.js'
+import { defineNamedMiddleware } from '../../src/define_middleware.js'
 
 test.group('Route | execute', () => {
   test('execute route handler function', async ({ assert }) => {
@@ -25,14 +26,13 @@ test.group('Route | execute', () => {
     await app.init()
 
     const context = new HttpContextFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler(ctx: HttpContext) {
       stack.push('handler')
       assert.strictEqual(ctx, context)
     }
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/',
       methods: ['GET'],
       handler,
@@ -54,9 +54,8 @@ test.group('Route | execute', () => {
     const resolver = app.container.createResolver()
 
     const context = new HttpContextFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/',
       methods: ['GET'],
       handler: () => {},
@@ -86,14 +85,13 @@ test.group('Route | execute', () => {
     await app.init()
 
     const context = new HttpContextFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler(ctx: HttpContext) {
       stack.push('handler')
       assert.strictEqual(ctx, context)
     }
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/',
       methods: ['GET'],
       handler,
@@ -126,14 +124,13 @@ test.group('Route | execute', () => {
     await app.init()
 
     const context = new HttpContextFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler(ctx: HttpContext) {
       stack.push('handler')
       assert.strictEqual(ctx, context)
     }
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/',
       methods: ['GET'],
       handler,
@@ -179,28 +176,25 @@ test.group('Route | execute', () => {
     }
 
     const context = new HttpContextFactory().create()
-    const middlewareStore = new MiddlewareStore(
-      [
-        async () => {
-          return {
-            default: BodyParserMiddleware,
-          }
-        },
-        async () => {
-          return {
-            default: LogMiddleware,
-          }
-        },
-      ],
-      {}
-    )
+    const routerMiddleware = [
+      async () => {
+        return {
+          default: BodyParserMiddleware,
+        }
+      },
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+    ].map((one) => moduleImporter(one, 'handle').toHandleMethod())
 
     async function handler(ctx: HttpContext) {
       stack.push('handler')
       assert.strictEqual(ctx, context)
     }
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, routerMiddleware, {
       pattern: '/',
       methods: ['GET'],
       handler,
@@ -248,28 +242,25 @@ test.group('Route | execute', () => {
     }
 
     const context = new HttpContextFactory().create()
-    const middlewareStore = new MiddlewareStore(
-      [
-        async () => {
-          return {
-            default: BodyParserMiddleware,
-          }
-        },
-        async () => {
-          return {
-            default: LogMiddleware,
-          }
-        },
-      ],
-      {}
-    )
+    const routerMiddleware = [
+      async () => {
+        return {
+          default: BodyParserMiddleware,
+        }
+      },
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+    ].map((one) => moduleImporter(one, 'handle').toHandleMethod())
 
     async function handler(ctx: HttpContext) {
       stack.push('handler')
       assert.strictEqual(ctx, context)
     }
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, routerMiddleware, {
       pattern: '/',
       methods: ['GET'],
       handler,
@@ -312,28 +303,25 @@ test.group('Route | execute', () => {
     }
 
     const context = new HttpContextFactory().create()
-    const middlewareStore = new MiddlewareStore(
-      [
-        async () => {
-          return {
-            default: BodyParserMiddleware,
-          }
-        },
-        async () => {
-          return {
-            default: LogMiddleware,
-          }
-        },
-      ],
-      {}
-    )
+    const routerMiddleware = [
+      async () => {
+        return {
+          default: BodyParserMiddleware,
+        }
+      },
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+    ].map((one) => moduleImporter(one, 'handle').toHandleMethod())
 
     async function handler(ctx: HttpContext) {
       stack.push('handler')
       assert.strictEqual(ctx, context)
     }
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, routerMiddleware, {
       pattern: '/',
       methods: ['GET'],
       handler,
@@ -380,27 +368,24 @@ test.group('Route | execute', () => {
     }
 
     const context = new HttpContextFactory().create()
-    const middlewareStore = new MiddlewareStore(
-      [
-        async () => {
-          return {
-            default: BodyParserMiddleware,
-          }
-        },
-        async () => {
-          return {
-            default: LogMiddleware,
-          }
-        },
-      ],
-      {}
-    )
+    const routerMiddleware = [
+      async () => {
+        return {
+          default: BodyParserMiddleware,
+        }
+      },
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+    ].map((one) => moduleImporter(one, 'handle').toHandleMethod())
 
     async function handler() {
       throw new Error('route handler failed')
     }
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, routerMiddleware, {
       pattern: '/',
       methods: ['GET'],
       handler,
@@ -441,7 +426,7 @@ test.group('Route | execute', () => {
     }
 
     const context = new HttpContextFactory().create()
-    const middlewareStore = new MiddlewareStore([], {
+    const namedMiddleware = defineNamedMiddleware({
       acl: async () => {
         return {
           default: AclMiddleware,
@@ -454,21 +439,21 @@ test.group('Route | execute', () => {
       assert.strictEqual(ctx, context)
     }
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/',
       methods: ['GET'],
       handler,
       globalMatchers: {},
     })
-    route.middleware('acl')
+    route.middleware(namedMiddleware.acl())
 
-    const route1 = new Route(app, middlewareStore, {
+    const route1 = new Route(app, [], {
       pattern: '/',
       methods: ['GET'],
       handler,
       globalMatchers: {},
     })
-    route1.middleware('acl', { role: 'admin' })
+    route1.middleware(namedMiddleware.acl({ role: 'admin' }))
 
     const routeJSON = route.toJSON()
     await routeJSON.execute(routeJSON, app.container.createResolver(), context)

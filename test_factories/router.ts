@@ -13,25 +13,19 @@ import type { Application } from '@adonisjs/application'
 import { AppFactory } from './app.js'
 import { Router } from '../src/router/main.js'
 import { EncryptionFactory } from './encryption.js'
-import type { LazyImport } from '../src/types/base.js'
 import { QsParserFactory } from './qs_parser_factory.js'
-import { MiddlewareStore } from '../src/middleware/store.js'
-import type { MiddlewareAsClass } from '../src/types/middleware.js'
 
-type FactoryParameters<NamedMiddleware extends Record<string, LazyImport<MiddlewareAsClass>>> = {
+type FactoryParameters = {
   app: Application<any, any>
   encryption: Encryption
-  middlewareStore: MiddlewareStore<NamedMiddleware>
 }
 
 /**
  * Router factory is used to generate router class instances for
  * testing
  */
-export class RouterFactory<
-  NamedMiddleware extends Record<string, LazyImport<MiddlewareAsClass>> = any
-> {
-  #parameters: Partial<FactoryParameters<NamedMiddleware>> = {}
+export class RouterFactory {
+  #parameters: Partial<FactoryParameters> = {}
 
   /**
    * Returns an instance of the application class
@@ -49,16 +43,9 @@ export class RouterFactory<
   }
 
   /**
-   * Returns an instance of the middleware store
-   */
-  #createMiddlewareStore() {
-    return this.#parameters.middlewareStore || new MiddlewareStore([], {} as NamedMiddleware)
-  }
-
-  /**
    * Merge factory params
    */
-  merge(params: Partial<FactoryParameters<NamedMiddleware>>) {
+  merge(params: Partial<FactoryParameters>) {
     Object.assign(this.#parameters, params)
     return this
   }
@@ -67,11 +54,6 @@ export class RouterFactory<
    * Create router instance
    */
   create() {
-    return new Router<NamedMiddleware>(
-      this.#getApp(),
-      this.#createEncryption(),
-      this.#createMiddlewareStore(),
-      new QsParserFactory().create()
-    )
+    return new Router(this.#getApp(), this.#createEncryption(), new QsParserFactory().create())
   }
 }

@@ -16,9 +16,11 @@ import type { Application } from '@adonisjs/application'
 
 import { execute } from './executor.js'
 import { dropSlash } from '../helpers.js'
-import type { MiddlewareStore } from '../middleware/store.js'
-import type { LazyImport, UnWrapLazyImport } from '../types/base.js'
-import type { GetMiddlewareArgs, MiddlewareAsClass, MiddlewareFn } from '../types/middleware.js'
+import type {
+  MiddlewareFn,
+  ParsedNamedMiddleware,
+  ParsedGlobalMiddleware,
+} from '../types/middleware.js'
 import type {
   RouteFn,
   RouteJSON,
@@ -32,9 +34,7 @@ import type {
  * The route class exposes the APIs for constructing a route using the
  * fluent API.
  */
-export class Route<
-  NamedMiddleware extends Record<string, LazyImport<MiddlewareAsClass>> = any
-> extends Macroable {
+export class Route extends Macroable {
   /**
    * Route pattern
    */
@@ -74,9 +74,9 @@ export class Route<
   #app: Application<any, any>
 
   /**
-   * Middleware store to resolve middleware
+   * Middleware registered on the router
    */
-  #middlewareStore: MiddlewareStore<NamedMiddleware>
+  #routerMiddleware: ParsedGlobalMiddleware[]
 
   /**
    * By default the route is part of the `root` domain. Root domain is used
@@ -104,7 +104,7 @@ export class Route<
 
   constructor(
     app: Application<any, any>,
-    middlewareStore: MiddlewareStore<NamedMiddleware>,
+    routerMiddleware: ParsedGlobalMiddleware[],
     options: {
       pattern: string
       methods: string[]
@@ -114,7 +114,7 @@ export class Route<
   ) {
     super()
     this.#app = app
-    this.#middlewareStore = middlewareStore
+    this.#routerMiddleware = routerMiddleware
     this.#pattern = options.pattern
     this.#methods = options.methods
     this.#handler = this.#resolveRouteHandle(options.handler)
@@ -216,21 +216,8 @@ export class Route<
    * Named middleware can be referenced using the name registered with
    * the router middleware store.
    */
-  middleware<Name extends keyof NamedMiddleware>(
-    middleware: Name,
-    ...args: GetMiddlewareArgs<UnWrapLazyImport<NamedMiddleware[Name]>>
-  ): this
-  middleware(middleware: MiddlewareFn): this
-  middleware(middleware: keyof NamedMiddleware | MiddlewareFn, args?: any): this {
-    if (typeof middleware === 'string') {
-      this.#middleware.push([this.#middlewareStore.get(middleware, args)])
-      return this
-    }
-
-    if (typeof middleware === 'function') {
-      this.#middleware.push([middleware])
-    }
-
+  middleware(middleware: MiddlewareFn | ParsedNamedMiddleware): this {
+    this.#middleware.push([middleware])
     return this
   }
 
@@ -308,7 +295,7 @@ export class Route<
   #getMiddlewareForStore() {
     const middleware = new Middleware<StoreRouteMiddleware>()
 
-    this.#middlewareStore.list().forEach((one) => middleware.add(one))
+    this.#routerMiddleware.forEach((one) => middleware.add(one))
     this.#middleware.flat().forEach((one) => middleware.add(one))
 
     return middleware

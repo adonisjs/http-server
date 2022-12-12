@@ -11,14 +11,12 @@ import { test } from '@japa/runner'
 
 import { BriskRoute } from '../../src/router/brisk.js'
 import { AppFactory } from '../../test_factories/app.js'
-import { MiddlewareStore } from '../../src/middleware/store.js'
 
 test.group('Brisk Route', () => {
   test('define handler for the route', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
-    const brisk = new BriskRoute(app, middlewareStore, {
+    const brisk = new BriskRoute(app, [], {
       pattern: '/',
       globalMatchers: {},
     })
@@ -38,9 +36,8 @@ test.group('Brisk Route', () => {
 
   test('define handler after calling the redirect method', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
-    const brisk = new BriskRoute(app, middlewareStore, {
+    const brisk = new BriskRoute(app, [], {
       pattern: '/',
       globalMatchers: {},
     })
@@ -50,9 +47,8 @@ test.group('Brisk Route', () => {
 
   test('define handler after calling the redirectToPath method', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
-    const brisk = new BriskRoute(app, middlewareStore, {
+    const brisk = new BriskRoute(app, [], {
       pattern: '/',
       globalMatchers: {},
     })

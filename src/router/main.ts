@@ -8,6 +8,7 @@
  */
 
 import is from '@sindresorhus/is'
+import { moduleImporter } from '@adonisjs/fold'
 import { RuntimeException } from '@poppinss/utils'
 import type { Encryption } from '@adonisjs/encryption'
 import type { Application } from '@adonisjs/application'
@@ -19,12 +20,12 @@ import { BriskRoute } from './brisk.js'
 import { RoutesStore } from './store.js'
 import { toRoutesJSON } from '../helpers.js'
 import { RouteResource } from './resource.js'
+import type { LazyImport } from '../types/base.js'
 import { LookupStore } from './lookup_store/main.js'
 import { RouteMatchers as Matchers } from './matchers.js'
+import { defineNamedMiddleware } from '../define_middleware.js'
+import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.js'
 
-import type { LazyImport } from '../types/base.js'
-import { MiddlewareStore } from '../middleware/store.js'
-import type { MiddlewareAsClass } from '../types/middleware.js'
 import type {
   RouteFn,
   MatchedRoute,
@@ -46,9 +47,7 @@ import type {
  * })
  * ```
  */
-export class Router<
-  NamedMiddleware extends Record<string, LazyImport<MiddlewareAsClass>> = any
-> extends LookupStore {
+export class Router extends LookupStore {
   /**
    * Application is needed to resolve string based controller expressions
    */
@@ -67,7 +66,7 @@ export class Router<
   /**
    * Middleware store to be shared with the routes
    */
-  #middlewareStore: MiddlewareStore<NamedMiddleware>
+  #middleware: ParsedGlobalMiddleware[] = []
 
   /**
    * A boolean to tell the router that a group is in
@@ -79,12 +78,7 @@ export class Router<
    * Collection of routes, including route resource and route
    * group. To get a flat list of routes, call `router.toJSON()`
    */
-  routes: (
-    | Route<NamedMiddleware>
-    | RouteResource<NamedMiddleware>
-    | RouteGroup<NamedMiddleware>
-    | BriskRoute<NamedMiddleware>
-  )[] = []
+  routes: (Route | RouteResource | RouteGroup | BriskRoute)[] = []
 
   /**
    * A flag to know if routes for explicit domains have been registered.
@@ -97,28 +91,16 @@ export class Router<
    */
   matchers = new Matchers()
 
-  constructor(
-    app: Application<any, any>,
-    encryption: Encryption,
-    middlewareStore: MiddlewareStore<NamedMiddleware>,
-    qsParser: Qs
-  ) {
+  constructor(app: Application<any, any>, encryption: Encryption, qsParser: Qs) {
     super(encryption, qsParser)
     this.#app = app
-    this.#middlewareStore = middlewareStore
   }
 
   /**
    * Push a give router entity to the list of routes or the
    * recently opened group.
    */
-  #pushToRoutes(
-    entity:
-      | Route<NamedMiddleware>
-      | RouteResource<NamedMiddleware>
-      | RouteGroup<NamedMiddleware>
-      | BriskRoute<NamedMiddleware>
-  ) {
+  #pushToRoutes(entity: Route | RouteResource | RouteGroup | BriskRoute) {
     const openedGroup = this.#openedGroups[this.#openedGroups.length - 1]
     if (openedGroup) {
       openedGroup.routes.push(entity)
@@ -129,10 +111,34 @@ export class Router<
   }
 
   /**
+   * Define an array of middleware to use on all the routes.
+   * Calling this method multiple times pushes to the
+   * existing list of middleware
+   */
+  use(middleware: LazyImport<MiddlewareAsClass>[]): this {
+    middleware.forEach((one) =>
+      this.#middleware.push(moduleImporter(one, 'handle').toHandleMethod())
+    )
+
+    return this
+  }
+
+  /**
+   * Define a collection of named middleware. The defined collection is
+   * not registered anywhere, but instead converted in a new collection
+   * of functions you can apply on the routes, or router groups.
+   */
+  named<NamedMiddleware extends Record<string, LazyImport<MiddlewareAsClass>>>(
+    collection: NamedMiddleware
+  ) {
+    return defineNamedMiddleware<NamedMiddleware>(collection)
+  }
+
+  /**
    * Add route for a given pattern and methods
    */
   route(pattern: string, methods: string[], handler: string | RouteFn) {
-    const route = new Route(this.#app, this.#middlewareStore, {
+    const route = new Route(this.#app, this.#middleware, {
       pattern,
       methods,
       handler,
@@ -197,7 +203,7 @@ export class Router<
     /*
      * Create a new group with empty set of routes
      */
-    const group = new RouteGroup([], this.#middlewareStore)
+    const group = new RouteGroup([])
 
     /**
      * Track group
@@ -228,7 +234,7 @@ export class Router<
    * Registers a route resource with conventional set of routes
    */
   resource(resource: string, controller: string) {
-    const resourceInstance = new RouteResource(this.#app, this.#middlewareStore, {
+    const resourceInstance = new RouteResource(this.#app, this.#middleware, {
       resource,
       controller,
       shallow: false,
@@ -243,7 +249,7 @@ export class Router<
    * Register a route resource with shallow nested routes.
    */
   shallowResource(resource: string, controller: string) {
-    const resourceInstance = new RouteResource(this.#app, this.#middlewareStore, {
+    const resourceInstance = new RouteResource(this.#app, this.#middleware, {
       resource,
       controller,
       shallow: true,
@@ -258,7 +264,7 @@ export class Router<
    * Returns a brisk route instance for a given URL pattern
    */
   on(pattern: string) {
-    const briskRoute = new BriskRoute(this.#app, this.#middlewareStore, {
+    const briskRoute = new BriskRoute(this.#app, this.#middleware, {
       pattern,
       globalMatchers: this.#globalMatchers,
     })
@@ -326,6 +332,7 @@ export class Router<
     this.usingDomains = this.#store.usingDomains
     this.routes = []
     this.#globalMatchers = {}
+    this.#middleware = []
   }
 
   /**

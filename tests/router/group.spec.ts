@@ -15,21 +15,20 @@ import { BriskRoute } from '../../src/router/brisk.js'
 import { RouteGroup } from '../../src/router/group.js'
 import { AppFactory } from '../../test_factories/app.js'
 import { RouteResource } from '../../src/router/resource.js'
-import { MiddlewareStore } from '../../src/middleware/store.js'
+import { defineNamedMiddleware } from '../../src/define_middleware.js'
 
 test.group('Route Group', () => {
   test('define resource inside the group', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
       globalMatchers: {},
       shallow: false,
     })
 
-    const group = new RouteGroup([resource], middlewareStore)
+    const group = new RouteGroup([resource])
 
     assert.containsSubset(toRoutesJSON(group.routes), [
       {
@@ -95,16 +94,15 @@ test.group('Route Group', () => {
 test.group('Route group | prefix', () => {
   test('define routes prefix', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/:id',
       methods: ['GET'],
       handler,
       globalMatchers: {},
     })
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.prefix('api/v1')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -122,20 +120,19 @@ test.group('Route group | prefix', () => {
 
   test('define routes prefix in nested groups', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/:id',
       methods: ['GET'],
       handler,
       globalMatchers: {},
     })
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.prefix('v1')
 
-    const apiGroup = new RouteGroup([group], middlewareStore)
+    const apiGroup = new RouteGroup([group])
     apiGroup.prefix('api')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -153,19 +150,18 @@ test.group('Route group | prefix', () => {
 
   test('define routes prefix on resourceful routes', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'app-posts',
       controller: '#controllers/posts',
       globalMatchers: {},
       shallow: false,
     })
 
-    const group = new RouteGroup([resource], middlewareStore)
+    const group = new RouteGroup([resource])
     group.prefix('v1')
 
-    const apiGroup = new RouteGroup([group], middlewareStore)
+    const apiGroup = new RouteGroup([group])
     apiGroup.prefix('api')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -238,16 +234,15 @@ test.group('Route group | prefix', () => {
 
   test('define prefix on a brisk route', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
-    const route = new BriskRoute(app, middlewareStore, {
+    const route = new BriskRoute(app, [], {
       pattern: '/:id',
       globalMatchers: {},
     })
     route.setHandler(handler)
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.prefix('api/v1')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -267,10 +262,9 @@ test.group('Route group | prefix', () => {
 test.group('Route group | as', () => {
   test('prepend name to the existing route names', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/:id',
       methods: ['GET'],
       handler,
@@ -278,7 +272,7 @@ test.group('Route group | as', () => {
     })
     route.as('list')
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.as('v1')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -296,10 +290,9 @@ test.group('Route group | as', () => {
 
   test('prepend name inside nested groups', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/:id',
       methods: ['GET'],
       handler,
@@ -307,10 +300,10 @@ test.group('Route group | as', () => {
     })
     route.as('list')
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.as('v1')
 
-    const apiGroup = new RouteGroup([group], middlewareStore)
+    const apiGroup = new RouteGroup([group])
     apiGroup.as('api')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -328,19 +321,18 @@ test.group('Route group | as', () => {
 
   test('prepend name to resourceful routes', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'posts',
       controller: '#controllers/posts',
       globalMatchers: {},
       shallow: false,
     })
 
-    const group = new RouteGroup([resource], middlewareStore)
+    const group = new RouteGroup([resource])
     group.as('v1')
 
-    const apiGroup = new RouteGroup([group], middlewareStore)
+    const apiGroup = new RouteGroup([group])
     apiGroup.as('api')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -405,10 +397,9 @@ test.group('Route group | as', () => {
 
   test('prepend name to the existing brisk route names', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
-    const route = new BriskRoute(app, middlewareStore, {
+    const route = new BriskRoute(app, [], {
       pattern: '/:id',
       globalMatchers: {},
     })
@@ -416,7 +407,7 @@ test.group('Route group | as', () => {
     route.setHandler(handler)
     route.route!.as('list')
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.as('v1')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -436,13 +427,12 @@ test.group('Route group | as', () => {
 test.group('Route group | middleware', () => {
   test('prepend middleware to existing route middleware', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
     function authMiddleware() {}
     function limiterMiddleware() {}
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/:id',
       methods: ['GET'],
       handler,
@@ -450,7 +440,7 @@ test.group('Route group | middleware', () => {
     })
     route.middleware(authMiddleware)
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.middleware(limiterMiddleware)
 
     const routesJSON = toRoutesJSON(group.routes)
@@ -472,14 +462,13 @@ test.group('Route group | middleware', () => {
 
   test('keep group own middleware in right order', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
     function aclMiddleware() {}
     function authMiddleware() {}
     function limiterMiddleware() {}
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/:id',
       methods: ['GET'],
       handler,
@@ -487,7 +476,7 @@ test.group('Route group | middleware', () => {
     })
     route.middleware(authMiddleware)
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.middleware(limiterMiddleware)
     group.middleware(aclMiddleware)
 
@@ -513,7 +502,6 @@ test.group('Route group | middleware', () => {
 
   test('define nested group middleware in right order', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
     function aclMiddleware() {}
@@ -521,7 +509,7 @@ test.group('Route group | middleware', () => {
     function limiterMiddleware() {}
     function impersonateMiddleware() {}
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/:id',
       methods: ['GET'],
       handler,
@@ -529,8 +517,8 @@ test.group('Route group | middleware', () => {
     })
     route.middleware(authMiddleware)
 
-    const group = new RouteGroup([route], middlewareStore)
-    const group1 = new RouteGroup([group], middlewareStore)
+    const group = new RouteGroup([route])
+    const group1 = new RouteGroup([group])
 
     group.middleware(limiterMiddleware)
     group1.middleware(aclMiddleware)
@@ -573,7 +561,7 @@ test.group('Route group | middleware', () => {
       handle() {}
     }
 
-    const namedMiddleware = {
+    const namedMiddleware = defineNamedMiddleware({
       log: async () => {
         return {
           default: LogMiddleware,
@@ -614,55 +602,54 @@ test.group('Route group | middleware', () => {
           default: ImpersonateMiddleware,
         }
       },
-    }
+    })
 
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], namedMiddleware)
     async function handler() {}
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/:id',
       methods: ['GET'],
       handler,
       globalMatchers: {},
     })
-    route.middleware('log')
+    route.middleware(namedMiddleware.log())
 
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'posts',
       controller: '#controllers/posts',
       globalMatchers: {},
       shallow: false,
     })
-    resource.tap((r) => r.middleware('log'))
+    resource.tap((r) => r.middleware(namedMiddleware.log()))
 
     resource.tap('create', (r) => {
-      r.middleware('logGet')
-      r.middleware('logForm')
+      r.middleware(namedMiddleware.logGet())
+      r.middleware(namedMiddleware.logForm())
     })
     resource.tap(['index', 'show'], (r) => {
-      r.middleware('logGet')
+      r.middleware(namedMiddleware.logGet())
     })
     resource.tap(['store'], (r) => {
-      r.middleware('logPost')
-      r.middleware('logForm')
+      r.middleware(namedMiddleware.logPost())
+      r.middleware(namedMiddleware.logForm())
     })
 
-    const group = new RouteGroup([route, resource], middlewareStore)
-    group.middleware('limiter')
-    group.middleware('acl')
+    const group = new RouteGroup([route, resource])
+    group.middleware(namedMiddleware.limiter())
+    group.middleware(namedMiddleware.acl())
 
-    const route1 = new Route(app, middlewareStore, {
+    const route1 = new Route(app, [], {
       pattern: '1/:id',
       methods: ['GET'],
       handler,
       globalMatchers: {},
     })
-    route1.middleware('log')
+    route1.middleware(namedMiddleware.log())
 
-    const outerGroup = new RouteGroup([group, route1], middlewareStore)
-    outerGroup.middleware('auth')
-    outerGroup.middleware('impersonate')
+    const outerGroup = new RouteGroup([group, route1])
+    outerGroup.middleware(namedMiddleware.auth())
+    outerGroup.middleware(namedMiddleware.impersonate())
 
     const routesJSON = toRoutesJSON(outerGroup.routes)
 
@@ -841,13 +828,12 @@ test.group('Route group | middleware', () => {
 
   test('prepend middleware to existing brisk route middleware', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     async function handler() {}
     function authMiddleware() {}
     function limiterMiddleware() {}
 
-    const route = new BriskRoute(app, middlewareStore, {
+    const route = new BriskRoute(app, [], {
       pattern: '/:id',
       globalMatchers: {},
     })
@@ -855,7 +841,7 @@ test.group('Route group | middleware', () => {
     route.setHandler(handler)
     route.route!.middleware(authMiddleware)
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.middleware(limiterMiddleware)
 
     const routesJSON = toRoutesJSON(group.routes)
@@ -879,16 +865,15 @@ test.group('Route group | middleware', () => {
 test.group('Route group | domain', () => {
   test('define routes domain', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/',
       methods: ['GET'],
       handler,
       globalMatchers: {},
     })
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.domain('blog.adonisjs.com')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -906,18 +891,17 @@ test.group('Route group | domain', () => {
 
   test('define route domain in nested groups', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/',
       methods: ['GET'],
       handler,
       globalMatchers: {},
     })
 
-    const group = new RouteGroup([route], middlewareStore)
-    const apiGroup = new RouteGroup([group], middlewareStore)
+    const group = new RouteGroup([route])
+    const apiGroup = new RouteGroup([group])
     apiGroup.domain('blog.adonisjs.com')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -935,9 +919,8 @@ test.group('Route group | domain', () => {
 
   test('define domain on resourceful routes', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'app-posts',
       controller: '#controllers/posts',
       globalMatchers: {},
@@ -945,7 +928,7 @@ test.group('Route group | domain', () => {
     })
     resource.tap('create', (r) => r.domain('api.adonisjs.com'))
 
-    const group = new RouteGroup([resource], middlewareStore)
+    const group = new RouteGroup([resource])
     group.domain('blog.adonisjs.com')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -1018,16 +1001,15 @@ test.group('Route group | domain', () => {
 
   test('define brisk route domain', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
-    const route = new BriskRoute(app, middlewareStore, {
+    const route = new BriskRoute(app, [], {
       pattern: '/',
       globalMatchers: {},
     })
     route.setHandler(handler)
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.domain('blog.adonisjs.com')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -1047,17 +1029,16 @@ test.group('Route group | domain', () => {
 test.group('Route group | matchers', () => {
   test('add matcher to group routes', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/:id',
       methods: ['GET'],
       handler,
       globalMatchers: {},
     })
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.where('id', '[a-z]')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -1077,20 +1058,19 @@ test.group('Route group | matchers', () => {
 
   test('add matcher to nested group routes', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/:id',
       methods: ['GET'],
       handler,
       globalMatchers: {},
     })
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.where('id', '[a-z]')
 
-    const group1 = new RouteGroup([group], middlewareStore)
+    const group1 = new RouteGroup([group])
     group1.where('id', '[0-9]')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -1110,10 +1090,9 @@ test.group('Route group | matchers', () => {
 
   test('do not overwrite matcher defined explicitly on the route', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/:id',
       methods: ['GET'],
       handler,
@@ -1121,10 +1100,10 @@ test.group('Route group | matchers', () => {
     })
     route.where('id', '[a-zA-Z]')
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.where('id', '[a-z]')
 
-    const group1 = new RouteGroup([group], middlewareStore)
+    const group1 = new RouteGroup([group])
     group1.where('id', '[0-9]')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -1144,16 +1123,15 @@ test.group('Route group | matchers', () => {
 
   test('add matcher resource routes', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
-    const route = new RouteResource(app, middlewareStore, {
+    const route = new RouteResource(app, [], {
       resource: 'posts',
       controller: '#controllers/posts',
       globalMatchers: {},
       shallow: false,
     })
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.where('id', '[a-z]')
 
     assert.containsSubset(toRoutesJSON(group.routes), [
@@ -1258,16 +1236,15 @@ test.group('Route group | matchers', () => {
 
   test('add matcher to brisk routes in the group', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     async function handler() {}
 
-    const route = new BriskRoute(app, middlewareStore, {
+    const route = new BriskRoute(app, [], {
       pattern: '/:id',
       globalMatchers: {},
     })
     route.setHandler(handler)
 
-    const group = new RouteGroup([route], middlewareStore)
+    const group = new RouteGroup([route])
     group.where('id', '[a-z]')
 
     assert.containsSubset(toRoutesJSON(group.routes), [

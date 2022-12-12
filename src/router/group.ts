@@ -8,10 +8,8 @@
  */
 
 import { Macroable } from '@poppinss/macroable'
-import type { MiddlewareStore } from '../middleware/store.js'
-import type { LazyImport, UnWrapLazyImport } from '../types/base.js'
 import type { RouteMatcher, StoreRouteMiddleware } from '../types/route.js'
-import type { GetMiddlewareArgs, MiddlewareAsClass, MiddlewareFn } from '../types/middleware.js'
+import type { MiddlewareFn, ParsedNamedMiddleware } from '../types/middleware.js'
 
 import { Route } from './route.js'
 import { BriskRoute } from './brisk.js'
@@ -21,25 +19,14 @@ import { RouteResource } from './resource.js'
  * Group class exposes the API to take action on a group of routes.
  * The group routes must be pre-defined using the constructor.
  */
-export class RouteGroup<
-  NamedMiddleware extends Record<string, LazyImport<MiddlewareAsClass>> = any
-> extends Macroable {
+export class RouteGroup extends Macroable {
   /**
    * Array of middleware registered on the group.
    */
   #middleware: StoreRouteMiddleware[] = []
 
-  /**
-   * Middleware store to resolve middleware
-   */
-  #middlewareStore: MiddlewareStore<NamedMiddleware>
-
-  constructor(
-    public routes: (Route | RouteGroup | RouteResource | BriskRoute)[],
-    middlewareStore: MiddlewareStore<NamedMiddleware>
-  ) {
+  constructor(public routes: (Route | RouteGroup | RouteResource | BriskRoute)[]) {
     super()
-    this.#middlewareStore = middlewareStore
   }
 
   /**
@@ -226,12 +213,7 @@ export class RouteGroup<
    * }).middleware(['auth'])
    * ```
    */
-  middleware<Name extends keyof NamedMiddleware>(
-    middleware: Name,
-    ...args: GetMiddlewareArgs<UnWrapLazyImport<NamedMiddleware[Name]>>
-  ): this
-  middleware(middleware: MiddlewareFn): this
-  middleware(middleware: keyof NamedMiddleware | MiddlewareFn, args?: any): this {
+  middleware(middleware: MiddlewareFn | ParsedNamedMiddleware): this {
     /**
      * Register middleware with children. We share the group middleware
      * array by reference, therefore have to register it only for the
@@ -241,21 +223,7 @@ export class RouteGroup<
       this.routes.forEach((route) => this.#shareMiddlewareStackWithRoutes(route))
     }
 
-    /**
-     * Resolve string based middleware
-     */
-    if (typeof middleware === 'string') {
-      this.#middleware.push(this.#middlewareStore.get(middleware, args))
-      return this
-    }
-
-    /**
-     * Register function
-     */
-    if (typeof middleware === 'function') {
-      this.#middleware.push(middleware)
-    }
-
+    this.#middleware.push(middleware)
     return this
   }
 }

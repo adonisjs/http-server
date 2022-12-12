@@ -27,9 +27,11 @@ type HasUndefined<T> = T extends NonNullable<T> ? true : false
 /**
  * Returns the arguments accepted by the middleware's handle method
  */
-export type GetMiddlewareArgs<Middleware extends MiddlewareAsClass> = HasUndefined<
-  Parameters<InstanceType<Middleware>['handle']>[2]
-> extends true
+export type GetMiddlewareArgs<Middleware extends MiddlewareAsClass> = Parameters<
+  InstanceType<Middleware>['handle']
+>[2] extends undefined
+  ? []
+  : HasUndefined<Parameters<InstanceType<Middleware>['handle']>[2]> extends true
   ? [Parameters<InstanceType<Middleware>['handle']>[2]]
   : [Parameters<InstanceType<Middleware>['handle']>[2]?]
 
@@ -46,4 +48,12 @@ export type ParsedGlobalMiddleware = {
     resolver: ContainerResolver<any>,
     ...args: [ctx: HttpContext, next: NextFn, params?: any]
   ) => any
+}
+
+/**
+ * Parsed named middleware
+ */
+export type ParsedNamedMiddleware = ParsedGlobalMiddleware & {
+  name: string
+  args: any
 }

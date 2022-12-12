@@ -11,7 +11,6 @@ import { test } from '@japa/runner'
 
 import { Route } from '../../src/router/route.js'
 import { AppFactory } from '../../test_factories/app.js'
-import { MiddlewareStore } from '../../src/middleware/store.js'
 import { LookupStore } from '../../src/router/lookup_store/main.js'
 import { EncryptionFactory } from '../../test_factories/encryption.js'
 import { QsParserFactory } from '../../test_factories/qs_parser_factory.js'
@@ -21,9 +20,8 @@ test.group('Lookup store | find', () => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
-    const middlewareStore = new MiddlewareStore([], {})
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/users/:id',
       globalMatchers: {},
       handler: () => {},
@@ -44,10 +42,9 @@ test.group('Lookup store | find', () => {
   test('find a route by route name', ({ assert }) => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/users/:id',
       globalMatchers: {},
       handler: () => {},
@@ -69,10 +66,9 @@ test.group('Lookup store | find', () => {
   test('find a route by route controller name', ({ assert }) => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/users/:id',
       globalMatchers: {},
       handler: '#controllers/users',
@@ -100,10 +96,9 @@ test.group('Lookup store | find', () => {
   test('do not match route handler name when it is defined as function', ({ assert }) => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/users/:id',
       globalMatchers: {},
       handler: () => {},
@@ -120,10 +115,9 @@ test.group('Lookup store | findByOrFail', () => {
   test('find a route by route pattern', ({ assert }) => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/users/:id',
       globalMatchers: {},
       handler: () => {},
@@ -144,10 +138,9 @@ test.group('Lookup store | findByOrFail', () => {
   test('find a route by route name', ({ assert }) => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/users/:id',
       globalMatchers: {},
       handler: () => {},
@@ -169,10 +162,9 @@ test.group('Lookup store | findByOrFail', () => {
   test('find a route by route controller name', ({ assert }) => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/users/:id',
       globalMatchers: {},
       handler: '#controllers/users',
@@ -202,10 +194,9 @@ test.group('Lookup store | has', () => {
   test('check if a route exists', ({ assert }) => {
     const app = new AppFactory().create()
     const encryption = new EncryptionFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
-    const route = new Route(app, middlewareStore, {
+    const route = new Route(app, [], {
       pattern: '/users/:id',
       globalMatchers: {},
       handler: () => {},

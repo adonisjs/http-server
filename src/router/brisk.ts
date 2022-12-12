@@ -11,9 +11,7 @@ import { Macroable } from '@poppinss/macroable'
 import type { Application } from '@adonisjs/application'
 
 import { Route } from './route.js'
-import type { LazyImport } from '../types/base.js'
-import type { MiddlewareStore } from '../middleware/store.js'
-import type { MiddlewareAsClass } from '../types/middleware.js'
+import type { ParsedGlobalMiddleware } from '../types/middleware.js'
 import type { MakeUrlOptions, RouteFn, RouteMatchers } from '../types/route.js'
 
 /**
@@ -25,9 +23,7 @@ import type { MakeUrlOptions, RouteFn, RouteMatchers } from '../types/route.js'
  *
  * Brisk routes are always registered under the `GET` HTTP method.
  */
-export class BriskRoute<
-  NamedMiddleware extends Record<string, LazyImport<MiddlewareAsClass>> = any
-> extends Macroable {
+export class BriskRoute extends Macroable {
   /**
    * Route pattern
    */
@@ -44,18 +40,18 @@ export class BriskRoute<
   #app: Application<any, any>
 
   /**
-   * Middleware store to resolve middleware
+   * Middleware registered on the router
    */
-  #middlewareStore: MiddlewareStore<NamedMiddleware>
+  #routerMiddleware: ParsedGlobalMiddleware[]
 
   /**
    * Reference to route instance. Set after `setHandler` is called
    */
-  route: null | Route<NamedMiddleware> = null
+  route: null | Route = null
 
   constructor(
     app: Application<any, any>,
-    middlewareStore: MiddlewareStore<NamedMiddleware>,
+    routerMiddleware: ParsedGlobalMiddleware[],
     options: {
       pattern: string
       globalMatchers: RouteMatchers
@@ -63,7 +59,7 @@ export class BriskRoute<
   ) {
     super()
     this.#app = app
-    this.#middlewareStore = middlewareStore
+    this.#routerMiddleware = routerMiddleware
     this.#pattern = options.pattern
     this.#globalMatchers = options.globalMatchers
   }
@@ -72,7 +68,7 @@ export class BriskRoute<
    * Set handler for the brisk route
    */
   setHandler(handler: RouteFn): Route {
-    this.route = new Route(this.#app, this.#middlewareStore, {
+    this.route = new Route(this.#app, this.#routerMiddleware, {
       pattern: this.#pattern,
       globalMatchers: this.#globalMatchers,
       methods: ['GET', 'HEAD'],

@@ -17,22 +17,13 @@ import { Router } from '../src/router/main.js'
 import { AppFactory } from '../test_factories/app.js'
 import { HttpContext } from '../src/http_context/main.js'
 import { ServerFactory } from '../test_factories/server_factory.js'
+import { defineNamedMiddleware } from '../src/define_middleware.js'
 
 test.group('Server', () => {
-  test('fail when booting without defining middleware', ({ assert }) => {
-    const app = new AppFactory().create()
-    const server = new ServerFactory().merge({ app }).create()
-
-    assert.rejects(
-      () => server.boot(),
-      'Cannot boot HTTP server. Register middleware using "server.use" first'
-    )
-  })
-
   test('get router instance used by the server', ({ assert }) => {
     const app = new AppFactory().create()
     const server = new ServerFactory().merge({ app }).create()
-    server.use([], [], {})
+    server.use([])
 
     assert.instanceOf(server.getRouter(), Router)
   })
@@ -40,7 +31,7 @@ test.group('Server', () => {
   test('store http server instance', ({ assert }) => {
     const app = new AppFactory().create()
     const server = new ServerFactory().merge({ app }).create()
-    server.use([], [], {})
+    server.use([])
 
     const httpServer = createServer(() => {})
     server.setNodeServer(httpServer)
@@ -57,8 +48,8 @@ test.group('Server | Response handling', () => {
 
     await app.init()
 
-    server.use([], [], {})
-    server.getRouter()!.get('/', async ({ response }) => response.send('handled'))
+    server.use([])
+    server.getRouter().get('/', async ({ response }) => response.send('handled'))
     await server.boot()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -72,8 +63,8 @@ test.group('Server | Response handling', () => {
 
     await app.init()
 
-    server.use([], [], {})
-    server.getRouter()!.get('/', async () => 'handled')
+    server.use([])
+    server.getRouter().get('/', async () => 'handled')
     await server.boot()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -87,8 +78,8 @@ test.group('Server | Response handling', () => {
 
     await app.init()
 
-    server.use([], [], {})
-    server.getRouter()!.get('/', async ({ response }) => {
+    server.use([])
+    server.getRouter().get('/', async ({ response }) => {
       response.send('handled')
       return 'done'
     })
@@ -107,7 +98,7 @@ test.group('Server | Response handling', () => {
 
     await app.init()
 
-    server.use([], [], {})
+    server.use([])
     server
       .getRouter()!
       .get('/guides/:doc', async ({ params }) => {
@@ -115,7 +106,7 @@ test.group('Server | Response handling', () => {
       })
       .as('guides')
 
-    server.getRouter()!.on('/docs/:doc').redirect('guides')
+    server.getRouter().on('/docs/:doc').redirect('guides')
     await server.boot()
 
     const { redirects } = await supertest(httpServer).get('/docs/introduction').redirects(1)
@@ -135,7 +126,7 @@ test.group('Server | Response handling', () => {
 
     await app.init()
 
-    server.use([], [], {})
+    server.use([])
     server
       .getRouter()!
       .get('/guides/:doc', async ({ params }) => {
@@ -143,7 +134,7 @@ test.group('Server | Response handling', () => {
       })
       .as('guides')
 
-    server.getRouter()!.on('/docs/:doc').redirectToPath('/guides/introduction')
+    server.getRouter().on('/docs/:doc').redirectToPath('/guides/introduction')
     await server.boot()
 
     const { redirects } = await supertest(httpServer).get('/docs/introduction').redirects(1)
@@ -160,7 +151,7 @@ test.group('Server | Response handling', () => {
 
     await app.init()
 
-    server.use([], [], {})
+    server.use([])
 
     server
       .getRouter()!
@@ -184,7 +175,7 @@ test.group('Server | Response handling', () => {
 
     await app.init()
 
-    server.use([], [], {})
+    server.use([])
 
     server
       .getRouter()!
@@ -222,24 +213,20 @@ test.group('Server | middleware', () => {
       }
     }
 
-    server.use(
-      [
-        async () => {
-          return {
-            default: LogMiddleware,
-          }
-        },
-        async () => {
-          return {
-            default: LogMiddleware2,
-          }
-        },
-      ],
-      [],
-      {}
-    )
+    server.use([
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+      async () => {
+        return {
+          default: LogMiddleware2,
+        }
+      },
+    ])
 
-    server.getRouter()!.get('/', async () => {
+    server.getRouter().get('/', async () => {
       stack.push('handler')
       return 'done'
     })
@@ -272,22 +259,18 @@ test.group('Server | middleware', () => {
       }
     }
 
-    server.use(
-      [
-        async () => {
-          return {
-            default: LogMiddleware,
-          }
-        },
-        async () => {
-          return {
-            default: LogMiddleware2,
-          }
-        },
-      ],
-      [],
-      {}
-    )
+    server.use([
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+      async () => {
+        return {
+          default: LogMiddleware2,
+        }
+      },
+    ])
 
     server
       .getRouter()!
@@ -328,22 +311,18 @@ test.group('Server | middleware', () => {
       }
     }
 
-    server.use(
-      [
-        async () => {
-          return {
-            default: LogMiddleware,
-          }
-        },
-        async () => {
-          return {
-            default: LogMiddleware2,
-          }
-        },
-      ],
-      [],
-      {}
-    )
+    server.use([
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+      async () => {
+        return {
+          default: LogMiddleware2,
+        }
+      },
+    ])
 
     server
       .getRouter()!
@@ -385,22 +364,18 @@ test.group('Server | middleware', () => {
       }
     }
 
-    server.use(
-      [
-        async () => {
-          return {
-            default: LogMiddleware,
-          }
-        },
-        async () => {
-          return {
-            default: LogMiddleware2,
-          }
-        },
-      ],
-      [],
-      {}
-    )
+    server.use([
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+      async () => {
+        return {
+          default: LogMiddleware2,
+        }
+      },
+    ])
 
     server
       .getRouter()!
@@ -442,22 +417,18 @@ test.group('Server | middleware', () => {
       }
     }
 
-    server.use(
-      [
-        async () => {
-          return {
-            default: LogMiddleware,
-          }
-        },
-        async () => {
-          return {
-            default: LogMiddleware2,
-          }
-        },
-      ],
-      [],
-      {}
-    )
+    server.use([
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+      async () => {
+        return {
+          default: LogMiddleware2,
+        }
+      },
+    ])
 
     server
       .getRouter()!
@@ -498,17 +469,13 @@ test.group('Server | error handler', () => {
       }
     }
 
-    server.use(
-      [
-        async () => {
-          return {
-            default: LogMiddleware,
-          }
-        },
-      ],
-      [],
-      {}
-    )
+    server.use([
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+    ])
 
     server.errorHandler(async () => {
       return {
@@ -541,17 +508,13 @@ test.group('Server | error handler', () => {
       }
     }
 
-    server.use(
-      [],
-      [
-        async () => {
-          return {
-            default: LogMiddleware,
-          }
-        },
-      ],
-      {}
-    )
+    server.getRouter().use([
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+    ])
 
     server.errorHandler(async () => {
       return {
@@ -559,7 +522,7 @@ test.group('Server | error handler', () => {
       }
     })
 
-    server.getRouter()!.get('/', () => {})
+    server.getRouter().get('/', () => {})
     await server.boot()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -573,17 +536,18 @@ test.group('Server | error handler', () => {
       }
     }
 
-    const namedMiddleware = {
+    const namedMiddleware = defineNamedMiddleware({
       auth: async () => {
         return {
           default: LogMiddleware,
         }
       },
-    }
+    })
 
     const app = new AppFactory().create()
-    const server = new ServerFactory<typeof namedMiddleware>().merge({ app }).create()
+    const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
+
     await app.init()
 
     class ErrorHandler {
@@ -593,8 +557,6 @@ test.group('Server | error handler', () => {
       }
     }
 
-    server.use([], [], namedMiddleware)
-
     server.errorHandler(async () => {
       return {
         default: ErrorHandler,
@@ -602,9 +564,10 @@ test.group('Server | error handler', () => {
     })
 
     server
-      .getRouter()!
+      .getRouter()
       .get('/', () => {})
-      .middleware('auth')
+      .middleware(namedMiddleware.auth())
+
     await server.boot()
 
     const { text } = await supertest(httpServer).get('/').expect(200)
@@ -624,7 +587,7 @@ test.group('Server | error handler', () => {
       }
     }
 
-    server.use([], [], {})
+    server.use([])
 
     server.errorHandler(async () => {
       return {
@@ -632,7 +595,7 @@ test.group('Server | error handler', () => {
       }
     })
 
-    server.getRouter()!.get('/', () => {
+    server.getRouter().get('/', () => {
       throw new Error('Something went wrong')
     })
     await server.boot()
@@ -647,8 +610,8 @@ test.group('Server | error handler', () => {
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
 
-    server.use([], [], {})
-    server.getRouter()!.get('/', async () => {
+    server.use([])
+    server.getRouter().get('/', async () => {
       return {
         toJSON() {
           throw new Error('blowup')
@@ -668,7 +631,7 @@ test.group('Server | error handler', () => {
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
 
-    server.use([], [], {})
+    server.use([])
     await server.boot()
 
     const { text } = await supertest(httpServer).get('/').expect(404)
@@ -683,10 +646,10 @@ test.group('Server | force content negotiation', () => {
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
 
-    server.use([], [], {})
+    server.use([])
     await server.boot()
 
-    server.getRouter()!.get('/', async ({ request, response }) => {
+    server.getRouter().get('/', async ({ request, response }) => {
       response.send(request.header('accept'))
     })
     await server.boot()
@@ -701,7 +664,7 @@ test.group('Server | force content negotiation', () => {
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
 
-    server.use([], [], {})
+    server.use([])
 
     server
       .getRouter()!
@@ -717,7 +680,7 @@ test.group('Server | force content negotiation', () => {
     /**
      * Make a signed url
      */
-    const url = server.getRouter()!.makeSignedUrl('showUser', [1], {
+    const url = server.getRouter().makeSignedUrl('showUser', [1], {
       qs: { site: 1, db: 'pg', dbUser: 1 },
     })
 
@@ -739,9 +702,9 @@ test.group('Server | force content negotiation', () => {
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
 
-    server.use([], [], {})
+    server.use([])
 
-    server.getRouter()!.get('/', async (ctx) => {
+    server.getRouter().get('/', async (ctx) => {
       return {
         enabled: HttpContext.usingAsyncLocalStorage,
         get: HttpContext.get() === ctx,
@@ -780,9 +743,9 @@ test.group('Server | force content negotiation', () => {
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
 
-    server.use([], [], {})
+    server.use([])
 
-    server.getRouter()!.get('/', async (ctx) => {
+    server.getRouter().get('/', async (ctx) => {
       return HttpContext.runOutsideContext(() => {
         return {
           enabled: HttpContext.usingAsyncLocalStorage,
@@ -814,16 +777,16 @@ test.group('Server | force content negotiation', () => {
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
 
-    server.use([], [], {})
+    server.use([])
 
-    server.getRouter()!.get('/', async () => {
+    server.getRouter().get('/', async () => {
       return {
         enabled: HttpContext.usingAsyncLocalStorage,
         get: HttpContext.get() === null,
       }
     })
 
-    server.getRouter()!.get('/fail', async () => {
+    server.getRouter().get('/fail', async () => {
       return HttpContext.getOrFail()
     })
 
@@ -863,9 +826,9 @@ test.group('Server | force content negotiation', () => {
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
 
-    server.use([], [], {})
+    server.use([])
 
-    server.getRouter()!.get('/', async (ctx) => {
+    server.getRouter().get('/', async (ctx) => {
       return HttpContext.runOutsideContext(() => {
         return {
           enabled: HttpContext.usingAsyncLocalStorage,

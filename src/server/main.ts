@@ -8,11 +8,10 @@
  */
 
 import Middleware from '@poppinss/middleware'
-import { RuntimeException } from '@poppinss/utils'
 import type { Encryption } from '@adonisjs/encryption'
-import type { ContainerResolver } from '@adonisjs/fold'
-import type { Application } from '@adonisjs/application'
 import type { Server as HttpsServer } from 'node:https'
+import type { Application } from '@adonisjs/application'
+import { ContainerResolver, moduleImporter } from '@adonisjs/fold'
 import type { ServerResponse, IncomingMessage, Server as HttpServer } from 'node:http'
 
 import type { LazyImport } from '../types/base.js'
@@ -25,7 +24,6 @@ import { Request } from '../request.js'
 import { Response } from '../response.js'
 import { Router } from '../router/main.js'
 import { HttpContext } from '../http_context/main.js'
-import { MiddlewareStore } from '../middleware/store.js'
 import { finalHandler } from './factories/final_handler.js'
 import { writeResponse } from './factories/write_response.js'
 import { useReturnValue } from './factories/use_return_value.js'
@@ -36,7 +34,7 @@ import { middlewareHandler } from './factories/middleware_handler.js'
  * The HTTP server implementation to handle incoming requests and respond using the
  * registered routes.
  */
-export class Server<NamedMiddleware extends Record<string, LazyImport<MiddlewareAsClass>> = any> {
+export class Server {
   /**
    * Registered error handler (if any)
    */
@@ -80,12 +78,17 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
   /**
    * Reference to the router used by the server
    */
-  #router?: Router<NamedMiddleware>
+  #router: Router
 
   /**
-   * Reference to the underlying HTTP server in use
+   * Reference to the underlying Node HTTP server in use
    */
-  #underlyingHttpServer?: HttpServer | HttpsServer
+  #nodeHttpServer?: HttpServer | HttpsServer
+
+  /**
+   * Middleware store to be shared with the routes
+   */
+  #middleware: ParsedGlobalMiddleware[] = []
 
   /**
    * Know if async local storage is enabled or not.
@@ -96,9 +99,10 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
 
   constructor(app: Application<any, any>, encryption: Encryption, config: ServerConfig) {
     this.#app = app
-    this.#encryption = encryption
     this.#config = config
+    this.#encryption = encryption
     this.#qsParser = new Qs(this.#config.qs)
+    this.#router = new Router(this.#app, this.#encryption, this.#qsParser)
     this.#createAsyncLocalStore()
 
     debug('server config: %O', this.#config)
@@ -109,7 +113,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
    */
   #createAsyncLocalStore() {
     if (this.#config.useAsyncLocalStorage) {
-      debug('creating http context async local storage')
+      debug('creating ALS store for HTTP context')
       asyncLocalStorage.create()
     } else {
       asyncLocalStorage.destroy()
@@ -117,19 +121,13 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
   }
 
   /**
-   * Creates an instance of the router
-   */
-  #createRouter(middlewareStore: MiddlewareStore<NamedMiddleware>) {
-    this.#router = new Router(this.#app, this.#encryption, middlewareStore, this.#qsParser)
-  }
-
-  /**
    * Creates an instance of the server middleware stack
    */
-  #createServerMiddlewareStack(middlewareStore: MiddlewareStore<any>) {
+  #createServerMiddlewareStack() {
     this.#serverMiddlewareStack = new Middleware()
-    middlewareStore.list().forEach((middleware) => this.#serverMiddlewareStack!.add(middleware))
+    this.#middleware.forEach((middleware) => this.#serverMiddlewareStack!.add(middleware))
     this.#serverMiddlewareStack.freeze()
+    this.#middleware = []
   }
 
   /**
@@ -143,22 +141,22 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
       res,
       this.#encryption,
       this.#config,
-      this.#router!,
+      this.#router,
       this.#qsParser
     )
+
     return new HttpContext(request, response, this.#app.logger.child({}))
   }
 
   /**
-   * Define the middleware to use on the server and the router
+   * Define an array of middleware to use on all the incoming HTTP request.
+   * Calling this method multiple times pushes to the existing list
+   * of middleware
    */
-  use(
-    serverMiddleware: LazyImport<MiddlewareAsClass>[],
-    routerMiddleware: LazyImport<MiddlewareAsClass>[],
-    namedMiddleware: NamedMiddleware
-  ) {
-    this.#createRouter(new MiddlewareStore(routerMiddleware, namedMiddleware))
-    this.#createServerMiddlewareStack(new MiddlewareStore(serverMiddleware))
+  use(middleware: LazyImport<MiddlewareAsClass>[]): this {
+    middleware.forEach((one) =>
+      this.#middleware.push(moduleImporter(one, 'handle').toHandleMethod())
+    )
 
     return this
   }
@@ -182,13 +180,9 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
     debug('booting HTTP server')
 
     /**
-     * Ensure router exists.
+     * Creates the middleware stack for the server
      */
-    if (!this.#router) {
-      throw new RuntimeException(
-        'Cannot boot HTTP server. Register middleware using "server.use" first'
-      )
-    }
+    this.#createServerMiddlewareStack()
 
     /**
      * Commit routes
@@ -224,7 +218,7 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
    * Set the HTTP server instance used to listen for requests.
    */
   setNodeServer(server: HttpServer | HttpsServer) {
-    this.#underlyingHttpServer = server
+    this.#nodeHttpServer = server
   }
 
   /**
@@ -232,14 +226,14 @@ export class Server<NamedMiddleware extends Record<string, LazyImport<Middleware
    * in use
    */
   getNodeServer() {
-    return this.#underlyingHttpServer
+    return this.#nodeHttpServer
   }
 
   /**
    * Returns reference to the router instance used
    * by the server.
    */
-  getRouter(): Router<NamedMiddleware> | undefined {
+  getRouter(): Router {
     return this.#router
   }
 

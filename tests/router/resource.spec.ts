@@ -11,13 +11,11 @@ import { test } from '@japa/runner'
 
 import { AppFactory } from '../../test_factories/app.js'
 import { RouteResource } from '../../src/router/resource.js'
-import { MiddlewareStore } from '../../src/middleware/store.js'
 
 test.group('Route Resource', () => {
   test('define resource routes', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
       globalMatchers: {},
@@ -95,8 +93,7 @@ test.group('Route Resource', () => {
 
   test('cleanup leading and trailing slashes', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: '/photos/',
       controller: '#controllers/photos',
       globalMatchers: {},
@@ -175,8 +172,7 @@ test.group('Route Resource', () => {
 
   test('define resource with a parent path', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'v1/photos',
       controller: '#controllers/photos',
       globalMatchers: {},
@@ -255,11 +251,10 @@ test.group('Route Resource', () => {
 
   test('raise error when resource name is a slash', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
 
     assert.throws(
       () =>
-        new RouteResource(app, middlewareStore, {
+        new RouteResource(app, [], {
           resource: '/',
           controller: '#controllers/photos',
           globalMatchers: {},
@@ -271,8 +266,7 @@ test.group('Route Resource', () => {
 
   test('define nested resource routes', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'magazines.ads',
       controller: '#controllers/ads',
       globalMatchers: {},
@@ -351,8 +345,7 @@ test.group('Route Resource', () => {
 
   test('add shallow nested resource routes', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'magazines.ads',
       controller: '#controllers/ads',
       globalMatchers: {},
@@ -431,8 +424,7 @@ test.group('Route Resource', () => {
 
   test('mark non-api routes deleted', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
       globalMatchers: {},
@@ -447,8 +439,7 @@ test.group('Route Resource', () => {
 
   test("mark all routes as deleted except the defined one's", ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
       globalMatchers: {},
@@ -469,8 +460,7 @@ test.group('Route Resource', () => {
 
   test('mark routes for defined actions as deleted', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
       globalMatchers: {},
@@ -497,8 +487,7 @@ test.group('Route Resource', () => {
     assert.plan(1)
 
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
       globalMatchers: {},
@@ -514,8 +503,7 @@ test.group('Route Resource', () => {
     assert.plan(2)
 
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
       globalMatchers: {},
@@ -529,8 +517,7 @@ test.group('Route Resource', () => {
 
   test('define matcher for params', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
       globalMatchers: {},
@@ -590,8 +577,7 @@ test.group('Route Resource', () => {
 
   test('create snake_case route names when resource name is in dash case', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'user-profile',
       controller: '#controllers/profile',
       globalMatchers: {},
@@ -672,8 +658,7 @@ test.group('Route Resource', () => {
     assert,
   }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'user-profile.comments',
       controller: '#controllers/comments',
       globalMatchers: {},
@@ -752,8 +737,7 @@ test.group('Route Resource', () => {
 
   test('define base prefix for resource route names', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
       globalMatchers: {},
@@ -778,8 +762,7 @@ test.group('Route Resource', () => {
 
   test('allow re-defining resource name for multiple times', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'main-photos',
       controller: '#controllers/photos',
       globalMatchers: {},
@@ -829,8 +812,7 @@ test.group('Route Resource', () => {
 
   test('rename the resource param', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
       globalMatchers: {},
@@ -911,8 +893,7 @@ test.group('Route Resource', () => {
 
   test('rename the resource param multiple times', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
       globalMatchers: {},
@@ -994,8 +975,7 @@ test.group('Route Resource', () => {
 
   test('define custom param name for nested resource', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'magazines.ads',
       controller: '#controllers/ads',
       globalMatchers: {},
@@ -1076,8 +1056,7 @@ test.group('Route Resource', () => {
 
   test('rename param name for a shallow resource', ({ assert }) => {
     const app = new AppFactory().create()
-    const middlewareStore = new MiddlewareStore([], {})
-    const resource = new RouteResource(app, middlewareStore, {
+    const resource = new RouteResource(app, [], {
       resource: 'magazines.ads',
       controller: '#controllers/ads',
       globalMatchers: {},

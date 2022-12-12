@@ -13,17 +13,13 @@ import { RuntimeException } from '@poppinss/utils'
 import type { Application } from '@adonisjs/application'
 
 import { Route } from './route.js'
-import type { LazyImport } from '../types/base.js'
-import type { MiddlewareStore } from '../middleware/store.js'
-import type { MiddlewareAsClass } from '../types/middleware.js'
+import type { ParsedGlobalMiddleware } from '../types/middleware.js'
 import type { ResourceActionNames, RouteMatcher, RouteMatchers } from '../types/route.js'
 
 /**
  * Route resource exposes the API to register multiple routes for a resource.
  */
-export class RouteResource<
-  NamedMiddleware extends Record<string, LazyImport<MiddlewareAsClass>> = any
-> extends Macroable {
+export class RouteResource extends Macroable {
   /**
    * Resource identifier. Nested resources are separated
    * with a dot notation
@@ -52,9 +48,9 @@ export class RouteResource<
   #app: Application<any, any>
 
   /**
-   * Middleware store to resolve middleware
+   * Middleware registered on the router
    */
-  #middlewareStore: MiddlewareStore<NamedMiddleware>
+  #routerMiddleware: ParsedGlobalMiddleware[]
 
   /**
    * Parameter names for the resources. Defaults to `id` for
@@ -76,7 +72,7 @@ export class RouteResource<
 
   constructor(
     app: Application<any, any>,
-    middlewareStore: MiddlewareStore<NamedMiddleware>,
+    routerMiddleware: ParsedGlobalMiddleware[],
     options: {
       resource: string
       controller: string
@@ -89,7 +85,7 @@ export class RouteResource<
 
     this.#app = app
     this.#shallow = options.shallow
-    this.#middlewareStore = middlewareStore
+    this.#routerMiddleware = routerMiddleware
     this.#controller = options.controller
     this.#globalMatchers = options.globalMatchers
     this.#resource = this.#normalizeResourceName(options.resource)
@@ -129,7 +125,7 @@ export class RouteResource<
    * Create a new route for the given pattern, methods and controller action
    */
   #createRoute(pattern: string, methods: string[], action: ResourceActionNames) {
-    const route = new Route(this.#app, this.#middlewareStore, {
+    const route = new Route(this.#app, this.#routerMiddleware, {
       pattern,
       methods,
       handler: `${this.#controller}.${action}`,
@@ -228,17 +224,11 @@ export class RouteResource<
   /**
    * Tap into multiple routes to configure them by their name
    */
-  tap(callback: (route: Route<NamedMiddleware>) => void): this
+  tap(callback: (route: Route) => void): this
+  tap(actions: ResourceActionNames | ResourceActionNames[], callback: (route: Route) => void): this
   tap(
-    actions: ResourceActionNames | ResourceActionNames[],
-    callback: (route: Route<NamedMiddleware>) => void
-  ): this
-  tap(
-    actions:
-      | ((route: Route<NamedMiddleware>) => void)
-      | ResourceActionNames
-      | ResourceActionNames[],
-    callback?: (route: Route<NamedMiddleware>) => void
+    actions: ((route: Route) => void) | ResourceActionNames | ResourceActionNames[],
+    callback?: (route: Route) => void
   ): this {
     if (typeof actions === 'function') {
       this.routes.forEach((route) => actions(route))
