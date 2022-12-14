@@ -136,6 +136,10 @@ test.group('Route | execute', () => {
       async index() {
         stack.push('invoked')
       }
+
+      async handle() {
+        stack.push('invoked handle')
+      }
     }
 
     const route = new Route(app, [], {
@@ -158,7 +162,7 @@ test.group('Route | execute', () => {
     const route1JSON = route1.toJSON()
     await route1JSON.execute(route1JSON, resolver, context)
 
-    assert.deepEqual(stack, ['invoked'])
+    assert.deepEqual(stack, ['invoked', 'invoked handle'])
   })
 
   test('execute route middleware defined as a function', async ({ assert }) => {
