@@ -34,7 +34,7 @@ export class RouteFinder {
           return false
         }
 
-        return handler.name === routeIdentifier
+        return handler.reference === routeIdentifier
       }) || null
     )
   }

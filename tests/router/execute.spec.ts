@@ -44,7 +44,7 @@ test.group('Route | execute', () => {
     assert.deepEqual(stack, ['handler'])
   })
 
-  test('execute route contoller', async ({ assert }) => {
+  test('execute route controller specified as a string', async ({ assert }) => {
     assert.plan(3)
 
     const stack: string[] = []
@@ -65,7 +65,7 @@ test.group('Route | execute', () => {
     const routeJSON = route.toJSON()
 
     routeJSON.handler = {
-      name: '#controllers/home',
+      reference: '#controllers/home',
       handle(container, ctx) {
         assert.strictEqual(container, resolver)
         assert.strictEqual(ctx, context)
@@ -75,6 +75,90 @@ test.group('Route | execute', () => {
 
     await routeJSON.execute(routeJSON, resolver, context)
     assert.deepEqual(stack, ['controller'])
+  })
+
+  test('execute route controller specified as lazy import', async ({ assert }) => {
+    const stack: string[] = []
+    const app = new AppFactory().create()
+    await app.init()
+
+    const resolver = app.container.createResolver()
+    const context = new HttpContextFactory().create()
+
+    class HomeControllerClass {
+      async index() {
+        stack.push('invoked')
+      }
+
+      async handle() {
+        stack.push('invoked handle')
+      }
+    }
+
+    const HomeController = async () => {
+      return {
+        default: HomeControllerClass,
+      }
+    }
+
+    const route = new Route(app, [], {
+      pattern: '/',
+      methods: ['GET'],
+      handler: [HomeController, 'index'],
+      globalMatchers: {},
+    })
+
+    const routeJSON = route.toJSON()
+    await routeJSON.execute(routeJSON, resolver, context)
+
+    const route1 = new Route(app, [], {
+      pattern: '/',
+      methods: ['GET'],
+      handler: [HomeController],
+      globalMatchers: {},
+    })
+
+    const route1JSON = route1.toJSON()
+    await route1JSON.execute(route1JSON, resolver, context)
+
+    assert.deepEqual(stack, ['invoked', 'invoked handle'])
+  })
+
+  test('execute route controller specified as a class constructor', async ({ assert }) => {
+    const stack: string[] = []
+    const app = new AppFactory().create()
+    await app.init()
+
+    const resolver = app.container.createResolver()
+    const context = new HttpContextFactory().create()
+
+    class HomeController {
+      async index() {
+        stack.push('invoked')
+      }
+    }
+
+    const route = new Route(app, [], {
+      pattern: '/',
+      methods: ['GET'],
+      handler: [HomeController, 'index'],
+      globalMatchers: {},
+    })
+
+    const routeJSON = route.toJSON()
+    await routeJSON.execute(routeJSON, resolver, context)
+
+    const route1 = new Route(app, [], {
+      pattern: '/',
+      methods: ['GET'],
+      handler: [HomeController],
+      globalMatchers: {},
+    })
+
+    const route1JSON = route1.toJSON()
+    await route1JSON.execute(route1JSON, resolver, context)
+
+    assert.deepEqual(stack, ['invoked'])
   })
 
   test('execute route middleware defined as a function', async ({ assert }) => {

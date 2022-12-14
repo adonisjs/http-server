@@ -20,7 +20,7 @@ import { BriskRoute } from './brisk.js'
 import { RoutesStore } from './store.js'
 import { toRoutesJSON } from '../helpers.js'
 import { RouteResource } from './resource.js'
-import type { LazyImport } from '../types/base.js'
+import type { Constructor, LazyImport } from '../types/base.js'
 import { LookupStore } from './lookup_store/main.js'
 import { RouteMatchers as Matchers } from './matchers.js'
 import { defineNamedMiddleware } from '../define_middleware.js'
@@ -33,6 +33,7 @@ import type {
   RouteMatchers,
   MakeUrlOptions,
   MakeSignedUrlOptions,
+  GetControllerHandlers,
 } from '../types/route.js'
 
 /**
@@ -137,7 +138,11 @@ export class Router extends LookupStore {
   /**
    * Add route for a given pattern and methods
    */
-  route(pattern: string, methods: string[], handler: string | RouteFn) {
+  route<T extends Constructor<any>>(
+    pattern: string,
+    methods: string[],
+    handler: string | RouteFn | [LazyImport<T> | T, GetControllerHandlers<T>?]
+  ) {
     const route = new Route(this.#app, this.#middleware, {
       pattern,
       methods,
@@ -152,7 +157,10 @@ export class Router extends LookupStore {
   /**
    * Define a route that handles all common HTTP methods
    */
-  any(pattern: string, handler: string | RouteFn) {
+  any<T extends Constructor<any>>(
+    pattern: string,
+    handler: string | RouteFn | [LazyImport<T> | T, GetControllerHandlers<T>?]
+  ) {
     return this.route(
       pattern,
       ['HEAD', 'OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
@@ -163,35 +171,50 @@ export class Router extends LookupStore {
   /**
    * Define `GET` route
    */
-  get(pattern: string, handler: string | RouteFn) {
+  get<T extends Constructor<any>>(
+    pattern: string,
+    handler: string | RouteFn | [LazyImport<T> | T, GetControllerHandlers<T>?]
+  ) {
     return this.route(pattern, ['GET', 'HEAD'], handler)
   }
 
   /**
    * Define `POST` route
    */
-  post(pattern: string, handler: string | RouteFn) {
+  post<T extends Constructor<any>>(
+    pattern: string,
+    handler: string | RouteFn | [LazyImport<T> | T, GetControllerHandlers<T>?]
+  ) {
     return this.route(pattern, ['POST'], handler)
   }
 
   /**
    * Define `PUT` route
    */
-  put(pattern: string, handler: string | RouteFn) {
+  put<T extends Constructor<any>>(
+    pattern: string,
+    handler: string | RouteFn | [LazyImport<T> | T, GetControllerHandlers<T>?]
+  ) {
     return this.route(pattern, ['PUT'], handler)
   }
 
   /**
    * Define `PATCH` route
    */
-  patch(pattern: string, handler: string | RouteFn) {
+  patch<T extends Constructor<any>>(
+    pattern: string,
+    handler: string | RouteFn | [LazyImport<T> | T, GetControllerHandlers<T>?]
+  ) {
     return this.route(pattern, ['PATCH'], handler)
   }
 
   /**
    * Define `DELETE` route
    */
-  delete(pattern: string, handler: string | RouteFn) {
+  delete<T extends Constructor<any>>(
+    pattern: string,
+    handler: string | RouteFn | [LazyImport<T> | T, GetControllerHandlers<T>?]
+  ) {
     return this.route(pattern, ['DELETE'], handler)
   }
 

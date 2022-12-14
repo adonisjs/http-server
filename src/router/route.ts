@@ -10,18 +10,22 @@
 import is from '@sindresorhus/is'
 import Middleware from '@poppinss/middleware'
 import { Macroable } from '@poppinss/macroable'
-import { moduleExpression } from '@adonisjs/fold'
 import { RuntimeException } from '@poppinss/utils'
 import type { Application } from '@adonisjs/application'
+import { moduleCaller, moduleExpression, moduleImporter } from '@adonisjs/fold'
 
 import { execute } from './executor.js'
 import { dropSlash } from '../helpers.js'
+import type { Constructor, LazyImport } from '../types/base.js'
+
 import type {
   MiddlewareFn,
   ParsedNamedMiddleware,
   ParsedGlobalMiddleware,
 } from '../types/middleware.js'
+
 import type {
+  GetControllerHandlers,
   RouteFn,
   RouteJSON,
   RouteMatcher,
@@ -34,7 +38,7 @@ import type {
  * The route class exposes the APIs for constructing a route using the
  * fluent API.
  */
-export class Route extends Macroable {
+export class Route<Controller extends Constructor<any> = any> extends Macroable {
   /**
    * Route pattern
    */
@@ -108,7 +112,10 @@ export class Route extends Macroable {
     options: {
       pattern: string
       methods: string[]
-      handler: RouteFn | string
+      handler:
+        | RouteFn
+        | string
+        | [LazyImport<Controller> | Controller, GetControllerHandlers<Controller>?]
       globalMatchers: RouteMatchers
     }
   ) {
@@ -125,11 +132,40 @@ export class Route extends Macroable {
    * Resolves the route handler string expression to a
    * handler method object
    */
-  #resolveRouteHandle(handler: RouteFn | string) {
+  #resolveRouteHandle(
+    handler:
+      | RouteFn
+      | string
+      | [LazyImport<Controller> | Controller, GetControllerHandlers<Controller>?]
+  ) {
     if (typeof handler === 'string') {
       return {
-        name: handler,
+        reference: handler,
         ...moduleExpression(handler, this.#app.appRoot).toHandleMethod(),
+      }
+    }
+
+    /**
+     * Using a lazily imported controller
+     */
+    if (Array.isArray(handler)) {
+      /**
+       * The first item of the tuple is a class constructor
+       */
+      if (is.class_(handler[0])) {
+        return {
+          reference: handler[0].name,
+          ...moduleCaller(handler[0], (handler[1] || 'handle') as string).toHandleMethod(),
+        }
+      }
+
+      /**
+       * The first item of the tuple is a function that lazily
+       * loads the controller
+       */
+      return {
+        reference: handler,
+        ...moduleImporter(handler[0], (handler[1] || 'handle') as string).toHandleMethod(),
       }
     }
 

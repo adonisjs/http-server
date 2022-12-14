@@ -10,8 +10,22 @@
 import type Middleware from '@poppinss/middleware'
 import type { ContainerResolver } from '@adonisjs/fold'
 
+import type { Constructor, LazyImport } from './base.js'
 import type { HttpContext } from '../http_context/main.js'
 import type { MiddlewareFn, ParsedGlobalMiddleware } from './middleware.js'
+
+/**
+ * Returns a union of methods from a controller that accepts
+ * the context as the first argument.
+ */
+export type GetControllerHandlers<Controller extends Constructor<any>> = {
+  [K in keyof InstanceType<Controller>]: InstanceType<Controller>[K] extends (
+    ctx: HttpContext,
+    ...args: any[]
+  ) => any
+    ? K
+    : never
+}[keyof InstanceType<Controller>]
 
 /**
  * Route token stored by matchit library
@@ -34,7 +48,7 @@ export type RouteFn = (ctx: HttpContext) => any
 export type StoreRouteHandler =
   | RouteFn
   | {
-      name: string
+      reference: string | [LazyImport<Constructor<any>> | Constructor<any>, any?]
       handle: (
         resolver: ContainerResolver<any>,
         ...args: [ctx: HttpContext, ...injections: any[]]

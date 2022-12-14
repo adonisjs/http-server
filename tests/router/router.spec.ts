@@ -1114,3 +1114,83 @@ test.group('Named middleware', () => {
     assert.containsSubset(namedMiddleware.auth(), { name: 'auth', args: undefined })
   })
 })
+
+test.group('Router | handler', () => {
+  test('define route handler as a lazy loaded controller', ({ assert }) => {
+    const router = new RouterFactory().create()
+    class HomeControllerClass {
+      async index() {}
+      async store() {}
+      async update() {}
+      async updatePatch() {}
+      async destroy() {}
+      async handle() {}
+    }
+
+    const HomeController = async () => {
+      return {
+        default: HomeControllerClass,
+      }
+    }
+
+    const getRoute = router.get('/', [HomeController, 'index'])
+    assert.isObject(getRoute.toJSON().handler)
+    assert.property(getRoute.toJSON().handler, 'handle')
+
+    const postRoute = router.post('/', [HomeController, 'store'])
+    assert.isObject(postRoute.toJSON().handler)
+    assert.property(postRoute.toJSON().handler, 'handle')
+
+    const putRoute = router.put('/', [HomeController, 'update'])
+    assert.isObject(putRoute.toJSON().handler)
+    assert.property(putRoute.toJSON().handler, 'handle')
+
+    const patchRoute = router.patch('/', [HomeController, 'updatePatch'])
+    assert.isObject(patchRoute.toJSON().handler)
+    assert.property(patchRoute.toJSON().handler, 'handle')
+
+    const deleteRoute = router.delete('/', [HomeController, 'destroy'])
+    assert.isObject(deleteRoute.toJSON().handler)
+    assert.property(deleteRoute.toJSON().handler, 'handle')
+
+    const anyRoute = router.any('/', [HomeController, 'handle'])
+    assert.isObject(anyRoute.toJSON().handler)
+    assert.property(anyRoute.toJSON().handler, 'handle')
+  })
+
+  test('define route handler as controller reference', ({ assert }) => {
+    const router = new RouterFactory().create()
+    class HomeController {
+      async index() {}
+      async store() {}
+      async update() {}
+      async updatePatch() {}
+      async destroy() {}
+      async handle() {}
+    }
+
+    const getRoute = router.get('/', [HomeController, 'index'])
+    assert.isObject(getRoute.toJSON().handler)
+    assert.property(getRoute.toJSON().handler, 'handle')
+
+    const postRoute = router.post('/', [HomeController, 'store'])
+    assert.isObject(postRoute.toJSON().handler)
+    assert.property(postRoute.toJSON().handler, 'handle')
+
+    const putRoute = router.put('/', [HomeController, 'update'])
+    assert.isObject(putRoute.toJSON().handler)
+    assert.property(putRoute.toJSON().handler, 'handle')
+
+    const patchRoute = router.patch('/', [HomeController, 'updatePatch'])
+    assert.isObject(patchRoute.toJSON().handler)
+    assert.property(patchRoute.toJSON().handler, 'handle')
+
+    const deleteRoute = router.delete('/', [HomeController, 'destroy'])
+    assert.isObject(deleteRoute.toJSON().handler)
+    assert.property(deleteRoute.toJSON().handler, 'handle')
+
+    const anyRoute = router.any('/', [HomeController, 'handle'])
+    assert.isObject(anyRoute.toJSON().handler)
+    assert.property(anyRoute.toJSON().handler, 'handle')
+  })
+})
