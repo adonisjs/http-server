@@ -11,6 +11,7 @@ import supertest from 'supertest'
 import { test } from '@japa/runner'
 import { createCertificate } from 'pem'
 import { createServer } from 'node:http'
+import Middleware from '@poppinss/middleware'
 import { createServer as httpsServer } from 'node:https'
 
 import { RequestFactory } from '../test_factories/request.js'
@@ -747,9 +748,13 @@ test.group('Request', () => {
     const server = createServer((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.ctx = new HttpContextFactory().merge({ request }).create()
-      ;(request.ctx.route as any) = {
+      request.ctx.route = {
+        middleware: new Middleware(),
+        meta: {},
+        name: '',
+        execute: () => {},
         pattern: '/users/:id',
-        handler: { name: '#controllers/user', handle: () => {} },
+        handler: { reference: '#controllers/user', handle: () => {} },
       }
 
       res.writeHead(200, { 'content-type': 'application/json' })
