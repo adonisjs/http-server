@@ -651,7 +651,7 @@ export class Request extends Macroable {
           return false
         }
 
-        return route.handler.name === identifier
+        return route.handler.reference === identifier
       }
     )
   }
