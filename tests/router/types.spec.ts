@@ -12,7 +12,7 @@ import type { HttpContext } from '../../src/http_context/main.js'
 import { GetControllerHandlers } from '../../src/types/route.js'
 
 test.group('Router types', () => {
-  test('infer types for lazily imported router controller', ({ expectTypeOf }) => {
+  test('infer route handlers from controller constructor', ({ expectTypeOf }) => {
     class HomeControllerClass {
       async index() {}
       async store({}: HttpContext) {}
