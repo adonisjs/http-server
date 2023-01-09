@@ -45,11 +45,6 @@ export class Server {
   }
 
   /**
-   * Collection of synchronous request hooks
-   */
-  #requestHooks: Set<(ctx: HttpContext) => void> = new Set()
-
-  /**
    * Registered error handler (if any)
    */
   #errorHandler?: LazyImport<ErrorHandlerAsAClass>
@@ -234,14 +229,6 @@ export class Server {
   }
 
   /**
-   * Synchronous hooks to get notified everytime a new HTTP request comes
-   */
-  onRequest(callback: (ctx: HttpContext) => void) {
-    this.#requestHooks.add(callback)
-    return this
-  }
-
-  /**
    * Handle request
    */
   handle(req: IncomingMessage, res: ServerResponse) {
@@ -258,19 +245,12 @@ export class Server {
       this.#router,
       this.#qsParser
     )
-    const ctx = new HttpContext(request, response, this.#app.logger.child({}), resolver)
 
-    /**
-     * Invoking synchronous hooks
-     */
-    for (let hook of this.#requestHooks) {
-      hook(ctx)
-    }
+    const ctx = new HttpContext(request, response, this.#app.logger.child({}), resolver)
 
     if (this.usingAsyncLocalStorage) {
       return asyncLocalStorage.storage!.run(ctx, () => this.#handleRequest(ctx, resolver))
     }
-
     return this.#handleRequest(ctx, resolver)
   }
 }
