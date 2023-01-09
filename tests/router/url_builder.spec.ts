@@ -96,7 +96,7 @@ test.group('URL builder', () => {
     )
   })
 
-  test('do not overwriting existing params when undefined params are shared', ({ assert }) => {
+  test('do not overwrite existing params when undefined params are shared', ({ assert }) => {
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -133,7 +133,7 @@ test.group('URL builder', () => {
     )
   })
 
-  test('define wildcard param is an object', ({ assert }) => {
+  test('define wildcard param as an object', ({ assert }) => {
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -223,5 +223,25 @@ test.group('URL builder', () => {
       .create()
 
     assert.isTrue(request.hasValidSignature())
+  })
+
+  test('build route with params and extension', ({ assert }) => {
+    const app = new AppFactory().create()
+    const encryption = new EncryptionFactory().create()
+    const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
+
+    const route = new Route(app, [], {
+      pattern: '/users/:slug.html',
+      globalMatchers: {},
+      handler: () => {},
+      methods: ['GET'],
+    })
+    route.as('users.show')
+
+    lookupStore.register(route.toJSON())
+    assert.equal(
+      lookupStore.builder().params({ slug: 'foo' }).make('users.show'),
+      '/users/foo.html'
+    )
   })
 })

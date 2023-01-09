@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import matchit from '@poppinss/matchit'
 import { RuntimeException } from '@poppinss/utils'
 import type { Encryption } from '@adonisjs/encryption'
 
@@ -101,35 +102,39 @@ export class UrlBuilder {
     const paramsObject = !Array.isArray(this.#params) ? this.#params : {}
 
     let paramsIndex = 0
-    const tokens = pattern.split('/')
+    const tokens = matchit.parse(pattern)
 
     for (const token of tokens) {
       /**
        * Expected wildcard param to be at the end always and hence
        * we must break out from the loop
        */
-      if (token === '*') {
+      if (token.type === 0) {
+        uriSegments.push(`${token.val}${token.end}`)
+      } else if (token.type === 2) {
         const values: string[] = paramsArray ? paramsArray.slice(paramsIndex) : paramsObject['*']
         this.#ensureHasWildCardValues(pattern, values)
-        values.forEach((value) => uriSegments.push(value))
+        uriSegments.push(`${values.join('/')}${token.end}`)
         break
-      } else if (!token.startsWith(':')) {
-        uriSegments.push(token)
       } else {
-        const paramName = token.replace(/^:/, '').replace(/\?$/, '')
+        const paramName = token.val
         const value = paramsArray ? paramsArray[paramsIndex] : paramsObject[paramName]
-        if (!token.endsWith('?')) {
+
+        /**
+         * Type = 1 means param is required
+         */
+        if (token.type === 1) {
           this.#ensureHasParamValue(pattern, paramName, value)
         }
 
         paramsIndex++
         if (value !== undefined && value !== null) {
-          uriSegments.push(value)
+          uriSegments.push(`${value}${token.end}`)
         }
       }
     }
 
-    return uriSegments.join('/')
+    return `/${uriSegments.join('/')}`
   }
 
   /**
