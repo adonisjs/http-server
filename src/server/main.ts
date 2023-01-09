@@ -26,7 +26,6 @@ import { Router } from '../router/main.js'
 import { HttpContext } from '../http_context/main.js'
 import { finalHandler } from './factories/final_handler.js'
 import { writeResponse } from './factories/write_response.js'
-import { useReturnValue } from './factories/use_return_value.js'
 import { asyncLocalStorage } from '../http_context/local_storage.js'
 import { middlewareHandler } from './factories/middleware_handler.js'
 
@@ -143,7 +142,6 @@ export class Server {
       .errorHandler((error) => this.#resolvedErrorHandler.handle(error, ctx))
       .finalHandler(finalHandler(this.#router!, resolver, ctx))
       .run(middlewareHandler(resolver, ctx))
-      .then(useReturnValue(ctx))
       .catch((error) => {
         ctx.logger.fatal({ err: error }, 'Exception raised by error handler')
         return this.#defaultErrorHandler.handle(error, ctx)

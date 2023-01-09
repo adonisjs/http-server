@@ -71,6 +71,71 @@ test.group('Server | Response handling', () => {
     assert.equal(text, 'handled')
   })
 
+  test('use route handler return value when handler is not async', async ({ assert }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([])
+    server.getRouter().get('/', () => 'handled')
+    await server.boot()
+
+    const { text } = await supertest(httpServer).get('/').expect(200)
+    assert.equal(text, 'handled')
+  })
+
+  test('use route handler return value when middleware does not return it', async ({ assert }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([])
+    server
+      .getRouter()
+      .get('/', async () => 'handled')
+      .middleware(async (_, next) => {
+        await next()
+      })
+
+    await server.boot()
+
+    const { text } = await supertest(httpServer).get('/').expect(200)
+    assert.equal(text, 'handled')
+  })
+
+  test('use route handler return value when server middleware does not return it', async ({
+    assert,
+  }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([
+      async () => {
+        return {
+          default: class GlobalMiddleware {
+            async handle(_: HttpContext, next: NextFn) {
+              await next()
+            }
+          },
+        }
+      },
+    ])
+
+    server.getRouter().get('/', async () => 'handled')
+
+    await server.boot()
+
+    const { text } = await supertest(httpServer).get('/').expect(200)
+    assert.equal(text, 'handled')
+  })
+
   test('do not use return value when response.send is called', async ({ assert }) => {
     const app = new AppFactory().create()
     const server = new ServerFactory().merge({ app }).create()
@@ -374,59 +439,6 @@ test.group('Server | middleware', () => {
       handle(ctx: HttpContext, _: NextFn) {
         stack.push('fn1')
         ctx.response.send('completed')
-      }
-    }
-
-    class LogMiddleware2 {
-      handle(_: HttpContext, next: NextFn) {
-        stack.push('fn2')
-        return next()
-      }
-    }
-
-    server.use([
-      async () => {
-        return {
-          default: LogMiddleware,
-        }
-      },
-      async () => {
-        return {
-          default: LogMiddleware2,
-        }
-      },
-    ])
-
-    server
-      .getRouter()!
-      .get('/', async () => {
-        stack.push('handler')
-        return 'done'
-      })
-      .middleware(async function routeMiddleware(_: HttpContext, next: NextFn) {
-        stack.push('route fn1')
-        await next()
-      })
-
-    await server.boot()
-
-    const { text } = await supertest(httpServer).get('/').expect(200)
-    assert.deepEqual(stack, ['fn1'])
-    assert.equal(text, 'completed')
-  })
-
-  test('terminate request from server middleware by returning value', async ({ assert }) => {
-    const stack: string[] = []
-
-    const app = new AppFactory().create()
-    const server = new ServerFactory().merge({ app }).create()
-    const httpServer = createServer(server.handle.bind(server))
-    await app.init()
-
-    class LogMiddleware {
-      handle(__: HttpContext, _: NextFn) {
-        stack.push('fn1')
-        return 'completed'
       }
     }
 

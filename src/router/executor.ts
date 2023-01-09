@@ -10,6 +10,7 @@
 import type { ContainerResolver } from '@adonisjs/fold'
 import type { StoreRouteNode } from '../types/route.js'
 import type { HttpContext } from '../http_context/main.js'
+import { useReturnValue } from './factories/use_return_value.js'
 
 /**
  * Executor to execute the route middleware pipeline the route
@@ -20,10 +21,10 @@ export function execute(route: StoreRouteNode, resolver: ContainerResolver<any>,
     .runner()
     .finalHandler(async () => {
       if (typeof route.handler === 'function') {
-        return route.handler(ctx)
+        return Promise.resolve(route.handler(ctx)).then(useReturnValue(ctx))
       }
 
-      return route.handler.handle(resolver, ctx)
+      return route.handler.handle(resolver, ctx).then(useReturnValue(ctx))
     })
     .run(async (middleware, next) => {
       if (typeof middleware === 'function') {
