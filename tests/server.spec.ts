@@ -11,6 +11,7 @@ import 'reflect-metadata'
 import supertest from 'supertest'
 import { test } from '@japa/runner'
 import { createServer } from 'node:http'
+import { Emitter } from '@adonisjs/events'
 import type { NextFn } from '@poppinss/middleware/types'
 
 import { Router } from '../src/router/main.js'
@@ -18,6 +19,7 @@ import { AppFactory } from '../test_factories/app.js'
 import { HttpContext } from '../src/http_context/main.js'
 import { ServerFactory } from '../test_factories/server_factory.js'
 import { defineNamedMiddleware } from '../src/define_middleware.js'
+import { HttpRequestFinishedPayload } from '../src/types/server.js'
 
 test.group('Server', () => {
   test('get router instance used by the server', ({ assert }) => {
@@ -38,6 +40,27 @@ test.group('Server', () => {
 
     assert.strictEqual(server.getNodeServer(), httpServer)
   })
+
+  test('emit request finished route handler', async ({ assert }, done) => {
+    const app = new AppFactory().create()
+    const emitter = new Emitter(app)
+    const server = new ServerFactory().merge({ app, emitter }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([])
+    server.getRouter().get('/', async ({ response }) => response.send('handled'))
+    await server.boot()
+
+    emitter.on('http:request_finished', (event: HttpRequestFinishedPayload) => {
+      assert.instanceOf(event.ctx, HttpContext)
+      assert.isArray(event.duration)
+      done()
+    })
+
+    await supertest(httpServer).get('/').expect(200)
+  }).waitForDone()
 })
 
 test.group('Server | Response handling', () => {

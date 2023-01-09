@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 
+import onFinished from 'on-finished'
+import { Emitter } from '@adonisjs/events'
 import Middleware from '@poppinss/middleware'
 import type { Encryption } from '@adonisjs/encryption'
 import type { Server as HttpsServer } from 'node:https'
@@ -55,6 +57,11 @@ export class Server {
   #resolvedErrorHandler: ServerErrorHandler = this.#defaultErrorHandler
 
   /**
+   * Emitter is required to notify when a request finishes
+   */
+  #emitter: Emitter<any>
+
+  /**
    * The application instance to be shared with the router
    */
   #app: Application<any, any>
@@ -101,8 +108,14 @@ export class Server {
     return asyncLocalStorage.isEnabled
   }
 
-  constructor(app: Application<any, any>, encryption: Encryption, config: ServerConfig) {
+  constructor(
+    app: Application<any, any>,
+    encryption: Encryption,
+    emitter: Emitter<any>,
+    config: ServerConfig
+  ) {
     this.#app = app
+    this.#emitter = emitter
     this.#config = config
     this.#encryption = encryption
     this.#qsParser = new Qs(this.#config.qs)
@@ -231,6 +244,12 @@ export class Server {
    */
   handle(req: IncomingMessage, res: ServerResponse) {
     /**
+     * Setup for the "http:request_finished" event
+     */
+    const hasRequestListener = this.#emitter.hasListeners('http:request_finished')
+    const startTime = hasRequestListener ? process.hrtime() : null
+
+    /**
      * Creating essential instances
      */
     const resolver = this.#app.container.createResolver()
@@ -243,9 +262,23 @@ export class Server {
       this.#router,
       this.#qsParser
     )
-
     const ctx = new HttpContext(request, response, this.#app.logger.child({}), resolver)
 
+    /**
+     * Emit event when listening for the request_finished event
+     */
+    if (startTime) {
+      onFinished(res, () => {
+        this.#emitter.emit('http:request_finished', {
+          ctx: ctx,
+          duration: process.hrtime(startTime),
+        })
+      })
+    }
+
+    /**
+     * Handle request
+     */
     if (this.usingAsyncLocalStorage) {
       return asyncLocalStorage.storage!.run(ctx, () => this.#handleRequest(ctx, resolver))
     }

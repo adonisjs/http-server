@@ -18,12 +18,12 @@ import { fileURLToPath } from 'node:url'
 import { createServer } from 'node:http'
 import { createWriteStream, createReadStream } from 'node:fs'
 
+import { Response } from '../src/response.js'
 import { AppFactory } from '../test_factories/app.js'
 import { CookieParser } from '../src/cookies/parser.js'
 import { RouterFactory } from '../test_factories/router.js'
 import { ResponseFactory } from '../test_factories/response.js'
 import { EncryptionFactory } from '../test_factories/encryption.js'
-import { Response } from '../src/response.js'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 const BASE_PATH = fileURLToPath(BASE_URL)

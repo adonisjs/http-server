@@ -16,10 +16,12 @@ import { EncryptionFactory } from './encryption.js'
 
 import { defineConfig } from '../src/define_config.js'
 import type { ServerConfig } from '../src/types/server.js'
+import { Emitter } from '@adonisjs/events'
 
 type FactoryParameters = {
   app: Application<any, any>
   encryption: Encryption
+  emitter: Emitter<any>
   config: Partial<ServerConfig>
 }
 
@@ -29,6 +31,13 @@ type FactoryParameters = {
  */
 export class ServerFactory {
   #parameters: Partial<FactoryParameters> = {}
+
+  /**
+   * Returns the emitter instance
+   */
+  #getEmitter() {
+    return this.#parameters.emitter || new Emitter(this.#getApp())
+  }
 
   /**
    * Returns the config for the server class
@@ -64,6 +73,11 @@ export class ServerFactory {
    * Create server instance
    */
   create() {
-    return new Server(this.#getApp(), this.#createEncryption(), this.#getConfig())
+    return new Server(
+      this.#getApp(),
+      this.#createEncryption(),
+      this.#getEmitter(),
+      this.#getConfig()
+    )
   }
 }

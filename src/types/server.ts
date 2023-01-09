@@ -7,11 +7,19 @@
  * file that was distributed with this source code.
  */
 
-import type { QSParserConfig } from './qs.js'
 import type { Constructor } from './base.js'
+import type { QSParserConfig } from './qs.js'
 import type { RequestConfig } from './request.js'
 import type { ResponseConfig } from './response.js'
 import type { HttpContext } from '../http_context/main.js'
+
+/**
+ * Data type for the "http:request_finished" event
+ */
+export type HttpRequestFinishedPayload = {
+  ctx: HttpContext
+  duration: [number, number]
+}
 
 /**
  * Error handler to handle HTTP errors
