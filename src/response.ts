@@ -83,11 +83,26 @@ export class Response extends Macroable {
   }
 
   /**
+   * Find if the response has non-stream content
+   */
+  get hasContent(): boolean {
+    return !!this.lazyBody.content
+  }
+
+  /**
    * Returns true when response body is set using "response.download"
    * and "response.attachment" methods
    */
-  get isStreamResponse(): boolean {
+  get hasStream(): boolean {
     return !!(this.lazyBody.stream || this.lazyBody.fileToStream)
+  }
+
+  /**
+   * Returns the response content. Check if the response
+   * has content using the "hasContent" method
+   */
+  get content() {
+    return this.lazyBody.content
   }
 
   /**
@@ -1019,8 +1034,8 @@ export class Response extends Macroable {
       return
     }
 
-    if (this.lazyBody.content) {
-      this.writeBody(...this.lazyBody.content)
+    if (this.content) {
+      this.writeBody(...this.content)
       return
     }
 

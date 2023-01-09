@@ -376,6 +376,18 @@ test.group('Response', (group) => {
     assert.deepEqual(body, { username: 'virk' })
   })
 
+  test('hasContent must return true after send has been called', async ({ assert }) => {
+    const server = createServer((req, res) => {
+      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+
+      response.json({ username: 'virk' })
+      res.end(String(response.hasContent))
+    })
+
+    const { text } = await supertest(server).get('/')
+    assert.equal(text, 'true')
+  })
+
   test('hasLazyBody must return true after send has been called', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
@@ -400,6 +412,18 @@ test.group('Response', (group) => {
     assert.equal(text, 'true')
   })
 
+  test('hasContent must return false after download has been called', async ({ assert }) => {
+    const server = createServer((req, res) => {
+      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+
+      response.download('./foo.html')
+      res.end(String(response.hasContent))
+    })
+
+    const { text } = await supertest(server).get('/')
+    assert.equal(text, 'false')
+  })
+
   test('hasLazyBody must return true after stream has been called', async ({ assert }) => {
     const server = createServer((req, res) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
@@ -410,6 +434,18 @@ test.group('Response', (group) => {
 
     const { text } = await supertest(server).get('/')
     assert.equal(text, 'true')
+  })
+
+  test('hasContent must return false after stream has been called', async ({ assert }) => {
+    const server = createServer((req, res) => {
+      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+
+      response.stream(new Readable())
+      res.end(String(response.hasContent))
+    })
+
+    const { text } = await supertest(server).get('/')
+    assert.equal(text, 'false')
   })
 
   test('write jsonp response', async ({ assert }) => {
@@ -470,7 +506,7 @@ test.group('Response', (group) => {
     const server = createServer((req, res) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
       response.stream(createReadStream(join(BASE_PATH, 'hello.txt')))
-      assert.isTrue(response.isStreamResponse)
+      assert.isTrue(response.hasStream)
       response.finish()
     })
 
@@ -590,7 +626,7 @@ test.group('Response', (group) => {
     const server = createServer((req, res) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
       response.download(join(BASE_PATH, 'hello.html'))
-      assert.isTrue(response.isStreamResponse)
+      assert.isTrue(response.hasStream)
       response.finish()
     })
 
