@@ -810,6 +810,43 @@ test.group('Route Resource', () => {
     )
   })
 
+  test('do not normalize resource name', ({ assert }) => {
+    const app = new AppFactory().create()
+    const resource = new RouteResource(app, [], {
+      resource: 'main-photos',
+      controller: '#controllers/photos',
+      globalMatchers: {},
+      shallow: false,
+    })
+
+    assert.deepEqual(
+      resource.routes.map((route) => route.toJSON().name),
+      [
+        'main_photos.index',
+        'main_photos.create',
+        'main_photos.store',
+        'main_photos.show',
+        'main_photos.edit',
+        'main_photos.update',
+        'main_photos.destroy',
+      ]
+    )
+
+    resource.as('publicPhotos', false)
+    assert.deepEqual(
+      resource.routes.map((route) => route.toJSON().name),
+      [
+        'publicPhotos.index',
+        'publicPhotos.create',
+        'publicPhotos.store',
+        'publicPhotos.show',
+        'publicPhotos.edit',
+        'publicPhotos.update',
+        'publicPhotos.destroy',
+      ]
+    )
+  })
+
   test('rename the resource param', ({ assert }) => {
     const app = new AppFactory().create()
     const resource = new RouteResource(app, [], {

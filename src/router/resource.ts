@@ -261,8 +261,8 @@ export class RouteResource extends Macroable {
   /**
    * Prepend name to all the routes
    */
-  as(name: string): this {
-    name = string.snakeCase(name)
+  as(name: string, normalizeName: boolean = true): this {
+    name = normalizeName ? string.snakeCase(name) : name
     this.routes.forEach((route) => {
       route.as(route.getName()!.replace(this.#routesBaseName, name), false)
     })
