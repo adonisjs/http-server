@@ -698,6 +698,35 @@ test.group('Server | error handler', () => {
     assert.equal(text, 'blowup')
   })
 
+  test('report when error handler raises exception', async ({ assert }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+    await app.init()
+
+    class ErrorHandler {
+      handle() {
+        throw new Error('Error handler also failed')
+      }
+    }
+
+    server.use([])
+    server.getRouter().get('/', async () => {
+      throw new Error('Route failed')
+    })
+
+    server.errorHandler(async () => {
+      return {
+        default: ErrorHandler,
+      }
+    })
+
+    await server.boot()
+
+    const { text } = await supertest(httpServer).get('/').expect(500)
+    assert.equal(text, 'Error handler also failed')
+  })
+
   test('raise 404 when route is missing', async ({ assert }) => {
     const app = new AppFactory().create()
     const server = new ServerFactory().merge({ app }).create()

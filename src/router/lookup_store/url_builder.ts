@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+// @ts-expect-error
 import matchit from '@poppinss/matchit'
 import { RuntimeException } from '@poppinss/utils'
 import type { Encryption } from '@adonisjs/encryption'

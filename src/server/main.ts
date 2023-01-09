@@ -36,6 +36,15 @@ import { middlewareHandler } from './factories/middleware_handler.js'
  */
 export class Server {
   /**
+   * The default error handler to use
+   */
+  #defaultErrorHandler: ServerErrorHandler = {
+    handle(error, ctx) {
+      ctx.response.status(error.status || 500).send(error.message || 'Internal server error')
+    },
+  }
+
+  /**
    * Collection of synchronous request hooks
    */
   #requestHooks: Set<(ctx: HttpContext) => void> = new Set()
@@ -49,11 +58,7 @@ export class Server {
    * Resolved error handler is an instance of the lazily imported error
    * handler class.
    */
-  #resolvedErrorHandler: ServerErrorHandler = {
-    handle(error, ctx) {
-      ctx.response.status(error.status || 500).send(error.message || 'Internal server error')
-    },
-  }
+  #resolvedErrorHandler: ServerErrorHandler = this.#defaultErrorHandler
 
   /**
    * The application instance to be shared with the router
@@ -140,10 +145,14 @@ export class Server {
    */
   #handleRequest(ctx: HttpContext, resolver: ContainerResolver<any>) {
     return this.#serverMiddlewareStack!.runner()
+      .errorHandler((error) => this.#resolvedErrorHandler.handle(error, ctx))
       .finalHandler(finalHandler(this.#router!, resolver, ctx))
       .run(middlewareHandler(resolver, ctx))
       .then(useReturnValue(ctx))
-      .catch((error) => this.#resolvedErrorHandler.handle(error, ctx))
+      .catch((error) => {
+        ctx.logger.fatal({ err: error }, 'Exception raised by error handler')
+        return this.#defaultErrorHandler.handle(error, ctx)
+      })
       .finally(writeResponse(ctx))
   }
 

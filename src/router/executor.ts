@@ -18,14 +18,14 @@ import type { HttpContext } from '../http_context/main.js'
 export function execute(route: StoreRouteNode, resolver: ContainerResolver<any>, ctx: HttpContext) {
   return route.middleware
     .runner()
-    .finalHandler(() => {
+    .finalHandler(async () => {
       if (typeof route.handler === 'function') {
         return route.handler(ctx)
       }
 
       return route.handler.handle(resolver, ctx)
     })
-    .run((middleware, next) => {
+    .run(async (middleware, next) => {
       if (typeof middleware === 'function') {
         return middleware(ctx, next)
       }

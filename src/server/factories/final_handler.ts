@@ -33,6 +33,6 @@ export function finalHandler(router: Router, resolver: ContainerResolver<any>, c
       return route.route.execute(route.route, resolver, ctx)
     }
 
-    throw new RouteNotFoundException(`Cannot ${method}:${url}`)
+    return Promise.reject(new RouteNotFoundException(`Cannot ${method}:${url}`))
   }
 }
