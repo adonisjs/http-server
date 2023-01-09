@@ -187,6 +187,79 @@ test.group('Server | Response handling', () => {
     const { text } = await supertest(httpServer).get('/').expect(404)
     assert.equal(text, 'Cannot GET:/')
   })
+
+  test('redirect to a route using route.redirect method', async ({ assert }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([])
+
+    server.getRouter().get('/dashboard', () => 'dashboard')
+    server.getRouter().on('/').redirect('/dashboard')
+
+    await server.boot()
+
+    const { status, headers } = await supertest(httpServer).get('/')
+    assert.equal(status, 302)
+    assert.equal(headers.location, '/dashboard')
+  })
+
+  test('redirect to a path using route.redirectToPath method', async ({ assert }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([])
+
+    server.getRouter().on('/').redirectToPath('/dashboard')
+
+    await server.boot()
+
+    const { status, headers } = await supertest(httpServer).get('/')
+    assert.equal(status, 302)
+    assert.equal(headers.location, '/dashboard')
+  })
+
+  test('redirect to a route with custom status code', async ({ assert }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([])
+
+    server.getRouter().get('/dashboard', () => 'dashboard')
+    server.getRouter().on('/').redirect('/dashboard', {}, { status: 301 })
+
+    await server.boot()
+
+    const { status, headers } = await supertest(httpServer).get('/')
+    assert.equal(status, 301)
+    assert.equal(headers.location, '/dashboard')
+  })
+
+  test('redirect to a path with custom status code', async ({ assert }) => {
+    const app = new AppFactory().create()
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([])
+
+    server.getRouter().on('/').redirectToPath('/dashboard', { status: 301 })
+    await server.boot()
+
+    const { status, headers } = await supertest(httpServer).get('/')
+    assert.equal(status, 301)
+    assert.equal(headers.location, '/dashboard')
+  })
 })
 
 test.group('Server | middleware', () => {
