@@ -262,7 +262,12 @@ export class Server {
       this.#router,
       this.#qsParser
     )
-    const ctx = new HttpContext(request, response, this.#app.logger.child({}), resolver)
+    const ctx = new HttpContext(
+      request,
+      response,
+      this.#app.logger.child({ request_id: request.id() }),
+      resolver
+    )
 
     /**
      * Emit event when listening for the request_finished event

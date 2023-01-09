@@ -8,6 +8,7 @@
  */
 
 import { createServer } from 'node:http'
+import { Emitter } from '@adonisjs/events'
 import { Encryption } from '@adonisjs/encryption'
 import { Application } from '@adonisjs/application'
 
@@ -19,7 +20,7 @@ await app.init()
 
 const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
 
-const server = new Server(app, encryption, defineConfig({}))
+const server = new Server(app, encryption, new Emitter(app), defineConfig({}))
 server.getRouter().get('/', async (ctx) => {
   return ctx.response.send({ hello: 'world' })
 })

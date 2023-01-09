@@ -148,7 +148,7 @@ export class Request extends Macroable {
 
   /**
    * Returns the request id from the `x-request-id` header. The
-   * header is untoched, if it already exists.
+   * header is untouched, if it already exists.
    */
   id(): string | undefined {
     let requestId = this.header('x-request-id')
