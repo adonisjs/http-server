@@ -115,6 +115,7 @@
   },
   "peerDependencies": {
     "@adonisjs/application": "^6.4.0-0",
+    "@adonisjs/events": "^8.3.0-0",
     "@adonisjs/encryption": "^5.0.2-0",
     "@adonisjs/fold": "^9.8.0-0"
   },
