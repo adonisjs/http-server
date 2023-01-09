@@ -14,6 +14,7 @@ import type { MiddlewareFn, ParsedNamedMiddleware } from '../types/middleware.js
 import { Route } from './route.js'
 import { BriskRoute } from './brisk.js'
 import { RouteResource } from './resource.js'
+import { OneOrMore } from '../types/base.js'
 
 /**
  * Group class exposes the API to take action on a group of routes.
@@ -212,7 +213,7 @@ export class RouteGroup extends Macroable {
    * }).use(middleware.auth())
    * ```
    */
-  use(middleware: MiddlewareFn | ParsedNamedMiddleware): this {
+  use(middleware: OneOrMore<MiddlewareFn | ParsedNamedMiddleware>): this {
     /**
      * Register middleware with children. We share the group middleware
      * array by reference, therefore have to register it only for the
@@ -222,14 +223,21 @@ export class RouteGroup extends Macroable {
       this.routes.forEach((route) => this.#shareMiddlewareStackWithRoutes(route))
     }
 
-    this.#middleware.push(middleware)
+    if (Array.isArray(middleware)) {
+      for (let one of middleware) {
+        this.#middleware.push(one)
+      }
+    } else {
+      this.#middleware.push(middleware)
+    }
+
     return this
   }
 
   /**
    * @alias use
    */
-  middleware(middleware: MiddlewareFn | ParsedNamedMiddleware): this {
+  middleware(middleware: OneOrMore<MiddlewareFn | ParsedNamedMiddleware>): this {
     return this.use(middleware)
   }
 }

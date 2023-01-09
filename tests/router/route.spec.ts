@@ -380,6 +380,36 @@ test.group('Route', () => {
     assert.deepEqual(routeJSON.middleware.all(), new Set([middlewareFn]))
   })
 
+  test('use multiple middleware', ({ assert }) => {
+    const app = new AppFactory().create()
+
+    async function handler() {}
+    const route = new Route(app, [], {
+      pattern: 'posts/:id',
+      methods: ['GET'],
+      handler,
+      globalMatchers: {},
+    })
+
+    const middlewareFn = () => {}
+    const middlewareFn1 = () => {}
+    route.middleware([middlewareFn, middlewareFn1])
+
+    const routeJSON = route.toJSON()
+
+    assert.containsSubset(routeJSON, {
+      pattern: '/posts/:id',
+      meta: {},
+      methods: ['GET'],
+      matchers: {},
+      domain: 'root',
+      handler,
+      name: undefined,
+    })
+
+    assert.deepEqual(routeJSON.middleware.all(), new Set([middlewareFn, middlewareFn1]))
+  })
+
   test('define a named middleware by reference', ({ assert }) => {
     const app = new AppFactory().create()
 
@@ -410,6 +440,49 @@ test.group('Route', () => {
     assert.lengthOf(middleware, 1)
     assert.isFunction('handle' in middleware[0] && middleware[0].handle)
     assert.containsSubset(middleware[0], { name: 'auth', args: undefined })
+  })
+
+  test('use multiple named middleware', ({ assert }) => {
+    const app = new AppFactory().create()
+
+    class AuthMiddleware {
+      handle() {}
+    }
+
+    class AclMiddleware {
+      handle() {}
+    }
+
+    const namedMiddleware = defineNamedMiddleware({
+      auth: async () => {
+        return {
+          default: AuthMiddleware,
+        }
+      },
+      acl: async () => {
+        return {
+          default: AclMiddleware,
+        }
+      },
+    })
+
+    async function handler() {}
+    const route = new Route(app, [], {
+      pattern: 'posts/:id',
+      methods: ['GET'],
+      handler,
+      globalMatchers: {},
+    })
+
+    route.middleware([namedMiddleware.auth(), namedMiddleware.acl()])
+    const middleware = [...route.toJSON().middleware.all()]
+
+    assert.isArray(middleware)
+    assert.lengthOf(middleware, 2)
+    assert.isFunction('handle' in middleware[0] && middleware[0].handle)
+    assert.isFunction('handle' in middleware[1] && middleware[1].handle)
+    assert.containsSubset(middleware[0], { name: 'auth', args: undefined })
+    assert.containsSubset(middleware[1], { name: 'acl', args: undefined })
   })
 
   test('give name to the route', ({ assert }) => {

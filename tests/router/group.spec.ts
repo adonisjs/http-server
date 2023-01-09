@@ -460,6 +460,45 @@ test.group('Route group | middleware', () => {
     assert.deepEqual(routesJSON[0].middleware.all(), new Set([limiterMiddleware, authMiddleware]))
   })
 
+  test('prepend multiple middleware to existing route middleware', ({ assert }) => {
+    const app = new AppFactory().create()
+
+    async function handler() {}
+    function authMiddleware() {}
+    function limiterMiddleware() {}
+    function rmbMiddleware() {}
+
+    const route = new Route(app, [], {
+      pattern: '/:id',
+      methods: ['GET'],
+      handler,
+      globalMatchers: {},
+    })
+    route.middleware(authMiddleware)
+
+    const group = new RouteGroup([route])
+    group.middleware([limiterMiddleware, rmbMiddleware])
+
+    const routesJSON = toRoutesJSON(group.routes)
+
+    assert.containsSubset(routesJSON, [
+      {
+        pattern: '/:id',
+        matchers: {},
+        meta: {},
+        methods: ['GET'],
+        domain: 'root',
+        handler,
+        name: undefined,
+      },
+    ])
+
+    assert.deepEqual(
+      routesJSON[0].middleware.all(),
+      new Set([limiterMiddleware, rmbMiddleware, authMiddleware])
+    )
+  })
+
   test('keep group own middleware in right order', ({ assert }) => {
     const app = new AppFactory().create()
 
@@ -631,13 +670,11 @@ test.group('Route group | middleware', () => {
       r.middleware(namedMiddleware.logGet())
     })
     resource.tap(['store'], (r) => {
-      r.middleware(namedMiddleware.logPost())
-      r.middleware(namedMiddleware.logForm())
+      r.middleware([namedMiddleware.logPost(), namedMiddleware.logForm()])
     })
 
     const group = new RouteGroup([route, resource])
-    group.middleware(namedMiddleware.limiter())
-    group.middleware(namedMiddleware.acl())
+    group.middleware([namedMiddleware.limiter(), namedMiddleware.acl()])
 
     const route1 = new Route(app, [], {
       pattern: '1/:id',

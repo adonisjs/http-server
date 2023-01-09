@@ -10,6 +10,11 @@
 export type { NextFn } from '@poppinss/middleware/types'
 
 /**
+ * Accept one or more of the mentioned type
+ */
+export type OneOrMore<T> = T | T[]
+
+/**
  * Class constructor type
  */
 export type Constructor<T> = new (...args: any[]) => T

@@ -16,7 +16,7 @@ import { moduleCaller, moduleExpression, moduleImporter } from '@adonisjs/fold'
 
 import { execute } from './executor.js'
 import { dropSlash } from '../helpers.js'
-import type { Constructor, LazyImport } from '../types/base.js'
+import type { Constructor, LazyImport, OneOrMore } from '../types/base.js'
 
 import type {
   MiddlewareFn,
@@ -252,15 +252,15 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
    * Named middleware can be referenced using the name registered with
    * the router middleware store.
    */
-  use(middleware: MiddlewareFn | ParsedNamedMiddleware): this {
-    this.#middleware.push([middleware])
+  use(middleware: OneOrMore<MiddlewareFn | ParsedNamedMiddleware>): this {
+    this.#middleware.push(Array.isArray(middleware) ? middleware : [middleware])
     return this
   }
 
   /**
    * @alias use
    */
-  middleware(middleware: MiddlewareFn | ParsedNamedMiddleware): this {
+  middleware(middleware: OneOrMore<MiddlewareFn | ParsedNamedMiddleware>): this {
     return this.use(middleware)
   }
 
