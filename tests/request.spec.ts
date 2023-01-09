@@ -83,6 +83,33 @@ test.group('Request', () => {
     })
   })
 
+  test('updating nested properties of request body must not impact the original body', async ({
+    assert,
+  }) => {
+    const server = createServer((req, res) => {
+      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      request.setInitialBody({ user: { username: 'virk' } })
+      const body = request.body()
+      body.user.username = 'romain'
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          body: request.body(),
+          all: request.all(),
+          original: request.original(),
+        })
+      )
+    })
+
+    const { body } = await supertest(server).get('/')
+    assert.deepEqual(body, {
+      body: { user: { username: 'romain' } },
+      all: { user: { username: 'romain' } },
+      original: { user: { username: 'virk' } },
+    })
+  })
+
   test('merge query string with all and original', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()

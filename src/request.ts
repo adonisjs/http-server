@@ -178,7 +178,7 @@ export class Request extends Macroable {
     /*
      * Freeze the original object
      */
-    this.#originalRequestData = Object.freeze({ ...this.#requestData })
+    this.#originalRequestData = Object.freeze(lodash.cloneDeep(this.#requestData))
   }
 
   /**
