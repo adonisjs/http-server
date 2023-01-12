@@ -8,18 +8,20 @@
  */
 
 import { test } from '@japa/runner'
+import { AppFactory } from '@adonisjs/application/test_factories/app'
 
 import { Route } from '../../src/router/route.js'
 import { toRoutesJSON } from '../../src/helpers.js'
 import { BriskRoute } from '../../src/router/brisk.js'
 import { RouteGroup } from '../../src/router/group.js'
-import { AppFactory } from '../../test_factories/app.js'
 import { RouteResource } from '../../src/router/resource.js'
 import { defineNamedMiddleware } from '../../src/define_middleware.js'
 
+const BASE_URL = new URL('./app/', import.meta.url)
+
 test.group('Route Group', () => {
   test('define resource inside the group', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
 
     const resource = new RouteResource(app, [], {
       resource: 'photos',
@@ -93,7 +95,7 @@ test.group('Route Group', () => {
 
 test.group('Route group | prefix', () => {
   test('define routes prefix', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new Route(app, [], {
@@ -119,7 +121,7 @@ test.group('Route group | prefix', () => {
   })
 
   test('define routes prefix in nested groups', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new Route(app, [], {
@@ -149,7 +151,7 @@ test.group('Route group | prefix', () => {
   })
 
   test('define routes prefix on resourceful routes', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
 
     const resource = new RouteResource(app, [], {
       resource: 'app-posts',
@@ -233,7 +235,7 @@ test.group('Route group | prefix', () => {
   })
 
   test('define prefix on a brisk route', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new BriskRoute(app, [], {
@@ -261,7 +263,7 @@ test.group('Route group | prefix', () => {
 
 test.group('Route group | as', () => {
   test('prepend name to the existing route names', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new Route(app, [], {
@@ -289,7 +291,7 @@ test.group('Route group | as', () => {
   })
 
   test('prepend name inside nested groups', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new Route(app, [], {
@@ -320,7 +322,7 @@ test.group('Route group | as', () => {
   })
 
   test('prepend name to resourceful routes', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
 
     const resource = new RouteResource(app, [], {
       resource: 'posts',
@@ -396,7 +398,7 @@ test.group('Route group | as', () => {
   })
 
   test('prepend name to the existing brisk route names', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new BriskRoute(app, [], {
@@ -426,7 +428,7 @@ test.group('Route group | as', () => {
 
 test.group('Route group | middleware', () => {
   test('prepend middleware to existing route middleware', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     function authMiddleware() {}
@@ -461,7 +463,7 @@ test.group('Route group | middleware', () => {
   })
 
   test('prepend multiple middleware to existing route middleware', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     function authMiddleware() {}
@@ -500,7 +502,7 @@ test.group('Route group | middleware', () => {
   })
 
   test('keep group own middleware in right order', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     function aclMiddleware() {}
@@ -540,7 +542,7 @@ test.group('Route group | middleware', () => {
   })
 
   test('define nested group middleware in right order', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     function aclMiddleware() {}
@@ -643,7 +645,7 @@ test.group('Route group | middleware', () => {
       },
     })
 
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new Route(app, [], {
@@ -864,7 +866,7 @@ test.group('Route group | middleware', () => {
   })
 
   test('prepend middleware to existing brisk route middleware', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     function authMiddleware() {}
@@ -901,7 +903,7 @@ test.group('Route group | middleware', () => {
 
 test.group('Route group | domain', () => {
   test('define routes domain', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new Route(app, [], {
@@ -927,7 +929,7 @@ test.group('Route group | domain', () => {
   })
 
   test('define route domain in nested groups', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new Route(app, [], {
@@ -955,7 +957,7 @@ test.group('Route group | domain', () => {
   })
 
   test('define domain on resourceful routes', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
 
     const resource = new RouteResource(app, [], {
       resource: 'app-posts',
@@ -1037,7 +1039,7 @@ test.group('Route group | domain', () => {
   })
 
   test('define brisk route domain', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new BriskRoute(app, [], {
@@ -1065,7 +1067,7 @@ test.group('Route group | domain', () => {
 
 test.group('Route group | matchers', () => {
   test('add matcher to group routes', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new Route(app, [], {
@@ -1094,7 +1096,7 @@ test.group('Route group | matchers', () => {
   })
 
   test('add matcher to nested group routes', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new Route(app, [], {
@@ -1126,7 +1128,7 @@ test.group('Route group | matchers', () => {
   })
 
   test('do not overwrite matcher defined explicitly on the route', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new Route(app, [], {
@@ -1159,7 +1161,7 @@ test.group('Route group | matchers', () => {
   })
 
   test('add matcher resource routes', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
 
     const route = new RouteResource(app, [], {
       resource: 'posts',
@@ -1272,7 +1274,7 @@ test.group('Route group | matchers', () => {
   })
 
   test('add matcher to brisk routes in the group', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     async function handler() {}
 
     const route = new BriskRoute(app, [], {

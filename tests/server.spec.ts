@@ -13,17 +13,19 @@ import { test } from '@japa/runner'
 import { createServer } from 'node:http'
 import { Emitter } from '@adonisjs/events'
 import type { NextFn } from '@poppinss/middleware/types'
+import { AppFactory } from '@adonisjs/application/test_factories/app'
 
 import { Router } from '../src/router/main.js'
-import { AppFactory } from '../test_factories/app.js'
 import { HttpContext } from '../src/http_context/main.js'
 import { ServerFactory } from '../test_factories/server_factory.js'
 import { defineNamedMiddleware } from '../src/define_middleware.js'
 import { HttpRequestFinishedPayload } from '../src/types/server.js'
 
+const BASE_URL = new URL('./app/', import.meta.url)
+
 test.group('Server', () => {
   test('get router instance used by the server', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     server.use([])
 
@@ -31,7 +33,7 @@ test.group('Server', () => {
   })
 
   test('store http server instance', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     server.use([])
 
@@ -42,7 +44,7 @@ test.group('Server', () => {
   })
 
   test('emit request finished route handler', async ({ assert }, done) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const emitter = new Emitter(app)
     const server = new ServerFactory().merge({ app, emitter }).create()
     const httpServer = createServer(server.handle.bind(server))
@@ -65,7 +67,7 @@ test.group('Server', () => {
 
 test.group('Server | Response handling', () => {
   test('invoke router handler', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -80,7 +82,7 @@ test.group('Server | Response handling', () => {
   })
 
   test('use route handler return value when response.send is not called', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -95,7 +97,7 @@ test.group('Server | Response handling', () => {
   })
 
   test('use route handler return value when handler is not async', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -110,7 +112,7 @@ test.group('Server | Response handling', () => {
   })
 
   test('use route handler return value when middleware does not return it', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -133,7 +135,7 @@ test.group('Server | Response handling', () => {
   test('use route handler return value when server middleware does not return it', async ({
     assert,
   }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -160,7 +162,7 @@ test.group('Server | Response handling', () => {
   })
 
   test('do not use return value when response.send is called', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -180,7 +182,7 @@ test.group('Server | Response handling', () => {
   test('redirect to given route', async ({ assert }) => {
     assert.plan(2)
 
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -208,7 +210,7 @@ test.group('Server | Response handling', () => {
   test('redirect to given path', async ({ assert }) => {
     assert.plan(2)
 
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -233,7 +235,7 @@ test.group('Server | Response handling', () => {
   })
 
   test('invoke a domain specific router handler', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -257,7 +259,7 @@ test.group('Server | Response handling', () => {
   })
 
   test('return 404 when route for a top level domain does not exists', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -277,7 +279,7 @@ test.group('Server | Response handling', () => {
   })
 
   test('redirect to a route using route.redirect method', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -296,7 +298,7 @@ test.group('Server | Response handling', () => {
   })
 
   test('redirect to a path using route.redirectToPath method', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -314,7 +316,7 @@ test.group('Server | Response handling', () => {
   })
 
   test('redirect to a route with custom status code', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -333,7 +335,7 @@ test.group('Server | Response handling', () => {
   })
 
   test('redirect to a path with custom status code', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -354,7 +356,7 @@ test.group('Server | middleware', () => {
   test('execute server middleware before route handler', async ({ assert }) => {
     const stack: string[] = []
 
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -401,7 +403,7 @@ test.group('Server | middleware', () => {
   test('execute server middleware before route middleware and handler', async ({ assert }) => {
     const stack: string[] = []
 
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
@@ -453,7 +455,7 @@ test.group('Server | middleware', () => {
   test('terminate request from server middleware', async ({ assert }) => {
     const stack: string[] = []
 
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
@@ -506,7 +508,7 @@ test.group('Server | middleware', () => {
   test('terminate request from server by raising exception', async ({ assert }) => {
     const stack: string[] = []
 
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
@@ -559,7 +561,7 @@ test.group('Server | middleware', () => {
 
 test.group('Server | error handler', () => {
   test('pass server middleware errors to the error handler', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
@@ -598,7 +600,7 @@ test.group('Server | error handler', () => {
   })
 
   test('pass router middleware errors to the error handler', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
@@ -652,7 +654,7 @@ test.group('Server | error handler', () => {
       },
     })
 
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -683,7 +685,7 @@ test.group('Server | error handler', () => {
   })
 
   test('pass route handler errors to the error handler', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
@@ -713,7 +715,7 @@ test.group('Server | error handler', () => {
   })
 
   test('report response serialization errors', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
@@ -734,7 +736,7 @@ test.group('Server | error handler', () => {
   })
 
   test('report when error handler raises exception', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
@@ -763,7 +765,7 @@ test.group('Server | error handler', () => {
   })
 
   test('raise 404 when route is missing', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
@@ -778,7 +780,7 @@ test.group('Server | error handler', () => {
 
 test.group('Server | force content negotiation', () => {
   test('set accept header when forceContentNegotiationTo is a string', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
@@ -796,7 +798,7 @@ test.group('Server | force content negotiation', () => {
   }).fails('Ship a middleware for this')
 
   test('find if the signed url signature is valid', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory().merge({ app }).create()
     const httpServer = createServer(server.handle.bind(server))
     await app.init()
@@ -826,7 +828,7 @@ test.group('Server | force content negotiation', () => {
   }).tags(['regression'])
 
   test('access context from the async local storage', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory()
       .merge({
         app,
@@ -867,7 +869,7 @@ test.group('Server | force content negotiation', () => {
   })
 
   test('run a callback outside the ALS context', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory()
       .merge({
         app,
@@ -901,7 +903,7 @@ test.group('Server | force content negotiation', () => {
   })
 
   test('disallow async local storage access when not enabled', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory()
       .merge({
         app,
@@ -950,7 +952,7 @@ test.group('Server | force content negotiation', () => {
   })
 
   test('run a callback outside the ALS context', async ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const server = new ServerFactory()
       .merge({
         app,

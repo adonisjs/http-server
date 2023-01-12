@@ -11,9 +11,9 @@ import { Socket } from 'node:net'
 import proxyAddr from 'proxy-addr'
 import type { Encryption } from '@adonisjs/encryption'
 import { IncomingMessage, ServerResponse } from 'node:http'
+import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
 
 import { Request } from '../src/request.js'
-import { EncryptionFactory } from './encryption.js'
 import { RequestConfig } from '../src/types/request.js'
 import { QsParserFactory } from './qs_parser_factory.js'
 

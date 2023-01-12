@@ -9,9 +9,9 @@
 
 import { test } from '@japa/runner'
 import { base64, MessageBuilder } from '@poppinss/utils'
+import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
 
 import { CookieSerializer } from '../../src/cookies/serializer.js'
-import { EncryptionFactory } from '../../test_factories/encryption.js'
 
 const encryption = new EncryptionFactory().create()
 

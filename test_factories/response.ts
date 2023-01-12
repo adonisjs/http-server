@@ -10,11 +10,11 @@
 import { Socket } from 'node:net'
 import type { Encryption } from '@adonisjs/encryption'
 import { IncomingMessage, ServerResponse } from 'node:http'
+import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
 
 import { RouterFactory } from './router.js'
 import { Response } from '../src/response.js'
 import { Router } from '../src/router/main.js'
-import { EncryptionFactory } from './encryption.js'
 import { ResponseConfig } from '../src/types/response.js'
 import { QsParserFactory } from './qs_parser_factory.js'
 

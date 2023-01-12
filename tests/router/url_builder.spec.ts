@@ -8,17 +8,19 @@
  */
 
 import { test } from '@japa/runner'
+import { AppFactory } from '@adonisjs/application/test_factories/app'
+import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
 
 import { Route } from '../../src/router/route.js'
-import { AppFactory } from '../../test_factories/app.js'
 import { RequestFactory } from '../../test_factories/request.js'
 import { LookupStore } from '../../src/router/lookup_store/main.js'
-import { EncryptionFactory } from '../../test_factories/encryption.js'
 import { QsParserFactory } from '../../test_factories/qs_parser_factory.js'
+
+const BASE_URL = new URL('./app/', import.meta.url)
 
 test.group('URL builder', () => {
   test('create url for a route', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -34,7 +36,7 @@ test.group('URL builder', () => {
   })
 
   test('create url for a route by its name', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -51,7 +53,7 @@ test.group('URL builder', () => {
   })
 
   test('create url for a route by the handler name', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -226,7 +228,7 @@ test.group('URL builder', () => {
   })
 
   test('build route with params and extension', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 

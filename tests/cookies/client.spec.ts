@@ -8,8 +8,9 @@
  */
 
 import { test } from '@japa/runner'
+import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
+
 import { CookieClient } from '../../src/cookies/client.js'
-import { EncryptionFactory } from '../../test_factories/encryption.js'
 
 const encryption = new EncryptionFactory().create()
 

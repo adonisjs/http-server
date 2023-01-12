@@ -10,13 +10,15 @@
 import supertest from 'supertest'
 import { test } from '@japa/runner'
 import { createServer } from 'node:http'
+import { AppFactory } from '@adonisjs/application/test_factories/app'
+import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
 
-import { AppFactory } from '../test_factories/app.js'
 import { RouterFactory } from '../test_factories/router.js'
-import { EncryptionFactory } from '../test_factories/encryption.js'
 import { ResponseFactory } from '../test_factories/response.js'
 
-const app = new AppFactory().create()
+const BASE_URL = new URL('./app/', import.meta.url)
+
+const app = new AppFactory().create(BASE_URL)
 const encryption = new EncryptionFactory().create()
 const router = new RouterFactory().merge({ app, encryption }).create()
 

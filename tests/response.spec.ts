@@ -17,19 +17,19 @@ import { Readable } from 'node:stream'
 import { fileURLToPath } from 'node:url'
 import { createServer } from 'node:http'
 import { createWriteStream, createReadStream } from 'node:fs'
+import { AppFactory } from '@adonisjs/application/test_factories/app'
+import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
 
 import { Response } from '../src/response.js'
-import { AppFactory } from '../test_factories/app.js'
 import { CookieParser } from '../src/cookies/parser.js'
 import { RouterFactory } from '../test_factories/router.js'
 import { ResponseFactory } from '../test_factories/response.js'
-import { EncryptionFactory } from '../test_factories/encryption.js'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 const BASE_PATH = fileURLToPath(BASE_URL)
 
 const encryption = new EncryptionFactory().create()
-const app = new AppFactory().merge({ appRoot: BASE_URL }).create()
+const app = new AppFactory().create(BASE_URL)
 const router = new RouterFactory().merge({ app, encryption }).create()
 
 test.group('Response', (group) => {

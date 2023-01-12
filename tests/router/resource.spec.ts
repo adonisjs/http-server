@@ -8,13 +8,15 @@
  */
 
 import { test } from '@japa/runner'
+import { AppFactory } from '@adonisjs/application/test_factories/app'
 
-import { AppFactory } from '../../test_factories/app.js'
 import { RouteResource } from '../../src/router/resource.js'
+
+const BASE_URL = new URL('./app/', import.meta.url)
 
 test.group('Route Resource', () => {
   test('define resource routes', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
@@ -92,7 +94,7 @@ test.group('Route Resource', () => {
   })
 
   test('cleanup leading and trailing slashes', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: '/photos/',
       controller: '#controllers/photos',
@@ -171,7 +173,7 @@ test.group('Route Resource', () => {
   })
 
   test('define resource with a parent path', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'v1/photos',
       controller: '#controllers/photos',
@@ -250,7 +252,7 @@ test.group('Route Resource', () => {
   })
 
   test('raise error when resource name is a slash', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
 
     assert.throws(
       () =>
@@ -265,7 +267,7 @@ test.group('Route Resource', () => {
   })
 
   test('define nested resource routes', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'magazines.ads',
       controller: '#controllers/ads',
@@ -344,7 +346,7 @@ test.group('Route Resource', () => {
   })
 
   test('add shallow nested resource routes', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'magazines.ads',
       controller: '#controllers/ads',
@@ -423,7 +425,7 @@ test.group('Route Resource', () => {
   })
 
   test('mark non-api routes deleted', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
@@ -438,7 +440,7 @@ test.group('Route Resource', () => {
   })
 
   test("mark all routes as deleted except the defined one's", ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
@@ -459,7 +461,7 @@ test.group('Route Resource', () => {
   })
 
   test('mark routes for defined actions as deleted', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
@@ -486,7 +488,7 @@ test.group('Route Resource', () => {
   test('tap into route by action name', ({ assert }) => {
     assert.plan(1)
 
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
@@ -502,7 +504,7 @@ test.group('Route Resource', () => {
   test('tap into multiple routes by action names', ({ assert }) => {
     assert.plan(2)
 
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
@@ -516,7 +518,7 @@ test.group('Route Resource', () => {
   })
 
   test('define matcher for params', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
@@ -576,7 +578,7 @@ test.group('Route Resource', () => {
   })
 
   test('create snake_case route names when resource name is in dash case', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'user-profile',
       controller: '#controllers/profile',
@@ -657,7 +659,7 @@ test.group('Route Resource', () => {
   test('create snake_case param and route names when nested resource name is in dash-case', ({
     assert,
   }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'user-profile.comments',
       controller: '#controllers/comments',
@@ -736,7 +738,7 @@ test.group('Route Resource', () => {
   })
 
   test('define base prefix for resource route names', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
@@ -761,7 +763,7 @@ test.group('Route Resource', () => {
   })
 
   test('allow re-defining resource name for multiple times', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'main-photos',
       controller: '#controllers/photos',
@@ -811,7 +813,7 @@ test.group('Route Resource', () => {
   })
 
   test('do not normalize resource name', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'main-photos',
       controller: '#controllers/photos',
@@ -848,7 +850,7 @@ test.group('Route Resource', () => {
   })
 
   test('rename the resource param', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
@@ -929,7 +931,7 @@ test.group('Route Resource', () => {
   })
 
   test('rename the resource param multiple times', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'photos',
       controller: '#controllers/photos',
@@ -1011,7 +1013,7 @@ test.group('Route Resource', () => {
   })
 
   test('define custom param name for nested resource', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'magazines.ads',
       controller: '#controllers/ads',
@@ -1092,7 +1094,7 @@ test.group('Route Resource', () => {
   })
 
   test('rename param name for a shallow resource', ({ assert }) => {
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     const resource = new RouteResource(app, [], {
       resource: 'magazines.ads',
       controller: '#controllers/ads',

@@ -9,9 +9,9 @@
 
 import { parse } from 'qs'
 import { test } from '@japa/runner'
+import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
 
 import { RouterFactory } from '../../test_factories/router.js'
-import { EncryptionFactory } from '../../test_factories/encryption.js'
 
 test.group('Router | add', () => {
   test('add routes', ({ assert }) => {

@@ -10,19 +10,21 @@
 import { test } from '@japa/runner'
 import { moduleImporter } from '@adonisjs/fold'
 import type { NextFn } from '@poppinss/middleware/types'
+import { AppFactory } from '@adonisjs/application/test_factories/app'
 
 import { Route } from '../../src/router/route.js'
-import { AppFactory } from '../../test_factories/app.js'
 import type { HttpContext } from '../../src/http_context/main.js'
 import { HttpContextFactory } from '../../test_factories/http_context.js'
 import { defineNamedMiddleware } from '../../src/define_middleware.js'
+
+const BASE_URL = new URL('./app/', import.meta.url)
 
 test.group('Route | execute', () => {
   test('execute route handler function', async ({ assert }) => {
     assert.plan(2)
 
     const stack: string[] = []
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     const context = new HttpContextFactory().create()
@@ -48,7 +50,7 @@ test.group('Route | execute', () => {
     assert.plan(3)
 
     const stack: string[] = []
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     const resolver = app.container.createResolver()
@@ -79,7 +81,7 @@ test.group('Route | execute', () => {
 
   test('execute route controller specified as lazy import', async ({ assert }) => {
     const stack: string[] = []
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     const resolver = app.container.createResolver()
@@ -126,7 +128,7 @@ test.group('Route | execute', () => {
 
   test('execute route controller specified as a class constructor', async ({ assert }) => {
     const stack: string[] = []
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     const resolver = app.container.createResolver()
@@ -169,7 +171,7 @@ test.group('Route | execute', () => {
     assert.plan(4)
 
     const stack: string[] = []
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     const context = new HttpContextFactory().create()
@@ -208,7 +210,7 @@ test.group('Route | execute', () => {
     assert.plan(3)
 
     const stack: string[] = []
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     const context = new HttpContextFactory().create()
@@ -244,7 +246,7 @@ test.group('Route | execute', () => {
     assert.plan(6)
 
     const stack: string[] = []
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     class BodyParserMiddleware {
@@ -311,7 +313,7 @@ test.group('Route | execute', () => {
     assert.plan(3)
 
     const stack: string[] = []
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     class BodyParserMiddleware {
@@ -373,7 +375,7 @@ test.group('Route | execute', () => {
 
   test('catch global middleware exceptions', async ({ assert }) => {
     const stack: string[] = []
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     class BodyParserMiddleware {
@@ -438,7 +440,7 @@ test.group('Route | execute', () => {
 
   test('catch route handler exceptions', async ({ assert }) => {
     const stack: string[] = []
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     class BodyParserMiddleware {
@@ -502,7 +504,7 @@ test.group('Route | execute', () => {
 
   test('pass arguments to the named middleware', async ({ assert }) => {
     const stack: any[] = []
-    const app = new AppFactory().create()
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     class AclMiddleware {
