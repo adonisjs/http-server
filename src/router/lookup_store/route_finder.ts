@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
+import * as errors from '../../exceptions/main.js'
 import type { RouteJSON } from '../../types/route.js'
-import { CannotLookupRouteException } from '../../exceptions/cannot_lookup_route.js'
 
 /**
  * Route finder is used to find a route by its name, route pattern
@@ -45,7 +45,7 @@ export class RouteFinder {
   findOrFail(routeIdentifier: string): RouteJSON {
     const route = this.find(routeIdentifier)
     if (!route) {
-      throw new CannotLookupRouteException(`Cannot lookup route "${routeIdentifier}"`)
+      throw new errors.E_CANNOT_LOOKUP_ROUTE([routeIdentifier])
     }
 
     return route

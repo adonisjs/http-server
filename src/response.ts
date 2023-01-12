@@ -28,7 +28,7 @@ import { Redirect } from './redirect.js'
 import type { Router } from './router/main.js'
 import type { HttpContext } from './http_context/main.js'
 import { CookieSerializer } from './cookies/serializer.js'
-import { AbortException } from './exceptions/abort_exception.js'
+import { E_HTTP_REQUEST_ABORTED } from './exceptions/main.js'
 import type {
   CastableHeader,
   CookieOptions,
@@ -927,7 +927,7 @@ export class Response extends Macroable {
    * used when status is not defined
    */
   abort(body: any, status?: number): never {
-    throw AbortException.invoke(body, status || 400)
+    throw E_HTTP_REQUEST_ABORTED.invoke(body, status || 400)
   }
 
   /**

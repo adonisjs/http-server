@@ -9,9 +9,9 @@
 
 import type { ContainerResolver } from '@adonisjs/fold'
 
+import * as errors from '../../exceptions/main.js'
 import type { Router } from '../../router/main.js'
 import type { HttpContext } from '../../http_context/main.js'
-import { RouteNotFoundException } from '../../exceptions/route_not_found.js'
 
 /**
  * The final handler is executed after the server middleware stack.
@@ -33,6 +33,6 @@ export function finalHandler(router: Router, resolver: ContainerResolver<any>, c
       return route.route.execute(route.route, resolver, ctx)
     }
 
-    return Promise.reject(new RouteNotFoundException(`Cannot ${method}:${url}`))
+    return Promise.reject(new errors.E_ROUTE_NOT_FOUND([method, url]))
   }
 }

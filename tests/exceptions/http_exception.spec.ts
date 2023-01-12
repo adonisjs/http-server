@@ -8,12 +8,12 @@
  */
 
 import { test } from '@japa/runner'
-import { HttpException } from '../../src/exceptions/http_exception.js'
+import { E_HTTP_EXCEPTION } from '../../src/exceptions/main.js'
 
 test.group('Http exception', () => {
   test('create http exception with an error object', ({ assert }) => {
     const error = new Error('Something went wrong')
-    const exception = HttpException.invoke(new Error('Something went wrong'), 500)
+    const exception = E_HTTP_EXCEPTION.invoke(new Error('Something went wrong'), 500)
 
     assert.deepEqual(exception.body, error)
     assert.equal(exception.message, 'Something went wrong')
@@ -22,7 +22,7 @@ test.group('Http exception', () => {
   })
 
   test('create http exception with a string message', ({ assert }) => {
-    const exception = HttpException.invoke('Something went wrong', 500)
+    const exception = E_HTTP_EXCEPTION.invoke('Something went wrong', 500)
 
     assert.deepEqual(exception.body, 'Something went wrong')
     assert.equal(exception.message, 'Something went wrong')
@@ -31,7 +31,7 @@ test.group('Http exception', () => {
   })
 
   test('create http exception with an error of values', ({ assert }) => {
-    const exception = HttpException.invoke([{ message: 'Something went wrong' }], 500)
+    const exception = E_HTTP_EXCEPTION.invoke([{ message: 'Something went wrong' }], 500)
 
     assert.deepEqual(exception.body, [{ message: 'Something went wrong' }])
     assert.equal(exception.message, 'HTTP Exception')
@@ -40,7 +40,10 @@ test.group('Http exception', () => {
   })
 
   test('create http exception with an object without message', ({ assert }) => {
-    const exception = HttpException.invoke({ errors: [{ message: 'Something went wrong' }] }, 500)
+    const exception = E_HTTP_EXCEPTION.invoke(
+      { errors: [{ message: 'Something went wrong' }] },
+      500
+    )
 
     assert.deepEqual(exception.body, { errors: [{ message: 'Something went wrong' }] })
     assert.equal(exception.message, 'HTTP Exception')
@@ -49,7 +52,7 @@ test.group('Http exception', () => {
   })
 
   test('create http exception with null body', ({ assert }) => {
-    const exception = HttpException.invoke(null, 500)
+    const exception = E_HTTP_EXCEPTION.invoke(null, 500)
 
     assert.deepEqual(exception.body, 'Internal server error')
     assert.equal(exception.message, 'HTTP Exception')
@@ -58,7 +61,7 @@ test.group('Http exception', () => {
   })
 
   test('create http exception with undefined body', ({ assert }) => {
-    const exception = HttpException.invoke(undefined, 500)
+    const exception = E_HTTP_EXCEPTION.invoke(undefined, 500)
 
     assert.deepEqual(exception.body, 'Internal server error')
     assert.equal(exception.message, 'HTTP Exception')
