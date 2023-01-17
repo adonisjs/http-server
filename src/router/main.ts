@@ -52,7 +52,7 @@ export class Router extends LookupStore {
   /**
    * Application is needed to resolve string based controller expressions
    */
-  #app: Application<any, any>
+  #app: Application<any>
 
   /**
    * Store with tokenized routes
@@ -92,7 +92,7 @@ export class Router extends LookupStore {
    */
   matchers = new Matchers()
 
-  constructor(app: Application<any, any>, encryption: Encryption, qsParser: Qs) {
+  constructor(app: Application<any>, encryption: Encryption, qsParser: Qs) {
     super(encryption, qsParser)
     this.#app = app
   }

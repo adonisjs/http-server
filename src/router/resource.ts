@@ -45,7 +45,7 @@ export class RouteResource extends Macroable {
   /**
    * Reference to the AdonisJS application
    */
-  #app: Application<any, any>
+  #app: Application<any>
 
   /**
    * Middleware registered on the router
@@ -71,7 +71,7 @@ export class RouteResource extends Macroable {
   routes: Route[] = []
 
   constructor(
-    app: Application<any, any>,
+    app: Application<any>,
     routerMiddleware: ParsedGlobalMiddleware[],
     options: {
       resource: string

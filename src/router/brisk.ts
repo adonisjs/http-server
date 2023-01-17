@@ -37,7 +37,7 @@ export class BriskRoute extends Macroable {
   /**
    * Reference to the AdonisJS application
    */
-  #app: Application<any, any>
+  #app: Application<any>
 
   /**
    * Middleware registered on the router
@@ -50,7 +50,7 @@ export class BriskRoute extends Macroable {
   route: null | Route = null
 
   constructor(
-    app: Application<any, any>,
+    app: Application<any>,
     routerMiddleware: ParsedGlobalMiddleware[],
     options: {
       pattern: string

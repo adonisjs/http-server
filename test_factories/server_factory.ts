@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import { Logger } from '@adonisjs/logger'
 import { Emitter } from '@adonisjs/events'
 import type { Encryption } from '@adonisjs/encryption'
 import type { Application } from '@adonisjs/application'
@@ -18,7 +19,8 @@ import { defineConfig } from '../src/define_config.js'
 import type { ServerConfig } from '../src/types/server.js'
 
 type FactoryParameters = {
-  app: Application<any, any>
+  app: Application<any>
+  logger: Logger
   encryption: Encryption
   emitter: Emitter<any>
   config: Partial<ServerConfig>
@@ -36,6 +38,13 @@ export class ServerFactory {
    */
   #getEmitter() {
     return this.#parameters.emitter || new Emitter(this.#getApp())
+  }
+
+  /**
+   * Returns the logger instance
+   */
+  #getLogger() {
+    return this.#parameters.logger || new Logger({ enabled: false })
   }
 
   /**
@@ -76,6 +85,7 @@ export class ServerFactory {
       this.#getApp(),
       this.#createEncryption(),
       this.#getEmitter(),
+      this.#getLogger(),
       this.#getConfig()
     )
   }

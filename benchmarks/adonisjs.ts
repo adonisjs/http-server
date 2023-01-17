@@ -14,13 +14,20 @@ import { Application } from '@adonisjs/application'
 
 import { defineConfig } from '../index.js'
 import { Server } from '../src/server/main.js'
+import { Logger } from '@adonisjs/logger'
 
 const app = new Application(new URL('./', import.meta.url), { environment: 'web' })
 await app.init()
 
 const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
 
-const server = new Server(app, encryption, new Emitter(app), defineConfig({}))
+const server = new Server(
+  app,
+  encryption,
+  new Emitter(app),
+  new Logger({ enabled: false }),
+  defineConfig({})
+)
 server.getRouter().get('/', async (ctx) => {
   return ctx.response.send({ hello: 'world' })
 })

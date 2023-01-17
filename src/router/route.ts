@@ -75,7 +75,7 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
   /**
    * Reference to the AdonisJS application
    */
-  #app: Application<any, any>
+  #app: Application<any>
 
   /**
    * Middleware registered on the router
@@ -107,7 +107,7 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
   #middleware: StoreRouteMiddleware[][] = []
 
   constructor(
-    app: Application<any, any>,
+    app: Application<any>,
     routerMiddleware: ParsedGlobalMiddleware[],
     options: {
       pattern: string

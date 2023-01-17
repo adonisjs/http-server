@@ -10,6 +10,7 @@
 import onFinished from 'on-finished'
 import { Emitter } from '@adonisjs/events'
 import Middleware from '@poppinss/middleware'
+import type { Logger } from '@adonisjs/logger'
 import type { Encryption } from '@adonisjs/encryption'
 import type { Server as HttpsServer } from 'node:https'
 import type { Application } from '@adonisjs/application'
@@ -46,6 +47,13 @@ export class Server {
   }
 
   /**
+   * Logger instance, a child logger is added
+   * to the context to have request specific
+   * logging capabilities.
+   */
+  #logger: Logger
+
+  /**
    * Registered error handler (if any)
    */
   #errorHandler?: LazyImport<ErrorHandlerAsAClass>
@@ -64,7 +72,7 @@ export class Server {
   /**
    * The application instance to be shared with the router
    */
-  #app: Application<any, any>
+  #app: Application<any>
 
   /**
    * The encryption instance to be shared with the router
@@ -109,14 +117,16 @@ export class Server {
   }
 
   constructor(
-    app: Application<any, any>,
+    app: Application<any>,
     encryption: Encryption,
     emitter: Emitter<any>,
+    logger: Logger,
     config: ServerConfig
   ) {
     this.#app = app
     this.#emitter = emitter
     this.#config = config
+    this.#logger = logger
     this.#encryption = encryption
     this.#qsParser = new Qs(this.#config.qs)
     this.#router = new Router(this.#app, this.#encryption, this.#qsParser)
@@ -265,7 +275,7 @@ export class Server {
     const ctx = new HttpContext(
       request,
       response,
-      this.#app.logger.child({ request_id: request.id() }),
+      this.#logger.child({ request_id: request.id() }),
       resolver
     )
 

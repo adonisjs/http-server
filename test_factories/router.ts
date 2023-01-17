@@ -16,7 +16,7 @@ import { Router } from '../src/router/main.js'
 import { QsParserFactory } from './qs_parser_factory.js'
 
 type FactoryParameters = {
-  app: Application<any, any>
+  app: Application<any>
   encryption: Encryption
 }
 
