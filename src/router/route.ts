@@ -154,7 +154,7 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
        */
       if (is.class_(handler[0])) {
         return {
-          reference: handler[0].name,
+          reference: handler,
           ...moduleCaller(handler[0], (handler[1] || 'handle') as string).toHandleMethod(),
         }
       }
@@ -164,7 +164,7 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
        * loads the controller
        */
       return {
-        reference: handler[0].name,
+        reference: handler,
         ...moduleImporter(handler[0], (handler[1] || 'handle') as string).toHandleMethod(),
       }
     }
