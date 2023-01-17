@@ -119,6 +119,7 @@
     "@adonisjs/application": "^6.7.0-0",
     "@adonisjs/encryption": "^5.1.0-0",
     "@adonisjs/events": "^8.4.1-0",
+    "@adonisjs/logger": "^5.2.0-0",
     "@adonisjs/fold": "^9.9.0-0"
   },
   "repository": {
