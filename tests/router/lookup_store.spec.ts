@@ -13,7 +13,7 @@ import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryptio
 
 import { Route } from '../../src/router/route.js'
 import { LookupStore } from '../../src/router/lookup_store/main.js'
-import { QsParserFactory } from '../../test_factories/qs_parser_factory.js'
+import { QsParserFactory } from '../../factories/qs_parser_factory.js'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 

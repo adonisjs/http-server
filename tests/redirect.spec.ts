@@ -13,8 +13,8 @@ import { createServer } from 'node:http'
 import { AppFactory } from '@adonisjs/application/test_factories/app'
 import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
 
-import { RouterFactory } from '../test_factories/router.js'
-import { ResponseFactory } from '../test_factories/response.js'
+import { RouterFactory } from '../factories/router.js'
+import { ResponseFactory } from '../factories/response.js'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 

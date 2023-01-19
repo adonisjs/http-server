@@ -17,7 +17,7 @@ import { AppFactory } from '@adonisjs/application/test_factories/app'
 
 import { Router } from '../src/router/main.js'
 import { HttpContext } from '../src/http_context/main.js'
-import { ServerFactory } from '../test_factories/server_factory.js'
+import { ServerFactory } from '../factories/server_factory.js'
 import { defineNamedMiddleware } from '../src/define_middleware.js'
 import { HttpRequestFinishedPayload } from '../src/types/server.js'
 

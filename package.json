@@ -6,14 +6,14 @@
   "type": "module",
   "files": [
     "build/src",
-    "build/test_factories",
+    "build/factories",
     "build/index.d.ts",
     "build/index.js"
   ],
   "exports": {
     ".": "./build/index.js",
     "./types": "./build/src/types/main.js",
-    "./test_factories/*": "./build/test_factories/*.js"
+    "./factories": "./build/factories/main.js"
   },
   "scripts": {
     "pretest": "npm run lint",

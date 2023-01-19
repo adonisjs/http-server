@@ -14,7 +14,7 @@ import { AppFactory } from '@adonisjs/application/test_factories/app'
 
 import { Route } from '../../src/router/route.js'
 import type { HttpContext } from '../../src/http_context/main.js'
-import { HttpContextFactory } from '../../test_factories/http_context.js'
+import { HttpContextFactory } from '../../factories/http_context.js'
 import { defineNamedMiddleware } from '../../src/define_middleware.js'
 
 const BASE_URL = new URL('./app/', import.meta.url)

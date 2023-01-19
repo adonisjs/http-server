@@ -22,8 +22,8 @@ import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryptio
 
 import { Response } from '../src/response.js'
 import { CookieParser } from '../src/cookies/parser.js'
-import { RouterFactory } from '../test_factories/router.js'
-import { ResponseFactory } from '../test_factories/response.js'
+import { RouterFactory } from '../factories/router.js'
+import { ResponseFactory } from '../factories/response.js'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 const BASE_PATH = fileURLToPath(BASE_URL)

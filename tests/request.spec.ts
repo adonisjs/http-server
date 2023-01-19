@@ -15,11 +15,11 @@ import Middleware from '@poppinss/middleware'
 import { createServer as httpsServer } from 'node:https'
 import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
 
-import { RequestFactory } from '../test_factories/request.js'
+import { RequestFactory } from '../factories/request.js'
 import { CookieSerializer } from '../src/cookies/serializer.js'
-import { HttpContextFactory } from '../test_factories/http_context.js'
+import { HttpContextFactory } from '../factories/http_context.js'
 import { UrlBuilder } from '../src/router/lookup_store/url_builder.js'
-import { QsParserFactory } from '../test_factories/qs_parser_factory.js'
+import { QsParserFactory } from '../factories/qs_parser_factory.js'
 
 const encryption = new EncryptionFactory().create()
 const serializer = new CookieSerializer(encryption)
