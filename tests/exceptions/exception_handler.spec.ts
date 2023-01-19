@@ -384,4 +384,26 @@ test.group('Exception handler | report', () => {
 
     assert.lengthOf(parsedLogs, 0)
   })
+
+  test('log request id in logs when request id exists', async ({ assert }) => {
+    const logs: string[] = []
+    const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
+    const exceptionHandler = new HttpExceptionHandler(logger)
+    const ctx = new HttpContextFactory().create()
+
+    ctx.request.request.headers['x-request-id'] = '123'
+
+    const error = new Exception('Something went wrong', { status: 302 })
+    await exceptionHandler.report(error, ctx)
+
+    const parsedLogs = logs.map((line) => {
+      const logLine = JSON.parse(line)
+      return { message: logLine.msg, level: logLine.level, requestId: logLine['x-request-id'] }
+    })
+
+    assert.lengthOf(parsedLogs, 1)
+    assert.equal(parsedLogs[0].message, 'Something went wrong')
+    assert.equal(parsedLogs[0].requestId, '123')
+    assert.equal(parsedLogs[0].level, 30)
+  })
 })

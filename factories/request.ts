@@ -41,7 +41,7 @@ export class RequestFactory {
       allowMethodSpoofing: false,
       trustProxy: proxyAddr.compile('loopback'),
       subdomainOffset: 2,
-      generateRequestId: true,
+      generateRequestId: false,
       ...this.#parameters.config,
     }
   }

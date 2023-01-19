@@ -688,7 +688,10 @@ test.group('Request', () => {
 
   test('set x-request-id header when id method is called', async ({ assert }) => {
     const server = createServer((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new RequestFactory()
+        .merge({ req, res, encryption, config: { generateRequestId: true } })
+        .create()
+
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
         JSON.stringify({

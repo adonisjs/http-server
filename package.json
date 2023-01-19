@@ -184,7 +184,7 @@
     ],
     "exclude": [
       "tests/**",
-      "test_factories/**",
+      "factories/**",
       ".yalc/**"
     ]
   }
