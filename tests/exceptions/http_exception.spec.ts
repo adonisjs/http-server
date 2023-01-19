@@ -8,7 +8,7 @@
  */
 
 import { test } from '@japa/runner'
-import { E_HTTP_EXCEPTION } from '../../src/exceptions/main.js'
+import { E_HTTP_EXCEPTION } from '../../src/exceptions.js'
 
 test.group('Http exception', () => {
   test('create http exception with an error object', ({ assert }) => {

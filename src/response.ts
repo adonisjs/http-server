@@ -28,7 +28,7 @@ import { Redirect } from './redirect.js'
 import type { Router } from './router/main.js'
 import type { HttpContext } from './http_context/main.js'
 import { CookieSerializer } from './cookies/serializer.js'
-import { E_HTTP_REQUEST_ABORTED } from './exceptions/main.js'
+import { E_HTTP_REQUEST_ABORTED } from './exceptions.js'
 import type {
   CastableHeader,
   CookieOptions,

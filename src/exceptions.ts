@@ -8,7 +8,7 @@
  */
 
 import { createError, Exception } from '@poppinss/utils'
-import type { HttpContext } from '../http_context/main.js'
+import type { HttpContext } from './http_context/main.js'
 
 export const E_ROUTE_NOT_FOUND = createError<[method: string, url: string]>(
   'Cannot %s:%s',
