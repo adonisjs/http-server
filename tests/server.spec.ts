@@ -567,6 +567,7 @@ test.group('Server | error handler', () => {
     await app.init()
 
     class ErrorHandler {
+      report() {}
       handle(error: any, { response }: HttpContext) {
         assert.equal(error.message, 'Something went wrong')
         response.status(200).send('handled by error handler')
@@ -606,6 +607,7 @@ test.group('Server | error handler', () => {
     await app.init()
 
     class ErrorHandler {
+      report() {}
       handle(error: any, { response }: HttpContext) {
         assert.equal(error.message, 'Something went wrong')
         response.status(200).send('handled by error handler')
@@ -661,6 +663,7 @@ test.group('Server | error handler', () => {
     await app.init()
 
     class ErrorHandler {
+      report() {}
       handle(error: any, { response }: HttpContext) {
         assert.equal(error.message, 'Something went wrong')
         response.status(200).send('handled by error handler')
@@ -691,6 +694,7 @@ test.group('Server | error handler', () => {
     await app.init()
 
     class ErrorHandler {
+      report() {}
       handle(error: any, { response }: HttpContext) {
         assert.equal(error.message, 'Something went wrong')
         response.status(200).send('handled by error handler')
@@ -742,6 +746,7 @@ test.group('Server | error handler', () => {
     await app.init()
 
     class ErrorHandler {
+      report() {}
       handle() {
         throw new Error('Error handler also failed')
       }

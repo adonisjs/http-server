@@ -8,6 +8,8 @@
  */
 
 import Cache from 'tmp-cache'
+import { InvalidArgumentsException } from '@poppinss/utils'
+
 import { Route } from './router/route.js'
 import { BriskRoute } from './router/brisk.js'
 import { RouteGroup } from './router/group.js'
@@ -75,4 +77,32 @@ export function trustProxy(
   const result = proxyFn(remoteAddress, 0)
   proxyCache.set(remoteAddress, result)
   return result
+}
+
+/**
+ * Parses a range expression to an object filled with the range
+ */
+export function parseRange<T>(range: string, value: T): Record<number, T> {
+  const parts = range.split('..')
+  const min = Number(parts[0])
+  const max = Number(parts[1])
+
+  if (Number.isNaN(min) || Number.isNaN(max)) {
+    return {}
+  }
+
+  if (min === max) {
+    return {
+      [min]: value,
+    }
+  }
+
+  if (max < min) {
+    throw new InvalidArgumentsException(`Invalid range "${range}"`)
+  }
+
+  return [...Array(max - min + 1).keys()].reduce((result, step) => {
+    result[min + step] = value
+    return result
+  }, {} as Record<number, T>)
 }

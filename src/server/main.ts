@@ -41,6 +41,7 @@ export class Server {
    * The default error handler to use
    */
   #defaultErrorHandler: ServerErrorHandler = {
+    report() {},
     handle(error, ctx) {
       ctx.response.status(error.status || 500).send(error.message || 'Internal server error')
     },
@@ -162,7 +163,10 @@ export class Server {
    */
   #handleRequest(ctx: HttpContext, resolver: ContainerResolver<any>) {
     return this.#serverMiddlewareStack!.runner()
-      .errorHandler((error) => this.#resolvedErrorHandler.handle(error, ctx))
+      .errorHandler((error) => {
+        this.#resolvedErrorHandler.report(error, ctx)
+        return this.#resolvedErrorHandler.handle(error, ctx)
+      })
       .finalHandler(finalHandler(this.#router!, resolver, ctx))
       .run(middlewareHandler(resolver, ctx))
       .catch((error) => {

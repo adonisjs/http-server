@@ -44,7 +44,7 @@
     "@adonisjs/encryption": "^5.1.0-0",
     "@adonisjs/events": "^8.4.3-0",
     "@adonisjs/fold": "^9.9.0-0",
-    "@adonisjs/logger": "^5.2.0-0",
+    "@adonisjs/logger": "^5.3.0-0",
     "@commitlint/cli": "^17.4.2",
     "@commitlint/config-conventional": "^17.4.2",
     "@fastify/middie": "^8.1.0",
@@ -113,14 +113,15 @@
     "qs": "^6.11.0",
     "tmp-cache": "^1.1.0",
     "type-is": "^1.6.18",
-    "vary": "^1.1.2"
+    "vary": "^1.1.2",
+    "youch": "^3.2.2"
   },
   "peerDependencies": {
     "@adonisjs/application": "^6.8.0-0",
     "@adonisjs/encryption": "^5.1.0-0",
     "@adonisjs/events": "^8.4.3-0",
     "@adonisjs/fold": "^9.9.0-0",
-    "@adonisjs/logger": "^5.2.0-0"
+    "@adonisjs/logger": "^5.3.0-0"
   },
   "repository": {
     "type": "git",
