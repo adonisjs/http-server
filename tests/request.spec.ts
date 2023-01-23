@@ -1255,7 +1255,7 @@ test.group('Request | Cookies', () => {
     })
   })
 
-  test('get value for a single unsigned cookie', async ({ assert }) => {
+  test('get value for a single plain cookie', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -1269,7 +1269,7 @@ test.group('Request | Cookies', () => {
     })
   })
 
-  test('use default value when actual unsigned value is missing', async ({ assert }) => {
+  test('use default value when actual plain cookie value is missing', async ({ assert }) => {
     const server = createServer((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -1298,6 +1298,47 @@ test.group('Request | Cookies', () => {
 
     const cookies = serializer.encode('name', 'virk', { encode: false })!
     const { body } = await supertest(server).get('/').set('cookie', cookies)
+    assert.deepEqual(body, {
+      name: 'virk',
+    })
+  })
+
+  test('get value for a single not encoded cookie using options object', async ({ assert }) => {
+    const server = createServer((req, res) => {
+      const request = new RequestFactory()
+        .merge({
+          req,
+          res,
+          encryption,
+        })
+        .create()
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ name: request.plainCookie('name', { encoded: false }) }))
+    })
+
+    const cookies = serializer.encode('name', 'virk', { encode: false })!
+    const { body } = await supertest(server).get('/').set('cookie', cookies)
+    assert.deepEqual(body, {
+      name: 'virk',
+    })
+  })
+
+  test('specify plain cookie default value via options object', async ({ assert }) => {
+    const server = createServer((req, res) => {
+      const request = new RequestFactory()
+        .merge({
+          req,
+          res,
+          encryption,
+        })
+        .create()
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ name: request.plainCookie('name', { defaultValue: 'virk' }) }))
+    })
+
+    const { body } = await supertest(server).get('/')
     assert.deepEqual(body, {
       name: 'virk',
     })

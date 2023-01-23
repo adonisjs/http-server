@@ -12,6 +12,7 @@ import fresh from 'fresh'
 import typeIs from 'type-is'
 import accepts from 'accepts'
 import { isIP } from 'node:net'
+import is from '@sindresorhus/is'
 import proxyaddr from 'proxy-addr'
 import lodash from '@poppinss/utils/lodash'
 import { safeEqual } from '@poppinss/utils'
@@ -908,9 +909,23 @@ export class Request extends Macroable {
    * Returns value for a given key from unsigned cookies. Optional
    * defaultValue is returned when actual value is undefined.
    */
-  plainCookie(key: string, defaultValue?: string, encoded?: boolean): any {
+  plainCookie(key: string, options?: { defaultValue?: string; encoded?: boolean }): any
+  plainCookie(key: string, defaultValue?: string, encoded?: boolean): any
+  plainCookie(
+    key: string,
+    defaultValueOrOptions?: string | { defaultValue?: string; encoded?: boolean },
+    encoded?: boolean
+  ): any {
     this.#initiateCookieParser()
-    return this.#cookieParser!.decode(key, encoded) || defaultValue
+
+    if (is.object(defaultValueOrOptions)) {
+      return (
+        this.#cookieParser!.decode(key, defaultValueOrOptions?.encoded) ||
+        defaultValueOrOptions.defaultValue
+      )
+    }
+
+    return this.#cookieParser!.decode(key, encoded) || defaultValueOrOptions
   }
 
   /**
