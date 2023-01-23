@@ -90,11 +90,19 @@ export class Response extends Macroable {
   }
 
   /**
-   * Returns true when response body is set using "response.download"
-   * and "response.attachment" methods
+   * Returns true when response body is set using "response.stream"
+   * method
    */
   get hasStream(): boolean {
-    return !!(this.lazyBody.stream || this.lazyBody.fileToStream)
+    return !!this.lazyBody.stream
+  }
+
+  /**
+   * Returns true when response body is set using "response.download"
+   * or "response.attachment" methods
+   */
+  get hasFileToStream(): boolean {
+    return !!this.lazyBody.fileToStream
   }
 
   /**
@@ -103,6 +111,27 @@ export class Response extends Macroable {
    */
   get content() {
     return this.lazyBody.content
+  }
+
+  /**
+   * Returns reference to the stream set using "response.stream"
+   * method
+   */
+  get outgoingStream() {
+    return this.lazyBody.stream?.[0]
+  }
+
+  /**
+   * Returns reference to the file path set using "response.stream"
+   * method.
+   */
+  get fileToStream() {
+    return this.lazyBody.fileToStream
+      ? {
+          path: this.lazyBody.fileToStream[0],
+          generateEtag: this.lazyBody.fileToStream[1],
+        }
+      : undefined
   }
 
   /**

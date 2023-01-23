@@ -8,7 +8,7 @@
  */
 
 import etag from 'etag'
-import fsExtra from 'fs-extra'
+import fsExtra, { read } from 'fs-extra'
 import { join } from 'node:path'
 import supertest from 'supertest'
 import { test } from '@japa/runner'
@@ -400,16 +400,27 @@ test.group('Response', (group) => {
     assert.equal(text, 'true')
   })
 
-  test('hasLazyBody must return true after download has been called', async ({ assert }) => {
+  test('hasLazyBody and hasFileToStream must return true after download has been called', async ({
+    assert,
+  }) => {
     const server = createServer((req, res) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.download('./foo.html')
-      res.end(String(response.hasLazyBody))
+      res.setHeader('content-type', 'application/json')
+      res.end(
+        JSON.stringify({
+          hasLazyBody: response.hasLazyBody,
+          hasFileToStream: response.hasFileToStream,
+        })
+      )
     })
 
-    const { text } = await supertest(server).get('/')
-    assert.equal(text, 'true')
+    const { body } = await supertest(server).get('/')
+    assert.deepEqual(body, {
+      hasLazyBody: true,
+      hasFileToStream: true,
+    })
   })
 
   test('hasContent must return false after download has been called', async ({ assert }) => {
@@ -424,16 +435,27 @@ test.group('Response', (group) => {
     assert.equal(text, 'false')
   })
 
-  test('hasLazyBody must return true after stream has been called', async ({ assert }) => {
+  test('hasLazyBody and hasStream must return true after stream has been called', async ({
+    assert,
+  }) => {
     const server = createServer((req, res) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.stream(new Readable())
-      res.end(String(response.hasLazyBody))
+      res.setHeader('content-type', 'application/json')
+      res.end(
+        JSON.stringify({
+          hasLazyBody: response.hasLazyBody,
+          hasStream: response.hasStream,
+        })
+      )
     })
 
-    const { text } = await supertest(server).get('/')
-    assert.equal(text, 'true')
+    const { body } = await supertest(server).get('/')
+    assert.deepEqual(body, {
+      hasLazyBody: true,
+      hasStream: true,
+    })
   })
 
   test('hasContent must return false after stream has been called', async ({ assert }) => {
@@ -505,8 +527,12 @@ test.group('Response', (group) => {
 
     const server = createServer((req, res) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
-      response.stream(createReadStream(join(BASE_PATH, 'hello.txt')))
+      const readableStream = createReadStream(join(BASE_PATH, 'hello.txt'))
+      response.stream(readableStream)
+
       assert.isTrue(response.hasStream)
+      assert.strictEqual(response.outgoingStream, readableStream)
+
       response.finish()
     })
 
@@ -626,7 +652,15 @@ test.group('Response', (group) => {
     const server = createServer((req, res) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
       response.download(join(BASE_PATH, 'hello.html'))
-      assert.isTrue(response.hasStream)
+
+      assert.isFalse(response.hasStream)
+      assert.isTrue(response.hasFileToStream)
+
+      assert.deepEqual(response.fileToStream, {
+        path: join(BASE_PATH, 'hello.html'),
+        generateEtag: false,
+      })
+
       response.finish()
     })
 
