@@ -628,9 +628,12 @@ export class Response extends Macroable {
    */
   removeHeader(key: string): this {
     key = key.toLowerCase()
+
+    this.response.removeHeader(key)
     if (this.#headers[key]) {
       delete this.#headers[key.toLowerCase()]
     }
+
     return this
   }
 
