@@ -8,7 +8,7 @@
  */
 
 import etag from 'etag'
-import fsExtra, { read } from 'fs-extra'
+import fsExtra from 'fs-extra'
 import { join } from 'node:path'
 import supertest from 'supertest'
 import { test } from '@japa/runner'
