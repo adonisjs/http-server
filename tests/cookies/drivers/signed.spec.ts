@@ -17,7 +17,7 @@
  */
 
 import { test } from '@japa/runner'
-import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
+import { EncryptionFactory } from '@adonisjs/encryption/factories'
 import { pack, unpack, canUnpack } from '../../../src/cookies/drivers/signed.js'
 
 const encryption = new EncryptionFactory().create()

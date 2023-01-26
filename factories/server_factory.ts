@@ -11,8 +11,8 @@ import { Logger } from '@adonisjs/logger'
 import { Emitter } from '@adonisjs/events'
 import type { Encryption } from '@adonisjs/encryption'
 import type { Application } from '@adonisjs/application'
-import { AppFactory } from '@adonisjs/application/test_factories/app'
-import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
+import { AppFactory } from '@adonisjs/application/factories'
+import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { Server } from '../src/server/main.js'
 import { defineConfig } from '../src/define_config.js'
@@ -58,7 +58,9 @@ export class ServerFactory {
    * Returns an instance of the application class
    */
   #getApp() {
-    return this.#parameters.app || new AppFactory().create(new URL('./app/', import.meta.url))
+    return (
+      this.#parameters.app || new AppFactory().create(new URL('./app/', import.meta.url), () => {})
+    )
   }
 
   /**

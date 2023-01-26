@@ -8,14 +8,14 @@
  */
 
 import { test } from '@japa/runner'
-import { AppFactory } from '@adonisjs/application/test_factories/app'
+import { AppFactory } from '@adonisjs/application/factories'
 import { BriskRoute } from '../../src/router/brisk.js'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 
 test.group('Brisk Route', () => {
   test('define handler for the route', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
 
     const brisk = new BriskRoute(app, [], {
       pattern: '/',
@@ -36,7 +36,7 @@ test.group('Brisk Route', () => {
   })
 
   test('define handler after calling the redirect method', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
 
     const brisk = new BriskRoute(app, [], {
       pattern: '/',
@@ -47,7 +47,7 @@ test.group('Brisk Route', () => {
   })
 
   test('define handler after calling the redirectToPath method', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
 
     const brisk = new BriskRoute(app, [], {
       pattern: '/',

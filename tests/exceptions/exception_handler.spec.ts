@@ -9,7 +9,7 @@
 
 import { test } from '@japa/runner'
 import { Exception } from '@poppinss/utils'
-import { LoggerFactory } from '@adonisjs/logger/test_factories/logger'
+import { LoggerFactory } from '@adonisjs/logger/factories'
 
 import { errors, HttpContext } from '../../index.js'
 import { HttpContextFactory } from '../../factories/http_context.js'

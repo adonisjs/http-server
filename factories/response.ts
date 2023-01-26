@@ -10,7 +10,7 @@
 import { Socket } from 'node:net'
 import type { Encryption } from '@adonisjs/encryption'
 import { IncomingMessage, ServerResponse } from 'node:http'
-import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
+import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { RouterFactory } from './router.js'
 import { Response } from '../src/response.js'

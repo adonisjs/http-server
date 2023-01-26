@@ -13,7 +13,7 @@ import { createCertificate } from 'pem'
 import { createServer } from 'node:http'
 import Middleware from '@poppinss/middleware'
 import { createServer as httpsServer } from 'node:https'
-import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
+import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { RequestFactory } from '../factories/request.js'
 import { CookieSerializer } from '../src/cookies/serializer.js'

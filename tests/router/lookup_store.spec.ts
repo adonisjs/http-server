@@ -8,8 +8,8 @@
  */
 
 import { test } from '@japa/runner'
-import { AppFactory } from '@adonisjs/application/test_factories/app'
-import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
+import { AppFactory } from '@adonisjs/application/factories'
+import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { Route } from '../../src/router/route.js'
 import { LookupStore } from '../../src/router/lookup_store/main.js'
@@ -19,7 +19,7 @@ const BASE_URL = new URL('./app/', import.meta.url)
 
 test.group('Lookup store | find', () => {
   test('find a route by route pattern', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -42,7 +42,7 @@ test.group('Lookup store | find', () => {
   })
 
   test('find a route by route name', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -66,7 +66,7 @@ test.group('Lookup store | find', () => {
   })
 
   test('find a route by route controller name', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -96,7 +96,7 @@ test.group('Lookup store | find', () => {
   })
 
   test('do not match route handler name when it is defined as function', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -115,7 +115,7 @@ test.group('Lookup store | find', () => {
 
 test.group('Lookup store | findByOrFail', () => {
   test('find a route by route pattern', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -138,7 +138,7 @@ test.group('Lookup store | findByOrFail', () => {
   })
 
   test('find a route by route name', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -162,7 +162,7 @@ test.group('Lookup store | findByOrFail', () => {
   })
 
   test('find a route by route controller name', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -194,7 +194,7 @@ test.group('Lookup store | findByOrFail', () => {
 
 test.group('Lookup store | has', () => {
   test('check if a route exists', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 

@@ -9,7 +9,7 @@
 
 import { parse } from 'qs'
 import { test } from '@japa/runner'
-import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
+import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { RouterFactory } from '../../factories/router.js'
 

@@ -9,7 +9,7 @@
 
 import { test } from '@japa/runner'
 import { base64, MessageBuilder } from '@poppinss/utils'
-import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
+import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { CookieSerializer } from '../../src/cookies/serializer.js'
 

@@ -8,8 +8,8 @@
  */
 
 import { test } from '@japa/runner'
-import { AppFactory } from '@adonisjs/application/test_factories/app'
-import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
+import { AppFactory } from '@adonisjs/application/factories'
+import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { Route } from '../../src/router/route.js'
 import { RequestFactory } from '../../factories/request.js'
@@ -20,7 +20,7 @@ const BASE_URL = new URL('./app/', import.meta.url)
 
 test.group('URL builder', () => {
   test('create url for a route', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -36,7 +36,7 @@ test.group('URL builder', () => {
   })
 
   test('create url for a route by its name', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -53,7 +53,7 @@ test.group('URL builder', () => {
   })
 
   test('create url for a route by the handler name', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
@@ -228,7 +228,7 @@ test.group('URL builder', () => {
   })
 
   test('build route with params and extension', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL)
+    const app = new AppFactory().create(BASE_URL, () => {})
     const encryption = new EncryptionFactory().create()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 

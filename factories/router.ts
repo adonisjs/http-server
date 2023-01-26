@@ -9,8 +9,8 @@
 
 import type { Encryption } from '@adonisjs/encryption'
 import type { Application } from '@adonisjs/application'
-import { AppFactory } from '@adonisjs/application/test_factories/app'
-import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
+import { AppFactory } from '@adonisjs/application/factories'
+import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { Router } from '../src/router/main.js'
 import { QsParserFactory } from './qs_parser_factory.js'
@@ -31,7 +31,9 @@ export class RouterFactory {
    * Returns an instance of the application class
    */
   #getApp() {
-    return this.#parameters.app || new AppFactory().create(new URL('./app/', import.meta.url))
+    return (
+      this.#parameters.app || new AppFactory().create(new URL('./app/', import.meta.url), () => {})
+    )
   }
 
   /**

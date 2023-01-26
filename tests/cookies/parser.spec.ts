@@ -8,7 +8,7 @@
  */
 
 import { test } from '@japa/runner'
-import { EncryptionFactory } from '@adonisjs/encryption/test_factories/encryption'
+import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { CookieParser } from '../../src/cookies/parser.js'
 import { CookieSerializer } from '../../src/cookies/serializer.js'

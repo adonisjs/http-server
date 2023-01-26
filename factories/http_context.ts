@@ -9,7 +9,7 @@
 
 import { Container } from '@adonisjs/fold'
 import type { Logger } from '@adonisjs/logger'
-import { LoggerFactory } from '@adonisjs/logger/test_factories/logger'
+import { LoggerFactory } from '@adonisjs/logger/factories'
 
 import { RequestFactory } from './request.js'
 import { ResponseFactory } from './response.js'
