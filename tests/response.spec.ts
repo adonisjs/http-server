@@ -29,7 +29,7 @@ const BASE_URL = new URL('./app/', import.meta.url)
 const BASE_PATH = fileURLToPath(BASE_URL)
 
 const encryption = new EncryptionFactory().create()
-const app = new AppFactory().create(BASE_URL)
+const app = new AppFactory().create(BASE_URL, () => {})
 const router = new RouterFactory().merge({ app, encryption }).create()
 
 test.group('Response', (group) => {

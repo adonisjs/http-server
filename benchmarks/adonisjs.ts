@@ -16,7 +16,10 @@ import { defineConfig } from '../index.js'
 import { Server } from '../src/server/main.js'
 import { Logger } from '@adonisjs/logger'
 
-const app = new Application(new URL('./', import.meta.url), { environment: 'web' })
+const app = new Application(new URL('./', import.meta.url), {
+  environment: 'web',
+  importer: () => {},
+})
 await app.init()
 
 const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
