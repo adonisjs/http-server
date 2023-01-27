@@ -954,9 +954,9 @@ export class Request extends Macroable {
   }
 
   /**
-   * toJSON copy of the request
+   * Serializes request to JSON format
    */
-  toJSON() {
+  serialize() {
     return {
       id: this.id(),
       url: this.url(),
@@ -971,5 +971,12 @@ export class Request extends Macroable {
       ip: this.ip(),
       subdomains: this.ctx?.subdomains || {},
     }
+  }
+
+  /**
+   * toJSON copy of the request
+   */
+  toJSON() {
+    return this.serialize()
   }
 }
