@@ -8,8 +8,8 @@
  */
 
 import { inspect } from 'node:util'
+import Macroable from '@poppinss/macroable'
 import type { Logger } from '@adonisjs/logger'
-import { Macroable } from '@poppinss/macroable'
 import { RuntimeException } from '@poppinss/utils'
 import { ContainerResolver } from '@adonisjs/fold'
 

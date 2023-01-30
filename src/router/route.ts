@@ -8,8 +8,8 @@
  */
 
 import is from '@sindresorhus/is'
+import Macroable from '@poppinss/macroable'
 import Middleware from '@poppinss/middleware'
-import { Macroable } from '@poppinss/macroable'
 import { RuntimeException } from '@poppinss/utils'
 import type { Application } from '@adonisjs/application'
 import { moduleCaller, moduleExpression, moduleImporter } from '@adonisjs/fold'

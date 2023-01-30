@@ -8,7 +8,7 @@
  */
 
 import string from '@poppinss/utils/string'
-import { Macroable } from '@poppinss/macroable'
+import Macroable from '@poppinss/macroable'
 import { RuntimeException } from '@poppinss/utils'
 import type { Application } from '@adonisjs/application'
 

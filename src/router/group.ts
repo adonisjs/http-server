@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Macroable } from '@poppinss/macroable'
+import Macroable from '@poppinss/macroable'
 import type { RouteMatcher, StoreRouteMiddleware } from '../types/route.js'
 import type { MiddlewareFn, ParsedNamedMiddleware } from '../types/middleware.js'
 

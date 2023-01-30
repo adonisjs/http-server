@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Macroable } from '@poppinss/macroable'
+import Macroable from '@poppinss/macroable'
 
 /**
  * Shortcut methods for commonly used route matchers
