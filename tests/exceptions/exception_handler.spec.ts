@@ -12,14 +12,14 @@ import { Exception } from '@poppinss/utils'
 import { LoggerFactory } from '@adonisjs/logger/factories'
 
 import { errors, HttpContext } from '../../index.js'
+import { ExceptionHandler } from '../../src/exception_handler.js'
 import { HttpContextFactory } from '../../factories/http_context.js'
-import { HttpExceptionHandler } from '../../src/exception_handler.js'
 import { StatusPageRange, StatusPageRenderer } from '../../src/types/server.js'
 
 test.group('Exception handler | handle', () => {
   test('handle error by pretty printing it using youch', async ({ assert }) => {
     const logger = new LoggerFactory().create()
-    const exceptionHandler = new HttpExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler(logger)
     const ctx = new HttpContextFactory().create()
 
     const error = new Error('Something went wrong')
@@ -31,7 +31,7 @@ test.group('Exception handler | handle', () => {
 
   test('pretty error as JSON when request accepts JSON', async ({ assert }) => {
     const logger = new LoggerFactory().create()
-    const exceptionHandler = new HttpExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler(logger)
     const ctx = new HttpContextFactory().create()
 
     ctx.request.request.headers['accept'] = 'application/json'
@@ -46,7 +46,7 @@ test.group('Exception handler | handle', () => {
 
   test('pretty error as JSON when request accepts JSONAPI', async ({ assert }) => {
     const logger = new LoggerFactory().create()
-    const exceptionHandler = new HttpExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler(logger)
     const ctx = new HttpContextFactory().create()
 
     ctx.request.request.headers['accept'] = 'application/vnd.api+json'
@@ -60,7 +60,7 @@ test.group('Exception handler | handle', () => {
   })
 
   test('do not render stack trace when debugging is disabled', async ({ assert }) => {
-    class AppExceptionHandler extends HttpExceptionHandler {
+    class AppExceptionHandler extends ExceptionHandler {
       protected debug: boolean = false
     }
 
@@ -78,7 +78,7 @@ test.group('Exception handler | handle', () => {
   test('do not render stack trace in JSON response when debugging is disabled', async ({
     assert,
   }) => {
-    class AppExceptionHandler extends HttpExceptionHandler {
+    class AppExceptionHandler extends ExceptionHandler {
       protected debug: boolean = false
     }
 
@@ -97,7 +97,7 @@ test.group('Exception handler | handle', () => {
   test('do not render stack trace in JSON API response when debugging is disabled', async ({
     assert,
   }) => {
-    class AppExceptionHandler extends HttpExceptionHandler {
+    class AppExceptionHandler extends ExceptionHandler {
       protected debug: boolean = false
     }
 
@@ -123,7 +123,7 @@ test.group('Exception handler | handle', () => {
 
   test('use error status code', async ({ assert }) => {
     const logger = new LoggerFactory().create()
-    const exceptionHandler = new HttpExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler(logger)
     const ctx = new HttpContextFactory().create()
 
     const error = new Exception('Something went wrong', { status: 401 })
@@ -134,7 +134,7 @@ test.group('Exception handler | handle', () => {
 
   test('render error using the error handle method', async ({ assert }) => {
     const logger = new LoggerFactory().create()
-    const exceptionHandler = new HttpExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler(logger)
     const ctx = new HttpContextFactory().create()
 
     class MyError extends Exception {
@@ -151,7 +151,7 @@ test.group('Exception handler | handle', () => {
   })
 
   test('render status page', async ({ assert }) => {
-    class AppExceptionHandler extends HttpExceptionHandler {
+    class AppExceptionHandler extends ExceptionHandler {
       protected renderStatusPages: boolean = true
       protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {
         '400..499': (error, ctx) => {
@@ -174,7 +174,7 @@ test.group('Exception handler | handle', () => {
   })
 
   test('do not render status page when exception has handle method', async ({ assert }) => {
-    class AppExceptionHandler extends HttpExceptionHandler {
+    class AppExceptionHandler extends ExceptionHandler {
       protected renderStatusPages: boolean = true
       protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {
         '400..499': (error, ctx) => {
@@ -202,7 +202,7 @@ test.group('Exception handler | handle', () => {
 
   test('handle literal values raised as exception', async ({ assert }) => {
     const logger = new LoggerFactory().create()
-    const exceptionHandler = new HttpExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler(logger)
     const ctx = new HttpContextFactory().create()
 
     ctx.request.request.headers['accept'] = 'application/json'
@@ -219,7 +219,7 @@ test.group('Exception handler | report', () => {
   test('report error using logger', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new HttpExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler(logger)
     const ctx = new HttpContextFactory().create()
 
     const error = new Error('Something went wrong')
@@ -239,7 +239,7 @@ test.group('Exception handler | report', () => {
   test('report errors with status code in 400 range as a warning', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new HttpExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler(logger)
     const ctx = new HttpContextFactory().create()
 
     const error = new Exception('Something went wrong', { status: 410 })
@@ -259,7 +259,7 @@ test.group('Exception handler | report', () => {
   test('report errors with status code below 400 as info', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new HttpExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler(logger)
     const ctx = new HttpContextFactory().create()
 
     const error = new Exception('Something went wrong', { status: 302 })
@@ -279,7 +279,7 @@ test.group('Exception handler | report', () => {
   test('do not report 400, 422 and 401 error codes', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new HttpExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler(logger)
     const ctx = new HttpContextFactory().create()
 
     await exceptionHandler.report(new Exception('Something went wrong', { status: 400 }), ctx)
@@ -297,7 +297,7 @@ test.group('Exception handler | report', () => {
   test('do not report internal exceptions', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new HttpExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler(logger)
     const ctx = new HttpContextFactory().create()
 
     await exceptionHandler.report(new errors.E_CANNOT_LOOKUP_ROUTE(['/']), ctx)
@@ -314,7 +314,7 @@ test.group('Exception handler | report', () => {
   })
 
   test('do not report when error reporting is turned off', async ({ assert }) => {
-    class AppExceptionHandler extends HttpExceptionHandler {
+    class AppExceptionHandler extends ExceptionHandler {
       protected reportErrors: boolean = false
     }
 
@@ -337,7 +337,7 @@ test.group('Exception handler | report', () => {
   test('report error using the error report method', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new HttpExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler(logger)
     const ctx = new HttpContextFactory().create()
 
     class MyError extends Exception {
@@ -361,7 +361,7 @@ test.group('Exception handler | report', () => {
   })
 
   test('ignore error codes when reporting error', async ({ assert }) => {
-    class AppExceptionHandler extends HttpExceptionHandler {
+    class AppExceptionHandler extends ExceptionHandler {
       protected ignoreCodes: string[] = ['E_CUSTOM_ERROR']
     }
 
@@ -388,7 +388,7 @@ test.group('Exception handler | report', () => {
   test('log request id in logs when request id exists', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new HttpExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler(logger)
     const ctx = new HttpContextFactory().create()
 
     ctx.request.request.headers['x-request-id'] = '123'

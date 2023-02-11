@@ -28,7 +28,7 @@ import type { HttpError, StatusPageRange, StatusPageRenderer } from './types/ser
  * - Transforming errors to JSON or HTML using content negotiation
  * - Reporting errors
  */
-export class HttpExceptionHandler {
+export class ExceptionHandler {
   /**
    * Whether or not to render debug info. When set to true, the errors
    * will have the complete error stack.
