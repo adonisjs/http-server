@@ -254,6 +254,32 @@ export class Server {
   }
 
   /**
+   * Creates an instance of the [[Request]] class
+   */
+  createRequest(req: IncomingMessage, res: ServerResponse) {
+    return new Request(req, res, this.#encryption, this.#config, this.#qsParser)
+  }
+
+  /**
+   * Creates an instance of the [[Response]] class
+   */
+  createResponse(req: IncomingMessage, res: ServerResponse) {
+    return new Response(req, res, this.#encryption, this.#config, this.#router, this.#qsParser)
+  }
+
+  /**
+   * Creates an instance of the [[HttpContext]] class
+   */
+  createHttpContext(request: Request, response: Response, resolver: ContainerResolver<any>) {
+    return new HttpContext(
+      request,
+      response,
+      this.#logger.child({ request_id: request.id() }),
+      resolver
+    )
+  }
+
+  /**
    * Handle request
    */
   handle(req: IncomingMessage, res: ServerResponse) {
@@ -267,19 +293,9 @@ export class Server {
      * Creating essential instances
      */
     const resolver = this.#app.container.createResolver()
-    const request = new Request(req, res, this.#encryption, this.#config, this.#qsParser)
-    const response = new Response(
-      req,
-      res,
-      this.#encryption,
-      this.#config,
-      this.#router,
-      this.#qsParser
-    )
-    const ctx = new HttpContext(
-      request,
-      response,
-      this.#logger.child({ request_id: request.id() }),
+    const ctx = this.createHttpContext(
+      this.createRequest(req, res),
+      this.createResponse(req, res),
       resolver
     )
 
