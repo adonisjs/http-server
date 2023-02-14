@@ -7,7 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import type { ContainerResolver } from '@adonisjs/fold'
 import type { ErrorHandler, FinalHandler } from '@poppinss/middleware/types'
 
 import type { Constructor } from './base.js'
