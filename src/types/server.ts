@@ -7,6 +7,9 @@
  * file that was distributed with this source code.
  */
 
+import type { ContainerResolver } from '@adonisjs/fold'
+import type { ErrorHandler, FinalHandler } from '@poppinss/middleware/types'
+
 import type { Constructor } from './base.js'
 import type { QSParserConfig } from './qs.js'
 import type { RequestConfig } from './request.js'
@@ -27,6 +30,15 @@ export type HttpError = {
   errors?: any
   handle?: (...args: any[]) => any
   report?: (...args: any[]) => any
+}
+
+/**
+ * The pipeline for executing middleware during tests
+ */
+export interface TestingMiddlewarePipeline {
+  finalHandler(handler: FinalHandler): this
+  errorHandler(handler: ErrorHandler): this
+  run(ctx: HttpContext): Promise<any>
 }
 
 /**

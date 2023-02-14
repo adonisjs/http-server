@@ -14,12 +14,17 @@ import type { Logger } from '@adonisjs/logger'
 import type { Encryption } from '@adonisjs/encryption'
 import type { Server as HttpsServer } from 'node:https'
 import type { Application } from '@adonisjs/application'
-import { ContainerResolver, moduleImporter } from '@adonisjs/fold'
+import { ContainerResolver, moduleCaller, moduleImporter } from '@adonisjs/fold'
 import type { ServerResponse, IncomingMessage, Server as HttpServer } from 'node:http'
 
 import type { LazyImport } from '../types/base.js'
 import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.js'
-import type { ErrorHandlerAsAClass, ServerConfig, ServerErrorHandler } from '../types/server.js'
+import type {
+  ServerConfig,
+  ServerErrorHandler,
+  ErrorHandlerAsAClass,
+  TestingMiddlewarePipeline,
+} from '../types/server.js'
 
 import { Qs } from '../qs.js'
 import debug from '../debug.js'
@@ -174,6 +179,35 @@ export class Server {
         return this.#defaultErrorHandler.handle(error, ctx)
       })
       .finally(writeResponse(ctx))
+  }
+
+  /**
+   * Creates a pipeline of middleware.
+   */
+  pipeline(middleware: MiddlewareAsClass[]): TestingMiddlewarePipeline {
+    const middlewareStack = new Middleware<ParsedGlobalMiddleware>()
+    middleware.forEach((one) => {
+      middlewareStack.add(moduleCaller(one, 'handle').toHandleMethod())
+    })
+
+    middlewareStack.freeze()
+    const stackRunner = middlewareStack.runner()
+
+    return {
+      finalHandler(handler) {
+        stackRunner.finalHandler(handler)
+        return this
+      },
+      errorHandler(handler) {
+        stackRunner.errorHandler(handler)
+        return this
+      },
+      run(ctx) {
+        return stackRunner.run((handler, next) => {
+          return handler.handle(ctx.containerResolver, ctx, next)
+        })
+      },
+    }
   }
 
   /**

@@ -9,11 +9,12 @@
 
 import 'reflect-metadata'
 import supertest from 'supertest'
+import { Socket } from 'node:net'
 import { test } from '@japa/runner'
-import { createServer } from 'node:http'
 import { Emitter } from '@adonisjs/events'
 import type { NextFn } from '@poppinss/middleware/types'
 import { AppFactory } from '@adonisjs/application/factories'
+import { createServer, IncomingMessage, ServerResponse } from 'node:http'
 
 import { Router } from '../src/router/main.js'
 import { HttpContext } from '../src/http_context/main.js'
@@ -988,5 +989,130 @@ test.group('Server | force content negotiation', () => {
       enabled: false,
       get: false,
     })
+  })
+})
+
+test.group('Server | Pipeline', () => {
+  test('execute middleware pipeline', async ({ assert }) => {
+    const stack: string[] = []
+    const app = new AppFactory().create(BASE_URL, () => {})
+    await app.init()
+
+    const server = new ServerFactory().merge({ app }).create()
+
+    class MiddlewareOne {
+      handle(_: any, next: NextFn) {
+        stack.push('middleware one')
+        return next()
+      }
+    }
+
+    class MiddlewareTwo {
+      handle(_: any, next: NextFn) {
+        stack.push('middleware two')
+        return next()
+      }
+    }
+
+    const req = new IncomingMessage(new Socket())
+    const res = new ServerResponse(req)
+
+    const ctx = server.createHttpContext(
+      server.createRequest(req, res),
+      server.createResponse(req, res),
+      app.container.createResolver()
+    )
+
+    await server.pipeline([MiddlewareOne, MiddlewareTwo]).run(ctx)
+    assert.deepEqual(stack, ['middleware one', 'middleware two'])
+  })
+
+  test('run final handler', async ({ assert }) => {
+    const stack: string[] = []
+    const app = new AppFactory().create(BASE_URL, () => {})
+    await app.init()
+
+    const server = new ServerFactory().merge({ app }).create()
+
+    class MiddlewareOne {
+      handle(_: any, next: NextFn) {
+        stack.push('middleware one')
+        return next()
+      }
+    }
+
+    class MiddlewareTwo {
+      handle(_: any, next: NextFn) {
+        stack.push('middleware two')
+        return next()
+      }
+    }
+
+    const req = new IncomingMessage(new Socket())
+    const res = new ServerResponse(req)
+
+    const ctx = server.createHttpContext(
+      server.createRequest(req, res),
+      server.createResponse(req, res),
+      app.container.createResolver()
+    )
+
+    await server
+      .pipeline([MiddlewareOne, MiddlewareTwo])
+      .finalHandler(async () => {
+        stack.push('final handler')
+      })
+      .run(ctx)
+
+    assert.deepEqual(stack, ['middleware one', 'middleware two', 'final handler'])
+  })
+
+  test('run error handler when error is thrown', async ({ assert }) => {
+    const stack: string[] = []
+    const app = new AppFactory().create(BASE_URL, () => {})
+    await app.init()
+
+    const server = new ServerFactory().merge({ app }).create()
+
+    class MiddlewareOne {
+      async handle(_: any, next: NextFn) {
+        stack.push('middleware one')
+        await next()
+        stack.push('upstream middleware one')
+      }
+    }
+
+    class MiddlewareTwo {
+      handle(_: any, __: NextFn) {
+        stack.push('middleware two')
+        throw new Error('Fail')
+      }
+    }
+
+    const req = new IncomingMessage(new Socket())
+    const res = new ServerResponse(req)
+
+    const ctx = server.createHttpContext(
+      server.createRequest(req, res),
+      server.createResponse(req, res),
+      app.container.createResolver()
+    )
+
+    await server
+      .pipeline([MiddlewareOne, MiddlewareTwo])
+      .finalHandler(async () => {
+        stack.push('final handler')
+      })
+      .errorHandler(async () => {
+        stack.push('error handler')
+      })
+      .run(ctx)
+
+    assert.deepEqual(stack, [
+      'middleware one',
+      'middleware two',
+      'error handler',
+      'upstream middleware one',
+    ])
   })
 })
