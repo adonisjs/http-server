@@ -8,7 +8,6 @@
  */
 
 import is from '@sindresorhus/is'
-import type { Logger } from '@adonisjs/logger'
 import type { Level } from '@adonisjs/logger/types'
 
 import { parseRange } from './helpers.js'
@@ -133,8 +132,6 @@ export class ExceptionHandler {
    */
   protected ignoreCodes: string[] = []
 
-  constructor(protected logger: Logger) {}
-
   /**
    * Expands status pages
    */
@@ -253,7 +250,7 @@ export class ExceptionHandler {
      * Log the error using the logger
      */
     const level = this.getErrorLogLevel(httpError)
-    this.logger.log(
+    ctx.logger.log(
       level,
       {
         ...(level === 'error' || level === 'fatal' ? { err: httpError } : {}),

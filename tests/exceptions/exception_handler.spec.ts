@@ -18,8 +18,7 @@ import { StatusPageRange, StatusPageRenderer } from '../../src/types/server.js'
 
 test.group('Exception handler | handle', () => {
   test('handle error by pretty printing it using youch', async ({ assert }) => {
-    const logger = new LoggerFactory().create()
-    const exceptionHandler = new ExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler()
     const ctx = new HttpContextFactory().create()
 
     const error = new Error('Something went wrong')
@@ -30,8 +29,7 @@ test.group('Exception handler | handle', () => {
   })
 
   test('pretty error as JSON when request accepts JSON', async ({ assert }) => {
-    const logger = new LoggerFactory().create()
-    const exceptionHandler = new ExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler()
     const ctx = new HttpContextFactory().create()
 
     ctx.request.request.headers['accept'] = 'application/json'
@@ -45,8 +43,7 @@ test.group('Exception handler | handle', () => {
   })
 
   test('pretty error as JSON when request accepts JSONAPI', async ({ assert }) => {
-    const logger = new LoggerFactory().create()
-    const exceptionHandler = new ExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler()
     const ctx = new HttpContextFactory().create()
 
     ctx.request.request.headers['accept'] = 'application/vnd.api+json'
@@ -64,8 +61,7 @@ test.group('Exception handler | handle', () => {
       protected debug: boolean = false
     }
 
-    const logger = new LoggerFactory().create()
-    const exceptionHandler = new AppExceptionHandler(logger)
+    const exceptionHandler = new AppExceptionHandler()
     const ctx = new HttpContextFactory().create()
 
     const error = new Error('Something went wrong')
@@ -82,8 +78,7 @@ test.group('Exception handler | handle', () => {
       protected debug: boolean = false
     }
 
-    const logger = new LoggerFactory().create()
-    const exceptionHandler = new AppExceptionHandler(logger)
+    const exceptionHandler = new AppExceptionHandler()
     const ctx = new HttpContextFactory().create()
     ctx.request.request.headers['accept'] = 'application/json'
 
@@ -101,8 +96,7 @@ test.group('Exception handler | handle', () => {
       protected debug: boolean = false
     }
 
-    const logger = new LoggerFactory().create()
-    const exceptionHandler = new AppExceptionHandler(logger)
+    const exceptionHandler = new AppExceptionHandler()
     const ctx = new HttpContextFactory().create()
     ctx.request.request.headers['accept'] = 'application/vnd.api+json'
 
@@ -122,8 +116,7 @@ test.group('Exception handler | handle', () => {
   })
 
   test('use error status code', async ({ assert }) => {
-    const logger = new LoggerFactory().create()
-    const exceptionHandler = new ExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler()
     const ctx = new HttpContextFactory().create()
 
     const error = new Exception('Something went wrong', { status: 401 })
@@ -133,8 +126,7 @@ test.group('Exception handler | handle', () => {
   })
 
   test('render error using the error handle method', async ({ assert }) => {
-    const logger = new LoggerFactory().create()
-    const exceptionHandler = new ExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler()
     const ctx = new HttpContextFactory().create()
 
     class MyError extends Exception {
@@ -160,8 +152,7 @@ test.group('Exception handler | handle', () => {
       }
     }
 
-    const logger = new LoggerFactory().create()
-    const exceptionHandler = new AppExceptionHandler(logger)
+    const exceptionHandler = new AppExceptionHandler()
     const ctx = new HttpContextFactory().create()
 
     class MyError extends Exception {}
@@ -183,8 +174,7 @@ test.group('Exception handler | handle', () => {
       }
     }
 
-    const logger = new LoggerFactory().create()
-    const exceptionHandler = new AppExceptionHandler(logger)
+    const exceptionHandler = new AppExceptionHandler()
     const ctx = new HttpContextFactory().create()
 
     class MyError extends Exception {
@@ -201,8 +191,7 @@ test.group('Exception handler | handle', () => {
   })
 
   test('handle literal values raised as exception', async ({ assert }) => {
-    const logger = new LoggerFactory().create()
-    const exceptionHandler = new ExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler()
     const ctx = new HttpContextFactory().create()
 
     ctx.request.request.headers['accept'] = 'application/json'
@@ -219,8 +208,8 @@ test.group('Exception handler | report', () => {
   test('report error using logger', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new ExceptionHandler(logger)
-    const ctx = new HttpContextFactory().create()
+    const exceptionHandler = new ExceptionHandler()
+    const ctx = new HttpContextFactory().merge({ logger }).create()
 
     const error = new Error('Something went wrong')
     await exceptionHandler.report(error, ctx)
@@ -239,8 +228,8 @@ test.group('Exception handler | report', () => {
   test('report errors with status code in 400 range as a warning', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new ExceptionHandler(logger)
-    const ctx = new HttpContextFactory().create()
+    const exceptionHandler = new ExceptionHandler()
+    const ctx = new HttpContextFactory().merge({ logger }).create()
 
     const error = new Exception('Something went wrong', { status: 410 })
     await exceptionHandler.report(error, ctx)
@@ -259,8 +248,8 @@ test.group('Exception handler | report', () => {
   test('report errors with status code below 400 as info', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new ExceptionHandler(logger)
-    const ctx = new HttpContextFactory().create()
+    const exceptionHandler = new ExceptionHandler()
+    const ctx = new HttpContextFactory().merge({ logger }).create()
 
     const error = new Exception('Something went wrong', { status: 302 })
     await exceptionHandler.report(error, ctx)
@@ -279,8 +268,8 @@ test.group('Exception handler | report', () => {
   test('do not report 400, 422 and 401 error codes', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new ExceptionHandler(logger)
-    const ctx = new HttpContextFactory().create()
+    const exceptionHandler = new ExceptionHandler()
+    const ctx = new HttpContextFactory().merge({ logger }).create()
 
     await exceptionHandler.report(new Exception('Something went wrong', { status: 400 }), ctx)
     await exceptionHandler.report(new Exception('Something went wrong', { status: 401 }), ctx)
@@ -297,8 +286,8 @@ test.group('Exception handler | report', () => {
   test('do not report internal exceptions', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new ExceptionHandler(logger)
-    const ctx = new HttpContextFactory().create()
+    const exceptionHandler = new ExceptionHandler()
+    const ctx = new HttpContextFactory().merge({ logger }).create()
 
     await exceptionHandler.report(new errors.E_CANNOT_LOOKUP_ROUTE(['/']), ctx)
     await exceptionHandler.report(new errors.E_HTTP_EXCEPTION(), ctx)
@@ -320,8 +309,8 @@ test.group('Exception handler | report', () => {
 
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new AppExceptionHandler(logger)
-    const ctx = new HttpContextFactory().create()
+    const exceptionHandler = new AppExceptionHandler()
+    const ctx = new HttpContextFactory().merge({ logger }).create()
 
     const error = new Exception('Something went wrong')
     await exceptionHandler.report(error, ctx)
@@ -337,7 +326,7 @@ test.group('Exception handler | report', () => {
   test('report error using the error report method', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new ExceptionHandler(logger)
+    const exceptionHandler = new ExceptionHandler()
     const ctx = new HttpContextFactory().create()
 
     class MyError extends Exception {
@@ -367,8 +356,8 @@ test.group('Exception handler | report', () => {
 
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new AppExceptionHandler(logger)
-    const ctx = new HttpContextFactory().create()
+    const exceptionHandler = new AppExceptionHandler()
+    const ctx = new HttpContextFactory().merge({ logger }).create()
 
     new Exception('Something went wrong', { code: 'E_CUSTOM_ERROR' })
 
@@ -388,8 +377,8 @@ test.group('Exception handler | report', () => {
   test('log request id in logs when request id exists', async ({ assert }) => {
     const logs: string[] = []
     const logger = new LoggerFactory().pushLogsTo(logs).merge({ enabled: true }).create()
-    const exceptionHandler = new ExceptionHandler(logger)
-    const ctx = new HttpContextFactory().create()
+    const exceptionHandler = new ExceptionHandler()
+    const ctx = new HttpContextFactory().merge({ logger }).create()
 
     ctx.request.request.headers['x-request-id'] = '123'
 
