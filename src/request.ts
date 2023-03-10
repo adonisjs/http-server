@@ -7,7 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import cuid from 'cuid'
 import fresh from 'fresh'
 import typeIs from 'type-is'
 import accepts from 'accepts'
@@ -17,6 +16,7 @@ import proxyaddr from 'proxy-addr'
 import { safeEqual } from '@poppinss/utils'
 import Macroable from '@poppinss/macroable'
 import lodash from '@poppinss/utils/lodash'
+import { createId } from '@paralleldrive/cuid2'
 import { parse, UrlWithStringQuery } from 'node:url'
 import type { Encryption } from '@adonisjs/encryption'
 import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'node:http'
@@ -154,7 +154,7 @@ export class Request extends Macroable {
   id(): string | undefined {
     let requestId = this.header('x-request-id')
     if (!requestId && this.#config.generateRequestId) {
-      requestId = cuid()
+      requestId = createId()
       this.request.headers['x-request-id'] = requestId
     }
 
