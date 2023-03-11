@@ -87,7 +87,7 @@ export class BriskRoute extends Macroable {
     params?: any[] | Record<string, any>,
     options?: MakeUrlOptions & { status: number }
   ): Route {
-    return this.setHandler(async (ctx) => {
+    return this.setHandler(async function redirectsToRoute(ctx) {
       const redirector = ctx.response.redirect()
       if (options?.status) {
         redirector.status(options.status)
@@ -101,7 +101,7 @@ export class BriskRoute extends Macroable {
    * Redirect request to a fixed URL
    */
   redirectToPath(url: string, options?: { status: number }): Route {
-    return this.setHandler(async (ctx) => {
+    return this.setHandler(async function redirectsToPath(ctx) {
       const redirector = ctx.response.redirect()
       if (options?.status) {
         redirector.status(options.status)

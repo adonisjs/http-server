@@ -13,6 +13,7 @@ import { RuntimeException } from '@poppinss/utils'
 import type { Application } from '@adonisjs/application'
 
 import { Route } from './route.js'
+import type { Constructor, LazyImport } from '../types/base.js'
 import type { ParsedGlobalMiddleware } from '../types/middleware.js'
 import type { ResourceActionNames, RouteMatcher, RouteMatchers } from '../types/route.js'
 
@@ -29,7 +30,7 @@ export class RouteResource extends Macroable {
   /**
    * The controller to handle resource routing requests
    */
-  #controller: string
+  #controller: string | LazyImport<Constructor<any>> | Constructor<any>
 
   /**
    * Is it a shallow resource? Shallow resources URLs do not have parent
@@ -75,7 +76,7 @@ export class RouteResource extends Macroable {
     routerMiddleware: ParsedGlobalMiddleware[],
     options: {
       resource: string
-      controller: string
+      controller: string | LazyImport<Constructor<any>> | Constructor<any>
       globalMatchers: RouteMatchers
       shallow: boolean
     }
@@ -128,7 +129,10 @@ export class RouteResource extends Macroable {
     const route = new Route(this.#app, this.#routerMiddleware, {
       pattern,
       methods,
-      handler: `${this.#controller}.${action}`,
+      handler:
+        typeof this.#controller === 'string'
+          ? `${this.#controller}.${action}`
+          : [this.#controller, action],
       globalMatchers: this.#globalMatchers,
     })
 

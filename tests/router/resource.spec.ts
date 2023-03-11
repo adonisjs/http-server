@@ -33,7 +33,9 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-
+          handler: {
+            reference: '#controllers/photos.index',
+          },
           name: 'photos.index',
         },
         {
@@ -42,7 +44,9 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-
+          handler: {
+            reference: '#controllers/photos.create',
+          },
           name: 'photos.create',
         },
         {
@@ -51,6 +55,9 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['POST'],
           domain: 'root',
+          handler: {
+            reference: '#controllers/photos.store',
+          },
           name: 'photos.store',
         },
         {
@@ -59,7 +66,9 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-
+          handler: {
+            reference: '#controllers/photos.show',
+          },
           name: 'photos.show',
         },
         {
@@ -68,7 +77,9 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['GET', 'HEAD'],
           domain: 'root',
-
+          handler: {
+            reference: '#controllers/photos.edit',
+          },
           name: 'photos.edit',
         },
         {
@@ -77,7 +88,9 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['PUT', 'PATCH'],
           domain: 'root',
-
+          handler: {
+            reference: '#controllers/photos.update',
+          },
           name: 'photos.update',
         },
         {
@@ -86,7 +99,9 @@ test.group('Route Resource', () => {
           meta: {},
           methods: ['DELETE'],
           domain: 'root',
-
+          handler: {
+            reference: '#controllers/photos.destroy',
+          },
           name: 'photos.destroy',
         },
       ]
@@ -1165,6 +1180,200 @@ test.group('Route Resource', () => {
           methods: ['DELETE'],
           domain: 'root',
           name: 'magazines.ads.destroy',
+        },
+      ]
+    )
+  })
+
+  test('define resource controller as a class reference', ({ assert }) => {
+    class UsersController {}
+
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const resource = new RouteResource(app, [], {
+      resource: 'photos',
+      controller: UsersController,
+      globalMatchers: {},
+      shallow: false,
+    })
+
+    assert.containsSubset(
+      resource.routes.map((route) => route.toJSON()),
+      [
+        {
+          pattern: '/photos',
+          matchers: {},
+          meta: {},
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'index'],
+          },
+          name: 'photos.index',
+        },
+        {
+          pattern: '/photos/create',
+          matchers: {},
+          meta: {},
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'create'],
+          },
+          name: 'photos.create',
+        },
+        {
+          pattern: '/photos',
+          matchers: {},
+          meta: {},
+          methods: ['POST'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'store'],
+          },
+          name: 'photos.store',
+        },
+        {
+          pattern: '/photos/:id',
+          matchers: {},
+          meta: {},
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'show'],
+          },
+          name: 'photos.show',
+        },
+        {
+          pattern: '/photos/:id/edit',
+          matchers: {},
+          meta: {},
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'edit'],
+          },
+          name: 'photos.edit',
+        },
+        {
+          pattern: '/photos/:id',
+          matchers: {},
+          meta: {},
+          methods: ['PUT', 'PATCH'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'update'],
+          },
+          name: 'photos.update',
+        },
+        {
+          pattern: '/photos/:id',
+          matchers: {},
+          meta: {},
+          methods: ['DELETE'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'destroy'],
+          },
+          name: 'photos.destroy',
+        },
+      ]
+    )
+  })
+
+  test('define resource controller as a lazy import reference', ({ assert }) => {
+    const UsersController = async () => {
+      return {
+        default: class UsersControllerClass {},
+      }
+    }
+
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const resource = new RouteResource(app, [], {
+      resource: 'photos',
+      controller: UsersController,
+      globalMatchers: {},
+      shallow: false,
+    })
+
+    assert.containsSubset(
+      resource.routes.map((route) => route.toJSON()),
+      [
+        {
+          pattern: '/photos',
+          matchers: {},
+          meta: {},
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'index'],
+          },
+          name: 'photos.index',
+        },
+        {
+          pattern: '/photos/create',
+          matchers: {},
+          meta: {},
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'create'],
+          },
+          name: 'photos.create',
+        },
+        {
+          pattern: '/photos',
+          matchers: {},
+          meta: {},
+          methods: ['POST'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'store'],
+          },
+          name: 'photos.store',
+        },
+        {
+          pattern: '/photos/:id',
+          matchers: {},
+          meta: {},
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'show'],
+          },
+          name: 'photos.show',
+        },
+        {
+          pattern: '/photos/:id/edit',
+          matchers: {},
+          meta: {},
+          methods: ['GET', 'HEAD'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'edit'],
+          },
+          name: 'photos.edit',
+        },
+        {
+          pattern: '/photos/:id',
+          matchers: {},
+          meta: {},
+          methods: ['PUT', 'PATCH'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'update'],
+          },
+          name: 'photos.update',
+        },
+        {
+          pattern: '/photos/:id',
+          matchers: {},
+          meta: {},
+          methods: ['DELETE'],
+          domain: 'root',
+          handler: {
+            reference: [UsersController, 'destroy'],
+          },
+          name: 'photos.destroy',
         },
       ]
     )

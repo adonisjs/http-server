@@ -256,7 +256,7 @@ export class Router extends LookupStore {
   /**
    * Registers a route resource with conventional set of routes
    */
-  resource(resource: string, controller: string) {
+  resource(resource: string, controller: string | LazyImport<Constructor<any>> | Constructor<any>) {
     const resourceInstance = new RouteResource(this.#app, this.#middleware, {
       resource,
       controller,
@@ -271,7 +271,10 @@ export class Router extends LookupStore {
   /**
    * Register a route resource with shallow nested routes.
    */
-  shallowResource(resource: string, controller: string) {
+  shallowResource(
+    resource: string,
+    controller: string | LazyImport<Constructor<any>> | Constructor<any>
+  ) {
     const resourceInstance = new RouteResource(this.#app, this.#middleware, {
       resource,
       controller,
