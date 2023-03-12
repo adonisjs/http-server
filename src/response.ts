@@ -14,10 +14,10 @@ import mime from 'mime-types'
 import destroy from 'destroy'
 import { extname } from 'node:path'
 import onFinished from 'on-finished'
-import { promisify } from 'node:util'
 import json from '@poppinss/utils/json'
 import Macroable from '@poppinss/macroable'
-import { createReadStream, stat } from 'node:fs'
+import { createReadStream } from 'node:fs'
+import { stat } from 'node:fs/promises'
 import { RuntimeException } from '@poppinss/utils'
 import contentDisposition from 'content-disposition'
 import type { Encryption } from '@adonisjs/encryption'
@@ -36,7 +36,6 @@ import type {
   ResponseStream,
 } from './types/response.js'
 
-const statFn = promisify(stat)
 const CACHEABLE_HTTP_METHODS = ['GET', 'HEAD']
 
 /**
@@ -489,7 +488,7 @@ export class Response extends Macroable {
     errorCallback?: (error: NodeJS.ErrnoException) => [string, number?]
   ) {
     try {
-      const stats = await statFn(filePath)
+      const stats = await stat(filePath)
       if (!stats || !stats.isFile()) {
         throw new TypeError('response.download only accepts path to a file')
       }
