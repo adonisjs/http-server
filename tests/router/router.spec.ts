@@ -1194,3 +1194,91 @@ test.group('Router | handler', () => {
     assert.property(anyRoute.toJSON().handler, 'handle')
   })
 })
+
+test.group('Router | parse route pattern', () => {
+  test('parse static route pattern', ({ assert }) => {
+    const router = new RouterFactory().create()
+    assert.deepEqual(router.parsePattern('/about'), [
+      {
+        end: '',
+        old: '/about',
+        type: 0,
+        val: 'about',
+      },
+    ])
+  })
+
+  test('parse route pattern with params', ({ assert }) => {
+    const router = new RouterFactory().create()
+    assert.deepEqual(router.parsePattern('/users/:id'), [
+      {
+        end: '',
+        old: '/users/:id',
+        type: 0,
+        val: 'users',
+      },
+      {
+        end: '',
+        old: '/users/:id',
+        type: 1,
+        cast: undefined,
+        matcher: undefined,
+        val: 'id',
+      },
+    ])
+  })
+
+  test('parse route pattern with optional params', ({ assert }) => {
+    const router = new RouterFactory().create()
+    assert.deepEqual(router.parsePattern('/users/:id/:username?'), [
+      {
+        end: '',
+        old: '/users/:id/:username?',
+        type: 0,
+        val: 'users',
+      },
+      {
+        end: '',
+        old: '/users/:id/:username?',
+        type: 1,
+        cast: undefined,
+        matcher: undefined,
+        val: 'id',
+      },
+      {
+        end: '',
+        old: '/users/:id/:username?',
+        type: 3,
+        cast: undefined,
+        matcher: undefined,
+        val: 'username',
+      },
+    ])
+  })
+
+  test('parse route pattern with wildcard params', ({ assert }) => {
+    const router = new RouterFactory().create()
+    assert.deepEqual(router.parsePattern('/files/:dir/*'), [
+      {
+        end: '',
+        old: '/files/:dir/*',
+        type: 0,
+        val: 'files',
+      },
+      {
+        end: '',
+        old: '/files/:dir/*',
+        type: 1,
+        cast: undefined,
+        matcher: undefined,
+        val: 'dir',
+      },
+      {
+        end: '',
+        old: '/files/:dir/*',
+        type: 2,
+        val: '*',
+      },
+    ])
+  })
+})

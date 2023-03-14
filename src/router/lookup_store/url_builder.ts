@@ -7,12 +7,11 @@
  * file that was distributed with this source code.
  */
 
-// @ts-expect-error
-import matchit from '@poppinss/matchit'
 import { RuntimeException } from '@poppinss/utils'
 import type { Encryption } from '@adonisjs/encryption'
 
 import type { Qs } from '../../qs.js'
+import { parseRoutePattern } from '../parser.js'
 import type { RouteFinder } from './route_finder.js'
 
 /**
@@ -103,7 +102,7 @@ export class UrlBuilder {
     const paramsObject = !Array.isArray(this.#params) ? this.#params : {}
 
     let paramsIndex = 0
-    const tokens = matchit.parse(pattern)
+    const tokens = parseRoutePattern(pattern)
 
     for (const token of tokens) {
       /**

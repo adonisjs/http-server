@@ -20,9 +20,9 @@ import { BriskRoute } from './brisk.js'
 import { RoutesStore } from './store.js'
 import { toRoutesJSON } from '../helpers.js'
 import { RouteResource } from './resource.js'
-import type { Constructor, LazyImport } from '../types/base.js'
 import { LookupStore } from './lookup_store/main.js'
 import { RouteMatchers as Matchers } from './matchers.js'
+import type { Constructor, LazyImport } from '../types/base.js'
 import { defineNamedMiddleware } from '../define_middleware.js'
 import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.js'
 
@@ -35,6 +35,7 @@ import type {
   MakeSignedUrlOptions,
   GetControllerHandlers,
 } from '../types/route.js'
+import { parseRoutePattern } from './parser.js'
 
 /**
  * Router class exposes a unified API to register new routes, group them or
@@ -109,6 +110,13 @@ export class Router extends LookupStore {
     }
 
     this.routes.push(entity)
+  }
+
+  /**
+   * Parses the route pattern
+   */
+  parsePattern(pattern: string, matchers?: RouteMatchers) {
+    return parseRoutePattern(pattern, matchers)
   }
 
   /**
