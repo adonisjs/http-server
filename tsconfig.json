@@ -20,6 +20,7 @@
     "strictFunctionTypes": true,
     "noImplicitThis": true,
     "skipLibCheck": true,
+    "declarationMap": true,
     "types": ["@types/node"]
   },
   "include": ["./**/*"],

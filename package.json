@@ -5,9 +5,13 @@
   "main": "build/index.js",
   "type": "module",
   "files": [
+    "src",
+    "factories",
+    "index.ts",
     "build/src",
     "build/factories",
     "build/index.d.ts",
+    "build/index.d.ts.map",
     "build/index.js"
   ],
   "exports": {
