@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
+import pem from 'pem'
 import supertest from 'supertest'
 import { test } from '@japa/runner'
-import { createCertificate } from 'pem'
 import { createServer } from 'node:http'
 import Middleware from '@poppinss/middleware'
 import { createServer as httpsServer } from 'node:https'
@@ -415,7 +415,7 @@ test.group('Request', () => {
 
   test('return boolean telling request is secure or not', async ({ assert }, done) => {
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
-    createCertificate({}, async (error, keys) => {
+    pem.createCertificate({}, async (error, keys) => {
       if (error) {
         done(error)
         return
