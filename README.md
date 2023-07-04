@@ -2,7 +2,7 @@
 
 <br />
 
-[![gh-workflow-image]][gh-workflow-url] [![npm-image]][npm-url] ![][typescript-image] [![license-image]][license-url] [![synk-image]][synk-url]
+[![gh-workflow-image]][gh-workflow-url] [![npm-image]][npm-url] ![][typescript-image] [![license-image]][license-url]
 
 ## Introduction
 Implementation of HTTP server used by AdonisJS. The package ships with a powerful **Router**, **Middleware pipeline**, helpers to create plain and signed URL for registered routes and much more.
@@ -21,8 +21,8 @@ In order to ensure that the AdonisJS community is welcoming to all, please revie
 ## License
 AdonisJS HTTP server is open-sourced software licensed under the [MIT license](LICENSE.md).
 
-[gh-workflow-image]: https://img.shields.io/github/actions/workflow/status/adonisjs/http-server/test.yml?style=for-the-badge
-[gh-workflow-url]: https://github.com/adonisjs/http-server/actions/workflows/test.yml "Github action"
+[gh-workflow-image]: https://img.shields.io/github/actions/workflow/status/adonisjs/http-server/checks.yml?style=for-the-badge
+[gh-workflow-url]: https://github.com/adonisjs/http-server/actions/workflows/checks.yml "Github action"
 
 [typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
 [typescript-url]:  "typescript"
@@ -32,6 +32,3 @@ AdonisJS HTTP server is open-sourced software licensed under the [MIT license](L
 
 [license-image]: https://img.shields.io/npm/l/@adonisjs/http-server?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md "license"
-
-[synk-image]: https://img.shields.io/snyk/vulnerabilities/github/adonisjs/http-server?label=Synk%20Vulnerabilities&style=for-the-badge
-[synk-url]: https://snyk.io/test/github/adonisjs/http-server?targetFile=package.json "synk"
