@@ -10,34 +10,34 @@
 import pem from 'pem'
 import supertest from 'supertest'
 import { test } from '@japa/runner'
-import { createServer } from 'node:http'
 import Middleware from '@poppinss/middleware'
 import { createServer as httpsServer } from 'node:https'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { RequestFactory } from '../factories/request.js'
+import { httpServer } from '../factories/http_server.js'
 import { CookieSerializer } from '../src/cookies/serializer.js'
 import { HttpContextFactory } from '../factories/http_context.js'
-import { UrlBuilder } from '../src/router/lookup_store/url_builder.js'
 import { QsParserFactory } from '../factories/qs_parser_factory.js'
+import { UrlBuilder } from '../src/router/lookup_store/url_builder.js'
 
 const encryption = new EncryptionFactory().create()
 const serializer = new CookieSerializer(encryption)
 
 test.group('Request', () => {
   test('get http request query string', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.qs()))
     })
 
-    const { body } = await supertest(server).get('/?username=virk&age=22')
+    const { body } = await supertest(url).get('/?username=virk&age=22')
     assert.deepEqual(body, { username: 'virk', age: '22' })
   })
 
   test('update request initial body', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({ username: 'virk' })
 
@@ -51,7 +51,7 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       body: { username: 'virk' },
       all: { username: 'virk' },
@@ -60,7 +60,7 @@ test.group('Request', () => {
   })
 
   test('updating request body later must not impact the original body', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({ username: 'virk' })
       request.updateBody({ username: 'nikk' })
@@ -75,7 +75,7 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       body: { username: 'nikk' },
       all: { username: 'nikk' },
@@ -86,7 +86,7 @@ test.group('Request', () => {
   test('updating nested properties of request body must not impact the original body', async ({
     assert,
   }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({ user: { username: 'virk' } })
       const body = request.body()
@@ -102,7 +102,7 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       body: { user: { username: 'romain' } },
       all: { user: { username: 'romain' } },
@@ -111,7 +111,7 @@ test.group('Request', () => {
   })
 
   test('merge query string with all and original', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({ username: 'virk' })
       request.updateBody({ username: 'nikk' })
@@ -126,7 +126,7 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/?age=22')
+    const { body } = await supertest(url).get('/?age=22')
     assert.deepEqual(body, {
       body: { username: 'nikk' },
       all: { username: 'nikk', age: '22' },
@@ -135,7 +135,7 @@ test.group('Request', () => {
   })
 
   test('raise error when setInitialBody is called twice', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({})
 
@@ -147,14 +147,14 @@ test.group('Request', () => {
       }
     })
 
-    const { body } = await supertest(server).get('/?age=22')
+    const { body } = await supertest(url).get('/?age=22')
     assert.deepEqual(body, {
       message: 'Cannot re-set initial body. Use "request.updateBody" instead',
     })
   })
 
   test('compute original and all even if body was never set', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
@@ -166,7 +166,7 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/?age=22')
+    const { body } = await supertest(url).get('/?age=22')
     assert.deepEqual(body, {
       body: {},
       all: { age: '22' },
@@ -175,7 +175,7 @@ test.group('Request', () => {
   })
 
   test('compute all when query string is updated', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.updateQs({ age: '24' })
 
@@ -189,7 +189,7 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/?age=22')
+    const { body } = await supertest(url).get('/?age=22')
     assert.deepEqual(body, {
       body: {},
       all: { age: '24' },
@@ -198,63 +198,63 @@ test.group('Request', () => {
   })
 
   test('read input value from request', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ input: request.input('age') }))
     })
 
-    const { body } = await supertest(server).get('/?age=22')
+    const { body } = await supertest(url).get('/?age=22')
     assert.deepEqual(body, {
       input: '22',
     })
   })
 
   test('read nested input value from request', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ input: request.input('users.1') }))
     })
 
-    const { body } = await supertest(server).get('/?users[0]=virk&users[1]=nikk')
+    const { body } = await supertest(url).get('/?users[0]=virk&users[1]=nikk')
     assert.deepEqual(body, {
       input: 'nikk',
     })
   })
 
   test('read array input value from request', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ input: request.input('users[1]') }))
     })
 
-    const { body } = await supertest(server).get('/?users[0]=virk&users[1]=nikk')
+    const { body } = await supertest(url).get('/?users[0]=virk&users[1]=nikk')
     assert.deepEqual(body, {
       input: 'nikk',
     })
   })
 
   test('get all except few keys', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.except(['age'])))
     })
 
-    const { body } = await supertest(server).get('/?age=22&username=virk')
+    const { body } = await supertest(url).get('/?age=22&username=virk')
     assert.deepEqual(body, {
       username: 'virk',
     })
   })
 
   test('get all except few keys from nested object', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({ user: { username: 'virk', age: 22 } })
 
@@ -262,7 +262,7 @@ test.group('Request', () => {
       res.end(JSON.stringify(request.except(['user.age'])))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       user: {
         username: 'virk',
@@ -271,21 +271,21 @@ test.group('Request', () => {
   })
 
   test('get only few keys', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.only(['age'])))
     })
 
-    const { body } = await supertest(server).get('/?age=22&username=virk')
+    const { body } = await supertest(url).get('/?age=22&username=virk')
     assert.deepEqual(body, {
       age: '22',
     })
   })
 
   test('get request params', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       const ctx = new HttpContextFactory().merge({ request }).create()
@@ -300,14 +300,14 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       params: { id: 1 },
     })
   })
 
   test('get value for a given param', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       const ctx = new HttpContextFactory().merge({ request }).create()
@@ -322,14 +322,14 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       id: 1,
     })
   })
 
   test('get only few keys from nested object', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({ user: { username: 'virk', age: 22 } })
 
@@ -337,7 +337,7 @@ test.group('Request', () => {
       res.end(JSON.stringify(request.only(['user.age'])))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       user: {
         age: 22,
@@ -346,68 +346,68 @@ test.group('Request', () => {
   })
 
   test('get request headers', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.headers()))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.includeMembers(Object.keys(body), ['host'])
   })
 
   test('get value for a given request header', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ header: request.header('accept-encoding') }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       header: 'gzip, deflate',
     })
   })
 
   test('get ip address', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ip: request.ip() }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
-      ip: '::ffff:127.0.0.1',
+      ip: '::1',
     })
   })
 
   test('get ip addresses as an array', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ip: request.ips() }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
-      ip: ['::ffff:127.0.0.1'],
+      ip: ['::1'],
     })
   })
 
   test('get request protocol', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ protocol: request.protocol() }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       protocol: 'http',
     })
@@ -438,21 +438,21 @@ test.group('Request', () => {
     .skip(!!process.env.CI, 'Needs OpenSSL to run')
 
   test('get request hostname', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hostname: request.hostname() }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
-      hostname: '127.0.0.1',
+      hostname: 'localhost',
     })
   })
 
   test('return an array of subdomains', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       req.headers.host = 'beta.adonisjs.com'
 
       const request = new RequestFactory().merge({ req, res, encryption }).create()
@@ -460,14 +460,14 @@ test.group('Request', () => {
       res.end(JSON.stringify({ subdomains: request.subdomains() }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       subdomains: ['beta'],
     })
   })
 
   test('do not consider www a subdomain', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       req.headers.host = 'www.adonisjs.com'
 
       const request = new RequestFactory().merge({ req, res, encryption }).create()
@@ -475,86 +475,86 @@ test.group('Request', () => {
       res.end(JSON.stringify({ subdomains: request.subdomains() }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       subdomains: [],
     })
   })
 
   test('return true for ajax when X-Requested-With is xmlhttprequest', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ajax: request.ajax() }))
     })
 
-    const { body } = await supertest(server).get('/').set('X-Requested-With', 'XMLHttpRequest')
+    const { body } = await supertest(url).get('/').set('X-Requested-With', 'XMLHttpRequest')
     assert.deepEqual(body, {
       ajax: true,
     })
   })
 
   test('return false for ajax when X-Requested-With header is missing', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ajax: request.ajax() }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       ajax: false,
     })
   })
 
   test('return true for ajax when X-Pjax header is set', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ pjax: request.pjax() }))
     })
 
-    const { body } = await supertest(server).get('/').set('X-Pjax', 'true')
+    const { body } = await supertest(url).get('/').set('X-Pjax', 'true')
     assert.deepEqual(body, {
       pjax: true,
     })
   })
 
   test('return request url without query string', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.url() }))
     })
 
-    const { body } = await supertest(server).get('/?username=virk')
+    const { body } = await supertest(url).get('/?username=virk')
     assert.deepEqual(body, {
       url: '/',
     })
   })
 
   test('return request url with query string', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.url(true) }))
     })
 
-    const { body } = await supertest(server).get('/?username=virk')
+    const { body } = await supertest(url).get('/?username=virk')
     assert.deepEqual(body, {
       url: '/?username=virk',
     })
   })
 
   test('return complete request url without query string', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.completeUrl() }))
     })
 
-    const response = await supertest(server).get('/?username=virk')
+    const response = await supertest(url).get('/?username=virk')
     const { body, request } = response as any
 
     assert.deepEqual(body, {
@@ -563,13 +563,13 @@ test.group('Request', () => {
   })
 
   test('return complete request url with query string', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.completeUrl(true) }))
     })
 
-    const response = await supertest(server).get('/?username=virk')
+    const response = await supertest(url).get('/?username=virk')
     const { body, request } = response as any
 
     assert.deepEqual(body, {
@@ -578,7 +578,7 @@ test.group('Request', () => {
   })
 
   test('call getIp method to return ip address when defined inside config', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory()
         .merge({
           req,
@@ -596,28 +596,28 @@ test.group('Request', () => {
       res.end(JSON.stringify({ ip: request.ip() }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
-      ip: '127.0.0.1',
+      ip: 'localhost',
     })
   })
 
   test('return default value when referer header does not exists', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ referrer: request.header('referrer', 'foo.com') }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       referrer: 'foo.com',
     })
   })
 
   test('handle referer header spelling inconsistencies', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -626,7 +626,7 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/').set('referer', 'foo.com')
+    const { body } = await supertest(url).get('/').set('referer', 'foo.com')
     assert.deepEqual(body, {
       referrer: 'foo.com',
       referer: 'foo.com',
@@ -634,30 +634,30 @@ test.group('Request', () => {
   })
 
   test('return raw body as null when does not exists', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'text/plain' })
       res.end(request.raw())
     })
 
-    const { text } = await supertest(server).get('/')
+    const { text } = await supertest(url).get('/')
     assert.equal(text, '')
   })
 
   test('update request raw body', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.updateRawBody(JSON.stringify({ username: 'virk' }))
       res.writeHead(200, { 'content-type': 'text/plain' })
       res.end(request.raw())
     })
 
-    const { text } = await supertest(server).get('/')
+    const { text } = await supertest(url).get('/')
     assert.deepEqual(JSON.parse(text), { username: 'virk' })
   })
 
   test('get null when request hostname is missing', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       delete req.headers['host']
 
@@ -665,14 +665,14 @@ test.group('Request', () => {
       res.end(JSON.stringify({ hostname: request.hostname() }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       hostname: null,
     })
   })
 
   test('get empty array when for subdomains request hostname is missing', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       delete req.headers['host']
 
@@ -680,14 +680,14 @@ test.group('Request', () => {
       res.end(JSON.stringify({ subdomains: request.subdomains() }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       subdomains: [],
     })
   })
 
   test('set x-request-id header when id method is called', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory()
         .merge({ req, res, encryption, config: { generateRequestId: true } })
         .create()
@@ -702,7 +702,7 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.exists(body.id)
     assert.exists(body.header)
     assert.exists(body.reComputed)
@@ -712,7 +712,7 @@ test.group('Request', () => {
   })
 
   test('do not generate request id when generateRequestId is false', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory()
         .merge({
           req,
@@ -732,25 +732,25 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.notExists(body.id)
   })
 
   test('do not append ? when query string is empty', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.url(true) }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       url: '/',
     })
   })
 
   test('find if an identifier matches the request route pattern', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.ctx = new HttpContextFactory().merge({ request }).create()
       ;(request.ctx.route as any) = {
@@ -767,7 +767,7 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/users/1')
+    const { body } = await supertest(url).get('/users/1')
     assert.deepEqual(body, {
       '/users/:id': true,
       '/users': false,
@@ -775,7 +775,7 @@ test.group('Request', () => {
   })
 
   test('find if an identifier matches the request route handler name', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.ctx = new HttpContextFactory().merge({ request }).create()
       request.ctx.route = {
@@ -796,7 +796,7 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/users/1')
+    const { body } = await supertest(url).get('/users/1')
     assert.deepEqual(body, {
       '/users/:id': true,
       '/users': false,
@@ -804,7 +804,7 @@ test.group('Request', () => {
   })
 
   test('find if an identifier matches the request route name', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.ctx = new HttpContextFactory().merge({ request }).create()
       ;(request.ctx.route as any) = {
@@ -822,7 +822,7 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/users/1')
+    const { body } = await supertest(url).get('/users/1')
     assert.deepEqual(body, {
       '/users/:id': true,
       '/users': false,
@@ -830,7 +830,7 @@ test.group('Request', () => {
   })
 
   test('find if an one or more identifiers matches the request route name', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       request.ctx = new HttpContextFactory().merge({ request }).create()
       ;(request.ctx.route as any) = {
@@ -848,7 +848,7 @@ test.group('Request', () => {
       )
     })
 
-    const { body } = await supertest(server).get('/users/1')
+    const { body } = await supertest(url).get('/users/1')
     assert.deepEqual(body, {
       '/users/:id': true,
       '/users': false,
@@ -856,18 +856,18 @@ test.group('Request', () => {
   })
 
   test('get request json representation', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.toJSON()))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.containsSubset(body, {
       body: {},
       cookies: {},
       headers: {},
-      hostname: '127.0.0.1',
+      hostname: 'localhost',
       method: 'GET',
       params: {},
       protocol: 'http',
@@ -880,13 +880,13 @@ test.group('Request', () => {
 
 test.group('Request | Content negotiation', () => {
   test('content negotiate the request content-type', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ type: request.is(['json', 'html']) }))
     })
 
-    const { body } = await supertest(server)
+    const { body } = await supertest(url)
       .post('/')
       .set('content-type', 'application/json')
       .send({ username: 'virk' })
@@ -897,117 +897,117 @@ test.group('Request | Content negotiation', () => {
   })
 
   test('return null when request body is empty', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ type: request.is(['json', 'html']) }))
     })
 
-    const { body } = await supertest(server).get('/').set('content-type', 'application/json')
+    const { body } = await supertest(url).get('/').set('content-type', 'application/json')
     assert.deepEqual(body, {
       type: null,
     })
   })
 
   test('return all types from most to least preferred', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ types: request.types() }))
     })
 
-    const { body } = await supertest(server).get('/').set('accept', 'application/json')
+    const { body } = await supertest(url).get('/').set('accept', 'application/json')
     assert.deepEqual(body, {
       types: ['application/json'],
     })
   })
 
   test('return the most relavant accept type', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ accepts: request.accepts(['jsonp', 'json']) }))
     })
 
-    const { body } = await supertest(server).get('/').set('accept', 'application/json')
+    const { body } = await supertest(url).get('/').set('accept', 'application/json')
     assert.deepEqual(body, {
       accepts: 'json',
     })
   })
 
   test('return all accept languages', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ languages: request.languages() }))
     })
 
-    const { body } = await supertest(server).get('/').set('accept-language', 'en-uk')
+    const { body } = await supertest(url).get('/').set('accept-language', 'en-uk')
     assert.deepEqual(body, {
       languages: ['en-uk'],
     })
   })
 
   test('return the most relavant language', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ language: request.language(['en', 'en-us', 'de']) }))
     })
 
-    const { body } = await supertest(server).get('/').set('accept-language', 'en-uk')
+    const { body } = await supertest(url).get('/').set('accept-language', 'en-uk')
     assert.deepEqual(body, {
       language: 'en',
     })
   })
 
   test('return all accept charsets', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ charsets: request.charsets() }))
     })
 
-    const { body } = await supertest(server).get('/').set('accept-charset', 'utf-8')
+    const { body } = await supertest(url).get('/').set('accept-charset', 'utf-8')
     assert.deepEqual(body, {
       charsets: ['utf-8'],
     })
   })
 
   test('return most relevant charset', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ charset: request.charset(['utf-8', 'base64']) }))
     })
 
-    const { body } = await supertest(server).get('/').set('accept-charset', 'utf-8')
+    const { body } = await supertest(url).get('/').set('accept-charset', 'utf-8')
     assert.deepEqual(body, {
       charset: 'utf-8',
     })
   })
 
   test('return all encodings', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ encodings: request.encodings() }))
     })
 
-    const { body } = await supertest(server).get('/').set('accept-encoding', 'gzip')
+    const { body } = await supertest(url).get('/').set('accept-encoding', 'gzip')
     assert.deepEqual(body, {
       encodings: ['gzip', 'identity'],
     })
   })
 
   test('return matching encoding', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ encoding: request.encoding(['utf-8', 'gzip']) }))
     })
 
-    const { body } = await supertest(server).get('/').set('accept-encoding', 'gzip')
+    const { body } = await supertest(url).get('/').set('accept-encoding', 'gzip')
     assert.deepEqual(body, {
       encoding: 'gzip',
     })
@@ -1016,14 +1016,14 @@ test.group('Request | Content negotiation', () => {
   test('return false from request.stale when etag and if-match-none are same', async ({
     assert,
   }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.setHeader('etag', 'foo')
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ stale: request.stale() }))
     })
 
-    const { body } = await supertest(server).get('/').set('if-none-match', 'foo')
+    const { body } = await supertest(url).get('/').set('if-none-match', 'foo')
     assert.deepEqual(body, {
       stale: false,
     })
@@ -1032,26 +1032,26 @@ test.group('Request | Content negotiation', () => {
 
 test.group('Request | cache', () => {
   test('return false from hasBody when request has no body', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasBody: request.hasBody() }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       hasBody: false,
     })
   })
 
   test('return true from hasBody when request has no body', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasBody: request.hasBody() }))
     })
 
-    const { body } = await supertest(server).post('/').set('username', 'virk')
+    const { body } = await supertest(url).post('/').set('username', 'virk')
     assert.deepEqual(body, {
       hasBody: true,
     })
@@ -1060,14 +1060,14 @@ test.group('Request | cache', () => {
   test('return true from request.fresh when etag and if-match-none are same', async ({
     assert,
   }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.setHeader('etag', 'foo')
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ fresh: request.fresh() }))
     })
 
-    const { body } = await supertest(server).get('/').set('if-none-match', 'foo')
+    const { body } = await supertest(url).get('/').set('if-none-match', 'foo')
     assert.deepEqual(body, {
       fresh: true,
     })
@@ -1076,14 +1076,14 @@ test.group('Request | cache', () => {
   test('return false from request.fresh when etag and if-match-none are same but method is POST', async ({
     assert,
   }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.setHeader('etag', 'foo')
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ fresh: request.fresh() }))
     })
 
-    const { body } = await supertest(server).post('/').set('if-none-match', 'foo')
+    const { body } = await supertest(url).post('/').set('if-none-match', 'foo')
     assert.deepEqual(body, {
       fresh: false,
     })
@@ -1092,14 +1092,14 @@ test.group('Request | cache', () => {
   test('return false from request.fresh when etag and if-match-none are same but statusCode is 301', async ({
     assert,
   }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.setHeader('etag', 'foo')
       res.writeHead(301, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ fresh: request.fresh() }))
     })
 
-    const { body } = await supertest(server).get('/').set('if-none-match', 'foo')
+    const { body } = await supertest(url).get('/').set('if-none-match', 'foo')
     assert.deepEqual(body, {
       fresh: false,
     })
@@ -1108,20 +1108,20 @@ test.group('Request | cache', () => {
 
 test.group('Request | Method spoofing', () => {
   test('return request http method', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ method: request.method() }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       method: 'GET',
     })
   })
 
   test('return request spoofed http method when spoofing is enabled', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory()
         .merge({
           req,
@@ -1135,7 +1135,7 @@ test.group('Request | Method spoofing', () => {
       res.end(JSON.stringify({ method: request.method() }))
     })
 
-    const { body } = await supertest(server).post('/?_method=put')
+    const { body } = await supertest(url).post('/?_method=put')
     assert.deepEqual(body, {
       method: 'PUT',
     })
@@ -1144,7 +1144,7 @@ test.group('Request | Method spoofing', () => {
   test('return original http method when spoofing is enabled but original method is GET', async ({
     assert,
   }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory()
         .merge({
           req,
@@ -1158,7 +1158,7 @@ test.group('Request | Method spoofing', () => {
       res.end(JSON.stringify({ method: request.method() }))
     })
 
-    const { body } = await supertest(server).get('/?_method=put')
+    const { body } = await supertest(url).get('/?_method=put')
     assert.deepEqual(body, {
       method: 'GET',
     })
@@ -1167,21 +1167,21 @@ test.group('Request | Method spoofing', () => {
 
 test.group('Request | Cookies', () => {
   test('get all unparsed cookies', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.cookiesList()))
     })
 
     const cookies = serializer.encode('name', 'virk')!
-    const { body } = await supertest(server).get('/').set('cookie', cookies)
+    const { body } = await supertest(url).get('/').set('cookie', cookies)
     assert.deepEqual(body, {
       name: cookies.split('=')[1],
     })
   })
 
   test('get all unsigned cookies via plainCookies', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
@@ -1193,7 +1193,7 @@ test.group('Request | Cookies', () => {
     })
 
     const cookies = serializer.encode('name', 'virk')!
-    const { body } = await supertest(server).get('/').set('cookie', cookies)
+    const { body } = await supertest(url).get('/').set('cookie', cookies)
     assert.deepEqual(body, {
       plainCookies: {
         name: 'virk',
@@ -1203,7 +1203,7 @@ test.group('Request | Cookies', () => {
   })
 
   test('get all signed cookies', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       try {
         const request = new RequestFactory().merge({ req, res, encryption }).create()
         res.writeHead(200, { 'content-type': 'application/json' })
@@ -1219,7 +1219,7 @@ test.group('Request | Cookies', () => {
     })
 
     const cookies = serializer.sign('name', 'virk')!
-    const { body } = await supertest(server).get('/').set('cookie', cookies)
+    const { body } = await supertest(url).get('/').set('cookie', cookies)
     assert.deepEqual(body, {
       plainCookies: {},
       cookies: {
@@ -1229,61 +1229,61 @@ test.group('Request | Cookies', () => {
   })
 
   test('get value for a single cookie', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.cookie('name') }))
     })
 
     const cookies = serializer.sign('name', 'virk')!
-    const { body } = await supertest(server).get('/').set('cookie', cookies)
+    const { body } = await supertest(url).get('/').set('cookie', cookies)
     assert.deepEqual(body, {
       name: 'virk',
     })
   })
 
   test('use default value when actual value is missing', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.cookie('name', 'nikk') }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       name: 'nikk',
     })
   })
 
   test('get value for a single plain cookie', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.plainCookie('name') }))
     })
 
     const cookies = serializer.encode('name', 'virk')!
-    const { body } = await supertest(server).get('/').set('cookie', cookies)
+    const { body } = await supertest(url).get('/').set('cookie', cookies)
     assert.deepEqual(body, {
       name: 'virk',
     })
   })
 
   test('use default value when actual plain cookie value is missing', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.plainCookie('name', 'nikk') }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       name: 'nikk',
     })
   })
 
   test('get value for a single not encoded cookie', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory()
         .merge({
           req,
@@ -1297,14 +1297,14 @@ test.group('Request | Cookies', () => {
     })
 
     const cookies = serializer.encode('name', 'virk', { encode: false })!
-    const { body } = await supertest(server).get('/').set('cookie', cookies)
+    const { body } = await supertest(url).get('/').set('cookie', cookies)
     assert.deepEqual(body, {
       name: 'virk',
     })
   })
 
   test('get value for a single not encoded cookie using options object', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory()
         .merge({
           req,
@@ -1318,14 +1318,14 @@ test.group('Request | Cookies', () => {
     })
 
     const cookies = serializer.encode('name', 'virk', { encode: false })!
-    const { body } = await supertest(server).get('/').set('cookie', cookies)
+    const { body } = await supertest(url).get('/').set('cookie', cookies)
     assert.deepEqual(body, {
       name: 'virk',
     })
   })
 
   test('specify plain cookie default value via options object', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory()
         .merge({
           req,
@@ -1338,34 +1338,34 @@ test.group('Request | Cookies', () => {
       res.end(JSON.stringify({ name: request.plainCookie('name', { defaultValue: 'virk' }) }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       name: 'virk',
     })
   })
 
   test('get value for a single encrypted', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.encryptedCookie('name') }))
     })
 
     const cookies = serializer.encrypt('name', 'virk')!
-    const { body } = await supertest(server).get('/').set('cookie', cookies)
+    const { body } = await supertest(url).get('/').set('cookie', cookies)
     assert.deepEqual(body, {
       name: 'virk',
     })
   })
 
   test('use default value when actual value is missing', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.encryptedCookie('name', 'nikk') }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       name: 'nikk',
     })
@@ -1374,118 +1374,118 @@ test.group('Request | Cookies', () => {
 
 test.group('Verify signed url', () => {
   test('return false when signature is not defined', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const { body } = await supertest(server).get('/')
+    const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
       hasValidSignature: false,
     })
   })
 
   test('return false when signature cannot be decrypted', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const { body } = await supertest(server).get('/?signature=sadjksadkjsaadjk')
+    const { body } = await supertest(url).get('/?signature=sadjksadkjsaadjk')
     assert.deepEqual(body, {
       hasValidSignature: false,
     })
   })
 
   test('return true when signature is valid', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const url = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
+    const route = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
       .params({ name: 'virk' })
       .disableRouteLookup()
       .makeSigned('/')
 
-    const { body } = await supertest(server).get(url)
+    const { body } = await supertest(url).get(route)
     assert.deepEqual(body, {
       hasValidSignature: true,
     })
   })
 
   test('return true when signature is valid without any querystring', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const url = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
+    const route = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
       .disableRouteLookup()
       .makeSigned('/')
 
-    const { body } = await supertest(server).get(url)
+    const { body } = await supertest(url).get(route)
     assert.deepEqual(body, {
       hasValidSignature: true,
     })
   })
 
   test('return false when signature is valid but expired', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const url = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
+    const route = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
       .disableRouteLookup()
       .makeSigned('/', {
         expiresIn: -100,
       })
 
-    const { body } = await supertest(server).get(url)
+    const { body } = await supertest(url).get(route)
     assert.deepEqual(body, {
       hasValidSignature: false,
     })
   })
 
   test('return true when expiry is in future', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const url = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
+    const route = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
       .disableRouteLookup()
       .makeSigned('/', {
         expiresIn: '1 hour',
       })
 
-    const { body } = await supertest(server).get(url)
+    const { body } = await supertest(url).get(route)
     assert.deepEqual(body, {
       hasValidSignature: true,
     })
   })
 
   test('return false when purpose is different', async ({ assert }) => {
-    const server = createServer((req, res) => {
+    const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature('login') }))
     })
 
-    const url = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
+    const route = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
       .disableRouteLookup()
       .makeSigned('/', {
         purpose: 'register',
       })
 
-    const { body } = await supertest(server).get(url)
+    const { body } = await supertest(url).get(route)
     assert.deepEqual(body, {
       hasValidSignature: false,
     })
