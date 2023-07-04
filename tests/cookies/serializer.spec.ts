@@ -8,6 +8,7 @@
  */
 
 import { test } from '@japa/runner'
+import { setTimeout } from 'node:timers/promises'
 import { base64, MessageBuilder } from '@poppinss/utils'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
@@ -81,13 +82,13 @@ test.group('Cookie | serialize', () => {
     assert.equal(options, `HttpOnly`)
   })
 
-  test('invoke expires callback when defined as a function', async ({ assert, sleep }) => {
+  test('invoke expires callback when defined as a function', async ({ assert }) => {
     const config = { expires: () => new Date() }
 
     const serializer = new CookieSerializer(encryption)
     const serialized = serializer.encode('username', 'virk', config)
 
-    await sleep(1000)
+    await setTimeout(1000)
     const serialized1 = serializer.encode('username', 'virk', config)
     assert.notEqual(serialized, serialized1)
   })
