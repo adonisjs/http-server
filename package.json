@@ -21,7 +21,7 @@
   },
   "scripts": {
     "pretest": "npm run lint",
-    "test": "cross-env NODE_DEBUG=adonisjs:http c8 npm run vscode:test",
+    "test": "cross-env NODE_DEBUG=adonisjs:http c8 npm run quick:test",
     "clean": "del-cli build",
     "compile": "npm run lint && npm run clean && tsc",
     "build": "npm run compile",
@@ -34,7 +34,7 @@
     "lint": "eslint . --ext=.ts",
     "sync-labels": "github-label-sync --labels .github/labels.json adonisjs/http-server",
     "test:watch": "node --watch --loader=ts-node/esm --experimental-import-meta-resolve bin/test.ts",
-    "vscode:test": "node --loader=ts-node/esm --experimental-import-meta-resolve bin/test.ts"
+    "quick:test": "node --loader=ts-node/esm --experimental-import-meta-resolve bin/test.ts"
   },
   "keywords": [
     "http",
