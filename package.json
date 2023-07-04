@@ -23,6 +23,7 @@
     "pretest": "npm run lint",
     "test": "cross-env NODE_DEBUG=adonisjs:http c8 npm run quick:test",
     "clean": "del-cli build",
+    "typecheck": "tsc --noEmit",
     "compile": "npm run lint && npm run clean && tsc",
     "build": "npm run compile",
     "prebenchmark": "npm run build",
@@ -45,9 +46,12 @@
   "devDependencies": {
     "@adonisjs/application": "^7.1.2-6",
     "@adonisjs/encryption": "^5.1.2-2",
+    "@adonisjs/eslint-config": "^1.1.7",
     "@adonisjs/events": "^8.4.9-3",
     "@adonisjs/fold": "^9.9.3-5",
     "@adonisjs/logger": "^5.4.2-3",
+    "@adonisjs/prettier-config": "^1.1.7",
+    "@adonisjs/tsconfig": "^1.1.7",
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
     "@fastify/middie": "^8.3.0",
@@ -79,9 +83,6 @@
     "cross-env": "^7.0.3",
     "del-cli": "^5.0.0",
     "eslint": "^8.44.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-adonis": "^3.0.3",
-    "eslint-plugin-prettier": "^4.2.1",
     "fastify": "^4.19.1",
     "fs-extra": "^11.1.1",
     "get-port": "^7.0.0",
@@ -134,37 +135,6 @@
     "url": "https://github.com/adonisjs/http-server/issues"
   },
   "homepage": "https://github.com/adonisjs/http-server#readme",
-  "eslintConfig": {
-    "extends": [
-      "plugin:adonis/typescriptPackage",
-      "prettier"
-    ],
-    "plugins": [
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": [
-        "error",
-        {
-          "endOfLine": "auto"
-        }
-      ]
-    }
-  },
-  "eslintIgnore": [
-    "build",
-    "backup"
-  ],
-  "prettier": {
-    "trailingComma": "es5",
-    "semi": false,
-    "singleQuote": true,
-    "useTabs": false,
-    "quoteProps": "consistent",
-    "bracketSpacing": true,
-    "arrowParens": "always",
-    "printWidth": 100
-  },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
@@ -190,5 +160,9 @@
       "factories/**",
       ".yalc/**"
     ]
-  }
+  },
+  "eslintConfig": {
+    "extends": "@adonisjs/eslint-config/package"
+  },
+  "prettier": "@adonisjs/prettier-config"
 }
