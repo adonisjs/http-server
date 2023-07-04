@@ -204,7 +204,7 @@ export class Response extends Macroable {
    * Ends the response by flushing headers and writing body
    */
   #endResponse(body?: any, statusCode?: number) {
-    this.flushHeaders(statusCode)
+    this.writeHead(statusCode)
 
     // avoid ArgumentsAdaptorTrampoline from V8 (inspired by fastify)
     const res = this.response as any
@@ -447,21 +447,32 @@ export class Response extends Macroable {
         destroy(body)
 
         this.type('text')
-        if (typeof errorCallback === 'function') {
-          this.#endResponse(...errorCallback(error))
+
+        if (!this.headersSent) {
+          if (typeof errorCallback === 'function') {
+            this.#endResponse(...errorCallback(error))
+          } else {
+            this.#endResponse(
+              error.code === 'ENOENT' ? 'File not found' : 'Cannot process file',
+              error.code === 'ENOENT' ? 404 : 500
+            )
+          }
         } else {
-          this.#endResponse(
-            error.code === 'ENOENT' ? 'File not found' : 'Cannot process file',
-            error.code === 'ENOENT' ? 404 : 500
-          )
-          resolve()
+          this.response.destroy()
         }
+
+        resolve()
       })
 
       /*
        * Listen for end and resolve the promise
        */
-      body.on('end', resolve)
+      body.on('end', () => {
+        if (!this.headersSent) {
+          this.#endResponse()
+        }
+        resolve()
+      })
 
       /*
        * Cleanup stream when finishing response
@@ -556,9 +567,24 @@ export class Response extends Macroable {
   }
 
   /**
-   * Writes headers to the response.
+   * Writes headers with the Node.js res object using the
+   * response.setHeader method
    */
-  flushHeaders(statusCode?: number): this {
+  flushHeaders() {
+    if (!this.headersSent) {
+      for (let key in this.#headers) {
+        const value = this.#headers[key]
+        if (value) {
+          this.response.setHeader(key, value)
+        }
+      }
+    }
+  }
+
+  /**
+   * Calls res.writeHead on the Node.js res object.
+   */
+  writeHead(statusCode?: number): this {
     this.response.writeHead(statusCode || this.response.statusCode, this.#headers)
     return this
   }
