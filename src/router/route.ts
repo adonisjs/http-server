@@ -33,6 +33,7 @@ import type {
   StoreRouteHandler,
   StoreRouteMiddleware,
 } from '../types/route.js'
+import debug from '../debug.js'
 
 /**
  * The route class exposes the APIs for constructing a route using the
@@ -338,8 +339,14 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
   #getMiddlewareForStore() {
     const middleware = new Middleware<StoreRouteMiddleware>()
 
-    this.#routerMiddleware.forEach((one) => middleware.add(one))
-    this.#middleware.flat().forEach((one) => middleware.add(one))
+    this.#routerMiddleware.forEach((one) => {
+      debug('adding global middleware to route %s, %O', this.#pattern, one)
+      middleware.add(one)
+    })
+    this.#middleware.flat().forEach((one) => {
+      debug('adding named middleware to route %s, %O', this.#pattern, one)
+      middleware.add(one)
+    })
 
     return middleware
   }

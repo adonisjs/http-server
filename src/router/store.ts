@@ -21,6 +21,7 @@ import type {
   MatchItRouteToken,
 } from '../types/route.js'
 import { parseRoutePattern } from './parser.js'
+import debug from '../debug.js'
 
 /**
  * Store class is used to store a list of routes, along side with their tokens
@@ -119,6 +120,11 @@ export class RoutesStore {
       throw new RuntimeException(
         `Duplicate route found. "${method}: ${route.pattern}" route already exists`
       )
+    }
+
+    if (debug.enabled) {
+      debug('registering route to the store %O', route)
+      debug('route middleware %O', route.middleware.all().entries())
     }
 
     methodRoutes.tokens.push(tokens)
