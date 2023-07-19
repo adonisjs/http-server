@@ -9,6 +9,8 @@
 
 import { test } from '@japa/runner'
 import { Exception } from '@poppinss/utils'
+import { SimpleErrorReporter } from '@vinejs/vine'
+import { fieldContext } from '@vinejs/vine/factories'
 import { LoggerFactory } from '@adonisjs/logger/factories'
 
 import { errors, HttpContext } from '../../index.js'
@@ -201,6 +203,76 @@ test.group('Exception handler | handle', () => {
 
     assert.equal(ctx.response.getStatus(), 500)
     assert.deepEqual(ctx.response.getBody().message, 'Something went wrong')
+  })
+
+  test('render validation error to a string', async ({ assert }) => {
+    const exceptionHandler = new ExceptionHandler()
+    const ctx = new HttpContextFactory().create()
+
+    const reporter = new SimpleErrorReporter()
+    reporter.report('Username is not unique', 'unique', fieldContext.create('username', ''), {
+      table: 'users',
+    })
+
+    await exceptionHandler.handle(reporter.createError(), ctx)
+    assert.equal(ctx.response.getStatus(), 422)
+    assert.equal(ctx.response.getBody(), 'username - Username is not unique')
+  })
+
+  test('render validation error to JSON', async ({ assert }) => {
+    const exceptionHandler = new ExceptionHandler()
+    const ctx = new HttpContextFactory().create()
+    ctx.request.request.headers['accept'] = 'application/json'
+
+    const reporter = new SimpleErrorReporter()
+    reporter.report('Username is not unique', 'unique', fieldContext.create('username', ''), {
+      table: 'users',
+    })
+
+    await exceptionHandler.handle(reporter.createError(), ctx)
+
+    assert.equal(ctx.response.getStatus(), 422)
+    assert.deepEqual(ctx.response.getBody(), {
+      errors: [
+        {
+          field: 'username',
+          message: 'Username is not unique',
+          meta: {
+            table: 'users',
+          },
+          rule: 'unique',
+        },
+      ],
+    })
+  })
+
+  test('render validation error to JSONAPI', async ({ assert }) => {
+    const exceptionHandler = new ExceptionHandler()
+    const ctx = new HttpContextFactory().create()
+    ctx.request.request.headers['accept'] = 'application/vnd.api+json'
+
+    const reporter = new SimpleErrorReporter()
+    reporter.report('Username is not unique', 'unique', fieldContext.create('username', ''), {
+      table: 'users',
+    })
+
+    await exceptionHandler.handle(reporter.createError(), ctx)
+
+    assert.equal(ctx.response.getStatus(), 422)
+    assert.deepEqual(ctx.response.getBody(), {
+      errors: [
+        {
+          source: {
+            pointer: 'username',
+          },
+          title: 'Username is not unique',
+          meta: {
+            table: 'users',
+          },
+          code: 'unique',
+        },
+      ],
+    })
   })
 })
 
