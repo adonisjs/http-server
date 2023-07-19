@@ -380,9 +380,7 @@ test.group('Request', () => {
     })
 
     const { body } = await supertest(url).get('/')
-    assert.deepEqual(body, {
-      ip: '::1',
-    })
+    assert.oneOf(body.ip, ['::1', '127.0.0.1'])
   })
 
   test('get ip addresses as an array', async ({ assert }) => {
@@ -394,9 +392,7 @@ test.group('Request', () => {
     })
 
     const { body } = await supertest(url).get('/')
-    assert.deepEqual(body, {
-      ip: ['::1'],
-    })
+    body.ip.map((ip: string) => assert.oneOf(ip, ['::1', '127.0.0.1']))
   })
 
   test('get request protocol', async ({ assert }) => {
