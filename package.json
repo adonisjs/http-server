@@ -77,6 +77,7 @@
     "@types/supertest": "^2.0.12",
     "@types/type-is": "^1.6.3",
     "@types/vary": "^1.1.0",
+    "@vinejs/vine": "^1.5.2",
     "autocannon": "^7.11.0",
     "c8": "^8.0.0",
     "cross-env": "^7.0.3",
