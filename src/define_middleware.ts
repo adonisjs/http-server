@@ -40,7 +40,7 @@ function middlewareReferenceBuilder(
  * a reference to the executable middleware.
  */
 export function defineNamedMiddleware<
-  NamedMiddleware extends Record<string | number | symbol, LazyImport<MiddlewareAsClass>>
+  NamedMiddleware extends Record<string | number | symbol, LazyImport<MiddlewareAsClass>>,
 >(collection: NamedMiddleware) {
   return Object.keys(collection).reduce(
     (result, key: keyof NamedMiddleware) => {
@@ -49,7 +49,7 @@ export function defineNamedMiddleware<
     },
     {} as {
       [K in keyof NamedMiddleware]: <
-        Args extends GetMiddlewareArgs<UnWrapLazyImport<NamedMiddleware[K]>>
+        Args extends GetMiddlewareArgs<UnWrapLazyImport<NamedMiddleware[K]>>,
       >(
         ...args: Args
       ) => {

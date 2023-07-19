@@ -137,11 +137,14 @@ export class ExceptionHandler {
    */
   #expandStatusPages() {
     if (!this.#expandedStatusPages) {
-      this.#expandedStatusPages = Object.keys(this.statusPages).reduce((result, range) => {
-        const renderer = this.statusPages[range as StatusPageRange]
-        result = Object.assign(result, parseRange(range, renderer))
-        return result
-      }, {} as Record<number, StatusPageRenderer>)
+      this.#expandedStatusPages = Object.keys(this.statusPages).reduce(
+        (result, range) => {
+          const renderer = this.statusPages[range as StatusPageRange]
+          result = Object.assign(result, parseRange(range, renderer))
+          return result
+        },
+        {} as Record<number, StatusPageRenderer>
+      )
     }
 
     return this.#expandedStatusPages

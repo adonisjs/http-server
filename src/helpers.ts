@@ -101,8 +101,11 @@ export function parseRange<T>(range: string, value: T): Record<number, T> {
     throw new InvalidArgumentsException(`Invalid range "${range}"`)
   }
 
-  return [...Array(max - min + 1).keys()].reduce((result, step) => {
-    result[min + step] = value
-    return result
-  }, {} as Record<number, T>)
+  return [...Array(max - min + 1).keys()].reduce(
+    (result, step) => {
+      result[min + step] = value
+      return result
+    },
+    {} as Record<number, T>
+  )
 }
