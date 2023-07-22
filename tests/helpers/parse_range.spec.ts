@@ -42,4 +42,20 @@ test.group('Helpers | parse range', () => {
     const result = parseRange('a..c', true)
     assert.deepEqual(result, {})
   })
+
+  test('parse when there is no range expression', ({ assert }) => {
+    const result = parseRange('200', true)
+    assert.deepEqual(result, {
+      200: true,
+    })
+  })
+
+  test('return error when no ending value is provided in range', () => {
+    parseRange('200..', true)
+  }).throws('Invalid range "200.."')
+
+  test('return empty object when ending value is not number', ({ assert }) => {
+    const result = parseRange('200..foo', true)
+    assert.deepEqual(result, {})
+  })
 })

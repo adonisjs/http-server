@@ -43,7 +43,7 @@ export interface TestingMiddlewarePipeline {
 /**
  * The expression to define a status page range
  */
-export type StatusPageRange = `${number}..${number}`
+export type StatusPageRange = `${number}..${number}` | `${number}` | number
 
 /**
  * The callback function to render status page for a given

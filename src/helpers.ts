@@ -87,20 +87,42 @@ export function parseRange<T>(range: string, value: T): Record<number, T> {
   const min = Number(parts[0])
   const max = Number(parts[1])
 
+  /**
+   * The ending status code does not exists
+   */
+  if (parts.length === 1 && !Number.isNaN(min)) {
+    return {
+      [min]: value,
+    }
+  }
+
+  /**
+   * The starting status code is not a number
+   */
   if (Number.isNaN(min) || Number.isNaN(max)) {
     return {}
   }
 
+  /**
+   * Min and max are same
+   */
   if (min === max) {
     return {
       [min]: value,
     }
   }
 
+  /**
+   * Max cannot be smaller than min
+   */
   if (max < min) {
     throw new InvalidArgumentsException(`Invalid range "${range}"`)
   }
 
+  /**
+   * Loop over the range and create a collection
+   * of status codes
+   */
   return [...Array(max - min + 1).keys()].reduce(
     (result, step) => {
       result[min + step] = value
