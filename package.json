@@ -69,7 +69,7 @@
     "@types/fs-extra": "^11.0.1",
     "@types/http-status-codes": "^1.2.0",
     "@types/mime-types": "^2.1.1",
-    "@types/node": "^20.4.2",
+    "@types/node": "^20.4.3",
     "@types/on-finished": "^2.3.1",
     "@types/pem": "^1.14.0",
     "@types/proxy-addr": "^2.0.0",
