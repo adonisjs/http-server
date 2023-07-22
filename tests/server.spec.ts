@@ -558,6 +558,179 @@ test.group('Server | middleware', () => {
     assert.deepEqual(stack, ['fn1'])
     assert.equal(text, 'Something went wrong')
   })
+
+  test('run upstream code when server middleware raises an exception', async ({ assert }) => {
+    const stack: string[] = []
+
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+    await app.init()
+
+    class LogMiddleware {
+      async handle(_: HttpContext, next: NextFn) {
+        stack.push('fn1')
+        await next()
+        stack.push('fn1 upstream')
+      }
+    }
+
+    class LogMiddleware2 {
+      handle(_: HttpContext) {
+        stack.push('fn2')
+        throw new Error('Something went wrong')
+      }
+    }
+
+    server.use([
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+      async () => {
+        return {
+          default: LogMiddleware2,
+        }
+      },
+    ])
+
+    server
+      .getRouter()!
+      .get('/', async () => {
+        stack.push('handler')
+        return 'done'
+      })
+      .middleware(async function routeMiddleware(_ctx: HttpContext, next: NextFn) {
+        stack.push('route fn1')
+        await next()
+      })
+
+    await server.boot()
+
+    const { text } = await supertest(httpServer).get('/').expect(500)
+    assert.equal(text, 'Something went wrong')
+    assert.deepEqual(stack, ['fn1', 'fn2', 'fn1 upstream'])
+  })
+
+  test('run upstream code when route middleware raises an exception', async ({ assert }) => {
+    const stack: string[] = []
+
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+    await app.init()
+
+    class LogMiddleware {
+      async handle(_: HttpContext, next: NextFn) {
+        stack.push('fn1')
+        await next()
+        stack.push('fn1 upstream')
+      }
+    }
+
+    class LogMiddleware2 {
+      async handle(_: HttpContext, next: NextFn) {
+        stack.push('fn2')
+        await next()
+        stack.push('fn2 upstream')
+      }
+    }
+
+    server.use([
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+      async () => {
+        return {
+          default: LogMiddleware2,
+        }
+      },
+    ])
+
+    server
+      .getRouter()!
+      .get('/', async () => {
+        stack.push('handler')
+        return 'done'
+      })
+      .middleware(async function routeMiddleware(_ctx: HttpContext) {
+        stack.push('route fn1')
+        throw new Error('Something went wrong')
+      })
+
+    await server.boot()
+
+    const { text } = await supertest(httpServer).get('/').expect(500)
+    assert.equal(text, 'Something went wrong')
+    assert.deepEqual(stack, ['fn1', 'fn2', 'route fn1', 'fn2 upstream', 'fn1 upstream'])
+  })
+
+  test('run upstream code when route handler raises an exception', async ({ assert }) => {
+    const stack: string[] = []
+
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+    await app.init()
+
+    class LogMiddleware {
+      async handle(_: HttpContext, next: NextFn) {
+        stack.push('fn1')
+        await next()
+        stack.push('fn1 upstream')
+      }
+    }
+
+    class LogMiddleware2 {
+      async handle(_: HttpContext, next: NextFn) {
+        stack.push('fn2')
+        await next()
+        stack.push('fn2 upstream')
+      }
+    }
+
+    server.use([
+      async () => {
+        return {
+          default: LogMiddleware,
+        }
+      },
+      async () => {
+        return {
+          default: LogMiddleware2,
+        }
+      },
+    ])
+
+    server
+      .getRouter()!
+      .get('/', async () => {
+        stack.push('handler')
+        throw new Error('Something went wrong')
+      })
+      .middleware(async function routeMiddleware(_ctx: HttpContext, next: NextFn) {
+        stack.push('route fn1')
+        await next()
+        stack.push('route fn1 upstream')
+      })
+
+    await server.boot()
+
+    const { text } = await supertest(httpServer).get('/').expect(500)
+    assert.equal(text, 'Something went wrong')
+    assert.deepEqual(stack, [
+      'fn1',
+      'fn2',
+      'route fn1',
+      'handler',
+      'route fn1 upstream',
+      'fn2 upstream',
+      'fn1 upstream',
+    ])
+  })
 })
 
 test.group('Server | error handler', () => {

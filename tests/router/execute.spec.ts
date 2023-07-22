@@ -42,7 +42,7 @@ test.group('Route | execute', () => {
     })
 
     const routeJSON = route.toJSON()
-    await routeJSON.execute(routeJSON, app.container.createResolver(), context)
+    await routeJSON.execute(routeJSON, app.container.createResolver(), context, () => {})
     assert.deepEqual(stack, ['handler'])
   })
 
@@ -75,7 +75,7 @@ test.group('Route | execute', () => {
       },
     }
 
-    await routeJSON.execute(routeJSON, resolver, context)
+    await routeJSON.execute(routeJSON, resolver, context, () => {})
     assert.deepEqual(stack, ['controller'])
   })
 
@@ -111,7 +111,7 @@ test.group('Route | execute', () => {
     })
 
     const routeJSON = route.toJSON()
-    await routeJSON.execute(routeJSON, resolver, context)
+    await routeJSON.execute(routeJSON, resolver, context, () => {})
 
     const route1 = new Route(app, [], {
       pattern: '/',
@@ -121,7 +121,7 @@ test.group('Route | execute', () => {
     })
 
     const route1JSON = route1.toJSON()
-    await route1JSON.execute(route1JSON, resolver, context)
+    await route1JSON.execute(route1JSON, resolver, context, () => {})
 
     assert.deepEqual(stack, ['invoked', 'invoked handle'])
   })
@@ -152,7 +152,7 @@ test.group('Route | execute', () => {
     })
 
     const routeJSON = route.toJSON()
-    await routeJSON.execute(routeJSON, resolver, context)
+    await routeJSON.execute(routeJSON, resolver, context, () => {})
 
     const route1 = new Route(app, [], {
       pattern: '/',
@@ -162,7 +162,7 @@ test.group('Route | execute', () => {
     })
 
     const route1JSON = route1.toJSON()
-    await route1JSON.execute(route1JSON, resolver, context)
+    await route1JSON.execute(route1JSON, resolver, context, () => {})
 
     assert.deepEqual(stack, ['invoked', 'invoked handle'])
   })
@@ -200,7 +200,7 @@ test.group('Route | execute', () => {
     })
 
     const routeJSON = route.toJSON()
-    await routeJSON.execute(routeJSON, app.container.createResolver(), context)
+    await routeJSON.execute(routeJSON, app.container.createResolver(), context, () => {})
     assert.deepEqual(stack, ['middleware 1', 'middleware 2', 'handler'])
   })
 
@@ -238,7 +238,7 @@ test.group('Route | execute', () => {
     })
 
     const routeJSON = route.toJSON()
-    await routeJSON.execute(routeJSON, app.container.createResolver(), context)
+    await routeJSON.execute(routeJSON, app.container.createResolver(), context, () => {})
     assert.deepEqual(stack, ['middleware 1', 'middleware 2'])
   })
 
@@ -303,7 +303,7 @@ test.group('Route | execute', () => {
     })
 
     const routeJSON = route.toJSON()
-    await routeJSON.execute(routeJSON, app.container.createResolver(), context)
+    await routeJSON.execute(routeJSON, app.container.createResolver(), context, () => {})
     assert.deepEqual(stack, ['bodyparser', 'log', 'middleware 1', 'middleware 2', 'handler'])
   })
 
@@ -369,7 +369,7 @@ test.group('Route | execute', () => {
     })
 
     const routeJSON = route.toJSON()
-    await routeJSON.execute(routeJSON, app.container.createResolver(), context)
+    await routeJSON.execute(routeJSON, app.container.createResolver(), context, () => {})
     assert.deepEqual(stack, ['bodyparser', 'log'])
   })
 
@@ -430,10 +430,9 @@ test.group('Route | execute', () => {
     })
 
     const routeJSON = route.toJSON()
-    await assert.rejects(
-      () => routeJSON.execute(routeJSON, app.container.createResolver(), context),
-      'Log middleware failed'
-    )
+    await routeJSON.execute(routeJSON, app.container.createResolver(), context, (error) => {
+      assert.equal(error.message, 'Log middleware failed')
+    })
 
     assert.deepEqual(stack, ['bodyparser', 'log'])
   })
@@ -494,10 +493,9 @@ test.group('Route | execute', () => {
     })
 
     const routeJSON = route.toJSON()
-    await assert.rejects(
-      () => routeJSON.execute(routeJSON, app.container.createResolver(), context),
-      'route handler failed'
-    )
+    await routeJSON.execute(routeJSON, app.container.createResolver(), context, (error) => {
+      assert.equal(error.message, 'route handler failed')
+    })
 
     assert.deepEqual(stack, ['bodyparser', 'log', 'middleware 1', 'middleware 2'])
   })
@@ -546,11 +544,11 @@ test.group('Route | execute', () => {
     route1.middleware(namedMiddleware.acl({ role: 'admin' }))
 
     const routeJSON = route.toJSON()
-    await routeJSON.execute(routeJSON, app.container.createResolver(), context)
+    await routeJSON.execute(routeJSON, app.container.createResolver(), context, () => {})
     assert.deepEqual(stack, [undefined, 'handler'])
 
     const route1JSON = route1.toJSON()
-    await route1JSON.execute(route1JSON, app.container.createResolver(), context)
+    await route1JSON.execute(route1JSON, app.container.createResolver(), context, () => {})
     assert.deepEqual(stack, [undefined, 'handler', { role: 'admin' }, 'handler'])
   })
 })

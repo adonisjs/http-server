@@ -13,6 +13,7 @@ import type { ContainerResolver } from '@adonisjs/fold'
 import type { Constructor, LazyImport } from './base.js'
 import type { HttpContext } from '../http_context/main.js'
 import type { MiddlewareFn, ParsedGlobalMiddleware } from './middleware.js'
+import { ServerErrorHandler } from './server.js'
 
 /**
  * Returns a union of methods from a controller that accepts
@@ -70,7 +71,12 @@ export type StoreRouteNode = {
    * The execute function to execute the route middleware
    * and the handler
    */
-  execute: (route: StoreRouteNode, resolver: ContainerResolver<any>, ctx: HttpContext) => any
+  execute: (
+    route: StoreRouteNode,
+    resolver: ContainerResolver<any>,
+    ctx: HttpContext,
+    errorResponder: ServerErrorHandler['handle']
+  ) => any
 
   /**
    * A unique name for the route

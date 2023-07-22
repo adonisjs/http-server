@@ -116,6 +116,19 @@ export class Server {
   #middleware: ParsedGlobalMiddleware[] = []
 
   /**
+   * The request error response is attached to the middleware
+   * pipeline to intercept errors and invoke the user
+   * registered error handler.
+   *
+   * We share this with the route middleware pipeline as well,
+   * so that it does not throw any exceptions
+   */
+  #requestErrorResponder: ServerErrorHandler['handle'] = (error, ctx) => {
+    this.#resolvedErrorHandler.report(error, ctx)
+    return this.#resolvedErrorHandler.handle(error, ctx)
+  }
+
+  /**
    * Know if async local storage is enabled or not.
    */
   get usingAsyncLocalStorage() {
@@ -168,11 +181,8 @@ export class Server {
    */
   #handleRequest(ctx: HttpContext, resolver: ContainerResolver<any>) {
     return this.#serverMiddlewareStack!.runner()
-      .errorHandler((error) => {
-        this.#resolvedErrorHandler.report(error, ctx)
-        return this.#resolvedErrorHandler.handle(error, ctx)
-      })
-      .finalHandler(finalHandler(this.#router!, resolver, ctx))
+      .errorHandler((error) => this.#requestErrorResponder(error, ctx))
+      .finalHandler(finalHandler(this.#router!, resolver, ctx, this.#requestErrorResponder))
       .run(middlewareHandler(resolver, ctx))
       .catch((error) => {
         ctx.logger.fatal({ err: error }, 'Exception raised by error handler')
