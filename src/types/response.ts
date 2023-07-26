@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 
+import { Readable } from 'node:stream'
+
 /**
  * Cookie options can that can be set on the response
  */
@@ -54,4 +56,4 @@ export type ResponseConfig = {
 /**
  * Stream that can be piped to the "response.stream" method
  */
-export type ResponseStream = NodeJS.ReadStream | NodeJS.ReadWriteStream | NodeJS.ReadableStream
+export type ResponseStream = Readable
