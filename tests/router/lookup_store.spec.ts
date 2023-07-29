@@ -9,7 +9,7 @@
 
 import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/application/factories'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionManagerFactory } from '@adonisjs/encryption/factories'
 
 import { Route } from '../../src/router/route.js'
 import { LookupStore } from '../../src/router/lookup_store/main.js'
@@ -20,7 +20,7 @@ const BASE_URL = new URL('./app/', import.meta.url)
 test.group('Lookup store | find', () => {
   test('find a route by route pattern', ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
-    const encryption = new EncryptionFactory().create()
+    const encryption = new EncryptionManagerFactory().create().use()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, [], {
@@ -43,7 +43,7 @@ test.group('Lookup store | find', () => {
 
   test('find a route by route name', ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
-    const encryption = new EncryptionFactory().create()
+    const encryption = new EncryptionManagerFactory().create().use()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, [], {
@@ -67,7 +67,7 @@ test.group('Lookup store | find', () => {
 
   test('find a route by route controller name', ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
-    const encryption = new EncryptionFactory().create()
+    const encryption = new EncryptionManagerFactory().create().use()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, [], {
@@ -89,7 +89,7 @@ test.group('Lookup store | find', () => {
   })
 
   test('return null when unable to find route', ({ assert }) => {
-    const encryption = new EncryptionFactory().create()
+    const encryption = new EncryptionManagerFactory().create().use()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     assert.isNull(lookupStore.find('/users/:id'))
@@ -97,7 +97,7 @@ test.group('Lookup store | find', () => {
 
   test('do not match route handler name when it is defined as function', ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
-    const encryption = new EncryptionFactory().create()
+    const encryption = new EncryptionManagerFactory().create().use()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, [], {
@@ -116,7 +116,7 @@ test.group('Lookup store | find', () => {
 test.group('Lookup store | findByOrFail', () => {
   test('find a route by route pattern', ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
-    const encryption = new EncryptionFactory().create()
+    const encryption = new EncryptionManagerFactory().create().use()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, [], {
@@ -139,7 +139,7 @@ test.group('Lookup store | findByOrFail', () => {
 
   test('find a route by route name', ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
-    const encryption = new EncryptionFactory().create()
+    const encryption = new EncryptionManagerFactory().create().use()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, [], {
@@ -163,7 +163,7 @@ test.group('Lookup store | findByOrFail', () => {
 
   test('find a route by route controller name', ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
-    const encryption = new EncryptionFactory().create()
+    const encryption = new EncryptionManagerFactory().create().use()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, [], {
@@ -185,7 +185,7 @@ test.group('Lookup store | findByOrFail', () => {
   })
 
   test('raise error when unable to lookup route', ({ assert }) => {
-    const encryption = new EncryptionFactory().create()
+    const encryption = new EncryptionManagerFactory().create().use()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     assert.throws(() => lookupStore.findOrFail('/users/:id'), 'Cannot lookup route "/users/:id"')
@@ -195,7 +195,7 @@ test.group('Lookup store | findByOrFail', () => {
 test.group('Lookup store | has', () => {
   test('check if a route exists', ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
-    const encryption = new EncryptionFactory().create()
+    const encryption = new EncryptionManagerFactory().create().use()
     const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
 
     const route = new Route(app, [], {

@@ -17,7 +17,7 @@ export function pack(key: string, value: any, encryption: Encryption): null | st
   if (value === undefined || value === null) {
     return null
   }
-  return `s:${encryption.verifier.sign(value, undefined, key)}`
+  return `s:${encryption.getMessageVerifier().sign(value, undefined, key)}`
 }
 
 /**
@@ -38,5 +38,5 @@ export function unpack(key: string, signedValue: string, encryption: Encryption)
     return null
   }
 
-  return encryption.verifier.unsign(value, key)
+  return encryption.getMessageVerifier().unsign(value, key)
 }

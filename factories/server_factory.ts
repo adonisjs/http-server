@@ -9,10 +9,10 @@
 
 import { Logger } from '@adonisjs/logger'
 import { Emitter } from '@adonisjs/events'
-import type { Encryption } from '@adonisjs/encryption'
+import type { EncryptionManager } from '@adonisjs/encryption'
 import type { Application } from '@adonisjs/application'
 import { AppFactory } from '@adonisjs/application/factories'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionManagerFactory } from '@adonisjs/encryption/factories'
 
 import { Server } from '../src/server/main.js'
 import { defineConfig } from '../src/define_config.js'
@@ -21,7 +21,7 @@ import type { ServerConfig } from '../src/types/server.js'
 type FactoryParameters = {
   app: Application<any>
   logger: Logger
-  encryption: Encryption
+  encryption: EncryptionManager<any>
   emitter: Emitter<any>
   config: Partial<ServerConfig>
 }
@@ -68,7 +68,7 @@ export class ServerFactory {
    * signed URLs
    */
   #createEncryption() {
-    return this.#parameters.encryption || new EncryptionFactory().create()
+    return this.#parameters.encryption || new EncryptionManagerFactory().create()
   }
 
   /**

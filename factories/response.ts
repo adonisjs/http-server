@@ -10,7 +10,7 @@
 import { Socket } from 'node:net'
 import type { Encryption } from '@adonisjs/encryption'
 import { IncomingMessage, ServerResponse } from 'node:http'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionManagerFactory } from '@adonisjs/encryption/factories'
 
 import { RouterFactory } from './router.js'
 import { Response } from '../src/response.js'
@@ -77,7 +77,7 @@ export class ResponseFactory {
    * signed URLs
    */
   #createEncryption() {
-    return this.#parameters.encryption || new EncryptionFactory().create()
+    return this.#parameters.encryption || new EncryptionManagerFactory().create().use()
   }
 
   /**

@@ -44,7 +44,7 @@
   "license": "MIT",
   "devDependencies": {
     "@adonisjs/application": "^7.1.2-9",
-    "@adonisjs/encryption": "^5.1.2-2",
+    "@adonisjs/encryption": "file:.yalc/@adonisjs/encryption",
     "@adonisjs/eslint-config": "^1.1.8",
     "@adonisjs/events": "^8.4.9-4",
     "@adonisjs/fold": "^9.9.3-7",
@@ -98,6 +98,7 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "@adonisjs/core": "file:.yalc/@adonisjs/core",
     "@paralleldrive/cuid2": "^2.2.1",
     "@poppinss/macroable": "^1.0.0-7",
     "@poppinss/matchit": "^3.1.2",

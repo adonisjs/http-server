@@ -17,7 +17,7 @@ import { Readable } from 'node:stream'
 import { fileURLToPath } from 'node:url'
 import { AppFactory } from '@adonisjs/application/factories'
 import { createWriteStream, createReadStream } from 'node:fs'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionManagerFactory } from '@adonisjs/encryption/factories'
 
 import { Response } from '../src/response.js'
 import { RouterFactory } from '../factories/router.js'
@@ -28,7 +28,7 @@ import { ResponseFactory } from '../factories/response.js'
 const BASE_URL = new URL('./app/', import.meta.url)
 const BASE_PATH = fileURLToPath(BASE_URL)
 
-const encryption = new EncryptionFactory().create()
+const encryption = new EncryptionManagerFactory().create().use()
 const app = new AppFactory().create(BASE_URL, () => {})
 const router = new RouterFactory().merge({ app, encryption }).create()
 

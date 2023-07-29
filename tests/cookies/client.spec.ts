@@ -8,11 +8,11 @@
  */
 
 import { test } from '@japa/runner'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionManagerFactory } from '@adonisjs/encryption/factories'
 
 import { CookieClient } from '../../src/cookies/client.js'
 
-const encryption = new EncryptionFactory().create()
+const encryption = new EncryptionManagerFactory().create().use()
 
 test.group('Cookie Client', () => {
   test('sign cookie', async ({ assert }) => {

@@ -12,7 +12,7 @@ import supertest from 'supertest'
 import { test } from '@japa/runner'
 import Middleware from '@poppinss/middleware'
 import { createServer as httpsServer } from 'node:https'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionManagerFactory } from '@adonisjs/encryption/factories'
 
 import { RequestFactory } from '../factories/request.js'
 import { httpServer } from '../factories/http_server.js'
@@ -21,7 +21,7 @@ import { HttpContextFactory } from '../factories/http_context.js'
 import { QsParserFactory } from '../factories/qs_parser_factory.js'
 import { UrlBuilder } from '../src/router/lookup_store/url_builder.js'
 
-const encryption = new EncryptionFactory().create()
+const encryption = new EncryptionManagerFactory().create().use()
 const serializer = new CookieSerializer(encryption)
 
 test.group('Request', () => {

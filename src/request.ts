@@ -19,7 +19,7 @@ import lodash from '@poppinss/utils/lodash'
 import { createId } from '@paralleldrive/cuid2'
 import { parse, UrlWithStringQuery } from 'node:url'
 import type { Encryption } from '@adonisjs/encryption'
-import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'node:http'
+import type { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'node:http'
 
 import type { Qs } from './qs.js'
 import { trustProxy } from './helpers.js'
@@ -941,7 +941,7 @@ export class Request extends Macroable {
     /*
      * Return false when signature fails
      */
-    const signedUrl = this.#encryption.verifier.unsign(signature, purpose)
+    const signedUrl = this.#encryption.getMessageVerifier().unsign(signature, purpose)
     if (!signedUrl) {
       return false
     }

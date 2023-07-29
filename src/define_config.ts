@@ -16,6 +16,10 @@ import type { ServerConfig } from './types/server.js'
  */
 export function defineConfig(config: Partial<ServerConfig>): ServerConfig {
   const normalizedConfig = {
+    encrypters: {
+      cookie: 'legacy',
+      signedRoute: 'legacy',
+    },
     allowMethodSpoofing: false,
     trustProxy: proxyAddr.compile('loopback'),
     subdomainOffset: 2,

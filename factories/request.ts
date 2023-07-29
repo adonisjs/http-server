@@ -9,9 +9,9 @@
 
 import { Socket } from 'node:net'
 import proxyAddr from 'proxy-addr'
-import type { Encryption } from '@adonisjs/encryption'
+import { EncryptionManagerFactory } from '@adonisjs/encryption/factories'
 import { IncomingMessage, ServerResponse } from 'node:http'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import type { Encryption } from '@adonisjs/encryption'
 
 import { Request } from '../src/request.js'
 import { RequestConfig } from '../src/types/request.js'
@@ -74,7 +74,7 @@ export class RequestFactory {
    * signed URLs
    */
   #createEncryption() {
-    return this.#parameters.encryption || new EncryptionFactory().create()
+    return this.#parameters.encryption || new EncryptionManagerFactory().create().use()
   }
 
   /**

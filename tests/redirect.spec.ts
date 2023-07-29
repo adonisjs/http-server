@@ -10,7 +10,7 @@
 import supertest from 'supertest'
 import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/application/factories'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionManagerFactory } from '@adonisjs/encryption/factories'
 
 import { RouterFactory } from '../factories/router.js'
 import { httpServer } from '../factories/http_server.js'
@@ -19,7 +19,7 @@ import { ResponseFactory } from '../factories/response.js'
 const BASE_URL = new URL('./app/', import.meta.url)
 
 const app = new AppFactory().create(BASE_URL, () => {})
-const encryption = new EncryptionFactory().create()
+const encryption = new EncryptionManagerFactory().create().use()
 const router = new RouterFactory().merge({ app, encryption }).create()
 
 test.group('Redirect', () => {

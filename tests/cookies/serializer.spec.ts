@@ -10,11 +10,11 @@
 import { test } from '@japa/runner'
 import { setTimeout } from 'node:timers/promises'
 import { base64, MessageBuilder } from '@poppinss/utils'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionManagerFactory } from '@adonisjs/encryption/factories'
 
 import { CookieSerializer } from '../../src/cookies/serializer.js'
 
-const encryption = new EncryptionFactory().create()
+const encryption = new EncryptionManagerFactory().create().use()
 
 test.group('Cookie | serialize', () => {
   test('serialize and sign cookie', ({ assert }) => {

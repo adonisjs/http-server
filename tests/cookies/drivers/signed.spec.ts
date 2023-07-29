@@ -17,10 +17,10 @@
  */
 
 import { test } from '@japa/runner'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionManagerFactory } from '@adonisjs/encryption/factories'
 import { pack, unpack, canUnpack } from '../../../src/cookies/drivers/signed.js'
 
-const encryption = new EncryptionFactory().create()
+const encryption = new EncryptionManagerFactory().create().use()
 
 test.group('Cookie | driver | signed', () => {
   test('sign value', ({ assert }) => {

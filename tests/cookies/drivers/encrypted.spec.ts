@@ -17,10 +17,10 @@
  */
 
 import { test } from '@japa/runner'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionManagerFactory } from '@adonisjs/encryption/factories'
 import { pack, unpack, canUnpack } from '../../../src/cookies/drivers/encrypted.js'
 
-const encryption = new EncryptionFactory().create()
+const encryption = new EncryptionManagerFactory().create().use()
 
 test.group('Cookie | driver | encrypted', () => {
   test('encrypt value', ({ assert }) => {

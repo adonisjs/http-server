@@ -9,7 +9,8 @@
 
 import { createServer } from 'node:http'
 import { Emitter } from '@adonisjs/events'
-import { Encryption } from '@adonisjs/encryption'
+import { EncryptionManager } from '@adonisjs/encryption'
+import { Legacy } from '@adonisjs/encryption/drivers/legacy'
 import { Application } from '@adonisjs/application'
 
 import { defineConfig } from '../index.js'
@@ -22,7 +23,12 @@ const app = new Application(new URL('./', import.meta.url), {
 })
 await app.init()
 
-const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
+const encryption = new EncryptionManager({
+  default: 'legacy',
+  list: {
+    legacy: () => new Legacy({ key: 'averylongrandom32charslongsecret' }),
+  },
+})
 
 const server = new Server(
   app,

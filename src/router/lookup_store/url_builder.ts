@@ -13,6 +13,7 @@ import type { Encryption } from '@adonisjs/encryption'
 import type { Qs } from '../../qs.js'
 import { parseRoutePattern } from '../parser.js'
 import type { RouteFinder } from './route_finder.js'
+import { EncryptersList } from '@adonisjs/core/types'
 
 /**
  * URL builder class is used to create URIs for pre-registered
@@ -220,7 +221,10 @@ export class UrlBuilder {
    * route name, controller.method name or the route pattern
    * itself.
    */
-  makeSigned(identifier: string, options?: { expiresIn?: string | number; purpose?: string }) {
+  makeSigned(
+    identifier: string,
+    options?: { encrypter?: EncryptersList; expiresIn?: string | number; purpose?: string }
+  ) {
     let url: string
 
     if (this.#shouldPerformLookup) {
@@ -238,11 +242,9 @@ export class UrlBuilder {
      * on their 2 different domains, but we ignore that case for now and can consider
      * it later (when someone asks for it)
      */
-    const signature = this.#encryption.verifier.sign(
-      this.#suffixQueryString(url, this.#qs),
-      options?.expiresIn,
-      options?.purpose
-    )
+    const signature = this.#encryption
+      .getMessageVerifier()
+      .sign(this.#suffixQueryString(url, this.#qs), options?.expiresIn, options?.purpose)
 
     const qs = Object.assign({}, this.#qs, { signature })
     return this.#suffixQueryString(this.#prefixBaseUrl(url), qs)

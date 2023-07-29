@@ -11,7 +11,7 @@ import onFinished from 'on-finished'
 import { Emitter } from '@adonisjs/events'
 import Middleware from '@poppinss/middleware'
 import type { Logger } from '@adonisjs/logger'
-import type { Encryption } from '@adonisjs/encryption'
+import type { EncryptionManager } from '@adonisjs/encryption'
 import type { Server as HttpsServer } from 'node:https'
 import type { Application } from '@adonisjs/application'
 import { ContainerResolver, moduleCaller, moduleImporter } from '@adonisjs/fold'
@@ -83,7 +83,7 @@ export class Server {
   /**
    * The encryption instance to be shared with the router
    */
-  #encryption: Encryption
+  #encryption: EncryptionManager<any>
 
   /**
    * Server config
@@ -137,7 +137,7 @@ export class Server {
 
   constructor(
     app: Application<any>,
-    encryption: Encryption,
+    encryption: EncryptionManager<any>,
     emitter: Emitter<any>,
     logger: Logger,
     config: ServerConfig
@@ -148,7 +148,11 @@ export class Server {
     this.#logger = logger
     this.#encryption = encryption
     this.#qsParser = new Qs(this.#config.qs)
-    this.#router = new Router(this.#app, this.#encryption, this.#qsParser)
+    this.#router = new Router(
+      this.#app,
+      this.#encryption.use(config.encrypters.signedRoute),
+      this.#qsParser
+    )
     this.#createAsyncLocalStore()
 
     debug('server config: %O', this.#config)
@@ -301,14 +305,27 @@ export class Server {
    * Creates an instance of the [[Request]] class
    */
   createRequest(req: IncomingMessage, res: ServerResponse) {
-    return new Request(req, res, this.#encryption, this.#config, this.#qsParser)
+    return new Request(
+      req,
+      res,
+      this.#encryption.use(this.#config.encrypters.cookie),
+      this.#config,
+      this.#qsParser
+    )
   }
 
   /**
    * Creates an instance of the [[Response]] class
    */
   createResponse(req: IncomingMessage, res: ServerResponse) {
-    return new Response(req, res, this.#encryption, this.#config, this.#router, this.#qsParser)
+    return new Response(
+      req,
+      res,
+      this.#encryption.use(this.#config.encrypters.cookie),
+      this.#config,
+      this.#router,
+      this.#qsParser
+    )
   }
 
   /**
