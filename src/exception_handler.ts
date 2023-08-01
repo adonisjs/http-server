@@ -8,6 +8,7 @@
  */
 
 import is from '@sindresorhus/is'
+import Macroable from '@poppinss/macroable'
 import type { Level } from '@adonisjs/logger/types'
 
 import { parseRange } from './helpers.js'
@@ -27,7 +28,7 @@ import type { HttpError, StatusPageRange, StatusPageRenderer } from './types/ser
  * - Transforming errors to JSON or HTML using content negotiation
  * - Reporting errors
  */
-export class ExceptionHandler {
+export class ExceptionHandler extends Macroable {
   /**
    * Computed from the status pages property
    */
@@ -121,131 +122,6 @@ export class ExceptionHandler {
   }
 
   /**
-   * Renders an error to JSON response
-   */
-  protected async renderErrorAsJSON(error: HttpError, ctx: HttpContext) {
-    if (this.isDebuggingEnabled(ctx)) {
-      const { default: Youch } = await import('youch')
-      const json = await new Youch(error, ctx.request.request).toJSON()
-      ctx.response.status(error.status).send(json.error)
-      return
-    }
-
-    ctx.response.status(error.status).send({ message: error.message })
-  }
-
-  /**
-   * Renders an error to JSON API response
-   */
-  protected async renderErrorAsJSONAPI(error: HttpError, ctx: HttpContext) {
-    if (this.isDebuggingEnabled(ctx)) {
-      const { default: Youch } = await import('youch')
-      const json = await new Youch(error, ctx.request.request).toJSON()
-      ctx.response.status(error.status).send(json.error)
-      return
-    }
-
-    ctx.response.status(error.status).send({
-      errors: [
-        {
-          title: error.message,
-          code: error.code,
-          status: error.status,
-        },
-      ],
-    })
-  }
-
-  /**
-   * Renders an error to HTML response
-   */
-  protected async renderErrorAsHTML(error: HttpError, ctx: HttpContext) {
-    if (this.isDebuggingEnabled(ctx)) {
-      const { default: Youch } = await import('youch')
-      const html = await new Youch(error, ctx.request.request).toHTML()
-      ctx.response.status(error.status).send(html)
-      return
-    }
-
-    ctx.response.status(error.status).send(`<p> ${error.message} </p>`)
-  }
-
-  /**
-   * Renders the validation error message to a JSON
-   * response
-   */
-  protected async renderValidationErrorAsJSON(error: HttpError, ctx: HttpContext) {
-    ctx.response.status(error.status).send({
-      errors: error.messages,
-    })
-  }
-
-  /**
-   * Renders the validation error message as per JSON API
-   * spec
-   */
-  protected async renderValidationErrorAsJSONAPI(error: HttpError, ctx: HttpContext) {
-    ctx.response.status(error.status).send({
-      errors: error.messages.map((message: any) => {
-        return {
-          title: message.message,
-          code: message.rule,
-          source: {
-            pointer: message.field,
-          },
-          meta: message.meta,
-        }
-      }),
-    })
-  }
-
-  /**
-   * Renders the validation error as an HTML string
-   */
-  protected async renderValidationErrorAsHTML(error: HttpError, ctx: HttpContext) {
-    ctx.response
-      .status(error.status)
-      .type('html')
-      .send(
-        error.messages
-          .map((message: any) => {
-            return `${message.field} - ${message.message}`
-          })
-          .join('<br />')
-      )
-  }
-
-  /**
-   * Renders the error to response
-   */
-  protected renderError(error: HttpError, ctx: HttpContext) {
-    switch (ctx.request.accepts(['html', 'application/vnd.api+json', 'json'])) {
-      case 'application/vnd.api+json':
-        return this.renderErrorAsJSONAPI(error, ctx)
-      case 'json':
-        return this.renderErrorAsJSON(error, ctx)
-      case 'html':
-      default:
-        return this.renderErrorAsHTML(error, ctx)
-    }
-  }
-
-  /**
-   * Renders the validation error to response
-   */
-  protected renderValidationError(error: HttpError, ctx: HttpContext) {
-    switch (ctx.request.accepts(['html', 'application/vnd.api+json', 'json'])) {
-      case 'application/vnd.api+json':
-        return this.renderValidationErrorAsJSONAPI(error, ctx)
-      case 'json':
-        return this.renderValidationErrorAsJSON(error, ctx)
-      case 'html':
-      default:
-        return this.renderValidationErrorAsHTML(error, ctx)
-    }
-  }
-
-  /**
    * Returns the log level for an error based upon the error
    * status code.
    */
@@ -290,6 +166,131 @@ export class ExceptionHandler {
     }
 
     return true
+  }
+
+  /**
+   * Renders an error to JSON response
+   */
+  async renderErrorAsJSON(error: HttpError, ctx: HttpContext) {
+    if (this.isDebuggingEnabled(ctx)) {
+      const { default: Youch } = await import('youch')
+      const json = await new Youch(error, ctx.request.request).toJSON()
+      ctx.response.status(error.status).send(json.error)
+      return
+    }
+
+    ctx.response.status(error.status).send({ message: error.message })
+  }
+
+  /**
+   * Renders an error to JSON API response
+   */
+  async renderErrorAsJSONAPI(error: HttpError, ctx: HttpContext) {
+    if (this.isDebuggingEnabled(ctx)) {
+      const { default: Youch } = await import('youch')
+      const json = await new Youch(error, ctx.request.request).toJSON()
+      ctx.response.status(error.status).send(json.error)
+      return
+    }
+
+    ctx.response.status(error.status).send({
+      errors: [
+        {
+          title: error.message,
+          code: error.code,
+          status: error.status,
+        },
+      ],
+    })
+  }
+
+  /**
+   * Renders an error to HTML response
+   */
+  async renderErrorAsHTML(error: HttpError, ctx: HttpContext) {
+    if (this.isDebuggingEnabled(ctx)) {
+      const { default: Youch } = await import('youch')
+      const html = await new Youch(error, ctx.request.request).toHTML()
+      ctx.response.status(error.status).send(html)
+      return
+    }
+
+    ctx.response.status(error.status).send(`<p> ${error.message} </p>`)
+  }
+
+  /**
+   * Renders the validation error message to a JSON
+   * response
+   */
+  async renderValidationErrorAsJSON(error: HttpError, ctx: HttpContext) {
+    ctx.response.status(error.status).send({
+      errors: error.messages,
+    })
+  }
+
+  /**
+   * Renders the validation error message as per JSON API
+   * spec
+   */
+  async renderValidationErrorAsJSONAPI(error: HttpError, ctx: HttpContext) {
+    ctx.response.status(error.status).send({
+      errors: error.messages.map((message: any) => {
+        return {
+          title: message.message,
+          code: message.rule,
+          source: {
+            pointer: message.field,
+          },
+          meta: message.meta,
+        }
+      }),
+    })
+  }
+
+  /**
+   * Renders the validation error as an HTML string
+   */
+  async renderValidationErrorAsHTML(error: HttpError, ctx: HttpContext) {
+    ctx.response
+      .status(error.status)
+      .type('html')
+      .send(
+        error.messages
+          .map((message: any) => {
+            return `${message.field} - ${message.message}`
+          })
+          .join('<br />')
+      )
+  }
+
+  /**
+   * Renders the error to response
+   */
+  renderError(error: HttpError, ctx: HttpContext) {
+    switch (ctx.request.accepts(['html', 'application/vnd.api+json', 'json'])) {
+      case 'application/vnd.api+json':
+        return this.renderErrorAsJSONAPI(error, ctx)
+      case 'json':
+        return this.renderErrorAsJSON(error, ctx)
+      case 'html':
+      default:
+        return this.renderErrorAsHTML(error, ctx)
+    }
+  }
+
+  /**
+   * Renders the validation error to response
+   */
+  renderValidationError(error: HttpError, ctx: HttpContext) {
+    switch (ctx.request.accepts(['html', 'application/vnd.api+json', 'json'])) {
+      case 'application/vnd.api+json':
+        return this.renderValidationErrorAsJSONAPI(error, ctx)
+      case 'json':
+        return this.renderValidationErrorAsJSON(error, ctx)
+      case 'html':
+      default:
+        return this.renderValidationErrorAsHTML(error, ctx)
+    }
   }
 
   /**

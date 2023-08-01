@@ -219,6 +219,28 @@ test.group('Exception handler | handle', () => {
     assert.equal(ctx.response.getBody(), 'username - Username is not unique')
   })
 
+  test('overwrite public methods using macros', async ({ assert, cleanup }) => {
+    const existingMethod = ExceptionHandler.prototype.renderValidationErrorAsHTML
+    cleanup(() => {
+      ExceptionHandler.prototype.renderValidationErrorAsHTML = existingMethod
+    })
+
+    ExceptionHandler.macro('renderValidationErrorAsHTML', async function (_, ctx) {
+      ctx.response.send('Handled using custom reporter')
+    })
+
+    const exceptionHandler = new ExceptionHandler()
+    const ctx = new HttpContextFactory().create()
+
+    const reporter = new SimpleErrorReporter()
+    reporter.report('Username is not unique', 'unique', fieldContext.create('username', ''), {
+      table: 'users',
+    })
+
+    await exceptionHandler.handle(reporter.createError(), ctx)
+    assert.equal(ctx.response.getBody(), 'Handled using custom reporter')
+  })
+
   test('render validation error to JSON', async ({ assert }) => {
     const exceptionHandler = new ExceptionHandler()
     const ctx = new HttpContextFactory().create()
