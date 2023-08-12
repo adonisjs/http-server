@@ -148,11 +148,7 @@ export class Server {
     this.#logger = logger
     this.#encryption = encryption
     this.#qsParser = new Qs(this.#config.qs)
-    this.#router = new Router(
-      this.#app,
-      this.#encryption.use(config.encrypters.signedRoute),
-      this.#qsParser
-    )
+    this.#router = new Router(this.#app, this.#encryption.use(), this.#qsParser)
     this.#createAsyncLocalStore()
 
     debug('server config: %O', this.#config)
@@ -305,13 +301,7 @@ export class Server {
    * Creates an instance of the [[Request]] class
    */
   createRequest(req: IncomingMessage, res: ServerResponse) {
-    return new Request(
-      req,
-      res,
-      this.#encryption.use(this.#config.encrypters.cookie),
-      this.#config,
-      this.#qsParser
-    )
+    return new Request(req, res, this.#encryption.use(), this.#config, this.#qsParser)
   }
 
   /**
@@ -321,7 +311,7 @@ export class Server {
     return new Response(
       req,
       res,
-      this.#encryption.use(this.#config.encrypters.cookie),
+      this.#encryption.use(),
       this.#config,
       this.#router,
       this.#qsParser

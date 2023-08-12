@@ -14,7 +14,6 @@ import type { QSParserConfig } from './qs.js'
 import type { RequestConfig } from './request.js'
 import type { ResponseConfig } from './response.js'
 import type { HttpContext } from '../http_context/main.js'
-import { EncryptersList } from '@adonisjs/core/types'
 
 /**
  * Normalized HTTP error used by the exception
@@ -90,13 +89,4 @@ export type ServerConfig = RequestConfig &
      * Config for query string parser
      */
     qs: QSParserConfig
-
-    /**
-     * The encrypter to be used for signing cookies and
-     * routes.
-     */
-    encrypters: {
-      cookie: EncryptersList
-      signedRoute: EncryptersList
-    }
   }
