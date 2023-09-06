@@ -210,7 +210,9 @@ export class ExceptionHandler extends Macroable {
   async renderErrorAsHTML(error: HttpError, ctx: HttpContext) {
     if (this.isDebuggingEnabled(ctx)) {
       const { default: Youch } = await import('youch')
-      const html = await new Youch(error, ctx.request.request).toHTML()
+      const html = await new Youch(error, ctx.request.request).toHTML({
+        cspNonce: 'nonce' in ctx.response ? ctx.response.nonce : undefined,
+      })
       ctx.response.status(error.status).send(html)
       return
     }
