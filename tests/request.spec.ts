@@ -560,6 +560,48 @@ test.group('Request', () => {
     assert.equal(body.ip, '10.10.10.10')
   })
 
+  test('trust all proxies when trustProxy is true', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      req.headers['x-forwarded-for'] = '10.10.10.10'
+      const request = new RequestFactory()
+        .merge({
+          req,
+          res,
+          encryption,
+          config: {
+            trustProxy: true,
+          },
+        })
+        .create()
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ ip: request.ip() }))
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.equal(body.ip, '10.10.10.10')
+  })
+
+  test('trust no proxy when trustProxy is false', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      req.headers['x-forwarded-for'] = '10.10.10.10'
+      const request = new RequestFactory()
+        .merge({
+          req,
+          res,
+          encryption,
+          config: {
+            trustProxy: false,
+          },
+        })
+        .create()
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ ip: request.ip() }))
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.notEqual(body.ip, '10.10.10.10')
+  })
+
   test('return request url without query string', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
