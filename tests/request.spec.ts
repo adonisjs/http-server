@@ -9,6 +9,7 @@
 
 import pem from 'pem'
 import supertest from 'supertest'
+import proxyAddr from 'proxy-addr'
 import { test } from '@japa/runner'
 import Middleware from '@poppinss/middleware'
 import { createServer as httpsServer } from 'node:https'
@@ -515,6 +516,48 @@ test.group('Request', () => {
     assert.deepEqual(body, {
       pjax: true,
     })
+  })
+
+  test('do not trust proxy when trustProxy does not allow it', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      req.headers['x-forwarded-for'] = '10.10.10.10'
+      const request = new RequestFactory()
+        .merge({
+          req,
+          res,
+          encryption,
+          config: {
+            trustProxy: proxyAddr.compile('192.168.1.0/24'),
+          },
+        })
+        .create()
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ ip: request.ip() }))
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.notEqual(body.ip, '10.10.10.10')
+  })
+
+  test('trust proxy when trustProxy allows it', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      req.headers['x-forwarded-for'] = '10.10.10.10'
+      const request = new RequestFactory()
+        .merge({
+          req,
+          res,
+          encryption,
+          config: {
+            trustProxy: proxyAddr.compile('loopback'),
+          },
+        })
+        .create()
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ ip: request.ip() }))
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.equal(body.ip, '10.10.10.10')
   })
 
   test('return request url without query string', async ({ assert }) => {
