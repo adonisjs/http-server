@@ -52,4 +52,10 @@ test.group('Define config', () => {
 
     assert.typeOf(config.trustProxy, 'function')
   })
+
+  test('comfile trustProxy config when string', ({ assert }) => {
+    const config = defineConfig({ trustProxy: 'loopback' })
+
+    assert.typeOf(config.trustProxy, 'function')
+  })
 })
