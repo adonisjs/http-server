@@ -46,4 +46,10 @@ test.group('Define config', () => {
       useAsyncLocalStorage: false,
     })
   })
+
+  test('compile trustProxy config when boolean', ({ assert }) => {
+    const config = defineConfig({ trustProxy: true })
+
+    assert.typeOf(config.trustProxy, 'function')
+  })
 })

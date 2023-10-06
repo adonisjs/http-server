@@ -13,7 +13,7 @@ import accepts from 'accepts'
 import { isIP } from 'node:net'
 import is from '@sindresorhus/is'
 import proxyaddr from 'proxy-addr'
-import { RuntimeException, safeEqual } from '@poppinss/utils'
+import { safeEqual } from '@poppinss/utils'
 import Macroable from '@poppinss/macroable'
 import lodash from '@poppinss/utils/lodash'
 import { createId } from '@paralleldrive/cuid2'
@@ -145,24 +145,6 @@ export class Request extends Macroable {
    */
   #initiateAccepts() {
     this.#lazyAccepts = this.#lazyAccepts || accepts(this.request)
-  }
-
-  #getTrustProxyFn(tp: RequestConfig['trustProxy']): (addr: string, distance: number) => boolean {
-    if (typeof tp === 'function') {
-      return tp
-    }
-
-    if (typeof tp === 'boolean') {
-      return () => tp
-    }
-
-    throw new RuntimeException(
-      'Invalid value for "trustProxy" config. Must be a function or a boolean',
-      {
-        code: 'E_INVALID_TRUST_PROXY_CONFIG',
-        status: 500,
-      }
-    )
   }
 
   /**
@@ -425,7 +407,7 @@ export class Request extends Macroable {
       return ipFn(this)
     }
 
-    return proxyaddr(this.request, this.#getTrustProxyFn(this.#config.trustProxy))
+    return proxyaddr(this.request, this.#config.trustProxy)
   }
 
   /**
@@ -447,7 +429,7 @@ export class Request extends Macroable {
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
    */
   ips(): string[] {
-    return proxyaddr.all(this.request, this.#getTrustProxyFn(this.#config.trustProxy))
+    return proxyaddr.all(this.request, this.#config.trustProxy)
   }
 
   /**
@@ -475,12 +457,7 @@ export class Request extends Macroable {
       return 'https'
     }
 
-    if (
-      !trustProxy(
-        this.request.socket.remoteAddress!,
-        this.#getTrustProxyFn(this.#config.trustProxy)
-      )
-    ) {
+    if (!trustProxy(this.request.socket.remoteAddress!, this.#config.trustProxy)) {
       return this.parsedUrl.protocol || 'http'
     }
 
@@ -521,9 +498,7 @@ export class Request extends Macroable {
      * Use X-Fowarded-Host when we trust the proxy header and it
      * exists
      */
-    if (
-      trustProxy(this.request.socket.remoteAddress!, this.#getTrustProxyFn(this.#config.trustProxy))
-    ) {
+    if (trustProxy(this.request.socket.remoteAddress!, this.#config.trustProxy)) {
       host = this.header('X-Forwarded-Host') || host
     }
 

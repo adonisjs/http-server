@@ -48,5 +48,5 @@ export type RequestConfig = {
    *
    * Defaults to: "proxyAddr.compile('loopback')"
    */
-  trustProxy: ((address: string, distance: number) => boolean) | boolean
+  trustProxy: ((address: string, distance: number) => boolean) | (() => boolean)
 }

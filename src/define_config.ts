@@ -11,10 +11,16 @@ import proxyAddr from 'proxy-addr'
 import string from '@poppinss/utils/string'
 import type { ServerConfig } from './types/server.js'
 
+type UserDefinedServerConfig = Partial<
+  Omit<ServerConfig, 'trustProxy'> & {
+    trustProxy: ((address: string, distance: number) => boolean) | boolean
+  }
+>
+
 /**
  * Define configuration for the HTTP server
  */
-export function defineConfig(config: Partial<ServerConfig>): ServerConfig {
+export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
   const normalizedConfig = {
     allowMethodSpoofing: false,
     trustProxy: proxyAddr.compile('loopback'),
@@ -50,6 +56,11 @@ export function defineConfig(config: Partial<ServerConfig>): ServerConfig {
 
   if (normalizedConfig.cookie.maxAge) {
     normalizedConfig.cookie.maxAge = string.seconds.parse(normalizedConfig.cookie.maxAge)
+  }
+
+  if (typeof normalizedConfig.trustProxy === 'boolean') {
+    const tpValue = normalizedConfig.trustProxy
+    normalizedConfig.trustProxy = () => tpValue
   }
 
   return normalizedConfig
