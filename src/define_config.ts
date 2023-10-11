@@ -60,7 +60,7 @@ export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
 
   if (typeof normalizedConfig.trustProxy === 'boolean') {
     const tpValue = normalizedConfig.trustProxy
-    normalizedConfig.trustProxy = () => tpValue
+    normalizedConfig.trustProxy = (_, __) => tpValue
   } else if (typeof normalizedConfig.trustProxy === 'string') {
     const tpValue = normalizedConfig.trustProxy
     normalizedConfig.trustProxy = proxyAddr.compile(tpValue)

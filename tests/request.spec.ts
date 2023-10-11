@@ -569,7 +569,7 @@ test.group('Request', () => {
           res,
           encryption,
           config: {
-            trustProxy: () => true,
+            trustProxy: (_, __) => true,
           },
         })
         .create()
@@ -590,7 +590,7 @@ test.group('Request', () => {
           res,
           encryption,
           config: {
-            trustProxy: () => false,
+            trustProxy: (_, __) => false,
           },
         })
         .create()
