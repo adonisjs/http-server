@@ -21,6 +21,8 @@ type UserDefinedServerConfig = Partial<
  * Define configuration for the HTTP server
  */
 export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
+  const { trustProxy, ...rest } = config
+
   const normalizedConfig = {
     allowMethodSpoofing: false,
     trustProxy: proxyAddr.compile('loopback'),
@@ -51,18 +53,26 @@ export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
         skipNulls: false,
       },
     },
-    ...config,
+    ...rest,
   }
 
+  /**
+   * Normalizing maxAge property on cookies to be a number in
+   * seconds
+   */
   if (normalizedConfig.cookie.maxAge) {
     normalizedConfig.cookie.maxAge = string.seconds.parse(normalizedConfig.cookie.maxAge)
   }
 
-  if (typeof normalizedConfig.trustProxy === 'boolean') {
-    const tpValue = normalizedConfig.trustProxy
+  /**
+   * Normalizing trust proxy setting to allow boolean and
+   * string values
+   */
+  if (typeof trustProxy === 'boolean') {
+    const tpValue = trustProxy
     normalizedConfig.trustProxy = (_, __) => tpValue
-  } else if (typeof normalizedConfig.trustProxy === 'string') {
-    const tpValue = normalizedConfig.trustProxy
+  } else if (typeof trustProxy === 'string') {
+    const tpValue = trustProxy
     normalizedConfig.trustProxy = proxyAddr.compile(tpValue)
   }
 
