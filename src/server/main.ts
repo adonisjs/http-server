@@ -8,9 +8,9 @@
  */
 
 import onFinished from 'on-finished'
-import { Emitter } from '@adonisjs/events'
 import Middleware from '@poppinss/middleware'
 import type { Logger } from '@adonisjs/logger'
+import type { Emitter } from '@adonisjs/events'
 import type { Encryption } from '@adonisjs/encryption'
 import type { Server as HttpsServer } from 'node:https'
 import type { Application } from '@adonisjs/application'

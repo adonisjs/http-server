@@ -5,10 +5,7 @@
   "main": "build/index.js",
   "type": "module",
   "files": [
-    "build/src",
-    "build/factories",
-    "build/index.d.ts",
-    "build/index.js"
+    "build"
   ],
   "exports": {
     ".": "./build/index.js",
@@ -23,7 +20,7 @@
     "test": "cross-env NODE_DEBUG=adonisjs:http c8 npm run quick:test",
     "clean": "del-cli build",
     "typecheck": "tsc --noEmit",
-    "compile": "npm run lint && npm run clean && tsc",
+    "compile": "npm run lint && npm run clean && tsup-node",
     "build": "npm run compile",
     "prebenchmark": "npm run build",
     "benchmark": "node --experimental-import-meta-resolve build/benchmarks/index.js",
@@ -94,6 +91,7 @@
     "reflect-metadata": "^0.1.13",
     "supertest": "^6.3.3",
     "ts-node": "^10.9.1",
+    "tsup": "^7.2.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
@@ -163,5 +161,17 @@
   "eslintConfig": {
     "extends": "@adonisjs/eslint-config/package"
   },
-  "prettier": "@adonisjs/prettier-config"
+  "prettier": "@adonisjs/prettier-config",
+  "tsup": {
+    "entry": [
+      "./index.ts",
+      "./src/types/main.ts",
+      "./factories/main.ts"
+    ],
+    "outDir": "./build",
+    "clean": true,
+    "format": "esm",
+    "dts": true,
+    "target": "esnext"
+  }
 }
