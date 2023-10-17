@@ -485,7 +485,7 @@ export class Response extends Macroable {
       /*
        * Pipe stream
        */
-      this.flushHeaders()
+      this.relayHeaders()
       body.pipe(this.response)
     })
   }
@@ -570,7 +570,7 @@ export class Response extends Macroable {
    * Writes headers with the Node.js res object using the
    * response.setHeader method
    */
-  flushHeaders() {
+  relayHeaders() {
     if (!this.headersSent) {
       for (let key in this.#headers) {
         const value = this.#headers[key]

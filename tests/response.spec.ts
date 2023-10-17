@@ -56,7 +56,7 @@ test.group('Response', (group) => {
       // @ts-expect-error
       response.header('content-type', undefined)
 
-      response.flushHeaders()
+      response.relayHeaders()
       res.end()
     })
 
@@ -72,7 +72,7 @@ test.group('Response', (group) => {
 
       const contentType = response.getHeader('Content-Type')
 
-      response.flushHeaders()
+      response.relayHeaders()
       res.end(JSON.stringify({ contentType }))
     })
 
@@ -93,7 +93,7 @@ test.group('Response', (group) => {
 
       const contentType = response.getHeader('Content-Type')
 
-      response.flushHeaders()
+      response.relayHeaders()
       res.end(JSON.stringify({ contentType }))
     })
 
@@ -114,7 +114,7 @@ test.group('Response', (group) => {
 
       response.header('x-powered-by', 'adonisjs')
 
-      response.flushHeaders()
+      response.relayHeaders()
       res.end(JSON.stringify(response.getHeaders()))
     })
 
@@ -153,7 +153,7 @@ test.group('Response', (group) => {
       // @ts-expect-error
       response.append('set-cookie', undefined)
 
-      response.flushHeaders()
+      response.relayHeaders()
       res.end()
     })
 
@@ -166,7 +166,7 @@ test.group('Response', (group) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.append('set-cookie', 'age=22')
-      response.flushHeaders()
+      response.relayHeaders()
       res.end()
     })
 
@@ -180,7 +180,7 @@ test.group('Response', (group) => {
 
       response.append('set-cookie', ['username=virk'])
       response.append('set-cookie', ['age=22'])
-      response.flushHeaders()
+      response.relayHeaders()
       res.end()
     })
 
@@ -194,7 +194,7 @@ test.group('Response', (group) => {
 
       response.header('content-type', 'application/json')
       response.safeHeader('content-type', 'text/html')
-      response.flushHeaders()
+      response.relayHeaders()
       res.end()
     })
 
@@ -207,7 +207,7 @@ test.group('Response', (group) => {
 
       response.header('content-type', 'application/json')
       response.removeHeader('content-type')
-      response.flushHeaders()
+      response.relayHeaders()
       res.end()
     })
 
@@ -220,7 +220,7 @@ test.group('Response', (group) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.status(201)
-      response.flushHeaders()
+      response.relayHeaders()
       res.end()
     })
 
