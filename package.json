@@ -23,7 +23,7 @@
     "compile": "npm run lint && npm run clean && tsup-node",
     "build": "npm run compile",
     "prebenchmark": "npm run build",
-    "benchmark": "node --experimental-import-meta-resolve build/benchmarks/index.js",
+    "benchmark": "node benchmarks/index.js",
     "release": "np",
     "version": "npm run build",
     "format": "prettier --write .",

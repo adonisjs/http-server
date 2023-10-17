@@ -8,16 +8,15 @@
  */
 
 import { join } from 'node:path'
-import { fork } from 'node:child_process'
-// @ts-expect-error
 import autocannon from 'autocannon'
+import { fork } from 'node:child_process'
 import { getDirname } from '@poppinss/utils'
 
 function coolOff() {
   return new Promise((resolve) => setTimeout(resolve, 5000))
 }
 
-function autocannonRun(opts: any): Promise<void> {
+function autocannonRun(opts) {
   return new Promise((resolve) => {
     const instance = autocannon(opts, () => {
       resolve()

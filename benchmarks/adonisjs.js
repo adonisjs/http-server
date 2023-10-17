@@ -8,13 +8,12 @@
  */
 
 import { createServer } from 'node:http'
+import { Logger } from '@adonisjs/logger'
 import { Emitter } from '@adonisjs/events'
 import { Encryption } from '@adonisjs/encryption'
 import { Application } from '@adonisjs/application'
 
-import { defineConfig } from '../index.js'
-import { Server } from '../src/server/main.js'
-import { Logger } from '@adonisjs/logger'
+import { defineConfig, Server } from '../build/index.js'
 
 const app = new Application(new URL('./', import.meta.url), {
   environment: 'web',
