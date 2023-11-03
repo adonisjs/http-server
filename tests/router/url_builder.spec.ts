@@ -52,6 +52,23 @@ test.group('URL builder', () => {
     assert.equal(lookupStore.builder().params([1]).make('users.show'), '/users/1')
   })
 
+  test('create url for a route by its name for the home path', ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const encryption = new EncryptionFactory().create()
+    const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
+
+    const route = new Route(app, [], {
+      pattern: '/',
+      globalMatchers: {},
+      handler: () => {},
+      methods: ['GET'],
+    })
+    route.as('home')
+
+    lookupStore.register(route.toJSON())
+    assert.equal(lookupStore.builder().make('home'), '/')
+  })
+
   test('create url for a route by the handler name', ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
     const encryption = new EncryptionFactory().create()
@@ -66,6 +83,22 @@ test.group('URL builder', () => {
 
     lookupStore.register(route.toJSON())
     assert.equal(lookupStore.builder().params([1]).make('#controllers/posts'), '/users/1')
+  })
+
+  test('create url for a route by the handler name for the home path', ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const encryption = new EncryptionFactory().create()
+    const lookupStore = new LookupStore(encryption, new QsParserFactory().create())
+
+    const route = new Route(app, [], {
+      pattern: '/',
+      globalMatchers: {},
+      handler: '#controllers/home',
+      methods: ['GET'],
+    })
+
+    lookupStore.register(route.toJSON())
+    assert.equal(lookupStore.builder().params([1]).make('#controllers/home'), '/')
   })
 
   test('raise error when unable to lookup route', ({ assert }) => {
