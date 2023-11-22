@@ -110,7 +110,8 @@ export class UrlBuilder {
        * we must break out from the loop
        */
       if (token.type === 0) {
-        uriSegments.push(`${token.val}${token.end}`)
+        const value = token.val.startsWith('/') ? token.val.substring(1) : token.val
+        uriSegments.push(`${value}${token.end}`)
       } else if (token.type === 2) {
         const values: string[] = paramsArray ? paramsArray.slice(paramsIndex) : paramsObject['*']
         this.#ensureHasWildCardValues(pattern, values)
