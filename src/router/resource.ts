@@ -13,8 +13,12 @@ import { RuntimeException } from '@poppinss/utils'
 import type { Application } from '@adonisjs/application'
 
 import { Route } from './route.js'
-import type { Constructor, LazyImport } from '../types/base.js'
-import type { ParsedGlobalMiddleware } from '../types/middleware.js'
+import type { Constructor, LazyImport, OneOrMore } from '../types/base.js'
+import type {
+  MiddlewareFn,
+  ParsedGlobalMiddleware,
+  ParsedNamedMiddleware,
+} from '../types/middleware.js'
 import type { ResourceActionNames, RouteMatcher, RouteMatchers } from '../types/route.js'
 
 /**
@@ -270,6 +274,35 @@ export class RouteResource<
     })
 
     return this
+  }
+
+  /**
+   * Define one or more middleware on the routes created by
+   * the resource.
+   *
+   * Calling this method multiple times will append middleware
+   * to existing list.
+   */
+  use(
+    actions: ActionNames | ActionNames[] | '*',
+    middleware: OneOrMore<MiddlewareFn | ParsedNamedMiddleware>
+  ): this {
+    if (actions === '*') {
+      this.tap((route) => route.use(middleware))
+    } else {
+      this.tap(actions, (route) => route.use(middleware))
+    }
+    return this
+  }
+
+  /**
+   * @alias use
+   */
+  middleware(
+    actions: ActionNames | ActionNames[] | '*',
+    middleware: OneOrMore<MiddlewareFn | ParsedNamedMiddleware>
+  ): this {
+    return this.use(actions, middleware)
   }
 
   /**

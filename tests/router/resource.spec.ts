@@ -1412,4 +1412,94 @@ test.group('Route Resource', () => {
       ]
     )
   })
+
+  test('define middleware on all routes', ({ assert }) => {
+    assert.plan(7)
+
+    const UsersController = async () => {
+      return {
+        default: class UsersControllerClass {},
+      }
+    }
+
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const resource = new RouteResource(app, [], {
+      resource: 'photos',
+      controller: UsersController,
+      globalMatchers: {},
+      shallow: false,
+    })
+
+    const middlewareFn = () => {}
+    resource.middleware('*', middlewareFn)
+
+    resource.routes.forEach((route) => {
+      assert.deepEqual(route.toJSON().middleware.all(), new Set([middlewareFn]))
+    })
+  })
+
+  test('define middleware on selected routes', ({ assert }) => {
+    assert.plan(7)
+
+    const UsersController = async () => {
+      return {
+        default: class UsersControllerClass {},
+      }
+    }
+
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const resource = new RouteResource(app, [], {
+      resource: 'photos',
+      controller: UsersController,
+      globalMatchers: {},
+      shallow: false,
+    })
+
+    const middlewareFn = () => {}
+    resource.middleware(['create', 'destroy'], middlewareFn)
+
+    resource.routes.forEach((route) => {
+      if (['photos.create', 'photos.destroy'].includes(route.getName()!)) {
+        assert.deepEqual(route.toJSON().middleware.all(), new Set([middlewareFn]))
+      } else {
+        assert.deepEqual(route.toJSON().middleware.all(), new Set([]))
+      }
+    })
+  })
+
+  test('apply middleware in the order they are defined', ({ assert }) => {
+    assert.plan(7)
+
+    const UsersController = async () => {
+      return {
+        default: class UsersControllerClass {},
+      }
+    }
+
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const resource = new RouteResource(app, [], {
+      resource: 'photos',
+      controller: UsersController,
+      globalMatchers: {},
+      shallow: false,
+    })
+
+    const middlewareFn = () => {}
+    const middlewareFn1 = () => {}
+    resource.middleware(['create', 'destroy'], middlewareFn).tap((route) => {
+      if (route.getName() === 'photos.create') {
+        route.use(middlewareFn1)
+      }
+    })
+
+    resource.routes.forEach((route) => {
+      if (route.getName() === 'photos.create') {
+        assert.deepEqual(route.toJSON().middleware.all(), new Set([middlewareFn, middlewareFn1]))
+      } else if (route.getName() === 'photos.destroy') {
+        assert.deepEqual(route.toJSON().middleware.all(), new Set([middlewareFn]))
+      } else {
+        assert.deepEqual(route.toJSON().middleware.all(), new Set([]))
+      }
+    })
+  })
 })
