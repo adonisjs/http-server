@@ -15,9 +15,10 @@ import type { RouteJSON } from '../../types/route.js'
  * or the controller.method name.
  */
 export class RouteFinder {
-  #routes: RouteJSON[]
-  constructor(routes: RouteJSON[]) {
-    this.#routes = routes
+  #routes: RouteJSON[] = []
+
+  register(route: RouteJSON) {
+    this.#routes.push(route)
   }
 
   /**
@@ -56,5 +57,12 @@ export class RouteFinder {
    */
   has(routeIdentifier: string): boolean {
     return !!this.find(routeIdentifier)
+  }
+
+  /**
+   * Returns an array of registered routes
+   */
+  toJSON() {
+    return this.#routes
   }
 }

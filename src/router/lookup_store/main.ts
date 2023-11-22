@@ -13,6 +13,7 @@ import type { Qs } from '../../qs.js'
 import { UrlBuilder } from './url_builder.js'
 import { RouteFinder } from './route_finder.js'
 import type { RouteJSON } from '../../types/route.js'
+import { E_CANNOT_LOOKUP_ROUTE } from '../../exceptions.js'
 
 /**
  * Lookup store exposes the API to lookup routes and
@@ -20,9 +21,9 @@ import type { RouteJSON } from '../../types/route.js'
  */
 export class LookupStore {
   /**
-   * List of routes grouped by domain
+   * List of route finders grouped by domains
    */
-  #routes: { [domain: string]: RouteJSON[] } = {}
+  #routes: { [domain: string]: RouteFinder } = {}
 
   /**
    * Encryption for making URLs
@@ -43,8 +44,8 @@ export class LookupStore {
    * Register route JSON payload
    */
   register(route: RouteJSON) {
-    this.#routes[route.domain] = this.#routes[route.domain] || []
-    this.#routes[route.domain].push(route)
+    this.#routes[route.domain] = this.#routes[route.domain] || new RouteFinder()
+    this.#routes[route.domain].register(route)
   }
 
   /**
@@ -60,8 +61,8 @@ export class LookupStore {
    * domain.
    */
   builderForDomain(domain: string) {
-    const routes = this.#routes[domain]
-    return new UrlBuilder(this.#encryption, new RouteFinder(routes || []), this.#qsParser)
+    const finder = this.#routes[domain]
+    return new UrlBuilder(this.#encryption, finder || new RouteFinder(), this.#qsParser)
   }
 
   /**
@@ -70,8 +71,12 @@ export class LookupStore {
    * itself.
    */
   find(routeIdentifier: string, domain?: string): RouteJSON | null {
-    const routes = this.#routes[domain || 'root'] || []
-    return new RouteFinder(routes).find(routeIdentifier)
+    const finder = this.#routes[domain || 'root']
+    if (!finder) {
+      return null
+    }
+
+    return finder.find(routeIdentifier)
   }
 
   /**
@@ -82,8 +87,12 @@ export class LookupStore {
    * An error is raised when unable to find the route.
    */
   findOrFail(routeIdentifier: string, domain?: string): RouteJSON {
-    const routes = this.#routes[domain || 'root'] || []
-    return new RouteFinder(routes).findOrFail(routeIdentifier)
+    const finder = this.#routes[domain || 'root']
+    if (!finder) {
+      throw new E_CANNOT_LOOKUP_ROUTE([routeIdentifier])
+    }
+
+    return finder.findOrFail(routeIdentifier)
   }
 
   /**
@@ -92,11 +101,18 @@ export class LookupStore {
    * itself.
    */
   has(routeIdentifier: string, domain?: string): boolean {
-    const routes = this.#routes[domain || 'root'] || []
-    return new RouteFinder(routes).has(routeIdentifier)
+    const finder = this.#routes[domain || 'root']
+    if (!finder) {
+      return false
+    }
+
+    return finder.has(routeIdentifier)
   }
 
   toJSON() {
-    return this.#routes
+    return Object.keys(this.#routes).reduce<Record<string, RouteJSON[]>>((result, domain) => {
+      result[domain] = this.#routes[domain].toJSON()
+      return result
+    }, {})
   }
 }
