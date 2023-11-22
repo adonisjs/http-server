@@ -439,7 +439,7 @@ test.group('Route Resource', () => {
     )
   })
 
-  test('mark non-api routes deleted', ({ assert }) => {
+  test('mark non-api routes deleted', ({ assert, expectTypeOf }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
     const resource = new RouteResource(app, [], {
       resource: 'photos',
@@ -450,11 +450,15 @@ test.group('Route Resource', () => {
 
     resource.apiOnly()
 
+    expectTypeOf(resource.apiOnly().only)
+      .parameter(0)
+      .toEqualTypeOf<('index' | 'store' | 'show' | 'update' | 'destroy')[]>()
+
     assert.isTrue(resource.routes.find((route) => route.getName() === 'photos.create')!.isDeleted())
     assert.isTrue(resource.routes.find((route) => route.getName() === 'photos.edit')!.isDeleted())
   })
 
-  test("mark all routes as deleted except the defined one's", ({ assert }) => {
+  test("mark all routes as deleted except the defined one's", ({ assert, expectTypeOf }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
     const resource = new RouteResource(app, [], {
       resource: 'photos',
@@ -462,7 +466,11 @@ test.group('Route Resource', () => {
       globalMatchers: {},
       shallow: true,
     })
+
     resource.only(['index', 'show'])
+    expectTypeOf(resource.only(['index', 'show']).only)
+      .parameter(0)
+      .toEqualTypeOf<('index' | 'show')[]>()
 
     assert.isFalse(resource.routes.find((route) => route.getName() === 'photos.index')!.isDeleted())
     assert.isTrue(resource.routes.find((route) => route.getName() === 'photos.create')!.isDeleted())
@@ -475,7 +483,7 @@ test.group('Route Resource', () => {
     )
   })
 
-  test('mark routes for defined actions as deleted', ({ assert }) => {
+  test('mark routes for defined actions as deleted', ({ assert, expectTypeOf }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
     const resource = new RouteResource(app, [], {
       resource: 'photos',
@@ -484,6 +492,10 @@ test.group('Route Resource', () => {
       shallow: true,
     })
     resource.except(['index', 'show'])
+
+    expectTypeOf(resource.except(['index', 'show']).only)
+      .parameter(0)
+      .toEqualTypeOf<('create' | 'store' | 'edit' | 'update' | 'destroy')[]>()
 
     assert.isTrue(resource.routes.find((route) => route.getName() === 'photos.index')!.isDeleted())
     assert.isFalse(
@@ -530,6 +542,28 @@ test.group('Route Resource', () => {
     resource.tap(['create', 'show'], (route) => {
       assert.oneOf(route.getName()!, ['photos.create', 'photos.show'])
     })
+  })
+
+  test('do not tap into deleted routes', ({ assert }) => {
+    assert.plan(2)
+
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const resource = new RouteResource(app, [], {
+      resource: 'photos',
+      controller: '#controllers/photos',
+      globalMatchers: {},
+      shallow: true,
+    })
+
+    resource
+      .only(['show'])
+      // @ts-expect-error: checking runtime behavior
+      .tap(['show', 'edit'], (route) => {
+        assert.equal(route.getName()!, ['photos.show'])
+      })
+      .tap((route) => {
+        assert.equal(route.getName()!, ['photos.show'])
+      })
   })
 
   test('define matcher for params', ({ assert }) => {

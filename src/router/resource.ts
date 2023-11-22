@@ -20,7 +20,9 @@ import type { ResourceActionNames, RouteMatcher, RouteMatchers } from '../types/
 /**
  * Route resource exposes the API to register multiple routes for a resource.
  */
-export class RouteResource extends Macroable {
+export class RouteResource<
+  ActionNames extends ResourceActionNames = ResourceActionNames,
+> extends Macroable {
   /**
    * Resource identifier. Nested resources are separated
    * with a dot notation
@@ -182,7 +184,7 @@ export class RouteResource extends Macroable {
   /**
    * Filter the routes based on their partial names
    */
-  #filter(names: ResourceActionNames | ResourceActionNames[], inverse: boolean) {
+  #filter(names: ActionNames | ActionNames[], inverse: boolean) {
     const actions = Array.isArray(names) ? names : [names]
     return this.routes.filter((route) => {
       const match = actions.find((name) => route.getName()!.endsWith(name))
@@ -193,7 +195,7 @@ export class RouteResource extends Macroable {
   /**
    * Register only given routes and remove others
    */
-  only(names: ResourceActionNames[]): this {
+  only<Name extends ActionNames>(names: Name[]): RouteResource<Name> {
     this.#filter(names, true).forEach((route) => route.markAsDeleted())
     return this
   }
@@ -201,7 +203,7 @@ export class RouteResource extends Macroable {
   /**
    * Register all routes, except the one's defined
    */
-  except(names: ResourceActionNames[]): this {
+  except<Name extends ActionNames>(names: Name[]): RouteResource<Exclude<ActionNames, Name>> {
     this.#filter(names, false).forEach((route) => route.markAsDeleted())
     return this
   }
@@ -210,8 +212,8 @@ export class RouteResource extends Macroable {
    * Register api only routes. The `create` and `edit` routes, which
    * are meant to show forms will not be registered
    */
-  apiOnly(): this {
-    return this.except(['create', 'edit'])
+  apiOnly(): RouteResource<Exclude<ActionNames, 'create' | 'edit'>> {
+    return this.except(['create', 'edit'] as ActionNames[])
   }
 
   /**
@@ -229,17 +231,25 @@ export class RouteResource extends Macroable {
    * Tap into multiple routes to configure them by their name
    */
   tap(callback: (route: Route) => void): this
-  tap(actions: ResourceActionNames | ResourceActionNames[], callback: (route: Route) => void): this
+  tap(actions: ActionNames | ActionNames[], callback: (route: Route) => void): this
   tap(
-    actions: ((route: Route) => void) | ResourceActionNames | ResourceActionNames[],
+    actions: ((route: Route) => void) | ActionNames | ActionNames[],
     callback?: (route: Route) => void
   ): this {
     if (typeof actions === 'function') {
-      this.routes.forEach((route) => actions(route))
+      this.routes.forEach((route) => {
+        if (!route.isDeleted()) {
+          actions(route)
+        }
+      })
       return this
     }
 
-    this.#filter(actions, false).forEach((route) => callback!(route))
+    this.#filter(actions, false).forEach((route) => {
+      if (!route.isDeleted()) {
+        callback!(route)
+      }
+    })
     return this
   }
 
