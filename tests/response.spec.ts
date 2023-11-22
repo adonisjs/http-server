@@ -1089,9 +1089,8 @@ test.group('Response', (group) => {
       response.finish()
     })
 
-    const { header } = await supertest(url).get('/').expect(200)
-
-    const cookies = header['set-cookie'].map((cookie: string) => {
+    const response = await supertest(url).get('/').expect(200)
+    const cookies = response.get('Set-Cookie').map((cookie: string) => {
       const [value, ...options] = cookie.split(';')
       const parser = new CookieParser(value, encryption)
       return {
@@ -1115,8 +1114,8 @@ test.group('Response', (group) => {
       response.finish()
     })
 
-    const { header } = await supertest(url).get('/').expect(200)
-    const cookies = header['set-cookie'].map((cookie: string) => {
+    const response = await supertest(url).get('/').expect(200)
+    const cookies = response.get('Set-Cookie').map((cookie: string) => {
       const [value, ...options] = cookie.split(';')
       const parser = new CookieParser(value, encryption)
       return {
@@ -1140,9 +1139,9 @@ test.group('Response', (group) => {
       response.finish()
     })
 
-    const { header } = await supertest(url).get('/').expect(200)
+    const response = await supertest(url).get('/').expect(200)
 
-    const cookies = header['set-cookie'].map((cookie: string) => {
+    const cookies = response.get('Set-Cookie').map((cookie: string) => {
       const [value, ...options] = cookie.split(';')
       const parser = new CookieParser(value, encryption)
       return {
@@ -1183,9 +1182,9 @@ test.group('Response', (group) => {
       response.finish()
     })
 
-    const { header } = await supertest(url).get('/').expect(200)
+    const response = await supertest(url).get('/').expect(200)
 
-    const cookies = header['set-cookie'].map((cookie: string) => {
+    const cookies = response.get('Set-Cookie').map((cookie: string) => {
       const [value, ...options] = cookie.split(';')
       const parser = new CookieParser(value, encryption)
       return {
@@ -1209,9 +1208,9 @@ test.group('Response', (group) => {
       response.finish()
     })
 
-    const { header } = await supertest(url).get('/').expect(200)
+    const response = await supertest(url).get('/').expect(200)
 
-    const cookies = header['set-cookie'].map((cookie: string) => {
+    const cookies = response.get('Set-Cookie').map((cookie: string) => {
       const [value, ...options] = cookie.split(';')
       return {
         value: value.split('=')[1] || null,
