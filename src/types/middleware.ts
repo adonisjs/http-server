@@ -32,8 +32,8 @@ export type GetMiddlewareArgs<Middleware extends MiddlewareAsClass> = Parameters
 >[2] extends undefined
   ? []
   : HasUndefined<Parameters<InstanceType<Middleware>['handle']>[2]> extends true
-  ? [Parameters<InstanceType<Middleware>['handle']>[2]]
-  : [Parameters<InstanceType<Middleware>['handle']>[2]?]
+    ? [Parameters<InstanceType<Middleware>['handle']>[2]]
+    : [Parameters<InstanceType<Middleware>['handle']>[2]?]
 
 /**
  * The middleware defined as a function on the router or the server
