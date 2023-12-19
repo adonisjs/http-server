@@ -52,11 +52,18 @@ export type StatusPageRange = `${number}..${number}` | `${number}` | number
 export type StatusPageRenderer = (error: HttpError, ctx: HttpContext) => any | Promise<any>
 
 /**
- * Data type for the "http:request_finished" event
+ * Data type for the "http:request_completed" event
  */
 export type HttpRequestFinishedPayload = {
   ctx: HttpContext
   duration: [number, number]
+}
+
+/**
+ * Events emitted by the HttpServer
+ */
+export type HttpServerEvents = {
+  'http:request_completed': HttpRequestFinishedPayload
 }
 
 /**

@@ -10,10 +10,10 @@
 import onFinished from 'on-finished'
 import Middleware from '@poppinss/middleware'
 import type { Logger } from '@adonisjs/logger'
-import type { Emitter } from '@adonisjs/events'
 import type { Encryption } from '@adonisjs/encryption'
 import type { Server as HttpsServer } from 'node:https'
 import type { Application } from '@adonisjs/application'
+import type { EmitterLike } from '@adonisjs/events/types'
 import { ContainerResolver, moduleCaller, moduleImporter } from '@adonisjs/fold'
 import type { ServerResponse, IncomingMessage, Server as HttpServer } from 'node:http'
 
@@ -21,6 +21,7 @@ import type { LazyImport } from '../types/base.js'
 import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.js'
 import type {
   ServerConfig,
+  HttpServerEvents,
   ServerErrorHandler,
   ErrorHandlerAsAClass,
   TestingMiddlewarePipeline,
@@ -73,7 +74,7 @@ export class Server {
   /**
    * Emitter is required to notify when a request finishes
    */
-  #emitter: Emitter<any>
+  #emitter: EmitterLike<HttpServerEvents>
 
   /**
    * The application instance to be shared with the router
@@ -138,7 +139,7 @@ export class Server {
   constructor(
     app: Application<any>,
     encryption: Encryption,
-    emitter: Emitter<any>,
+    emitter: EmitterLike<HttpServerEvents>,
     logger: Logger,
     config: ServerConfig
   ) {
@@ -330,7 +331,7 @@ export class Server {
     /**
      * Setup for the "http:request_finished" event
      */
-    const hasRequestListener = this.#emitter.hasListeners('http:request_finished')
+    const hasRequestListener = this.#emitter.hasListeners('http:request_completed')
     const startTime = hasRequestListener ? process.hrtime() : null
 
     /**
@@ -348,7 +349,7 @@ export class Server {
      */
     if (startTime) {
       onFinished(res, () => {
-        this.#emitter.emit('http:request_finished', {
+        this.#emitter.emit('http:request_completed', {
           ctx: ctx,
           duration: process.hrtime(startTime),
         })

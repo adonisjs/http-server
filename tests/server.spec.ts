@@ -20,7 +20,7 @@ import { Router } from '../src/router/main.js'
 import { HttpContext } from '../src/http_context/main.js'
 import { ServerFactory } from '../factories/server_factory.js'
 import { defineNamedMiddleware } from '../src/define_middleware.js'
-import { HttpRequestFinishedPayload } from '../src/types/server.js'
+import { HttpRequestFinishedPayload, HttpServerEvents } from '../src/types/server.js'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 
@@ -46,7 +46,7 @@ test.group('Server', () => {
 
   test('emit request finished route handler', async ({ assert }, done) => {
     const app = new AppFactory().create(BASE_URL, () => {})
-    const emitter = new Emitter(app)
+    const emitter = new Emitter<HttpServerEvents>(app)
     const server = new ServerFactory().merge({ app, emitter }).create()
     const httpServer = createServer(server.handle.bind(server))
 
@@ -56,7 +56,7 @@ test.group('Server', () => {
     server.getRouter().get('/', async ({ response }) => response.send('handled'))
     await server.boot()
 
-    emitter.on('http:request_finished', (event: HttpRequestFinishedPayload) => {
+    emitter.on('http:request_completed', (event: HttpRequestFinishedPayload) => {
       assert.instanceOf(event.ctx, HttpContext)
       assert.isArray(event.duration)
       done()
