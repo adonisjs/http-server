@@ -153,7 +153,7 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
       /**
        * The first item of the tuple is a class constructor
        */
-      if (is.class_(handler[0])) {
+      if (is.class(handler[0])) {
         return {
           reference: handler,
           ...moduleCaller(handler[0], (handler[1] || 'handle') as string).toHandleMethod(),

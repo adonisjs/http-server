@@ -12,12 +12,14 @@ import type { ContainerResolver } from '@adonisjs/fold'
 
 import type { HttpContext } from '../../http_context/main.js'
 import { ParsedGlobalMiddleware } from '../../types/middleware.js'
+import debug from '../../debug.js'
 
 /**
  * The middleware handler invokes the middleware functions.
  */
 export function middlewareHandler(resolver: ContainerResolver<any>, ctx: HttpContext) {
   return function (fn: ParsedGlobalMiddleware, next: NextFn) {
+    debug('executing middleware %s', fn.name)
     return fn.handle(resolver, ctx, next)
   }
 }

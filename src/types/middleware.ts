@@ -44,6 +44,7 @@ export type MiddlewareFn = (ctx: HttpContext, next: NextFn) => any
  * Parsed global middleware
  */
 export type ParsedGlobalMiddleware = {
+  name?: string
   handle: (
     resolver: ContainerResolver<any>,
     ...args: [ctx: HttpContext, next: NextFn, params?: any]
@@ -53,7 +54,8 @@ export type ParsedGlobalMiddleware = {
 /**
  * Parsed named middleware
  */
-export type ParsedNamedMiddleware = ParsedGlobalMiddleware & {
+export type ParsedNamedMiddleware = {
   name: string
+  handle: ParsedGlobalMiddleware['handle']
   args: any
 }

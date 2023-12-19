@@ -27,9 +27,9 @@ function middlewareReferenceBuilder(
   const handler = moduleImporter(middleware, 'handle').toHandleMethod()
   return function (...args: any[]) {
     return {
+      ...handler,
       name,
       args: args[0],
-      ...handler,
     }
   }
 }
@@ -55,7 +55,8 @@ export function defineNamedMiddleware<
       ) => {
         name: K
         args: Args[0]
-      } & ParsedGlobalMiddleware
+        handle: ParsedGlobalMiddleware['handle']
+      }
     }
   )
 }
