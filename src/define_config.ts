@@ -35,8 +35,8 @@ export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
       maxAge: '2h',
       path: '/',
       httpOnly: true,
-      secure: false,
-      sameSite: false,
+      secure: true,
+      sameSite: 'lax' as const,
     },
     qs: {
       parse: {
