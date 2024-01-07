@@ -31,9 +31,7 @@ export class RouterFactory {
    * Returns an instance of the application class
    */
   #getApp() {
-    return (
-      this.#parameters.app || new AppFactory().create(new URL('./app/', import.meta.url), () => {})
-    )
+    return this.#parameters.app || new AppFactory().create(new URL('./app/', import.meta.url))
   }
 
   /**

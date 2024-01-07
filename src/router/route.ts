@@ -12,7 +12,7 @@ import Macroable from '@poppinss/macroable'
 import Middleware from '@poppinss/middleware'
 import { RuntimeException } from '@poppinss/utils'
 import type { Application } from '@adonisjs/application'
-import { moduleCaller, moduleExpression, moduleImporter } from '@adonisjs/fold'
+import { moduleCaller, moduleImporter } from '@adonisjs/fold'
 
 import { execute } from './executor.js'
 import { dropSlash } from '../helpers.js'
@@ -139,10 +139,18 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
       | string
       | [LazyImport<Controller> | Controller, GetControllerHandlers<Controller>?]
   ) {
+    /**
+     * Convert magic string to handle method call
+     */
     if (typeof handler === 'string') {
+      const parts = handler.split('.')
+      const method = parts.length === 1 ? 'handle' : parts.pop()!
+      const moduleRefId = parts.join('.')
+
       return {
         reference: handler,
-        ...moduleExpression(handler, this.#app.appRoot).toHandleMethod(),
+        ...moduleImporter(() => this.#app.import(moduleRefId), method).toHandleMethod(),
+        name: handler,
       }
     }
 

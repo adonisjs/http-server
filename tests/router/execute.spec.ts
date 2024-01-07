@@ -24,7 +24,7 @@ test.group('Route | execute', () => {
     assert.plan(2)
 
     const stack: string[] = []
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     const context = new HttpContextFactory().create()
@@ -47,41 +47,40 @@ test.group('Route | execute', () => {
   })
 
   test('execute route controller specified as a string', async ({ assert }) => {
-    assert.plan(3)
-
     const stack: string[] = []
-    const app = new AppFactory().create(BASE_URL, () => {})
+
+    class HomeControllerClass {
+      async handle() {
+        stack.push('invoked handle')
+      }
+    }
+    const app = new AppFactory().create(BASE_URL, (filePath: string) => {
+      if (filePath === '#controllers/home') {
+        return {
+          default: HomeControllerClass,
+        }
+      }
+    })
     await app.init()
 
     const resolver = app.container.createResolver()
-
     const context = new HttpContextFactory().create()
 
     const route = new Route(app, [], {
       pattern: '/',
       methods: ['GET'],
-      handler: () => {},
+      handler: '#controllers/home',
       globalMatchers: {},
     })
 
     const routeJSON = route.toJSON()
-
-    routeJSON.handler = {
-      reference: '#controllers/home',
-      async handle(container, ctx) {
-        assert.strictEqual(container, resolver)
-        assert.strictEqual(ctx, context)
-        stack.push('controller')
-      },
-    }
-
     await routeJSON.execute(routeJSON, resolver, context, () => {})
-    assert.deepEqual(stack, ['controller'])
+    assert.deepEqual(stack, ['invoked handle'])
   })
 
   test('execute route controller specified as lazy import', async ({ assert }) => {
     const stack: string[] = []
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     const resolver = app.container.createResolver()
@@ -128,7 +127,7 @@ test.group('Route | execute', () => {
 
   test('execute route controller specified as a class constructor', async ({ assert }) => {
     const stack: string[] = []
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     const resolver = app.container.createResolver()
@@ -171,7 +170,7 @@ test.group('Route | execute', () => {
     assert.plan(4)
 
     const stack: string[] = []
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     const context = new HttpContextFactory().create()
@@ -210,7 +209,7 @@ test.group('Route | execute', () => {
     assert.plan(3)
 
     const stack: string[] = []
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     const context = new HttpContextFactory().create()
@@ -246,7 +245,7 @@ test.group('Route | execute', () => {
     assert.plan(6)
 
     const stack: string[] = []
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     class BodyParserMiddleware {
@@ -313,7 +312,7 @@ test.group('Route | execute', () => {
     assert.plan(3)
 
     const stack: string[] = []
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     class BodyParserMiddleware {
@@ -375,7 +374,7 @@ test.group('Route | execute', () => {
 
   test('catch global middleware exceptions', async ({ assert }) => {
     const stack: string[] = []
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     class BodyParserMiddleware {
@@ -439,7 +438,7 @@ test.group('Route | execute', () => {
 
   test('catch route handler exceptions', async ({ assert }) => {
     const stack: string[] = []
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     class BodyParserMiddleware {
@@ -502,7 +501,7 @@ test.group('Route | execute', () => {
 
   test('pass arguments to the named middleware', async ({ assert }) => {
     const stack: any[] = []
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
     await app.init()
 
     class AclMiddleware {

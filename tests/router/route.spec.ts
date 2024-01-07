@@ -17,7 +17,7 @@ const BASE_URL = new URL('./app/', import.meta.url)
 
 test.group('Route', () => {
   test('create a route instance', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -39,7 +39,7 @@ test.group('Route', () => {
   })
 
   test('prefix route', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -62,7 +62,7 @@ test.group('Route', () => {
   })
 
   test('apply multiple prefixes in reverse order', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -86,7 +86,7 @@ test.group('Route', () => {
   })
 
   test('handle leading slash in pattern', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -108,7 +108,7 @@ test.group('Route', () => {
   })
 
   test('handle leading slash in pattern along with prefix', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -131,7 +131,7 @@ test.group('Route', () => {
   })
 
   test('define matcher for param as a string', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -156,7 +156,7 @@ test.group('Route', () => {
   })
 
   test('define matcher for param as a regular expression', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -181,7 +181,7 @@ test.group('Route', () => {
   })
 
   test('define match and cast methods for a param', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const matcher = {
@@ -212,7 +212,7 @@ test.group('Route', () => {
   })
 
   test('do not overwrite existing params', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -239,7 +239,7 @@ test.group('Route', () => {
   })
 
   test('define global matchers for params', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -265,7 +265,7 @@ test.group('Route', () => {
   })
 
   test('give preference to local matcher over global', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -293,7 +293,7 @@ test.group('Route', () => {
   })
 
   test('define route domain', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -317,7 +317,7 @@ test.group('Route', () => {
   })
 
   test('do not overwrite route domain unless explicitly stated', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -354,7 +354,7 @@ test.group('Route', () => {
   })
 
   test('use function as a route middleware', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -383,7 +383,7 @@ test.group('Route', () => {
   })
 
   test('use multiple middleware', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -413,7 +413,7 @@ test.group('Route', () => {
   })
 
   test('define a named middleware by reference', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     class AuthMiddleware {
       handle() {}
@@ -445,7 +445,7 @@ test.group('Route', () => {
   })
 
   test('use multiple named middleware', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     class AuthMiddleware {
       handle() {}
@@ -488,7 +488,7 @@ test.group('Route', () => {
   })
 
   test('give name to the route', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -513,7 +513,7 @@ test.group('Route', () => {
   })
 
   test('prefix to the route name', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -539,7 +539,7 @@ test.group('Route', () => {
   })
 
   test('throw error when prefix without an existing name', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
@@ -556,7 +556,7 @@ test.group('Route', () => {
   })
 
   test('update route pattern', ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
+    const app = new AppFactory().create(BASE_URL)
 
     async function handler() {}
     const route = new Route(app, [], {
