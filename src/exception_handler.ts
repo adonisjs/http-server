@@ -104,8 +104,12 @@ export class ExceptionHandler extends Macroable {
    */
   #toHttpError(error: unknown): HttpError {
     const httpError: any = is.object(error) ? error : new Error(String(error))
-    httpError.message = httpError.message || 'Internal server error'
-    httpError.status = httpError.status || 500
+    if (!httpError.message) {
+      httpError.message = 'Internal server error'
+    }
+    if (!httpError.status) {
+      httpError.status = 500
+    }
     return httpError
   }
 
