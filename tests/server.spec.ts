@@ -958,24 +958,6 @@ test.group('Server | error handler', () => {
 })
 
 test.group('Server | force content negotiation', () => {
-  test('set accept header when forceContentNegotiationTo is a string', async ({ assert }) => {
-    const app = new AppFactory().create(BASE_URL, () => {})
-    const server = new ServerFactory().merge({ app }).create()
-    const httpServer = createServer(server.handle.bind(server))
-    await app.init()
-
-    server.use([])
-    await server.boot()
-
-    server.getRouter().get('/', async ({ request, response }) => {
-      response.send(request.header('accept'))
-    })
-    await server.boot()
-
-    const { text } = await supertest(httpServer).get('/').expect(200)
-    assert.equal(text, 'application/json')
-  }).fails('Ship a middleware for this')
-
   test('find if the signed url signature is valid', async ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
     const server = new ServerFactory().merge({ app }).create()
