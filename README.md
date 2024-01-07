@@ -1,51 +1,28 @@
-<div align="center">
-  <img src="https://res.cloudinary.com/adonisjs/image/upload/q_100/v1558612869/adonis-readme_zscycu.jpg" width="600px">
-</div>
+# @adonisjs/http-server
 
 <br />
 
-<div align="center">
-  <h3>AdonisJS HTTP Server</h3>
-  <p>A fully featured HTTP server with first class support for <strong>Route groups</strong>, <strong>Sub-domain routing</strong>, <strong>Middleware</strong> and <strong>Cookies</strong>.</p>
-</div>
+[![gh-workflow-image]][gh-workflow-url] [![npm-image]][npm-url] ![][typescript-image] [![license-image]][license-url]
 
-<br />
+## Introduction
+Implementation of HTTP server used by AdonisJS. The package ships with a powerful **Router**, **Middleware pipeline**, helpers to create plain and signed URL for registered routes and much more.
 
-<div align="center">
+## Official Documentation
+The documentation is available on the [AdonisJS website](https://docs.adonisjs.com/guides/context)
 
-[![gh-workflow-image]][gh-workflow-url] [![npm-image]][npm-url] ![][typescript-image] [![license-image]][license-url] [![synk-image]][synk-url]
+## Contributing
+One of the primary goals of AdonisJS is to have a vibrant community of users and contributors who believes in the principles of the framework.
 
-</div>
+We encourage you to read the [contribution guide](https://github.com/adonisjs/.github/blob/main/docs/CONTRIBUTING.md) before contributing to the framework.
 
-<div align="center">
-  <h3>
-    <a href="https://adonisjs.com">
-      Website
-    </a>
-    <span> | </span>
-    <a href="https://docs.adonisjs.com/guides/context">
-      Guides
-    </a>
-    <span> | </span>
-    <a href="CONTRIBUTING.md">
-      Contributing
-    </a>
-    <span> | </span>
-    <a href="benchmarks.md">
-      Benchmarks
-    </a>
-  </h3>
-</div>
+## Code of Conduct
+In order to ensure that the AdonisJS community is welcoming to all, please review and abide by the [Code of Conduct](https://github.com/adonisjs/.github/blob/main/docs/CODE_OF_CONDUCT.md).
 
-<div align="center">
-  <sub>Built with ❤︎ by <a href="https://twitter.com/AmanVirk1">Harminder Virk</a>
-</div>
+## License
+AdonisJS HTTP server is open-sourced software licensed under the [MIT license](LICENSE.md).
 
-[appveyor-image]: https://img.shields.io/appveyor/ci/thetutlage/http-server/master.svg?style=for-the-badge&logo=appveyor
-[appveyor-url]: https://ci.appveyor.com/project/thetutlage/http-server "appveyor"
-
-[gh-workflow-image]: https://img.shields.io/github/workflow/status/adonisjs/http-server/test?style=for-the-badge
-[gh-workflow-url]: https://github.com/adonisjs/http-server/actions/workflows/test.yml "Github action"
+[gh-workflow-image]: https://img.shields.io/github/actions/workflow/status/adonisjs/http-server/checks.yml?style=for-the-badge
+[gh-workflow-url]: https://github.com/adonisjs/http-server/actions/workflows/checks.yml "Github action"
 
 [typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
 [typescript-url]:  "typescript"
@@ -55,6 +32,3 @@
 
 [license-image]: https://img.shields.io/npm/l/@adonisjs/http-server?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md "license"
-
-[synk-image]: https://img.shields.io/snyk/vulnerabilities/github/adonisjs/http-server?label=Synk%20Vulnerabilities&style=for-the-badge
-[synk-url]: https://snyk.io/test/github/adonisjs/http-server?targetFile=package.json "synk"

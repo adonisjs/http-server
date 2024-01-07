@@ -1,4 +1,4 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
-HUSKY_GIT_PARAMS=$1 node ./node_modules/@adonisjs/mrm-preset/validate-commit/conventional/validate.js
+npx --no -- commitlint --edit 
