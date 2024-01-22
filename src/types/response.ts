@@ -20,6 +20,8 @@ export type CookieOptions = {
   path: string
   sameSite: boolean | 'lax' | 'none' | 'strict'
   secure: boolean
+  partitioned?: boolean
+  priority?: 'low' | 'medium' | 'high'
 }
 
 /**
