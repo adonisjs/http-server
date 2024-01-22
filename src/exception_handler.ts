@@ -353,7 +353,19 @@ export class ExceptionHandler extends Macroable {
      */
     const statusPages = this.#expandStatusPages()
     if (this.renderStatusPages && statusPages[httpError.status]) {
-      return statusPages[httpError.status](httpError, ctx)
+      const statusPageResponse = await statusPages[httpError.status](httpError, ctx)
+
+      /**
+       * Use return value and convert it into a response
+       */
+      if (
+        statusPageResponse !== undefined && // Return value is explicitly defined
+        !ctx.response.hasLazyBody && // Lazy body is not set
+        statusPageResponse !== ctx.response // Return value is not the instance of response object
+      ) {
+        return ctx.response.safeStatus(httpError.status).send(statusPageResponse)
+      }
+      return statusPageResponse
     }
 
     /**

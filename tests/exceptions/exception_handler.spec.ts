@@ -296,6 +296,50 @@ test.group('Exception handler | handle', () => {
       ],
     })
   })
+
+  test('use status page return value for response', async ({ assert }) => {
+    class AppExceptionHandler extends ExceptionHandler {
+      protected renderStatusPages: boolean = true
+      protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {
+        '400..499': () => {
+          return '400 status page'
+        },
+      }
+    }
+
+    const exceptionHandler = new AppExceptionHandler()
+    const ctx = new HttpContextFactory().create()
+
+    class MyError extends Exception {}
+
+    const error = new MyError('Something went wrong', { status: 401 })
+    await exceptionHandler.handle(error, ctx)
+
+    assert.equal(ctx.response.getStatus(), 401)
+    assert.equal(ctx.response.getBody(), '400 status page')
+  })
+
+  test('do not overwrite response explicitly set via response.send method', async ({ assert }) => {
+    class AppExceptionHandler extends ExceptionHandler {
+      protected renderStatusPages: boolean = true
+      protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {
+        '400..499': (error, ctx) => {
+          return ctx.response.status(error.status).send(error.message)
+        },
+      }
+    }
+
+    const exceptionHandler = new AppExceptionHandler()
+    const ctx = new HttpContextFactory().create()
+
+    class MyError extends Exception {}
+
+    const error = new MyError('Something went wrong', { status: 401 })
+    await exceptionHandler.handle(error, ctx)
+
+    assert.equal(ctx.response.getStatus(), 401)
+    assert.equal(ctx.response.getBody(), 'Something went wrong')
+  })
 })
 
 test.group('Exception handler | report', () => {
