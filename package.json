@@ -42,12 +42,12 @@
   "author": "virk,adonisjs",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/application": "^8.0.0",
+    "@adonisjs/application": "^8.0.2",
     "@adonisjs/encryption": "^6.0.0",
     "@adonisjs/eslint-config": "^1.2.1",
     "@adonisjs/events": "^9.0.0",
-    "@adonisjs/fold": "^10.0.0",
-    "@adonisjs/logger": "^6.0.0",
+    "@adonisjs/fold": "^10.0.1",
+    "@adonisjs/logger": "^6.0.1",
     "@adonisjs/prettier-config": "^1.2.1",
     "@adonisjs/tsconfig": "^1.2.1",
     "@commitlint/cli": "^18.5.0",
@@ -120,11 +120,11 @@
     "youch": "^3.3.3"
   },
   "peerDependencies": {
-    "@adonisjs/application": "^8.0.0",
+    "@adonisjs/application": "^8.0.2",
     "@adonisjs/encryption": "^6.0.0",
     "@adonisjs/events": "^9.0.0",
-    "@adonisjs/fold": "^10.0.0",
-    "@adonisjs/logger": "^6.0.0"
+    "@adonisjs/fold": "^10.0.1",
+    "@adonisjs/logger": "^6.0.1"
   },
   "repository": {
     "type": "git",
