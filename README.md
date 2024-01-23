@@ -8,7 +8,7 @@
 Implementation of HTTP server used by AdonisJS. The package ships with a powerful **Router**, **Middleware pipeline**, helpers to create plain and signed URL for registered routes and much more.
 
 ## Official Documentation
-The documentation is available on the [AdonisJS website](https://docs.adonisjs.com/guides/context)
+The documentation is available on the [AdonisJS website](https://docs.adonisjs.com/guides/http)
 
 ## Contributing
 One of the primary goals of AdonisJS is to have a vibrant community of users and contributors who believes in the principles of the framework.
