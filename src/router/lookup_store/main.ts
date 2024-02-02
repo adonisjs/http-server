@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import Macroable from '@poppinss/macroable'
 import type { Encryption } from '@adonisjs/encryption'
 
 import type { Qs } from '../../qs.js'
@@ -19,7 +20,7 @@ import { E_CANNOT_LOOKUP_ROUTE } from '../../exceptions.js'
  * Lookup store exposes the API to lookup routes and
  * make URLs for registered routes.
  */
-export class LookupStore {
+export class LookupStore extends Macroable {
   /**
    * List of route finders grouped by domains
    */
@@ -36,6 +37,7 @@ export class LookupStore {
   #qsParser: Qs
 
   constructor(encryption: Encryption, qsParser: Qs) {
+    super()
     this.#encryption = encryption
     this.#qsParser = qsParser
   }
