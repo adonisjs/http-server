@@ -35,6 +35,7 @@ import type {
   ResponseConfig,
   ResponseStream,
 } from './types/response.js'
+import { ResponseStatus } from './response_status.js'
 
 const CACHEABLE_HTTP_METHODS = ['GET', 'HEAD']
 
@@ -283,7 +284,12 @@ export class Response extends Macroable {
      * Do not process body when status code is less than 200 or is 204 or 304. As per
      * https://tools.ietf.org/html/rfc7230#section-3.3.2
      */
-    if (statusCode && (statusCode < 200 || statusCode === 204 || statusCode === 304)) {
+    if (
+      statusCode &&
+      (statusCode < ResponseStatus.Ok ||
+        statusCode === ResponseStatus.NoContent ||
+        statusCode === ResponseStatus.NotModified)
+    ) {
       this.removeHeader('Content-Type')
       this.removeHeader('Content-Length')
       this.removeHeader('Transfer-Encoding')
@@ -367,7 +373,7 @@ export class Response extends Macroable {
       this.removeHeader('Content-Type')
       this.removeHeader('Content-Length')
       this.removeHeader('Transfer-Encoding')
-      this.#endResponse(null, 304)
+      this.#endResponse(null, ResponseStatus.NotModified)
       return
     }
 
@@ -454,7 +460,7 @@ export class Response extends Macroable {
           } else {
             this.#endResponse(
               error.code === 'ENOENT' ? 'File not found' : 'Cannot process file',
-              error.code === 'ENOENT' ? 404 : 500
+              error.code === 'ENOENT' ? ResponseStatus.NotFound : ResponseStatus.InternalServerError
             )
           }
         } else {
@@ -527,7 +533,10 @@ export class Response extends Macroable {
        * 304: When etags are used and cache is fresh
        */
       if (this.request.method === 'HEAD') {
-        this.#endResponse(null, generateEtag && this.fresh() ? 304 : 200)
+        this.#endResponse(
+          null,
+          generateEtag && this.fresh() ? ResponseStatus.NotModified : ResponseStatus.Ok
+        )
         return
       }
 
@@ -536,7 +545,7 @@ export class Response extends Macroable {
        * cache is fresh, then we must respond with 304
        */
       if (generateEtag && this.fresh()) {
-        this.#endResponse(null, 304)
+        this.#endResponse(null, ResponseStatus.NotModified)
         return
       }
 
@@ -560,7 +569,7 @@ export class Response extends Macroable {
       } else {
         this.#endResponse(
           error.code === 'ENOENT' ? 'File not found' : 'Cannot process file',
-          error.code === 'ENOENT' ? 404 : 500
+          error.code === 'ENOENT' ? ResponseStatus.NotFound : ResponseStatus.InternalServerError
         )
       }
     }
@@ -789,7 +798,10 @@ export class Response extends Macroable {
     }
 
     const status = this.response.statusCode
-    if ((status >= 200 && status < 300) || status === 304) {
+    if (
+      (status >= ResponseStatus.Ok && status < ResponseStatus.MultipleChoices) ||
+      status === ResponseStatus.NotModified
+    ) {
       return fresh(this.request.headers, this.#headers)
     }
 
@@ -960,7 +972,7 @@ export class Response extends Macroable {
   redirect(
     path?: string,
     forwardQueryString: boolean = false,
-    statusCode: number = 302
+    statusCode: number = ResponseStatus.Found
   ): Redirect | void {
     const handler = new Redirect(this.request, this, this.#router, this.#qs)
 
@@ -984,7 +996,7 @@ export class Response extends Macroable {
    * used when status is not defined
    */
   abort(body: any, status?: number): never {
-    throw E_HTTP_REQUEST_ABORTED.invoke(body, status || 400)
+    throw E_HTTP_REQUEST_ABORTED.invoke(body, status || ResponseStatus.BadRequest)
   }
 
   /**
@@ -1113,7 +1125,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "100" status code
    */
   continue(): void {
-    this.status(100)
+    this.status(ResponseStatus.Continue)
     return this.send(null, false)
   }
 
@@ -1121,7 +1133,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "101" status code
    */
   switchingProtocols(): void {
-    this.status(101)
+    this.status(ResponseStatus.SwitchingProtocols)
     return this.send(null, false)
   }
 
@@ -1129,7 +1141,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "200" status code
    */
   ok(body: any, generateEtag?: boolean): void {
-    this.status(200)
+    this.status(ResponseStatus.Ok)
     return this.send(body, generateEtag)
   }
 
@@ -1137,7 +1149,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "201" status code
    */
   created(body?: any, generateEtag?: boolean): void {
-    this.status(201)
+    this.status(ResponseStatus.Created)
     return this.send(body, generateEtag)
   }
 
@@ -1145,7 +1157,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "202" status code
    */
   accepted(body: any, generateEtag?: boolean): void {
-    this.status(202)
+    this.status(ResponseStatus.Accepted)
     return this.send(body, generateEtag)
   }
 
@@ -1153,7 +1165,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "203" status code
    */
   nonAuthoritativeInformation(body: any, generateEtag?: boolean): void {
-    this.status(203)
+    this.status(ResponseStatus.NonAuthoritativeInformation)
     return this.send(body, generateEtag)
   }
 
@@ -1161,7 +1173,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "204" status code
    */
   noContent(): void {
-    this.status(204)
+    this.status(ResponseStatus.NoContent)
     return this.send(null, false)
   }
 
@@ -1169,7 +1181,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "205" status code
    */
   resetContent(): void {
-    this.status(205)
+    this.status(ResponseStatus.ResetContent)
     return this.send(null, false)
   }
 
@@ -1177,7 +1189,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "206" status code
    */
   partialContent(body: any, generateEtag?: boolean): void {
-    this.status(206)
+    this.status(ResponseStatus.PartialContent)
     return this.send(body, generateEtag)
   }
 
@@ -1185,7 +1197,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "300" status code
    */
   multipleChoices(body?: any, generateEtag?: boolean): void {
-    this.status(300)
+    this.status(ResponseStatus.MultipleChoices)
     return this.send(body, generateEtag)
   }
 
@@ -1193,7 +1205,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "301" status code
    */
   movedPermanently(body?: any, generateEtag?: boolean): void {
-    this.status(301)
+    this.status(ResponseStatus.MovedPermanently)
     return this.send(body, generateEtag)
   }
 
@@ -1201,7 +1213,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "302" status code
    */
   movedTemporarily(body?: any, generateEtag?: boolean): void {
-    this.status(302)
+    this.status(ResponseStatus.Found)
     return this.send(body, generateEtag)
   }
 
@@ -1209,7 +1221,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "303" status code
    */
   seeOther(body?: any, generateEtag?: boolean): void {
-    this.status(303)
+    this.status(ResponseStatus.SeeOther)
     return this.send(body, generateEtag)
   }
 
@@ -1217,7 +1229,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "304" status code
    */
   notModified(body?: any, generateEtag?: boolean): void {
-    this.status(304)
+    this.status(ResponseStatus.NotModified)
     return this.send(body, generateEtag)
   }
 
@@ -1225,7 +1237,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "305" status code
    */
   useProxy(body?: any, generateEtag?: boolean): void {
-    this.status(305)
+    this.status(ResponseStatus.UseProxy)
     return this.send(body, generateEtag)
   }
 
@@ -1233,7 +1245,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "307" status code
    */
   temporaryRedirect(body?: any, generateEtag?: boolean): void {
-    this.status(307)
+    this.status(ResponseStatus.TemporaryRedirect)
     return this.send(body, generateEtag)
   }
 
@@ -1241,7 +1253,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "400" status code
    */
   badRequest(body?: any, generateEtag?: boolean): void {
-    this.status(400)
+    this.status(ResponseStatus.BadRequest)
     return this.send(body, generateEtag)
   }
 
@@ -1249,7 +1261,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "401" status code
    */
   unauthorized(body?: any, generateEtag?: boolean): void {
-    this.status(401)
+    this.status(ResponseStatus.Unauthorized)
     return this.send(body, generateEtag)
   }
 
@@ -1257,7 +1269,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "402" status code
    */
   paymentRequired(body?: any, generateEtag?: boolean): void {
-    this.status(402)
+    this.status(ResponseStatus.PaymentRequired)
     return this.send(body, generateEtag)
   }
 
@@ -1265,7 +1277,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "403" status code
    */
   forbidden(body?: any, generateEtag?: boolean): void {
-    this.status(403)
+    this.status(ResponseStatus.Forbidden)
     return this.send(body, generateEtag)
   }
 
@@ -1273,7 +1285,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "404" status code
    */
   notFound(body?: any, generateEtag?: boolean): void {
-    this.status(404)
+    this.status(ResponseStatus.NotFound)
     return this.send(body, generateEtag)
   }
 
@@ -1281,7 +1293,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "405" status code
    */
   methodNotAllowed(body?: any, generateEtag?: boolean): void {
-    this.status(405)
+    this.status(ResponseStatus.MethodNotAllowed)
     return this.send(body, generateEtag)
   }
 
@@ -1289,7 +1301,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "406" status code
    */
   notAcceptable(body?: any, generateEtag?: boolean): void {
-    this.status(406)
+    this.status(ResponseStatus.NotAcceptable)
     return this.send(body, generateEtag)
   }
 
@@ -1297,7 +1309,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "407" status code
    */
   proxyAuthenticationRequired(body?: any, generateEtag?: boolean): void {
-    this.status(407)
+    this.status(ResponseStatus.ProxyAuthenticationRequired)
     return this.send(body, generateEtag)
   }
 
@@ -1305,7 +1317,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "408" status code
    */
   requestTimeout(body?: any, generateEtag?: boolean): void {
-    this.status(408)
+    this.status(ResponseStatus.RequestTimeout)
     return this.send(body, generateEtag)
   }
 
@@ -1313,7 +1325,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "409" status code
    */
   conflict(body?: any, generateEtag?: boolean): void {
-    this.status(409)
+    this.status(ResponseStatus.Conflict)
     return this.send(body, generateEtag)
   }
 
@@ -1321,7 +1333,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "401" status code
    */
   gone(body?: any, generateEtag?: boolean): void {
-    this.status(410)
+    this.status(ResponseStatus.Gone)
     return this.send(body, generateEtag)
   }
 
@@ -1329,7 +1341,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "411" status code
    */
   lengthRequired(body?: any, generateEtag?: boolean): void {
-    this.status(411)
+    this.status(ResponseStatus.LengthRequired)
     return this.send(body, generateEtag)
   }
 
@@ -1337,7 +1349,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "412" status code
    */
   preconditionFailed(body?: any, generateEtag?: boolean): void {
-    this.status(412)
+    this.status(ResponseStatus.PreconditionFailed)
     return this.send(body, generateEtag)
   }
 
@@ -1345,7 +1357,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "413" status code
    */
   requestEntityTooLarge(body?: any, generateEtag?: boolean): void {
-    this.status(413)
+    this.status(ResponseStatus.PayloadTooLarge)
     return this.send(body, generateEtag)
   }
 
@@ -1353,7 +1365,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "414" status code
    */
   requestUriTooLong(body?: any, generateEtag?: boolean): void {
-    this.status(414)
+    this.status(ResponseStatus.URITooLong)
     return this.send(body, generateEtag)
   }
 
@@ -1361,7 +1373,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "415" status code
    */
   unsupportedMediaType(body?: any, generateEtag?: boolean): void {
-    this.status(415)
+    this.status(ResponseStatus.UnsupportedMediaType)
     return this.send(body, generateEtag)
   }
 
@@ -1369,7 +1381,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "416" status code
    */
   requestedRangeNotSatisfiable(body?: any, generateEtag?: boolean): void {
-    this.status(416)
+    this.status(ResponseStatus.RequestHeaderFieldsTooLarge)
     return this.send(body, generateEtag)
   }
 
@@ -1377,7 +1389,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "417" status code
    */
   expectationFailed(body?: any, generateEtag?: boolean): void {
-    this.status(417)
+    this.status(ResponseStatus.ExpectationFailed)
     return this.send(body, generateEtag)
   }
 
@@ -1385,7 +1397,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "422" status code
    */
   unprocessableEntity(body?: any, generateEtag?: boolean): void {
-    this.status(422)
+    this.status(ResponseStatus.UnprocessableEntity)
     return this.send(body, generateEtag)
   }
 
@@ -1393,7 +1405,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "429" status code
    */
   tooManyRequests(body?: any, generateEtag?: boolean): void {
-    this.status(429)
+    this.status(ResponseStatus.TooManyRequests)
     return this.send(body, generateEtag)
   }
 
@@ -1401,7 +1413,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "500" status code
    */
   internalServerError(body?: any, generateEtag?: boolean): void {
-    this.status(500)
+    this.status(ResponseStatus.InternalServerError)
     return this.send(body, generateEtag)
   }
 
@@ -1409,7 +1421,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "501" status code
    */
   notImplemented(body?: any, generateEtag?: boolean): void {
-    this.status(501)
+    this.status(ResponseStatus.NotImplemented)
     return this.send(body, generateEtag)
   }
 
@@ -1417,7 +1429,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "502" status code
    */
   badGateway(body?: any, generateEtag?: boolean): void {
-    this.status(502)
+    this.status(ResponseStatus.BadGateway)
     return this.send(body, generateEtag)
   }
 
@@ -1425,7 +1437,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "503" status code
    */
   serviceUnavailable(body?: any, generateEtag?: boolean): void {
-    this.status(503)
+    this.status(ResponseStatus.ServiceUnavailable)
     return this.send(body, generateEtag)
   }
 
@@ -1433,7 +1445,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "504" status code
    */
   gatewayTimeout(body?: any, generateEtag?: boolean): void {
-    this.status(504)
+    this.status(ResponseStatus.GatewayTimeout)
     return this.send(body, generateEtag)
   }
 
@@ -1441,7 +1453,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "505" status code
    */
   httpVersionNotSupported(body?: any, generateEtag?: boolean): void {
-    this.status(505)
+    this.status(ResponseStatus.HTTPVersionNotSupported)
     return this.send(body, generateEtag)
   }
 }
