@@ -1381,7 +1381,7 @@ export class Response extends Macroable {
    * Shorthand method to finish request with "416" status code
    */
   requestedRangeNotSatisfiable(body?: any, generateEtag?: boolean): void {
-    this.status(ResponseStatus.RequestHeaderFieldsTooLarge)
+    this.status(ResponseStatus.RangeNotSatisfiable)
     return this.send(body, generateEtag)
   }
 
