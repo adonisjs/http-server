@@ -9,6 +9,7 @@
 
 export { Request } from './src/request.js'
 export { Response } from './src/response.js'
+export { ResponseStatus } from './src/response_status.js'
 export { Redirect } from './src/redirect.js'
 export { Server } from './src/server/main.js'
 export { Router } from './src/router/main.js'
