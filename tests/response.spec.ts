@@ -1510,4 +1510,18 @@ test.group('Response', (group) => {
 
     await supertest(url).get('/')
   })
+
+  test('listen for the event when response finishes', async ({ assert }) => {
+    assert.plan(1)
+
+    const { url } = await httpServer.create((req, res) => {
+      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      response.onFinish(() => {
+        assert.isTrue(true)
+      })
+      res.end()
+    })
+
+    await supertest(url).get('/').expect(200)
+  })
 })

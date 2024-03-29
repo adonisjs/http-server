@@ -576,6 +576,17 @@ export class Response extends Macroable {
   }
 
   /**
+   * Listen for the event the response is written
+   * to the TCP socket.
+   *
+   * Under the hood the callback is registered with
+   * the "https://github.com/jshttp/on-finished" package
+   */
+  onFinish(callback: (err: Error | null, response: ServerResponse) => void) {
+    onFinished(this.response, callback)
+  }
+
+  /**
    * Writes headers with the Node.js res object using the
    * response.setHeader method
    */
