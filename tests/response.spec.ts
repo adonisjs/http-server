@@ -1090,7 +1090,7 @@ test.group('Response', (group) => {
     })
 
     const response = await supertest(url).get('/').expect(200)
-    const cookies = response.get('Set-Cookie').map((cookie: string) => {
+    const cookies = response.get('Set-Cookie')!.map((cookie: string) => {
       const [value, ...options] = cookie.split(';')
       const parser = new CookieParser(value, encryption)
       return {
@@ -1115,7 +1115,7 @@ test.group('Response', (group) => {
     })
 
     const response = await supertest(url).get('/').expect(200)
-    const cookies = response.get('Set-Cookie').map((cookie: string) => {
+    const cookies = response.get('Set-Cookie')!.map((cookie: string) => {
       const [value, ...options] = cookie.split(';')
       const parser = new CookieParser(value, encryption)
       return {
@@ -1141,7 +1141,7 @@ test.group('Response', (group) => {
 
     const response = await supertest(url).get('/').expect(200)
 
-    const cookies = response.get('Set-Cookie').map((cookie: string) => {
+    const cookies = response.get('Set-Cookie')!.map((cookie: string) => {
       const [value, ...options] = cookie.split(';')
       const parser = new CookieParser(value, encryption)
       return {
@@ -1184,7 +1184,7 @@ test.group('Response', (group) => {
 
     const response = await supertest(url).get('/').expect(200)
 
-    const cookies = response.get('Set-Cookie').map((cookie: string) => {
+    const cookies = response.get('Set-Cookie')!.map((cookie: string) => {
       const [value, ...options] = cookie.split(';')
       const parser = new CookieParser(value, encryption)
       return {
@@ -1210,7 +1210,7 @@ test.group('Response', (group) => {
 
     const response = await supertest(url).get('/').expect(200)
 
-    const cookies = response.get('Set-Cookie').map((cookie: string) => {
+    const cookies = response.get('Set-Cookie')!.map((cookie: string) => {
       const [value, ...options] = cookie.split(';')
       return {
         value: value.split('=')[1] || null,
