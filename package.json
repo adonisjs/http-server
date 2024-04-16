@@ -33,7 +33,8 @@
     "prepublishOnly": "npm run build",
     "lint": "eslint . --ext=.ts",
     "sync-labels": "github-label-sync --labels .github/labels.json adonisjs/http-server",
-    "quick:test": "node --loader=ts-node/esm --enable-source-maps bin/test.ts"
+    "quick:test": "node --loader=ts-node/esm --enable-source-maps bin/test.ts",
+    "citgm": "cross-env FORCE_COLOR=0 node --loader=ts-node/esm bin/test.ts"
   },
   "keywords": [
     "http",
