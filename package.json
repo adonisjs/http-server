@@ -27,7 +27,7 @@
     "build": "npm run compile",
     "prebenchmark": "npm run build",
     "benchmark": "node benchmarks/index.js",
-    "release": "realease-it",
+    "release": "release-it",
     "version": "npm run build",
     "format": "prettier --write .",
     "prepublishOnly": "npm run build",
