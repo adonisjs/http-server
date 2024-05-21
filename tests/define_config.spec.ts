@@ -9,6 +9,7 @@
 
 import { test } from '@japa/runner'
 import { defineConfig } from '../index.js'
+import proxyAddr from 'proxy-addr'
 
 test.group('Define config', () => {
   test('define server config', ({ assert }) => {
@@ -57,5 +58,11 @@ test.group('Define config', () => {
     const config = defineConfig({ trustProxy: 'loopback' })
 
     assert.typeOf(config.trustProxy, 'function')
+  })
+
+  test('compile trustProxy config when a function', ({ assert }) => {
+    const fn = proxyAddr.compile(['192.168.1.2'])
+    const config = defineConfig({ trustProxy: fn })
+    assert.strictEqual(config.trustProxy, fn)
   })
 })
