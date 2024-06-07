@@ -585,6 +585,66 @@ test.group('Store | match', () => {
     })
   })
 
+  test('find route for a given url - pattern priority over route with params', ({ assert }) => {
+    async function handler() {}
+
+    const store = new RoutesStore()
+
+    store.add({
+      pattern: '/:id',
+      handler,
+      matchers: {},
+      meta: {},
+      execute,
+      middleware: new Middleware<any>(),
+      methods: ['GET'],
+      domain: 'root',
+    })
+
+    store.add({
+      pattern: '/123',
+      handler,
+      matchers: {},
+      meta: {},
+      execute,
+      middleware: new Middleware<any>(),
+      methods: ['GET'],
+      domain: 'root',
+    })
+
+    assert.deepEqual(store.match('/123', 'GET'), {
+      route: {
+        pattern: '/123',
+        handler,
+        execute,
+        middleware: new Middleware<any>(),
+        meta: {
+          params: [],
+        },
+      },
+      params: {},
+      subdomains: {},
+      routeKey: 'GET-/123',
+    })
+
+    assert.deepEqual(store.match('/12345', 'GET'), {
+      route: {
+        pattern: '/:id',
+        handler,
+        execute,
+        middleware: new Middleware<any>(),
+        meta: {
+          params: ['id'],
+        },
+      },
+      params: {
+        id: '12345',
+      },
+      subdomains: {},
+      routeKey: 'GET-/:id',
+    })
+  })
+
   test('find route and parse route params', ({ assert }) => {
     async function handler() {}
 

@@ -214,6 +214,20 @@ export class RoutesStore {
       return null
     }
 
+    /**
+     * First look if we have any route node for the given url.
+     * In case the `url` is the same as the `pattern` return the `MatchedRoute`.
+     */
+    const routeNode = matchedMethod.routes[url]
+    if (routeNode) {
+      return {
+        route: routeNode,
+        routeKey: matchedMethod.routeKeys[routeNode.pattern],
+        params: {},
+        subdomains: domain?.hostname ? matchit.exec(domain.hostname, domain.tokens) : {},
+      }
+    }
+
     /*
      * Next, match route for the given url inside the tokens list for the
      * matchedMethod
