@@ -218,7 +218,9 @@ export class RoutesStore {
      * First look if we have any route node for the given url.
      * In case the `url` is the same as the `pattern` return the `MatchedRoute`.
      */
-    const routeNode = matchedMethod.routes[url]
+    const routeNode = Object.values(matchedMethod.routes).find((route) => {
+      return route.pattern.toLowerCase() === url.toLowerCase()
+    })
     if (routeNode) {
       return {
         route: routeNode,

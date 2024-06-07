@@ -602,7 +602,7 @@ test.group('Store | match', () => {
     })
 
     store.add({
-      pattern: '/123',
+      pattern: '/user',
       handler,
       matchers: {},
       meta: {},
@@ -612,9 +612,9 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.match('/123', 'GET'), {
+    assert.deepEqual(store.match('/user', 'GET'), {
       route: {
-        pattern: '/123',
+        pattern: '/user',
         handler,
         execute,
         middleware: new Middleware<any>(),
@@ -624,7 +624,22 @@ test.group('Store | match', () => {
       },
       params: {},
       subdomains: {},
-      routeKey: 'GET-/123',
+      routeKey: 'GET-/user',
+    })
+
+    assert.deepEqual(store.match('/USER', 'GET'), {
+      route: {
+        pattern: '/user',
+        handler,
+        execute,
+        middleware: new Middleware<any>(),
+        meta: {
+          params: [],
+        },
+      },
+      params: {},
+      subdomains: {},
+      routeKey: 'GET-/user',
     })
 
     assert.deepEqual(store.match('/12345', 'GET'), {
