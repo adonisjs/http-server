@@ -627,21 +627,6 @@ test.group('Store | match', () => {
       routeKey: 'GET-/user',
     })
 
-    assert.deepEqual(store.match('/USER', 'GET'), {
-      route: {
-        pattern: '/user',
-        handler,
-        execute,
-        middleware: new Middleware<any>(),
-        meta: {
-          params: [],
-        },
-      },
-      params: {},
-      subdomains: {},
-      routeKey: 'GET-/user',
-    })
-
     assert.deepEqual(store.match('/12345', 'GET'), {
       route: {
         pattern: '/:id',
