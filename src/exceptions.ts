@@ -22,6 +22,12 @@ export const E_CANNOT_LOOKUP_ROUTE = createError<[routeIdentifier: string]>(
   500
 )
 
+export const E_DIRECT_CONTROLLER_IMPORT = createError<[controllerName: string]>(
+  'Cannot import controller "%s" directly with HMR enabled. Make sure to lazy import it',
+  'E_DIRECT_CONTROLLER_IMPORT',
+  500
+)
+
 export const E_HTTP_EXCEPTION = class HttpException extends Exception {
   body: any
   static code = 'E_HTTP_EXCEPTION'

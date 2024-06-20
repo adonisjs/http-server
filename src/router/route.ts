@@ -16,6 +16,7 @@ import { moduleCaller, moduleImporter } from '@adonisjs/fold'
 
 import { execute } from './executor.js'
 import { dropSlash } from '../helpers.js'
+import { E_DIRECT_CONTROLLER_IMPORT } from '../exceptions.js'
 import type { Constructor, LazyImport, OneOrMore } from '../types/base.js'
 
 import type {
@@ -162,6 +163,11 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
        * The first item of the tuple is a class constructor
        */
       if (is.class(handler[0])) {
+        // @ts-expect-error - Dynamic property added by hot-hook
+        if (import.meta.hot) {
+          throw new E_DIRECT_CONTROLLER_IMPORT([handler[0].name])
+        }
+
         return {
           reference: handler,
           ...moduleCaller(handler[0], (handler[1] || 'handle') as string).toHandleMethod(),
