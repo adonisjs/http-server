@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { parse } from 'qs'
+import { parse } from 'neoqs'
 import { test } from '@japa/runner'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
