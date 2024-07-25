@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { parse, stringify } from 'qs'
+import { parse, stringify } from 'neoqs'
 import { QSParserConfig } from './types/qs.js'
 
 /**
