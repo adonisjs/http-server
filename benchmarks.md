@@ -1,13 +1,13 @@
 # Benchmarks
-The benchmark scheme is taken from the Fastify Github repo.
+The benchmark scheme is taken from the Fastify GitHub repo.
 
-- **Machine**: MacBook Pro (Quad-Core Intel Core i7, 2.2GHz) 16GB RAM
+- **Machine**: MacBook Pro (M1 Pro) 32GB RAM
 - **Method**: autocannon -c 100 -d 40 -p 10 localhost:3000 * 2, taking the second average
 
-| Framework          | Version                    | Router?      |  Requests/sec  |
-| :----------------- | :------------------------- | :----------: | -------------: |
-| **Fastify**        | **3.1.1**                 | **&#10003;** | **53277.6**    |
-| **AdonisJS**       | **3.0.0**                  | **&#10003;** | **50313.6**    |
+| Framework                 | Version                    | Router?      |  Requests/sec  |
+| :-----------------        | :------------------------- | :----------: | -------------: |
+| **Fastify**               | **4.28.1**                 | **&#10003;** | **111,985.6**    |
+| **AdonisJS Http Server**  | **7.2.4**                  | **&#10003;** | **101,992**    |
 
 You can run the same benchmarks by cloning the repo and then running the following command.
 
