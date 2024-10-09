@@ -35,6 +35,7 @@ import type {
   MakeSignedUrlOptions,
   GetControllerHandlers,
 } from '../types/route.js'
+import debug from '../debug.js'
 import { parseRoutePattern } from './parser.js'
 
 /**
@@ -50,6 +51,8 @@ import { parseRoutePattern } from './parser.js'
  * ```
  */
 export class Router extends LookupStore {
+  #commited: boolean = false
+
   /**
    * Application is needed to resolve string based controller expressions
    */
@@ -92,6 +95,15 @@ export class Router extends LookupStore {
    * Shortcut methods for commonly used route matchers
    */
   matchers = new Matchers()
+
+  /**
+   * Check if routes have been committed to the store. Once
+   * routes are committed, defining new set of routes will
+   * have no impact
+   */
+  get commited() {
+    return this.#commited
+  }
 
   constructor(app: Application<any>, encryption: Encryption, qsParser: Qs) {
     super(encryption, qsParser)
@@ -328,6 +340,11 @@ export class Router extends LookupStore {
    * commit method is called.
    */
   commit() {
+    if (this.#commited) {
+      return
+    }
+
+    debug('Committing routes to the routes store')
     const routeNamesByDomain: Map<string, Set<string>> = new Map()
 
     toRoutesJSON(this.routes).forEach((route) => {
@@ -367,6 +384,7 @@ export class Router extends LookupStore {
     this.routes = []
     this.#globalMatchers = {}
     this.#middleware = []
+    this.#commited = true
   }
 
   /**

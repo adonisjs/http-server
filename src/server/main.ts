@@ -43,6 +43,8 @@ import { middlewareHandler } from './factories/middleware_handler.js'
  * registered routes.
  */
 export class Server {
+  #booted: boolean = false
+
   /**
    * The default error handler to use
    */
@@ -127,6 +129,13 @@ export class Server {
   #requestErrorResponder: ServerErrorHandler['handle'] = (error, ctx) => {
     this.#resolvedErrorHandler.report(error, ctx)
     return this.#resolvedErrorHandler.handle(error, ctx)
+  }
+
+  /**
+   * Check if the server has already been booted
+   */
+  get booted() {
+    return this.#booted
   }
 
   /**
@@ -250,6 +259,10 @@ export class Server {
    * - Resolve and construct the error handler.
    */
   async boot() {
+    if (this.#booted) {
+      return
+    }
+
     debug('booting HTTP server')
 
     /**
@@ -273,6 +286,8 @@ export class Server {
       const moduleExports = await this.#errorHandler()
       this.#resolvedErrorHandler = await this.#app.container.make(moduleExports.default)
     }
+
+    this.#booted = true
   }
 
   /**
