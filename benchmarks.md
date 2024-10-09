@@ -1,5 +1,6 @@
 # Benchmarks
-The benchmark scheme is taken from the Fastify GitHub repo.
+
+The benchmark scheme is taken from the Fastify GitHub repository except that we intall [@fastify/middie](https://github.com/fastify/middie), their middleware engine, to be closer to the reality.
 
 - **Machine**: MacBook Pro (M1 Pro) 32GB RAM
 - **Method**: autocannon -c 100 -d 40 -p 10 localhost:3000 * 2, taking the second average
@@ -20,4 +21,3 @@ Since the program correctness and reliability is more important over micro optim
 - **The AdonisJS query string parser can parse arrays inside the query string** `(/api?foo[]=bar&foo[]=fuzz&foo[]=buzz
 )`, wherease fastify doesn't parse it by default for performance reasons. However, you can also define your own query string parser with fastify, but again, you will end up paying the same performance penalty.
 - **Subdomain based routing** is another front, where AdonisJS has to perform little bit extra work to find the correct route and it's handler by matching the domains first.
-- **Middleware support** is inbuilt in AdonisJS. Whereas, with [fastify you will have to install](https://www.fastify.io/docs/latest/Middleware/) additional packages for middleware support.
