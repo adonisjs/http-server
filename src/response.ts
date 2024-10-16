@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import { Buffer } from 'node:buffer'
 import etag from 'etag'
 import vary from 'vary'
 import fresh from 'fresh'
@@ -22,7 +23,6 @@ import { RuntimeException } from '@poppinss/utils'
 import contentDisposition from 'content-disposition'
 import type { Encryption } from '@adonisjs/encryption'
 import { ServerResponse, IncomingMessage, OutgoingHttpHeaders } from 'node:http'
-import { Buffer } from "node:buffer";
 
 import type { Qs } from './qs.js'
 import { Redirect } from './redirect.js'
