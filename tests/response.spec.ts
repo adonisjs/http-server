@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import { Buffer } from 'node:buffer'
 import etag from 'etag'
 import fsExtra from 'fs-extra'
 import { join } from 'node:path'
