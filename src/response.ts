@@ -380,6 +380,13 @@ export class Response extends Macroable {
 
     /*
      * ----------------------------------------
+     * SET X-REQUEST-ID HEADER
+     * ----------------------------------------
+     */
+    this.setRequestId()
+
+    /*
+     * ----------------------------------------
      * SET CONTENT-LENGTH HEADER
      * ----------------------------------------
      */
@@ -776,6 +783,18 @@ export class Response extends Macroable {
    */
   setEtag(body: any, weak: boolean = false): this {
     this.header('Etag', etag(body, { weak }))
+    return this
+  }
+
+  /**
+   * Set X-Request-Id header by copying the header value from the request if it exists.
+   *
+   */
+  setRequestId(): this {
+    const requestId = this.request.headers['x-request-id']
+    if (requestId) {
+      this.header('X-Request-Id', requestId)
+    }
     return this
   }
 

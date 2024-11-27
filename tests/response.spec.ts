@@ -108,6 +108,18 @@ test.group('Response', (group) => {
     })
   })
 
+  test('set x-request-id header', async () => {
+    const { url } = await httpServer.create((req, res) => {
+      req.headers['x-request-id'] = '20241127'
+      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+
+      response.send('<p> hello </p>')
+      response.finish()
+    })
+
+    await supertest(url).get('/').expect(200).expect('x-request-id', '20241127')
+  })
+
   test('get merged from http res object', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       res.setHeader('content-type', 'application/json')
