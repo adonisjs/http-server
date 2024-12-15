@@ -11,6 +11,7 @@ import Macroable from '@poppinss/macroable'
 import type { Application } from '@adonisjs/application'
 
 import { Route } from './route.js'
+import type { HttpContext } from '../http_context/main.js'
 import type { ParsedGlobalMiddleware } from '../types/middleware.js'
 import type { MakeUrlOptions, RouteFn, RouteMatchers } from '../types/route.js'
 
@@ -87,27 +88,33 @@ export class BriskRoute extends Macroable {
     params?: any[] | Record<string, any>,
     options?: MakeUrlOptions & { status: number }
   ): Route {
-    return this.setHandler(async function redirectsToRoute(ctx) {
+    function redirectsToRoute(ctx: HttpContext) {
       const redirector = ctx.response.redirect()
       if (options?.status) {
         redirector.status(options.status)
       }
 
       return redirector.toRoute(identifier, params || ctx.params, options)
-    })
+    }
+    Object.defineProperty(redirectsToRoute, 'listArgs', { value: identifier, writable: false })
+
+    return this.setHandler(redirectsToRoute)
   }
 
   /**
    * Redirect request to a fixed URL
    */
   redirectToPath(url: string, options?: { status: number }): Route {
-    return this.setHandler(async function redirectsToPath(ctx) {
+    function redirectsToPath(ctx: HttpContext) {
       const redirector = ctx.response.redirect()
       if (options?.status) {
         redirector.status(options.status)
       }
 
       return redirector.toPath(url)
-    })
+    }
+    Object.defineProperty(redirectsToPath, 'listArgs', { value: url, writable: false })
+
+    return this.setHandler(redirectsToPath)
   }
 }

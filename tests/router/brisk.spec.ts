@@ -35,25 +35,30 @@ test.group('Brisk Route', () => {
     })
   })
 
-  test('define handler after calling the redirect method', ({ assert }) => {
+  test('define handler via the redirect method', ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
 
     const brisk = new BriskRoute(app, [], {
       pattern: '/',
       globalMatchers: {},
     })
-    const route = brisk.redirect('/:page', { page: 'home' })
-    assert.isFunction(route.toJSON().handler)
+    const route = brisk.redirect('/:page', { page: 'home' }).toJSON()
+
+    assert.isFunction(route.handler)
+    assert.equal('listArgs' in route.handler && route.handler.listArgs, '/:page')
   })
 
-  test('define handler after calling the redirectToPath method', ({ assert }) => {
+  test('define handler via the redirectToPath method', ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
 
     const brisk = new BriskRoute(app, [], {
       pattern: '/',
       globalMatchers: {},
     })
-    const route = brisk.redirectToPath('/home')
-    assert.isFunction(route.toJSON().handler)
+
+    const route = brisk.redirectToPath('/home').toJSON()
+
+    assert.isFunction(route.handler)
+    assert.equal('listArgs' in route.handler && route.handler.listArgs, '/home')
   })
 })
