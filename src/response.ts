@@ -224,7 +224,7 @@ export class Response extends Macroable {
    * - Buffer
    */
   #getDataType(content: any) {
-    if (Buffer.isBuffer(content)) {
+    if (content instanceof Uint8Array) {
       return 'buffer'
     }
 

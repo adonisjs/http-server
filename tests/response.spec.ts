@@ -251,6 +251,17 @@ test.group('Response', (group) => {
     await supertest(url).get('/').expect('content-type', 'application/octet-stream; charset=utf-8')
   })
 
+  test('parse Uint8Array and set correct response header', async () => {
+    const { url } = await httpServer.create((req, res) => {
+      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+
+      response.send(new Uint8Array(Buffer.from('hello')))
+      response.finish()
+    })
+
+    await supertest(url).get('/').expect('content-type', 'application/octet-stream; charset=utf-8')
+  })
+
   test('parse string and set correct response header', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
