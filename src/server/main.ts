@@ -294,29 +294,11 @@ export class Server {
    * Set the HTTP server instance used to listen for requests.
    */
   setNodeServer(server: HttpServer | HttpsServer) {
-    if (this.#config.nodeHttpServer) {
-      const {
-        keepAliveTimeout,
-        headersTimeout,
-        requestTimeout,
-        timeout,
-      } = this.#config.nodeHttpServer
-
-      if (typeof keepAliveTimeout === 'number') {
-        server.keepAliveTimeout = keepAliveTimeout
-      }
-
-      if (typeof headersTimeout === 'number') {
-        server.headersTimeout = headersTimeout
-      }
-
-      if (typeof requestTimeout === 'number') {
-        server.requestTimeout = requestTimeout
-      }
-
-      if (typeof timeout === 'number') {
-        server.timeout = timeout
-      }
+    if (this.#config.node) {
+      Object.assign<HttpServer | HttpsServer, Partial<HttpServer | HttpsServer>>(
+        server,
+        this.#config.node
+      )
     }
 
     this.#nodeHttpServer = server
