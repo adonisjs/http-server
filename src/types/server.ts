@@ -84,7 +84,8 @@ export type ErrorHandlerAsAClass = Constructor<ServerErrorHandler>
  * Config accepted by the HTTP server
  */
 export type ServerConfig = RequestConfig &
-  ResponseConfig & {
+  ResponseConfig &
+  NodeConfig & {
     /**
      * Whether or not to create an async local storage store for
      * the HTTP context.
@@ -97,9 +98,4 @@ export type ServerConfig = RequestConfig &
      * Config for query string parser
      */
     qs: QSParserConfig
-
-    /**
-     * Node.js HTTP server options
-     */
-    node?: NodeConfig
   }
