@@ -64,6 +64,25 @@ test.group('Server', () => {
 
     await supertest(httpServer).get('/').expect(200)
   }).waitForDone()
+
+  test('pass config to node http server', ({ assert }) => {
+    const keepAliveTimeout = 61000
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory()
+      .merge({
+        app,
+        config: {
+          node: { keepAliveTimeout },
+        },
+      })
+      .create()
+    server.use([])
+
+    const httpServer = createServer(() => {})
+    server.setNodeServer(httpServer)
+
+    assert.strictEqual(httpServer.keepAliveTimeout, keepAliveTimeout)
+  })
 })
 
 test.group('Server | Response handling', () => {
