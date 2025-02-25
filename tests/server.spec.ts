@@ -72,7 +72,7 @@ test.group('Server', () => {
       .merge({
         app,
         config: {
-          node: { keepAliveTimeout },
+          keepAliveTimeout,
         },
       })
       .create()
