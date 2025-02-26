@@ -37,7 +37,6 @@ import { finalHandler } from './factories/final_handler.js'
 import { writeResponse } from './factories/write_response.js'
 import { asyncLocalStorage } from '../http_context/local_storage.js'
 import { middlewareHandler } from './factories/middleware_handler.js'
-import lodash from '@poppinss/utils/lodash'
 
 /**
  * The HTTP server implementation to handle incoming requests and respond using the
