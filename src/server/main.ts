@@ -37,6 +37,8 @@ import { finalHandler } from './factories/final_handler.js'
 import { writeResponse } from './factories/write_response.js'
 import { asyncLocalStorage } from '../http_context/local_storage.js'
 import { middlewareHandler } from './factories/middleware_handler.js'
+import lodash from '@poppinss/utils/lodash'
+import { NodeConfig } from '../types/node.js'
 
 /**
  * The HTTP server implementation to handle incoming requests and respond using the
@@ -294,6 +296,18 @@ export class Server {
    * Set the HTTP server instance used to listen for requests.
    */
   setNodeServer(server: HttpServer | HttpsServer) {
+    const nodeServerOptions: (keyof NodeConfig)[] = [
+      'keepAliveTimeout',
+      'headersTimeout',
+      'requestTimeout',
+      'timeout',
+    ]
+
+    Object.assign<HttpServer | HttpsServer, Partial<NodeConfig>>(
+      server,
+      lodash.pick<NodeConfig>(this.#config, nodeServerOptions)
+    )
+
     this.#nodeHttpServer = server
   }
 

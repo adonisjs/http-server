@@ -14,6 +14,7 @@ import type { QSParserConfig } from './qs.js'
 import type { RequestConfig } from './request.js'
 import type { ResponseConfig } from './response.js'
 import type { HttpContext } from '../http_context/main.js'
+import type { NodeConfig } from './node.js'
 
 /**
  * Normalized HTTP error used by the exception
@@ -83,7 +84,8 @@ export type ErrorHandlerAsAClass = Constructor<ServerErrorHandler>
  * Config accepted by the HTTP server
  */
 export type ServerConfig = RequestConfig &
-  ResponseConfig & {
+  ResponseConfig &
+  NodeConfig & {
     /**
      * Whether or not to create an async local storage store for
      * the HTTP context.
