@@ -12,11 +12,9 @@ import string from '@poppinss/utils/string'
 import type { ServerConfig } from './types/server.js'
 import lodash from '@poppinss/utils/lodash'
 
-type DeepPartial<T> = T extends object
-  ? {
-      [P in keyof T]?: DeepPartial<T[P]>
-    }
-  : T
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
+}
 
 type UserDefinedServerConfig = DeepPartial<
   Omit<ServerConfig, 'trustProxy'> & {
