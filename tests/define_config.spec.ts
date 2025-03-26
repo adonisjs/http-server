@@ -54,7 +54,7 @@ test.group('Define config', () => {
     assert.typeOf(config.trustProxy, 'function')
   })
 
-  test('comfile trustProxy config when string', ({ assert }) => {
+  test('compile trustProxy config when string', ({ assert }) => {
     const config = defineConfig({ trustProxy: 'loopback' })
 
     assert.typeOf(config.trustProxy, 'function')
@@ -64,5 +64,41 @@ test.group('Define config', () => {
     const fn = proxyAddr.compile(['192.168.1.2'])
     const config = defineConfig({ trustProxy: fn })
     assert.strictEqual(config.trustProxy, fn)
+  })
+
+  test('deep merge user values with defaults', ({ assert }) => {
+    const config = defineConfig({
+      cookie: {
+        httpOnly: false,
+      },
+      qs: {
+        parse: {
+          comma: false,
+        },
+      },
+    })
+
+    assert.deepEqual(config.cookie, {
+      httpOnly: false,
+      path: '/',
+      maxAge: 7200,
+      sameSite: 'lax',
+      secure: true,
+    })
+    assert.deepEqual(config.qs, {
+      parse: {
+        depth: 5,
+        parameterLimit: 1000,
+        allowSparse: false,
+        arrayLimit: 20,
+        comma: false,
+      },
+      stringify: {
+        encode: true,
+        encodeValuesOnly: false,
+        arrayFormat: 'indices' as const,
+        skipNulls: false,
+      },
+    })
   })
 })

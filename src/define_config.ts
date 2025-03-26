@@ -10,8 +10,15 @@
 import proxyAddr from 'proxy-addr'
 import string from '@poppinss/utils/string'
 import type { ServerConfig } from './types/server.js'
+import lodash from '@poppinss/utils/lodash'
 
-type UserDefinedServerConfig = Partial<
+type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>
+    }
+  : T
+
+type UserDefinedServerConfig = DeepPartial<
   Omit<ServerConfig, 'trustProxy'> & {
     trustProxy: ((address: string, distance: number) => boolean) | boolean | string
   }
@@ -23,7 +30,7 @@ type UserDefinedServerConfig = Partial<
 export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
   const { trustProxy, ...rest } = config
 
-  const normalizedConfig = {
+  const defaults = {
     allowMethodSpoofing: false,
     trustProxy: proxyAddr.compile('loopback'),
     subdomainOffset: 2,
@@ -53,8 +60,9 @@ export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
         skipNulls: false,
       },
     },
-    ...rest,
-  }
+  } satisfies ServerConfig
+
+  const normalizedConfig: ServerConfig = lodash.merge({}, defaults, rest)
 
   /**
    * Normalizing maxAge property on cookies to be a number in
