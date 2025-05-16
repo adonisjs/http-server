@@ -156,11 +156,6 @@ export class RoutesStore {
     }
 
     /**
-     * Generate tokens for the route
-     */
-    const tokens = parseRoutePattern(route.pattern, route.matchers)
-
-    /**
      * Create route node object for persistence
      */
     const routeNode: StoreRouteNode = lodash.merge(
@@ -171,13 +166,13 @@ export class RoutesStore {
     /**
      * Set route params
      */
-    routeNode.meta.params = this.#collectRouteParams(routeNode, tokens)
+    routeNode.meta.params = this.#collectRouteParams(routeNode, route.tokens)
 
     /**
      * Register route for every method
      */
     route.methods.forEach((method) => {
-      this.#registerRoute(route.domain, method, tokens, routeNode)
+      this.#registerRoute(route.domain, method, route.tokens, routeNode)
     })
 
     return this

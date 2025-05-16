@@ -1282,3 +1282,396 @@ test.group('Router | parse route pattern', () => {
     ])
   })
 })
+
+test.group('Router | toJSON', () => {
+  test('convert routes to JSON', ({ assert }) => {
+    const router = new RouterFactory().create()
+
+    router.get('/users/:id?', () => {})
+    router
+      .group(() => {
+        router.resource('posts', 'PostController')
+      })
+      .prefix('api')
+    router.get('/docs/:category/*', () => {})
+    router.get('/docs/:category?/:id', () => {})
+
+    router.commit()
+    assert.snapshot(router.toJSON()).matchInline(`
+      {
+        "root": [
+          {
+            "domain": "root",
+            "execute": [Function],
+            "handler": [Function],
+            "matchers": {},
+            "meta": {},
+            "methods": [
+              "GET",
+              "HEAD",
+            ],
+            "middleware": Middleware {},
+            "name": undefined,
+            "pattern": "/users/:id?",
+            "tokens": [
+              {
+                "end": "",
+                "old": "/users/:id?",
+                "type": 0,
+                "val": "users",
+              },
+              {
+                "cast": undefined,
+                "end": "",
+                "matcher": undefined,
+                "old": "/users/:id?",
+                "type": 3,
+                "val": "id",
+              },
+            ],
+          },
+          {
+            "domain": "root",
+            "execute": [Function],
+            "handler": {
+              "handle": [Function],
+              "name": "PostController.index",
+              "reference": "PostController.index",
+            },
+            "matchers": {},
+            "meta": {},
+            "methods": [
+              "GET",
+              "HEAD",
+            ],
+            "middleware": Middleware {},
+            "name": "posts.index",
+            "pattern": "/api/posts",
+            "tokens": [
+              {
+                "end": "",
+                "old": "/api/posts",
+                "type": 0,
+                "val": "api",
+              },
+              {
+                "end": "",
+                "old": "/api/posts",
+                "type": 0,
+                "val": "posts",
+              },
+            ],
+          },
+          {
+            "domain": "root",
+            "execute": [Function],
+            "handler": {
+              "handle": [Function],
+              "name": "PostController.create",
+              "reference": "PostController.create",
+            },
+            "matchers": {},
+            "meta": {},
+            "methods": [
+              "GET",
+              "HEAD",
+            ],
+            "middleware": Middleware {},
+            "name": "posts.create",
+            "pattern": "/api/posts/create",
+            "tokens": [
+              {
+                "end": "",
+                "old": "/api/posts/create",
+                "type": 0,
+                "val": "api",
+              },
+              {
+                "end": "",
+                "old": "/api/posts/create",
+                "type": 0,
+                "val": "posts",
+              },
+              {
+                "end": "",
+                "old": "/api/posts/create",
+                "type": 0,
+                "val": "create",
+              },
+            ],
+          },
+          {
+            "domain": "root",
+            "execute": [Function],
+            "handler": {
+              "handle": [Function],
+              "name": "PostController.store",
+              "reference": "PostController.store",
+            },
+            "matchers": {},
+            "meta": {},
+            "methods": [
+              "POST",
+            ],
+            "middleware": Middleware {},
+            "name": "posts.store",
+            "pattern": "/api/posts",
+            "tokens": [
+              {
+                "end": "",
+                "old": "/api/posts",
+                "type": 0,
+                "val": "api",
+              },
+              {
+                "end": "",
+                "old": "/api/posts",
+                "type": 0,
+                "val": "posts",
+              },
+            ],
+          },
+          {
+            "domain": "root",
+            "execute": [Function],
+            "handler": {
+              "handle": [Function],
+              "name": "PostController.show",
+              "reference": "PostController.show",
+            },
+            "matchers": {},
+            "meta": {},
+            "methods": [
+              "GET",
+              "HEAD",
+            ],
+            "middleware": Middleware {},
+            "name": "posts.show",
+            "pattern": "/api/posts/:id",
+            "tokens": [
+              {
+                "end": "",
+                "old": "/api/posts/:id",
+                "type": 0,
+                "val": "api",
+              },
+              {
+                "end": "",
+                "old": "/api/posts/:id",
+                "type": 0,
+                "val": "posts",
+              },
+              {
+                "cast": undefined,
+                "end": "",
+                "matcher": undefined,
+                "old": "/api/posts/:id",
+                "type": 1,
+                "val": "id",
+              },
+            ],
+          },
+          {
+            "domain": "root",
+            "execute": [Function],
+            "handler": {
+              "handle": [Function],
+              "name": "PostController.edit",
+              "reference": "PostController.edit",
+            },
+            "matchers": {},
+            "meta": {},
+            "methods": [
+              "GET",
+              "HEAD",
+            ],
+            "middleware": Middleware {},
+            "name": "posts.edit",
+            "pattern": "/api/posts/:id/edit",
+            "tokens": [
+              {
+                "end": "",
+                "old": "/api/posts/:id/edit",
+                "type": 0,
+                "val": "api",
+              },
+              {
+                "end": "",
+                "old": "/api/posts/:id/edit",
+                "type": 0,
+                "val": "posts",
+              },
+              {
+                "cast": undefined,
+                "end": "",
+                "matcher": undefined,
+                "old": "/api/posts/:id/edit",
+                "type": 1,
+                "val": "id",
+              },
+              {
+                "end": "",
+                "old": "/api/posts/:id/edit",
+                "type": 0,
+                "val": "edit",
+              },
+            ],
+          },
+          {
+            "domain": "root",
+            "execute": [Function],
+            "handler": {
+              "handle": [Function],
+              "name": "PostController.update",
+              "reference": "PostController.update",
+            },
+            "matchers": {},
+            "meta": {},
+            "methods": [
+              "PUT",
+              "PATCH",
+            ],
+            "middleware": Middleware {},
+            "name": "posts.update",
+            "pattern": "/api/posts/:id",
+            "tokens": [
+              {
+                "end": "",
+                "old": "/api/posts/:id",
+                "type": 0,
+                "val": "api",
+              },
+              {
+                "end": "",
+                "old": "/api/posts/:id",
+                "type": 0,
+                "val": "posts",
+              },
+              {
+                "cast": undefined,
+                "end": "",
+                "matcher": undefined,
+                "old": "/api/posts/:id",
+                "type": 1,
+                "val": "id",
+              },
+            ],
+          },
+          {
+            "domain": "root",
+            "execute": [Function],
+            "handler": {
+              "handle": [Function],
+              "name": "PostController.destroy",
+              "reference": "PostController.destroy",
+            },
+            "matchers": {},
+            "meta": {},
+            "methods": [
+              "DELETE",
+            ],
+            "middleware": Middleware {},
+            "name": "posts.destroy",
+            "pattern": "/api/posts/:id",
+            "tokens": [
+              {
+                "end": "",
+                "old": "/api/posts/:id",
+                "type": 0,
+                "val": "api",
+              },
+              {
+                "end": "",
+                "old": "/api/posts/:id",
+                "type": 0,
+                "val": "posts",
+              },
+              {
+                "cast": undefined,
+                "end": "",
+                "matcher": undefined,
+                "old": "/api/posts/:id",
+                "type": 1,
+                "val": "id",
+              },
+            ],
+          },
+          {
+            "domain": "root",
+            "execute": [Function],
+            "handler": [Function],
+            "matchers": {},
+            "meta": {},
+            "methods": [
+              "GET",
+              "HEAD",
+            ],
+            "middleware": Middleware {},
+            "name": undefined,
+            "pattern": "/docs/:category/*",
+            "tokens": [
+              {
+                "end": "",
+                "old": "/docs/:category/*",
+                "type": 0,
+                "val": "docs",
+              },
+              {
+                "cast": undefined,
+                "end": "",
+                "matcher": undefined,
+                "old": "/docs/:category/*",
+                "type": 1,
+                "val": "category",
+              },
+              {
+                "end": "",
+                "old": "/docs/:category/*",
+                "type": 2,
+                "val": "*",
+              },
+            ],
+          },
+          {
+            "domain": "root",
+            "execute": [Function],
+            "handler": [Function],
+            "matchers": {},
+            "meta": {},
+            "methods": [
+              "GET",
+              "HEAD",
+            ],
+            "middleware": Middleware {},
+            "name": undefined,
+            "pattern": "/docs/:category?/:id",
+            "tokens": [
+              {
+                "end": "",
+                "old": "/docs/:category?/:id",
+                "type": 0,
+                "val": "docs",
+              },
+              {
+                "cast": undefined,
+                "end": "",
+                "matcher": undefined,
+                "old": "/docs/:category?/:id",
+                "type": 3,
+                "val": "category",
+              },
+              {
+                "cast": undefined,
+                "end": "",
+                "matcher": undefined,
+                "old": "/docs/:category?/:id",
+                "type": 1,
+                "val": "id",
+              },
+            ],
+          },
+        ],
+      }
+    `)
+  })
+})

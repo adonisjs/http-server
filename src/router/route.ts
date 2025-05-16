@@ -34,6 +34,7 @@ import type {
   StoreRouteMiddleware,
 } from '../types/route.js'
 import debug from '../debug.js'
+import { parseRoutePattern } from './parser.js'
 
 /**
  * The route class exposes the APIs for constructing a route using the
@@ -363,10 +364,14 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
    * Returns JSON representation of the route
    */
   toJSON(): RouteJSON {
+    const pattern = this.#computePattern()
+    const matchers = this.#getMatchers()
+
     return {
       domain: this.#routeDomain,
-      pattern: this.#computePattern(),
-      matchers: this.#getMatchers(),
+      pattern,
+      matchers,
+      tokens: parseRoutePattern(pattern, matchers),
       meta: {},
       name: this.#name,
       handler: this.#handler,

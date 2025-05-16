@@ -365,7 +365,7 @@ export class Router extends LookupStore {
       }
 
       /*
-       * If route has a unique, then track the name for checking duplicates
+       * If route has a unique name, then track the name for checking duplicates
        */
       if (route.name) {
         routeNames.add(route.name)

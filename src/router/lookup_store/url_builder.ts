@@ -13,6 +13,7 @@ import type { Encryption } from '@adonisjs/encryption'
 import type { Qs } from '../../qs.js'
 import { parseRoutePattern } from '../parser.js'
 import type { RouteFinder } from './route_finder.js'
+import type { MatchItRouteToken } from '../../types/route.js'
 
 /**
  * URL builder class is used to create URIs for pre-registered
@@ -96,13 +97,13 @@ export class UrlBuilder {
   /**
    * Processes the pattern against the params
    */
-  #processPattern(pattern: string): string {
+  #processPattern(pattern: string, tokens?: MatchItRouteToken[]): string {
     const uriSegments: string[] = []
     const paramsArray = Array.isArray(this.#params) ? this.#params : null
     const paramsObject = !Array.isArray(this.#params) ? this.#params : {}
 
     let paramsIndex = 0
-    const tokens = parseRoutePattern(pattern)
+    tokens = tokens ?? parseRoutePattern(pattern)
 
     for (const token of tokens) {
       /**
@@ -207,7 +208,7 @@ export class UrlBuilder {
 
     if (this.#shouldPerformLookup) {
       const route = this.#routeFinder.findOrFail(identifier)
-      url = this.#processPattern(route.pattern)
+      url = this.#processPattern(route.pattern, route.tokens)
     } else {
       url = this.#processPattern(identifier)
     }
