@@ -10,18 +10,27 @@
 import { createError, Exception } from '@poppinss/utils'
 import type { HttpContext } from './http_context/main.js'
 
+/**
+ * Thrown when unable to find a matching route for the given request
+ */
 export const E_ROUTE_NOT_FOUND = createError<[method: string, url: string]>(
   'Cannot %s:%s',
   'E_ROUTE_NOT_FOUND',
   404
 )
 
+/**
+ * Thrown when unable to lookup a route by its identifier.
+ */
 export const E_CANNOT_LOOKUP_ROUTE = createError<[routeIdentifier: string]>(
   'Cannot lookup route "%s"',
   'E_CANNOT_LOOKUP_ROUTE',
   500
 )
 
+/**
+ * A generic HTTP exception to convert errors to HTTP response
+ */
 export const E_HTTP_EXCEPTION = class HttpException extends Exception {
   body: any
   static code = 'E_HTTP_EXCEPTION'
@@ -48,6 +57,9 @@ export const E_HTTP_EXCEPTION = class HttpException extends Exception {
   }
 }
 
+/**
+ * Thrown when the "response.abort" method is called
+ */
 export const E_HTTP_REQUEST_ABORTED = class AbortException extends E_HTTP_EXCEPTION {
   handle(error: AbortException, ctx: HttpContext) {
     ctx.response.status(error.status).send(error.body)

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import * as errors from '../../exceptions.js'
+import * as errors from '../../errors.js'
 import type { RouteJSON } from '../../types/route.js'
 
 /**

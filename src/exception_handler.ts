@@ -11,8 +11,8 @@ import is from '@sindresorhus/is'
 import Macroable from '@poppinss/macroable'
 import type { Level } from '@adonisjs/logger/types'
 
+import * as errors from './errors.js'
 import { parseRange } from './helpers.js'
-import * as errors from './exceptions.js'
 import type { HttpContext } from './http_context/main.js'
 import type { HttpError, StatusPageRange, StatusPageRenderer } from './types/server.js'
 
@@ -177,9 +177,9 @@ export class ExceptionHandler extends Macroable {
    */
   async renderErrorAsJSON(error: HttpError, ctx: HttpContext) {
     if (this.isDebuggingEnabled(ctx)) {
-      const { default: Youch } = await import('youch')
-      const json = await new Youch(error, ctx.request.request).toJSON()
-      ctx.response.status(error.status).send(json.error)
+      const { Youch } = await import('youch')
+      const json = await new Youch().toJSON(error)
+      ctx.response.status(error.status).send(json)
       return
     }
 
@@ -191,9 +191,9 @@ export class ExceptionHandler extends Macroable {
    */
   async renderErrorAsJSONAPI(error: HttpError, ctx: HttpContext) {
     if (this.isDebuggingEnabled(ctx)) {
-      const { default: Youch } = await import('youch')
-      const json = await new Youch(error, ctx.request.request).toJSON()
-      ctx.response.status(error.status).send(json.error)
+      const { Youch } = await import('youch')
+      const json = await new Youch().toJSON(error)
+      ctx.response.status(error.status).send(json)
       return
     }
 
@@ -213,9 +213,10 @@ export class ExceptionHandler extends Macroable {
    */
   async renderErrorAsHTML(error: HttpError, ctx: HttpContext) {
     if (this.isDebuggingEnabled(ctx)) {
-      const { default: Youch } = await import('youch')
-      const html = await new Youch(error, ctx.request.request).toHTML({
-        cspNonce: 'nonce' in ctx.response ? ctx.response.nonce : undefined,
+      const { Youch } = await import('youch')
+      const html = await new Youch().toHTML(error, {
+        request: ctx.request.request,
+        cspNonce: 'nonce' in ctx.response ? (ctx.response.nonce as string) : undefined,
       })
       ctx.response.status(error.status).send(html)
       return

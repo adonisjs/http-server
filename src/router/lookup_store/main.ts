@@ -14,7 +14,7 @@ import type { Qs } from '../../qs.js'
 import { UrlBuilder } from './url_builder.js'
 import { RouteFinder } from './route_finder.js'
 import type { RouteJSON } from '../../types/route.js'
-import { E_CANNOT_LOOKUP_ROUTE } from '../../exceptions.js'
+import { E_CANNOT_LOOKUP_ROUTE } from '../../errors.js'
 
 /**
  * Lookup store exposes the API to lookup routes and

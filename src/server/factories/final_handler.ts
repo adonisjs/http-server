@@ -9,7 +9,7 @@
 
 import type { ContainerResolver } from '@adonisjs/fold'
 
-import * as errors from '../../exceptions.js'
+import * as errors from '../../errors.js'
 import type { Router } from '../../router/main.js'
 import type { HttpContext } from '../../http_context/main.js'
 import type { ServerErrorHandler } from '../../types/server.js'
