@@ -13,6 +13,7 @@ import type {
   GetMiddlewareArgs,
   MiddlewareAsClass,
   ParsedGlobalMiddleware,
+  ParsedNamedMiddleware,
 } from './types/middleware.js'
 
 /**
@@ -20,17 +21,15 @@ import type {
  * can than later be used to reference the middleware with different arguments
  * every time.
  */
-function middlewareReferenceBuilder(
-  name: string | number | symbol,
-  middleware: LazyImport<MiddlewareAsClass>
-) {
+function middlewareReferenceBuilder(name: string, middleware: LazyImport<MiddlewareAsClass>) {
   const handler = moduleImporter(middleware, 'handle').toHandleMethod()
   return function (...args: any[]) {
     return {
       ...handler,
       name,
+      reference: middleware,
       args: args[0],
-    }
+    } satisfies ParsedNamedMiddleware
   }
 }
 
@@ -40,10 +39,10 @@ function middlewareReferenceBuilder(
  * a reference to the executable middleware.
  */
 export function defineNamedMiddleware<
-  NamedMiddleware extends Record<string | number | symbol, LazyImport<MiddlewareAsClass>>,
+  NamedMiddleware extends Record<string, LazyImport<MiddlewareAsClass>>,
 >(collection: NamedMiddleware) {
   return Object.keys(collection).reduce(
-    (result, key: keyof NamedMiddleware) => {
+    (result, key: keyof NamedMiddleware & string) => {
       result[key] = middlewareReferenceBuilder(key, collection[key])
       return result
     },

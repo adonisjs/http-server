@@ -9,7 +9,7 @@
 
 import type { ContainerResolver } from '@adonisjs/fold'
 
-import type { Constructor, NextFn } from './base.js'
+import type { Constructor, LazyImport, NextFn } from './base.js'
 import type { HttpContext } from '../http_context/main.js'
 
 /**
@@ -45,6 +45,7 @@ export type MiddlewareFn = (ctx: HttpContext, next: NextFn) => any
  */
 export type ParsedGlobalMiddleware = {
   name?: string
+  reference: LazyImport<MiddlewareAsClass> | MiddlewareAsClass
   handle: (
     resolver: ContainerResolver<any>,
     ...args: [ctx: HttpContext, next: NextFn, params?: any]
@@ -56,6 +57,7 @@ export type ParsedGlobalMiddleware = {
  */
 export type ParsedNamedMiddleware = {
   name: string
+  reference: LazyImport<MiddlewareAsClass> | MiddlewareAsClass
   handle: ParsedGlobalMiddleware['handle']
   args: any
 }

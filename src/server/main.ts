@@ -207,7 +207,10 @@ export class Server {
   pipeline(middleware: MiddlewareAsClass[]): TestingMiddlewarePipeline {
     const middlewareStack = new Middleware<ParsedGlobalMiddleware>()
     middleware.forEach((one) => {
-      middlewareStack.add(moduleCaller(one, 'handle').toHandleMethod())
+      middlewareStack.add({
+        reference: one,
+        ...moduleCaller(one, 'handle').toHandleMethod(),
+      })
     })
 
     middlewareStack.freeze()
@@ -237,7 +240,10 @@ export class Server {
    */
   use(middleware: LazyImport<MiddlewareAsClass>[]): this {
     middleware.forEach((one) =>
-      this.#middleware.push(moduleImporter(one, 'handle').toHandleMethod())
+      this.#middleware.push({
+        reference: one,
+        ...moduleImporter(one, 'handle').toHandleMethod(),
+      })
     )
 
     return this
@@ -341,6 +347,15 @@ export class Server {
       this.#logger.child({ request_id: request.id() }),
       resolver
     )
+  }
+
+  /**
+   * Returns a list of server middleware stack
+   */
+  getMiddlewareList(): ParsedGlobalMiddleware[] {
+    return this.#serverMiddlewareStack
+      ? Array.from(this.#serverMiddlewareStack.all())
+      : [...this.#middleware]
   }
 
   /**

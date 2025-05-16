@@ -138,7 +138,10 @@ export class Router extends LookupStore {
    */
   use(middleware: LazyImport<MiddlewareAsClass>[]): this {
     middleware.forEach((one) =>
-      this.#middleware.push(moduleImporter(one, 'handle').toHandleMethod())
+      this.#middleware.push({
+        reference: one,
+        ...moduleImporter(one, 'handle').toHandleMethod(),
+      })
     )
 
     return this

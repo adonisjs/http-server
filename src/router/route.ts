@@ -357,6 +357,7 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
       middleware.add(one)
     })
 
+    middleware.freeze()
     return middleware
   }
 

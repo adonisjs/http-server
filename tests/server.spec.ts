@@ -750,6 +750,50 @@ test.group('Server | middleware', () => {
       'fn1 upstream',
     ])
   })
+
+  test('get list of server middleware stack', async ({ assert }) => {
+    const stack: string[] = []
+
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+
+    await app.init()
+
+    const LogMiddlewareRef = async () => {
+      return {
+        default: class LogMiddleware {
+          handle(_: HttpContext, next: NextFn) {
+            stack.push('fn1')
+            return next()
+          }
+        },
+      }
+    }
+
+    class LogMiddleware2 {
+      handle(_: HttpContext, next: NextFn) {
+        stack.push('fn2')
+        return next()
+      }
+    }
+
+    server.use([
+      LogMiddlewareRef,
+      async () => {
+        return {
+          default: LogMiddleware2,
+        }
+      },
+    ])
+
+    await server.boot()
+    assert.containsSubset(server.getMiddlewareList()[0], {
+      name: 'LogMiddlewareRef',
+      reference: LogMiddlewareRef,
+    })
+    assert.equal(server.getMiddlewareList()[1].name, '')
+    assert.equal(server.getMiddlewareList()[1].reference.name, '')
+  })
 })
 
 test.group('Server | error handler', () => {
