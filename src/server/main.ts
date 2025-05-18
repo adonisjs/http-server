@@ -10,14 +10,13 @@
 import onFinished from 'on-finished'
 import Middleware from '@poppinss/middleware'
 import type { Logger } from '@adonisjs/logger'
+import type { LazyImport } from '@poppinss/types'
 import type { Encryption } from '@adonisjs/encryption'
 import type { Server as HttpsServer } from 'node:https'
 import type { Application } from '@adonisjs/application'
 import type { EmitterLike } from '@adonisjs/events/types'
 import { ContainerResolver, moduleCaller, moduleImporter } from '@adonisjs/fold'
 import type { ServerResponse, IncomingMessage, Server as HttpServer } from 'node:http'
-
-import type { LazyImport } from '../types/base.js'
 import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.js'
 import type {
   ServerConfig,

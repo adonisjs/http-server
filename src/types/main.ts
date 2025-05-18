@@ -7,7 +7,6 @@
  * file that was distributed with this source code.
  */
 
-export * from './base.js'
 export * from './middleware.js'
 export * from './qs.js'
 export * from './request.js'

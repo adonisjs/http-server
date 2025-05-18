@@ -9,9 +9,9 @@
 
 import type Middleware from '@poppinss/middleware'
 import type { ContainerResolver } from '@adonisjs/fold'
+import type { Constructor, LazyImport } from '@poppinss/types'
 
 import type { ServerErrorHandler } from './server.js'
-import type { Constructor, LazyImport } from './base.js'
 import type { HttpContext } from '../http_context/main.js'
 import type { MiddlewareFn, ParsedGlobalMiddleware } from './middleware.js'
 
@@ -211,6 +211,7 @@ export type ResourceActionNames =
 
 /**
  * Options accepted by makeUrl method
+ * @deprecated
  */
 export type MakeUrlOptions = {
   qs?: Record<string, any>
@@ -221,6 +222,7 @@ export type MakeUrlOptions = {
 
 /**
  * Options accepted by makeSignedUrl method
+ * @deprecated
  */
 export type MakeSignedUrlOptions = MakeUrlOptions & {
   expiresIn?: string | number
@@ -242,56 +244,6 @@ export type RouteBuilderSignedURLOptions = RouteBuilderURLOptions & {
   expiresIn?: string | number
   purpose?: string
 }
-
-/**
- * Infers param segment from the route identifier.
- */
-export type ParamSegment<Identifier extends string> =
-  Identifier extends `${infer SegmentA}/${infer SegmentB}`
-    ? Param<SegmentA> | ParamSegment<SegmentB>
-    : Param<Identifier>
-export type Param<Segment extends string> = Segment extends `:${string}?`
-  ? never
-  : Segment extends `:${infer ParamName}`
-    ? ParamName extends `${infer ParamWithoutExt}.${string}`
-      ? ParamWithoutExt
-      : ParamName
-    : never
-
-/**
- * Infers optional param segment from the route identifier.
- */
-export type OptionalParamSegment<Identifier extends string> =
-  Identifier extends `${infer SegmentA}/${infer SegmentB}`
-    ? OptionalParam<SegmentA> | OptionalParamSegment<SegmentB>
-    : OptionalParam<Identifier>
-export type OptionalParam<Segment extends string> = Segment extends `:${infer ParamName}?`
-  ? ParamName
-  : never
-
-/**
- * Infers wildcard param segment from the route identifier.
- */
-export type WildcardParamSegment<Identifier extends string> =
-  Identifier extends `${infer SegmentA}/${infer SegmentB}`
-    ? WildcardParam<SegmentA> | WildcardParamSegment<SegmentB>
-    : WildcardParam<Identifier>
-export type WildcardParam<Segment extends string> = Segment extends '*' ? '*' : never
-
-export type Simplify<T> = { [KeyType in keyof T]: T[KeyType] } & {}
-
-/**
- * Infer route params from the route idenfifier
- */
-export type InferRouteParams<Identifier extends string> = Simplify<
-  {
-    [Key in ParamSegment<Identifier>]: string
-  } & {
-    [Key in OptionalParamSegment<Identifier>]?: string
-  } & {
-    [Key in WildcardParamSegment<Identifier>]: string[]
-  }
->
 
 /**
  * LookupList type is used by the URLBuilder to provide

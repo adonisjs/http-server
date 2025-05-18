@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
+import type { Constructor, LazyImport } from '@poppinss/types'
+import type { NextFn } from '@poppinss/middleware/types'
 import type { ContainerResolver } from '@adonisjs/fold'
-
-import type { Constructor, LazyImport, NextFn } from './base.js'
 import type { HttpContext } from '../http_context/main.js'
 
 /**

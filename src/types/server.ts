@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
+import type { Constructor } from '@poppinss/types'
 import type { ErrorHandler, FinalHandler } from '@poppinss/middleware/types'
 
-import type { Constructor } from './base.js'
 import type { QSParserConfig } from './qs.js'
 import type { RequestConfig } from './request.js'
 import type { ResponseConfig } from './response.js'

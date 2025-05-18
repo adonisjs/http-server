@@ -11,9 +11,9 @@ import string from '@poppinss/utils/string'
 import Macroable from '@poppinss/macroable'
 import { RuntimeException } from '@poppinss/utils'
 import type { Application } from '@adonisjs/application'
+import type { Constructor, LazyImport, OneOrMore } from '@poppinss/types'
 
 import { Route } from './route.js'
-import type { Constructor, LazyImport, OneOrMore } from '../types/base.js'
 import type {
   MiddlewareFn,
   ParsedGlobalMiddleware,

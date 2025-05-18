@@ -8,7 +8,7 @@
  */
 
 import { moduleImporter } from '@adonisjs/fold'
-import type { LazyImport, UnWrapLazyImport } from './types/base.js'
+import type { LazyImport, UnWrapLazyImport } from '@poppinss/types'
 import type {
   GetMiddlewareArgs,
   MiddlewareAsClass,

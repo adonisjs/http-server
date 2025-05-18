@@ -8,24 +8,15 @@
  */
 
 import type { Encryption } from '@adonisjs/encryption'
+import type { AreAllOptional, InferRouteParams, Prettify } from '@poppinss/types'
 
 import type { Router } from './main.js'
 import { createSignedURL, createURL } from '../utils.js'
 import type {
   LookupList,
-  InferRouteParams,
   RouteBuilderURLOptions,
   RouteBuilderSignedURLOptions,
-  Simplify,
 } from '../types/route.js'
-
-type IsAllOptional<T> = keyof T extends never
-  ? true
-  : {
-        [K in keyof T]-?: [undefined] extends [T[K]] ? never : K
-      }[keyof T] extends never
-    ? true
-    : false
 
 /**
  * Creates type-safe URL builder helpers
@@ -48,8 +39,8 @@ export function createURLBuilder<Routes extends LookupList>(
    */
   function url<T extends string>(
     identifier: T,
-    ...[params, options]: Simplify<
-      IsAllOptional<InferRouteParams<T>> extends true
+    ...[params, options]: Prettify<
+      AreAllOptional<InferRouteParams<T>> extends true
         ? [params?: InferRouteParams<T>, options?: RouteBuilderURLOptions]
         : [params: InferRouteParams<T>, options?: RouteBuilderURLOptions]
     >
@@ -63,8 +54,8 @@ export function createURLBuilder<Routes extends LookupList>(
    */
   function signedUrl<T extends string>(
     identifier: T,
-    ...[params, options]: Simplify<
-      IsAllOptional<InferRouteParams<T>> extends true
+    ...[params, options]: Prettify<
+      AreAllOptional<InferRouteParams<T>> extends true
         ? [params?: InferRouteParams<T>, options?: RouteBuilderSignedURLOptions]
         : [params: InferRouteParams<T>, options?: RouteBuilderSignedURLOptions]
     >
@@ -78,7 +69,7 @@ export function createURLBuilder<Routes extends LookupList>(
    */
   function route<Identifier extends keyof Routes & string>(
     identifier: Identifier,
-    ...[params, options]: Simplify<
+    ...[params, options]: Prettify<
       [undefined] extends [Routes[Identifier]['params']]
         ? [
             params?: Routes[Identifier]['params'] | Routes[Identifier]['paramsTuple'],
@@ -102,7 +93,7 @@ export function createURLBuilder<Routes extends LookupList>(
    */
   function signedRoute<Identifier extends keyof Routes & string>(
     identifier: Identifier,
-    ...[params, options]: Simplify<
+    ...[params, options]: Prettify<
       [undefined] extends [Routes[Identifier]['params']]
         ? [
             params?: Routes[Identifier]['params'] | Routes[Identifier]['paramsTuple'],
