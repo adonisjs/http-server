@@ -397,7 +397,6 @@ test.group('Router | commit', () => {
     router.get('/', handler)
     router.commit()
 
-    assert.deepEqual(router.routes, [])
     assert.containsSubset(router.match('/', 'GET'), {
       params: {},
       route: {
@@ -426,7 +425,6 @@ test.group('Router | commit', () => {
 
     router.commit()
 
-    assert.deepEqual(router.routes, [])
     assert.containsSubset(router.match('/api', 'GET'), {
       params: {},
       route: {
@@ -453,7 +451,6 @@ test.group('Router | commit', () => {
 
     router.commit()
 
-    assert.deepEqual(router.routes, [])
     assert.containsSubset(router.match('/api/posts', 'GET'), {
       params: {},
       route: {
@@ -483,7 +480,6 @@ test.group('Router | commit', () => {
 
     router.commit()
 
-    assert.deepEqual(router.routes, [])
     assert.containsSubset(router.match('/api/v1/posts', 'GET'), {
       params: {},
       route: {
@@ -504,7 +500,6 @@ test.group('Router | commit', () => {
     router.shallowResource('posts.comments', 'CommentsController')
     router.commit()
 
-    assert.deepEqual(router.routes, [])
     assert.containsSubset(router.match('/comments/1', 'GET'), {
       params: {
         id: '1',
@@ -1306,6 +1301,7 @@ test.group('Router | toJSON', () => {
     router.get('categories', [CategoriesControllerRef, 'index'])
 
     router.commit()
+    console.log(router.toJSON().root.map((r) => r.tokens))
     assert.containsSubset(router.toJSON(), {
       root: [
         {
@@ -1386,5 +1382,165 @@ test.group('Router | toJSON', () => {
     })
     assert.isFunction(routeMiddleware[1])
     assert.isFunction(routeMiddleware[2])
+  })
+})
+
+test.group('Router | find', () => {
+  test('find a route by route pattern', ({ assert }) => {
+    const router = new RouterFactory().create()
+
+    router.get('/users/:id', () => {})
+    router.commit()
+    assert.containsSubset(router.find('/users/:id'), {
+      pattern: '/users/:id',
+      meta: {},
+      methods: ['GET'],
+      matchers: {},
+      domain: 'root',
+      name: undefined,
+    })
+  })
+
+  test('find a route by route name', ({ assert }) => {
+    const router = new RouterFactory().create()
+
+    router.get('/users/:id', () => {}).as('users.show')
+    router.commit()
+    assert.containsSubset(router.find('users.show'), {
+      pattern: '/users/:id',
+      meta: {},
+      methods: ['GET'],
+      matchers: {},
+      domain: 'root',
+      name: 'users.show',
+    })
+  })
+
+  test('find a route by route controller name', ({ assert }) => {
+    const router = new RouterFactory().create()
+
+    router.get('/users/:id', '#controllers/users')
+    router.commit()
+
+    assert.containsSubset(router.find('#controllers/users'), {
+      pattern: '/users/:id',
+      meta: {},
+      methods: ['GET'],
+      matchers: {},
+      domain: 'root',
+      name: undefined,
+    })
+  })
+
+  test('return null when unable to find route', ({ assert }) => {
+    const router = new RouterFactory().create()
+    router.commit()
+
+    assert.isNull(router.find('/users/:id'))
+  })
+
+  test('do not match route handler name when it is defined as function', ({ assert }) => {
+    const router = new RouterFactory().create()
+    router.get('/users/:id', () => {})
+    router.commit()
+
+    assert.isNull(router.find('#controllers/posts.show'))
+  })
+
+  test('find a route across domains', ({ assert }) => {
+    const router = new RouterFactory().create()
+
+    router.get('/users/:id', () => {}).as('users.show')
+    router
+      .get('/posts/:id', () => {})
+      .as('posts.show')
+      .domain('blog.adonisjs.com')
+
+    router.commit()
+    assert.containsSubset(router.find('posts.show'), {
+      pattern: '/posts/:id',
+      meta: {},
+      methods: ['GET'],
+      matchers: {},
+      domain: 'blog.adonisjs.com',
+      name: 'posts.show',
+    })
+  })
+
+  test('limit search to a specific domain', ({ assert }) => {
+    const router = new RouterFactory().create()
+
+    router.get('/users/:id', () => {}).as('users.show')
+    router
+      .get('/posts/:id', () => {})
+      .as('posts.show')
+      .domain('blog.adonisjs.com')
+
+    router.commit()
+    assert.isNull(router.find('users.show', 'blog.adonisjs.com'))
+  })
+})
+
+test.group('Lookup store | findByOrFail', () => {
+  test('find a route by route pattern', ({ assert }) => {
+    const router = new RouterFactory().create()
+    router.get('/users/:id', () => {})
+    router.commit()
+
+    assert.containsSubset(router.findOrFail('/users/:id'), {
+      pattern: '/users/:id',
+      meta: {},
+      methods: ['GET'],
+      matchers: {},
+      domain: 'root',
+      name: undefined,
+    })
+  })
+
+  test('find a route by route name', ({ assert }) => {
+    const router = new RouterFactory().create()
+    router.get('/users/:id', () => {}).as('users.show')
+    router.commit()
+
+    assert.containsSubset(router.findOrFail('users.show'), {
+      pattern: '/users/:id',
+      meta: {},
+      methods: ['GET'],
+      matchers: {},
+      domain: 'root',
+      name: 'users.show',
+    })
+  })
+
+  test('find a route by route controller name', ({ assert }) => {
+    const router = new RouterFactory().create()
+    router.get('/users/:id', '#controllers/users')
+    router.commit()
+
+    assert.containsSubset(router.findOrFail('#controllers/users'), {
+      pattern: '/users/:id',
+      meta: {},
+      methods: ['GET'],
+      matchers: {},
+      domain: 'root',
+      name: undefined,
+    })
+  })
+
+  test('raise error when unable to lookup route', ({ assert }) => {
+    const router = new RouterFactory().create()
+    router.commit()
+
+    assert.throws(() => router.findOrFail('/users/:id'), 'Cannot lookup route "/users/:id"')
+  })
+})
+
+test.group('Lookup store | has', () => {
+  test('check if a route exists', ({ assert }) => {
+    const router = new RouterFactory().create()
+    router.get('/users/:id', () => {})
+    assert.isFalse(router.has('/users/:id'))
+    router.commit()
+    assert.isTrue(router.has('/users/:id'))
   })
 })

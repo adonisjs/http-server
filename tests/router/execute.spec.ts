@@ -276,7 +276,12 @@ test.group('Route | execute', () => {
           default: LogMiddleware,
         }
       },
-    ].map((one) => moduleImporter(one, 'handle').toHandleMethod())
+    ].map((one) => {
+      return {
+        reference: one,
+        ...moduleImporter(one, 'handle').toHandleMethod(),
+      }
+    })
 
     async function handler(ctx: HttpContext) {
       stack.push('handler')
@@ -342,7 +347,12 @@ test.group('Route | execute', () => {
           default: LogMiddleware,
         }
       },
-    ].map((one) => moduleImporter(one, 'handle').toHandleMethod())
+    ].map((one) => {
+      return {
+        reference: one,
+        ...moduleImporter(one, 'handle').toHandleMethod(),
+      }
+    })
 
     async function handler(ctx: HttpContext) {
       stack.push('handler')
@@ -403,7 +413,12 @@ test.group('Route | execute', () => {
           default: LogMiddleware,
         }
       },
-    ].map((one) => moduleImporter(one, 'handle').toHandleMethod())
+    ].map((one) => {
+      return {
+        reference: one,
+        ...moduleImporter(one, 'handle').toHandleMethod(),
+      }
+    })
 
     async function handler(ctx: HttpContext) {
       stack.push('handler')
@@ -467,7 +482,12 @@ test.group('Route | execute', () => {
           default: LogMiddleware,
         }
       },
-    ].map((one) => moduleImporter(one, 'handle').toHandleMethod())
+    ].map((one) => {
+      return {
+        reference: one,
+        ...moduleImporter(one, 'handle').toHandleMethod(),
+      }
+    })
 
     async function handler() {
       throw new Error('route handler failed')

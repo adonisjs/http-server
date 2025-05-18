@@ -15,12 +15,11 @@ import Middleware from '@poppinss/middleware'
 import { createServer as httpsServer } from 'node:https'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
+import { RouterFactory } from '../factories/router.js'
 import { RequestFactory } from '../factories/request.js'
 import { httpServer } from '../factories/http_server.js'
 import { CookieSerializer } from '../src/cookies/serializer.js'
 import { HttpContextFactory } from '../factories/http_context.js'
-import { QsParserFactory } from '../factories/qs_parser_factory.js'
-import { UrlBuilder } from '../src/router/lookup_store/url_builder.js'
 
 const encryption = new EncryptionFactory().create()
 const serializer = new CookieSerializer(encryption)
@@ -1487,7 +1486,9 @@ test.group('Verify signed url', () => {
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const route = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
+    const route = new RouterFactory()
+      .create()
+      .builder()
       .params({ name: 'virk' })
       .disableRouteLookup()
       .makeSigned('/')
@@ -1505,9 +1506,7 @@ test.group('Verify signed url', () => {
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const route = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
-      .disableRouteLookup()
-      .makeSigned('/')
+    const route = new RouterFactory().create().builder().disableRouteLookup().makeSigned('/')
 
     const { body } = await supertest(url).get(route)
     assert.deepEqual(body, {
@@ -1522,11 +1521,9 @@ test.group('Verify signed url', () => {
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const route = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
-      .disableRouteLookup()
-      .makeSigned('/', {
-        expiresIn: -100,
-      })
+    const route = new RouterFactory().create().builder().disableRouteLookup().makeSigned('/', {
+      expiresIn: -100,
+    })
 
     const { body } = await supertest(url).get(route)
     assert.deepEqual(body, {
@@ -1541,11 +1538,9 @@ test.group('Verify signed url', () => {
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
 
-    const route = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
-      .disableRouteLookup()
-      .makeSigned('/', {
-        expiresIn: '1 hour',
-      })
+    const route = new RouterFactory().create().builder().disableRouteLookup().makeSigned('/', {
+      expiresIn: '1 hour',
+    })
 
     const { body } = await supertest(url).get(route)
     assert.deepEqual(body, {
@@ -1560,11 +1555,9 @@ test.group('Verify signed url', () => {
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature('login') }))
     })
 
-    const route = new UrlBuilder(encryption, {} as any, new QsParserFactory().create())
-      .disableRouteLookup()
-      .makeSigned('/', {
-        purpose: 'register',
-      })
+    const route = new RouterFactory().create().builder().disableRouteLookup().makeSigned('/', {
+      purpose: 'register',
+    })
 
     const { body } = await supertest(url).get(route)
     assert.deepEqual(body, {

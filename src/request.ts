@@ -22,7 +22,7 @@ import type { Encryption } from '@adonisjs/encryption'
 import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'node:http'
 
 import type { Qs } from './qs.js'
-import { trustProxy } from './helpers.js'
+import { trustProxy } from './utils.js'
 import { CookieParser } from './cookies/parser.js'
 import { RequestConfig } from './types/request.js'
 import type { HttpContext } from './http_context/main.js'

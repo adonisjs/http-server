@@ -15,7 +15,7 @@ import type { Application } from '@adonisjs/application'
 import { moduleCaller, moduleImporter } from '@adonisjs/fold'
 
 import { execute } from './executor.js'
-import { dropSlash } from '../helpers.js'
+import { dropSlash } from '../utils.js'
 import type { Constructor, LazyImport, OneOrMore } from '../types/base.js'
 
 import type {
@@ -34,7 +34,7 @@ import type {
   StoreRouteMiddleware,
 } from '../types/route.js'
 import debug from '../debug.js'
-import { parseRoutePattern } from './parser.js'
+import { parse } from '../utils.js'
 
 /**
  * The route class exposes the APIs for constructing a route using the
@@ -372,7 +372,7 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
       domain: this.#routeDomain,
       pattern,
       matchers,
-      tokens: parseRoutePattern(pattern, matchers),
+      tokens: parse(pattern, matchers),
       meta: {},
       name: this.#name,
       handler: this.#handler,

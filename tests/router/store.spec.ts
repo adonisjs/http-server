@@ -9,9 +9,10 @@
 
 import { test } from '@japa/runner'
 import Middleware from '@poppinss/middleware'
+
+import { parse } from '../../src/utils.js'
 import { execute } from '../../src/router/executor.js'
 import { RoutesStore } from '../../src/router/store.js'
-import { parseRoutePattern } from '../../src/router/parser.js'
 
 test.group('Store | add', () => {
   test('add route without explicit domain', ({ assert }) => {
@@ -20,7 +21,7 @@ test.group('Store | add', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/',
-      tokens: parseRoutePattern('/'),
+      tokens: parse('/'),
       methods: ['GET'],
       handler: handler,
       matchers: {},
@@ -80,7 +81,7 @@ test.group('Store | add', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/',
-      tokens: parseRoutePattern('/'),
+      tokens: parse('/'),
       methods: ['GET'],
       meta: {},
       handler: handler,
@@ -138,7 +139,7 @@ test.group('Store | add', () => {
     async function handler() {}
     const route = {
       pattern: '/',
-      tokens: parseRoutePattern('/'),
+      tokens: parse('/'),
       methods: ['GET'],
       handler: handler,
       matchers: {},
@@ -158,7 +159,7 @@ test.group('Store | add', () => {
     async function handler() {}
     const route = {
       pattern: '/:id/:id',
-      tokens: parseRoutePattern('/:id/:id'),
+      tokens: parse('/:id/:id'),
       methods: ['GET'],
       handler: handler,
       matchers: {},
@@ -176,7 +177,7 @@ test.group('Store | add', () => {
     async function handler() {}
     const route = {
       pattern: '/id/:id',
-      tokens: parseRoutePattern('id/:id'),
+      tokens: parse('id/:id'),
       methods: ['GET'],
       handler: handler,
       matchers: {},
@@ -194,7 +195,7 @@ test.group('Store | add', () => {
     async function handler() {}
     const route = {
       pattern: '/',
-      tokens: parseRoutePattern('/'),
+      tokens: parse('/'),
       methods: ['GET'],
       handler: handler,
       matchers: {},
@@ -282,7 +283,7 @@ test.group('Store | add', () => {
     async function handler() {}
     const route = {
       pattern: '/',
-      tokens: parseRoutePattern('/'),
+      tokens: parse('/'),
       methods: ['GET'],
       handler: handler,
       matchers: {},
@@ -382,7 +383,7 @@ test.group('Store | add', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:id',
-      tokens: parseRoutePattern('/:id'),
+      tokens: parse('/:id'),
       methods: ['GET', 'POST'],
       handler: handler,
       matchers: {},
@@ -472,7 +473,7 @@ test.group('Store | add', () => {
     const store = new RoutesStore()
     store.add({
       pattern: 'users',
-      tokens: parseRoutePattern('users'),
+      tokens: parse('users'),
       methods: ['GET'],
       handler: handler,
       matchers: {},
@@ -483,7 +484,7 @@ test.group('Store | add', () => {
     })
     store.add({
       pattern: 'users/:id',
-      tokens: parseRoutePattern('users/:id'),
+      tokens: parse('users/:id'),
       methods: ['GET'],
       handler: handler,
       matchers: {},
@@ -571,7 +572,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/',
-      tokens: parseRoutePattern('/'),
+      tokens: parse('/'),
       handler,
       matchers: {},
       meta: {},
@@ -603,7 +604,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:username',
-      tokens: parseRoutePattern('/:username'),
+      tokens: parse('/:username'),
       handler,
       matchers: {},
       meta: {},
@@ -637,7 +638,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:username?',
-      tokens: parseRoutePattern('/:username?'),
+      tokens: parse('/:username?'),
       handler,
       matchers: {},
       meta: {},
@@ -686,7 +687,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:username',
-      tokens: parseRoutePattern('/:username'),
+      tokens: parse('/:username'),
       handler,
       matchers: {},
       meta: {},
@@ -698,7 +699,7 @@ test.group('Store | match', () => {
 
     store.add({
       pattern: '/:id',
-      tokens: parseRoutePattern('/:id'),
+      tokens: parse('/:id'),
       handler,
       matchers: {},
       meta: {},
@@ -736,7 +737,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:username',
-      tokens: parseRoutePattern('/:username', matchers),
+      tokens: parse('/:username', matchers),
       handler,
       meta: {},
       matchers,
@@ -748,7 +749,7 @@ test.group('Store | match', () => {
 
     store.add({
       pattern: '/:id',
-      tokens: parseRoutePattern('/:id', matchers),
+      tokens: parse('/:id', matchers),
       handler,
       meta: {},
       matchers,
@@ -782,7 +783,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/',
-      tokens: parseRoutePattern('/'),
+      tokens: parse('/'),
       handler,
       matchers: {},
       meta: {},
@@ -809,7 +810,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/',
-      tokens: parseRoutePattern('/'),
+      tokens: parse('/'),
       handler,
       matchers: {},
       meta: {},
@@ -838,7 +839,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:id',
-      tokens: parseRoutePattern('/:id'),
+      tokens: parse('/:id'),
       handler,
       matchers: {},
       meta: {},
@@ -857,7 +858,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:id',
-      tokens: parseRoutePattern('/:id'),
+      tokens: parse('/:id'),
       handler,
       matchers: {},
       meta: {},
@@ -876,7 +877,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:username',
-      tokens: parseRoutePattern('/:username'),
+      tokens: parse('/:username'),
       handler,
       matchers: {},
       meta: {},
@@ -888,7 +889,7 @@ test.group('Store | match', () => {
 
     store.add({
       pattern: '/:id',
-      tokens: parseRoutePattern('/:id'),
+      tokens: parse('/:id'),
       handler,
       matchers: {},
       meta: {},
@@ -929,7 +930,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:id',
-      tokens: parseRoutePattern('/:id'),
+      tokens: parse('/:id'),
       handler,
       matchers: {},
       meta: {},
@@ -972,7 +973,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:id',
-      tokens: parseRoutePattern('/:id'),
+      tokens: parse('/:id'),
       handler,
       matchers: {},
       meta: {},
@@ -991,7 +992,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:id',
-      tokens: parseRoutePattern('/:id'),
+      tokens: parse('/:id'),
       handler,
       matchers: {},
       meta: {},
@@ -1015,7 +1016,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/',
-      tokens: parseRoutePattern('/'),
+      tokens: parse('/'),
       handler,
       matchers: {},
       meta: {},
@@ -1037,7 +1038,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/users/:id?',
-      tokens: parseRoutePattern('/users/:id?', matchers),
+      tokens: parse('/users/:id?', matchers),
       handler,
       meta: {},
       matchers,
@@ -1072,7 +1073,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/users/:id?',
-      tokens: parseRoutePattern('/users/:id?', matchers),
+      tokens: parse('/users/:id?', matchers),
       handler,
       meta: {},
       matchers,
@@ -1110,7 +1111,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:username',
-      tokens: parseRoutePattern('/:username', matchers),
+      tokens: parse('/:username', matchers),
       handler,
       meta: {},
       matchers,
@@ -1122,7 +1123,7 @@ test.group('Store | match', () => {
 
     store.add({
       pattern: '/:id',
-      tokens: parseRoutePattern('/:id', matchers),
+      tokens: parse('/:id', matchers),
       handler,
       meta: {},
       matchers,
@@ -1159,7 +1160,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:id?',
-      tokens: parseRoutePattern('/:id?', matchers),
+      tokens: parse('/:id?', matchers),
       handler,
       meta: {},
       matchers,
@@ -1195,7 +1196,7 @@ test.group('Store | match', () => {
     const store = new RoutesStore()
     store.add({
       pattern: '/:id/:slug',
-      tokens: parseRoutePattern('/:id/:slug', matchers),
+      tokens: parse('/:id/:slug', matchers),
       handler,
       meta: {},
       matchers,

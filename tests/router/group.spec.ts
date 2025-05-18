@@ -11,7 +11,7 @@ import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/application/factories'
 
 import { Route } from '../../src/router/route.js'
-import { toRoutesJSON } from '../../src/helpers.js'
+import { toRoutesJSON } from '../../src/utils.js'
 import { BriskRoute } from '../../src/router/brisk.js'
 import { RouteGroup } from '../../src/router/group.js'
 import { RouteResource } from '../../src/router/resource.js'

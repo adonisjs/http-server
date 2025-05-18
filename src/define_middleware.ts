@@ -53,6 +53,7 @@ export function defineNamedMiddleware<
         ...args: Args
       ) => {
         name: K
+        reference: LazyImport<MiddlewareAsClass> | MiddlewareAsClass
         args: Args[0]
         handle: ParsedGlobalMiddleware['handle']
       }

@@ -20,8 +20,8 @@ import type {
   StoreRoutesTree,
   MatchItRouteToken,
 } from '../types/route.js'
-import { parseRoutePattern } from './parser.js'
 import debug from '../debug.js'
+import { parse } from '../utils.js'
 
 /**
  * Store class is used to store a list of routes, along side with their tokens
@@ -61,7 +61,7 @@ export class RoutesStore {
    */
   #getDomainNode(domain: string): StoreDomainNode {
     if (!this.tree.domains[domain]) {
-      this.tree.tokens.push(parseRoutePattern(domain))
+      this.tree.tokens.push(parse(domain))
       this.tree.domains[domain] = {}
     }
 

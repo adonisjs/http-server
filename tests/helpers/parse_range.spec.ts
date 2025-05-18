@@ -8,7 +8,7 @@
  */
 
 import { test } from '@japa/runner'
-import { parseRange } from '../../src/helpers.js'
+import { parseRange } from '../../src/utils.js'
 
 test.group('Helpers | parse range', () => {
   test('parse a range expression to an object', ({ assert }) => {

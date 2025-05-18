@@ -13,21 +13,24 @@ import { RuntimeException } from '@poppinss/utils'
 import type { Encryption } from '@adonisjs/encryption'
 import type { Application } from '@adonisjs/application'
 
+import debug from '../debug.js'
 import type { Qs } from '../qs.js'
 import { Route } from './route.js'
 import { RouteGroup } from './group.js'
 import { BriskRoute } from './brisk.js'
 import { RoutesStore } from './store.js'
-import { toRoutesJSON } from '../helpers.js'
 import { RouteResource } from './resource.js'
-import { LookupStore } from './lookup_store/main.js'
+import { E_CANNOT_LOOKUP_ROUTE } from '../errors.js'
+import { UrlBuilder } from './legacy/url_builder.js'
 import { RouteMatchers as Matchers } from './matchers.js'
 import type { Constructor, LazyImport } from '../types/base.js'
 import { defineNamedMiddleware } from '../define_middleware.js'
+import { parse, createSignedURL, toRoutesJSON, createURL } from '../utils.js'
 import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.js'
 
 import type {
   RouteFn,
+  RouteJSON,
   MatchedRoute,
   RouteMatcher,
   RouteMatchers,
@@ -35,8 +38,6 @@ import type {
   MakeSignedUrlOptions,
   GetControllerHandlers,
 } from '../types/route.js'
-import debug from '../debug.js'
-import { parseRoutePattern } from './parser.js'
 
 /**
  * Router class exposes a unified API to register new routes, group them or
@@ -50,8 +51,17 @@ import { parseRoutePattern } from './parser.js'
  * })
  * ```
  */
-export class Router extends LookupStore {
+export class Router {
+  /**
+   * Flag to avoid re-comitting routes to the store
+   */
   #commited: boolean = false
+
+  /**
+   * List of route references kept for lookup. The routes with the store
+   * are not optimized for lookup.
+   */
+  #routes: { [domain: string]: RouteJSON[] } = {}
 
   /**
    * Application is needed to resolve string based controller expressions
@@ -62,6 +72,11 @@ export class Router extends LookupStore {
    * Store with tokenized routes
    */
   #store: RoutesStore = new RoutesStore()
+
+  /**
+   * Encryption for making signed URLs
+   */
+  #encryption: Encryption
 
   /**
    * Global matchers to test route params against regular expressions.
@@ -80,10 +95,10 @@ export class Router extends LookupStore {
   #openedGroups: RouteGroup[] = []
 
   /**
-   * Collection of routes, including route resource and route
-   * group. To get a flat list of routes, call `router.toJSON()`
+   * Collection of routes to be committed with the store, including
+   * route resource and route group.
    */
-  routes: (Route | RouteResource | RouteGroup | BriskRoute)[] = []
+  #routesToBeCommitted: (Route | RouteResource | RouteGroup | BriskRoute)[] = []
 
   /**
    * A flag to know if routes for explicit domains have been registered.
@@ -105,9 +120,23 @@ export class Router extends LookupStore {
     return this.#commited
   }
 
+  /**
+   * Query string parser for making URLs
+   */
+  qs: Qs
+
   constructor(app: Application<any>, encryption: Encryption, qsParser: Qs) {
-    super(encryption, qsParser)
     this.#app = app
+    this.#encryption = encryption
+    this.qs = qsParser
+  }
+
+  /**
+   * Register route JSON payload
+   */
+  #register(route: RouteJSON) {
+    this.#routes[route.domain] = this.#routes[route.domain] || []
+    this.#routes[route.domain].push(route)
   }
 
   /**
@@ -121,14 +150,14 @@ export class Router extends LookupStore {
       return
     }
 
-    this.routes.push(entity)
+    this.#routesToBeCommitted.push(entity)
   }
 
   /**
    * Parses the route pattern
    */
   parsePattern(pattern: string, matchers?: RouteMatchers) {
-    return parseRoutePattern(pattern, matchers)
+    return parse(pattern, matchers)
   }
 
   /**
@@ -350,7 +379,7 @@ export class Router extends LookupStore {
     debug('Committing routes to the routes store')
     const routeNamesByDomain: Map<string, Set<string>> = new Map()
 
-    toRoutesJSON(this.routes).forEach((route) => {
+    toRoutesJSON(this.#routesToBeCommitted).forEach((route) => {
       if (!routeNamesByDomain.has(route.domain)) {
         routeNamesByDomain.set(route.domain, new Set())
       }
@@ -377,35 +406,132 @@ export class Router extends LookupStore {
       /**
        * Register the route with the lookup store
        */
-      this.register(route)
+      this.#register(route)
       this.#store.add(route)
     })
 
     routeNamesByDomain.clear()
 
     this.usingDomains = this.#store.usingDomains
-    this.routes = []
+    this.#routesToBeCommitted = []
     this.#globalMatchers = {}
     this.#middleware = []
+    this.#openedGroups = []
     this.#commited = true
+  }
+
+  /**
+   * Finds a route by its identifier. The identifier can be the
+   * route name, controller.method name or the route pattern
+   * itself.
+   */
+  find(routeIdentifier: string, domain?: string): RouteJSON | null {
+    /**
+     * Search for route in all the domains when no domain name is
+     * mentioned.
+     */
+    if (!domain) {
+      let route: RouteJSON | null = null
+      for (const routeDomain of Object.keys(this.#routes)) {
+        route = this.find(routeIdentifier, routeDomain)
+        if (route) {
+          break
+        }
+      }
+      return route
+    }
+
+    const routes = this.#routes[domain]
+    if (!routes) {
+      return null
+    }
+
+    return (
+      routes.find((route) => {
+        if (route.name === routeIdentifier || route.pattern === routeIdentifier) {
+          return true
+        }
+
+        if (typeof route.handler === 'function') {
+          return false
+        }
+
+        return route.handler.reference === routeIdentifier
+      }) || null
+    )
+  }
+
+  /**
+   * Finds a route by its identifier. The identifier can be the
+   * route name, controller.method name or the route pattern
+   * itself.
+   *
+   * An error is raised when unable to find the route.
+   */
+  findOrFail(routeIdentifier: string, domain?: string): RouteJSON {
+    const route = this.find(routeIdentifier, domain)
+    if (!route) {
+      throw new E_CANNOT_LOOKUP_ROUTE([routeIdentifier])
+    }
+
+    return route
+  }
+
+  /**
+   * Check if a route exists. The identifier can be the
+   * route name, controller.method name or the route pattern
+   * itself.
+   */
+  has(routeIdentifier: string, domain?: string): boolean {
+    return !!this.find(routeIdentifier, domain)
+  }
+
+  /**
+   * Returns a list of routes grouped by their domain names
+   */
+  toJSON(): { [domain: string]: RouteJSON[] } {
+    return this.#routes
   }
 
   /**
    * Find route for a given URL, method and optionally domain
    */
-  match(url: string, method: string, hostname?: string | null): null | MatchedRoute {
+  match(uri: string, method: string, hostname?: string | null): null | MatchedRoute {
     const matchingDomain = this.#store.matchDomain(hostname)
 
     return matchingDomain.length
-      ? this.#store.match(url, method, {
+      ? this.#store.match(uri, method, {
           tokens: matchingDomain,
           hostname: hostname!,
         })
-      : this.#store.match(url, method)
+      : this.#store.match(uri, method)
+  }
+
+  /**
+   * Create URL builder instance.
+   * @deprecated
+   *
+   * Instead use "@adonisjs/core/services/url_builder" instead
+   */
+  builder() {
+    return new UrlBuilder(this)
+  }
+
+  /**
+   * Create URL builder instance for a given domain.
+   * @deprecated
+   *
+   * Instead use "@adonisjs/core/services/url_builder" instead
+   */
+  builderForDomain(domain: string) {
+    return new UrlBuilder(this, domain)
   }
 
   /**
    * Make URL to a pre-registered route
+   *
+   * @deprecated
+   * Instead use "@adonisjs/core/services/url_builder" instead
    */
   makeUrl(
     routeIdentifier: string,
@@ -414,21 +540,19 @@ export class Router extends LookupStore {
   ): string {
     const normalizedOptions = Object.assign({}, options)
 
-    const builder = normalizedOptions.domain
-      ? this.builderForDomain(normalizedOptions.domain)
-      : this.builder()
+    if (options?.disableRouteLookup) {
+      return createURL(routeIdentifier, this.qs, params, options)
+    }
 
-    builder.params(params)
-    builder.qs(normalizedOptions.qs)
-
-    normalizedOptions.prefixUrl && builder.prefixUrl(normalizedOptions.prefixUrl)
-    normalizedOptions.disableRouteLookup && builder.disableRouteLookup()
-
-    return builder.make(routeIdentifier)
+    const route = this.findOrFail(routeIdentifier, normalizedOptions.domain)
+    return createURL(route, this.qs, params, options)
   }
 
   /**
    * Makes a signed URL to a pre-registered route.
+   *
+   * @deprecated
+   * Instead use "@adonisjs/core/services/url_builder" instead
    */
   makeSignedUrl(
     routeIdentifier: string,
@@ -437,16 +561,11 @@ export class Router extends LookupStore {
   ): string {
     const normalizedOptions = Object.assign({}, options)
 
-    const builder = normalizedOptions.domain
-      ? this.builderForDomain(normalizedOptions.domain)
-      : this.builder()
+    if (options?.disableRouteLookup) {
+      return createSignedURL(routeIdentifier, this.qs, this.#encryption, params, options)
+    }
 
-    builder.params(params)
-    builder.qs(normalizedOptions.qs)
-
-    normalizedOptions.prefixUrl && builder.prefixUrl(normalizedOptions.prefixUrl)
-    normalizedOptions.disableRouteLookup && builder.disableRouteLookup()
-
-    return builder.makeSigned(routeIdentifier, normalizedOptions)
+    const route = this.findOrFail(routeIdentifier, normalizedOptions.domain)
+    return createSignedURL(route, this.qs, this.#encryption, params, options)
   }
 }

@@ -12,7 +12,7 @@ import Macroable from '@poppinss/macroable'
 import type { Level } from '@adonisjs/logger/types'
 
 import * as errors from './errors.js'
-import { parseRange } from './helpers.js'
+import { parseRange } from './utils.js'
 import type { HttpContext } from './http_context/main.js'
 import type { HttpError, StatusPageRange, StatusPageRenderer } from './types/server.js'
 
