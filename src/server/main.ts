@@ -36,6 +36,7 @@ import { finalHandler } from './factories/final_handler.js'
 import { writeResponse } from './factories/write_response.js'
 import { asyncLocalStorage } from '../http_context/local_storage.js'
 import { middlewareHandler } from './factories/middleware_handler.js'
+import { httpRequest } from '../tracing_channels.js'
 
 /**
  * The HTTP server implementation to handle incoming requests and respond using the
@@ -393,8 +394,11 @@ export class Server {
      * Handle request
      */
     if (this.usingAsyncLocalStorage) {
-      return asyncLocalStorage.storage!.run(ctx, () => this.#handleRequest(ctx, resolver))
+      return asyncLocalStorage.storage!.run(ctx, () =>
+        httpRequest.tracePromise(this.#handleRequest, ctx, this, ctx, resolver)
+      )
     }
-    return this.#handleRequest(ctx, resolver)
+
+    return httpRequest.tracePromise(this.#handleRequest, ctx, this, ctx, resolver)
   }
 }

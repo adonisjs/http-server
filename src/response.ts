@@ -37,6 +37,7 @@ import type {
   ResponseStream,
 } from './types/response.js'
 import { ResponseStatus } from './response_status.js'
+import { httpResponseSerializer } from './tracing_channels.js'
 
 const CACHEABLE_HTTP_METHODS = ['GET', 'HEAD']
 
@@ -1135,7 +1136,7 @@ export class Response extends Macroable {
     }
 
     if (this.content) {
-      this.writeBody(...this.content)
+      httpResponseSerializer.traceSync(this.writeBody, undefined, this, ...this.content)
       return
     }
 
