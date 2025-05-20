@@ -28,6 +28,11 @@ import type { RouteMatchers, MatchItRouteToken } from './types/route.js'
 export { default as encodeUrl } from 'encodeurl'
 
 /**
+ * Re-exports the "https://www.npmjs.com/package/mime-types" package
+ */
+export { default as mime } from 'mime-types'
+
+/**
  * Parse a route pattern into an array of tokens. These tokes can be used
  * to match routes, or print them with semantic information.
  *
