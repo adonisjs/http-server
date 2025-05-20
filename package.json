@@ -11,6 +11,7 @@
   ],
   "exports": {
     ".": "./build/index.js",
+    "./helpers": "./build/src/helpers.js",
     "./types": "./build/src/types/main.js",
     "./factories": "./build/factories/main.js"
   },
@@ -170,6 +171,7 @@
   "tsup": {
     "entry": [
       "./index.ts",
+      "./src/helpers.ts",
       "./src/types/main.ts",
       "./factories/main.ts"
     ],

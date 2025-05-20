@@ -10,11 +10,11 @@
 // @ts-expect-error
 import matchit from '@poppinss/matchit'
 import { test } from '@japa/runner'
-import { parse } from '../../src/utils.js'
+import { parseRoute } from '../../src/helpers.js'
 
 test.group('Route parser', () => {
   test('parse route with params', ({ assert }) => {
-    const tokens = parse('/posts/:id')
+    const tokens = parseRoute('/posts/:id')
     assert.deepEqual(tokens, [
       {
         end: '',
@@ -36,7 +36,7 @@ test.group('Route parser', () => {
   })
 
   test('parse route params with extensions', ({ assert }) => {
-    const tokens = parse('/posts/:id.json')
+    const tokens = parseRoute('/posts/:id.json')
     assert.deepEqual(tokens, [
       {
         end: '',
@@ -58,7 +58,7 @@ test.group('Route parser', () => {
   })
 
   test('do not allow extensions with optional params', ({ assert }) => {
-    const tokens = parse('/posts/:id?.json')
+    const tokens = parseRoute('/posts/:id?.json')
     assert.deepEqual(tokens, [
       {
         end: '',
@@ -81,7 +81,7 @@ test.group('Route parser', () => {
   })
 
   test('parse route params wildcard', ({ assert }) => {
-    const tokens = parse('/posts/*')
+    const tokens = parseRoute('/posts/*')
     assert.deepEqual(tokens, [
       {
         end: '',

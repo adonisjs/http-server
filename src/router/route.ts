@@ -34,7 +34,7 @@ import type {
   StoreRouteMiddleware,
 } from '../types/route.js'
 import debug from '../debug.js'
-import { parse } from '../utils.js'
+import { parseRoute } from '../helpers.js'
 
 /**
  * The route class exposes the APIs for constructing a route using the
@@ -372,7 +372,7 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
       domain: this.#routeDomain,
       pattern,
       matchers,
-      tokens: parse(pattern, matchers),
+      tokens: parseRoute(pattern, matchers),
       meta: {},
       name: this.#name,
       handler: this.#handler,

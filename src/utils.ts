@@ -8,18 +8,17 @@
  */
 
 import Cache from 'tmp-cache'
-// @ts-expect-error
-import matchit from '@poppinss/matchit'
 import type { Encryption } from '@adonisjs/encryption'
 import { RuntimeException, InvalidArgumentsException } from '@poppinss/utils'
 
 import type { Qs } from './qs.js'
+import { parseRoute } from './helpers.js'
 import { Route } from './router/route.js'
 import { RouteGroup } from './router/group.js'
 import { BriskRoute } from './router/brisk.js'
 import { RouteResource } from './router/resource.js'
 import type { SignedURLOptions, URLOptions } from './types/url_builder.js'
-import type { RouteJSON, RouteMatchers, MatchItRouteToken } from './types/route.js'
+import type { RouteJSON } from './types/route.js'
 
 const proxyCache = new Cache({ max: 200 })
 
@@ -138,26 +137,6 @@ export function parseRange<T>(range: string, value: T): Record<number, T> {
 }
 
 /**
- * Parse a route pattern into an array of tokens. These tokes can be used
- * to match routes, or print them with semantic information.
- *
- * Token types
- *
- * - 0: (static) segment
- * - 1: (parameter) segment
- * - 2: (optional parameter) segment
- * - 3: (wildcard) segment
- *
- * Value (val) refers to the segment value
- *
- * end refers to be the suffix or the segment (if any)
- */
-export function parse(pattern: string, matchers?: RouteMatchers): MatchItRouteToken[] {
-  const tokens = matchit.parse(pattern, matchers)
-  return tokens
-}
-
-/**
  * Makes URL for a given route pattern. The route pattern could be an
  * identifier or an array of tokens.
  */
@@ -171,7 +150,7 @@ export function createURL(
   const paramsArray = Array.isArray(params) ? params : null
   const paramsObject = !Array.isArray(params) ? (params ?? {}) : {}
   const tokens =
-    typeof identifierOrRoute === 'string' ? parse(identifierOrRoute) : identifierOrRoute.tokens
+    typeof identifierOrRoute === 'string' ? parseRoute(identifierOrRoute) : identifierOrRoute.tokens
   const identifier =
     typeof identifierOrRoute === 'string' ? identifierOrRoute : identifierOrRoute.pattern
 

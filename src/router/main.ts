@@ -25,7 +25,8 @@ import { E_CANNOT_LOOKUP_ROUTE } from '../errors.js'
 import { UrlBuilder } from './legacy/url_builder.js'
 import { RouteMatchers as Matchers } from './matchers.js'
 import { defineNamedMiddleware } from '../define_middleware.js'
-import { parse, createSignedURL, toRoutesJSON, createURL } from '../utils.js'
+import { createSignedURL, toRoutesJSON, createURL } from '../utils.js'
+import { parseRoute } from '../helpers.js'
 import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.js'
 
 import type {
@@ -170,7 +171,7 @@ export class Router {
    * Parses the route pattern
    */
   parsePattern(pattern: string, matchers?: RouteMatchers) {
-    return parse(pattern, matchers)
+    return parseRoute(pattern, matchers)
   }
 
   /**
