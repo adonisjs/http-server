@@ -17,8 +17,8 @@ import { Route } from './router/route.js'
 import { RouteGroup } from './router/group.js'
 import { BriskRoute } from './router/brisk.js'
 import { RouteResource } from './router/resource.js'
-import type { SignedURLOptions, URLOptions } from './types/url_builder.js'
 import type { RouteJSON } from './types/route.js'
+import type { SignedURLOptions, URLOptions } from './types/url_builder.js'
 
 const proxyCache = new Cache({ max: 200 })
 

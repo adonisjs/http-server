@@ -7,11 +7,10 @@
  * file that was distributed with this source code.
  */
 
-import cookie from 'cookie'
-import string from '@poppinss/utils/string'
 import type { Encryption } from '@adonisjs/encryption'
 
 import { CookieClient } from './client.js'
+import { serializeCookie } from '../helpers.js'
 import type { CookieOptions } from '../types/response.js'
 
 /**
@@ -24,28 +23,6 @@ export class CookieSerializer {
 
   constructor(encryption: Encryption) {
     this.#client = new CookieClient(encryption)
-  }
-
-  /**
-   * Serializes the key-value pair to a string, that can be set on the
-   * `Set-Cookie` header.
-   */
-  #serializeAsCookie(key: string, value: string, options?: Partial<CookieOptions>) {
-    /**
-     * Invoked expires method to get the date
-     */
-    let expires = options?.expires
-    if (typeof expires === 'function') {
-      expires = expires()
-    }
-
-    /**
-     * Parse string based max age to seconds
-     */
-    let maxAge = options?.maxAge ? string.seconds.parse(options?.maxAge) : undefined
-
-    const parsedOptions = Object.assign({}, options, { maxAge, expires })
-    return cookie.serialize(key, value, parsedOptions)
   }
 
   /**
@@ -68,7 +45,7 @@ export class CookieSerializer {
       return null
     }
 
-    return this.#serializeAsCookie(key, packedValue, options)
+    return serializeCookie(key, packedValue, options)
   }
 
   /**
@@ -81,7 +58,7 @@ export class CookieSerializer {
       return null
     }
 
-    return this.#serializeAsCookie(key, packedValue, options)
+    return serializeCookie(key, packedValue, options)
   }
 
   /**
@@ -93,6 +70,6 @@ export class CookieSerializer {
       return null
     }
 
-    return this.#serializeAsCookie(key, packedValue, options)
+    return serializeCookie(key, packedValue, options)
   }
 }

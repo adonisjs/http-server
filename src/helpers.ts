@@ -7,8 +7,12 @@
  * file that was distributed with this source code.
  */
 
+import cookie from 'cookie'
 // @ts-expect-error
 import matchit from '@poppinss/matchit'
+import string from '@poppinss/utils/string'
+
+import { CookieOptions } from './types/response.js'
 import type { RouteMatchers, MatchItRouteToken } from './types/route.js'
 
 /**
@@ -64,4 +68,24 @@ export function matchRoute(url: string, patterns: string[]): null | Record<strin
   }
 
   return matchit.exec(url, match)
+}
+
+/**
+ * Serialize the value of a cookie to a string you can send via
+ * set-cookie response header.
+ */
+export function serializeCookie(
+  key: string,
+  value: string,
+  options?: Partial<CookieOptions>
+): string {
+  let expires: Date | undefined
+  let maxAge: number | undefined
+
+  if (options) {
+    expires = typeof options.expires === 'function' ? options.expires() : options.expires
+    maxAge = options.maxAge ? string.seconds.parse(options.maxAge) : undefined
+  }
+
+  return cookie.serialize(key, value, { ...options, maxAge, expires })
 }
