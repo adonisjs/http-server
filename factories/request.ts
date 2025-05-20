@@ -9,6 +9,7 @@
 
 import { Socket } from 'node:net'
 import proxyAddr from 'proxy-addr'
+import { randomUUID } from 'node:crypto'
 import type { Encryption } from '@adonisjs/encryption'
 import { IncomingMessage, ServerResponse } from 'node:http'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
@@ -42,8 +43,11 @@ export class RequestFactory {
       trustProxy: proxyAddr.compile('loopback'),
       subdomainOffset: 2,
       generateRequestId: false,
+      createRequestId() {
+        return randomUUID()
+      },
       ...this.#parameters.config,
-    }
+    } satisfies RequestConfig
   }
 
   /**

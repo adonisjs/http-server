@@ -90,7 +90,6 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@paralleldrive/cuid2": "^2.2.2",
     "@poppinss/macroable": "^1.0.4",
     "@poppinss/matchit": "^3.1.2",
     "@poppinss/middleware": "^3.2.5",

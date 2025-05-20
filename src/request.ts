@@ -16,7 +16,6 @@ import proxyaddr from 'proxy-addr'
 import { safeEqual } from '@poppinss/utils'
 import Macroable from '@poppinss/macroable'
 import lodash from '@poppinss/utils/lodash'
-import { createId } from '@paralleldrive/cuid2'
 import { parse, UrlWithStringQuery } from 'node:url'
 import type { Encryption } from '@adonisjs/encryption'
 import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'node:http'
@@ -154,7 +153,7 @@ export class Request extends Macroable {
   id(): string | undefined {
     let requestId = this.header('x-request-id')
     if (!requestId && this.#config.generateRequestId) {
-      requestId = createId()
+      requestId = this.#config.createRequestId()
       this.request.headers['x-request-id'] = requestId
     }
 

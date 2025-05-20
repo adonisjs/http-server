@@ -32,7 +32,10 @@ export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
     allowMethodSpoofing: false,
     trustProxy: proxyAddr.compile('loopback'),
     subdomainOffset: 2,
-    generateRequestId: false,
+    generateRequestId: !!config.createRequestId,
+    createRequestId() {
+      return crypto.randomUUID()
+    },
     useAsyncLocalStorage: false,
     etag: false,
     jsonpCallbackName: 'callback',

@@ -29,6 +29,11 @@ export type RequestConfig = {
   generateRequestId: boolean
 
   /**
+   * A custom method to generate a unique request id. Defaults to uuid v4.
+   */
+  createRequestId(): string
+
+  /**
    * Method spoofing allows changing the request method using the query string.
    * For example: Making a POST request on URL /users/1?_method=PATCH will
    * be handled by the patch route.
