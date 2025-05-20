@@ -9,8 +9,8 @@
 
 import proxyAddr from 'proxy-addr'
 import string from '@poppinss/utils/string'
-import type { ServerConfig } from './types/server.js'
 import lodash from '@poppinss/utils/lodash'
+import type { ServerConfig } from './types/server.js'
 
 type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]

@@ -31,6 +31,7 @@ import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middlew
 import type {
   RouteFn,
   RouteJSON,
+  RoutesList,
   MatchedRoute,
   RouteMatcher,
   RouteMatchers,
@@ -38,6 +39,8 @@ import type {
   MakeSignedUrlOptions,
   GetControllerHandlers,
 } from '../types/route.js'
+import { URLBuilder } from '../url_builder.js'
+import type { LookupList } from '../types/url_builder.js'
 
 /**
  * Router class exposes a unified API to register new routes, group them or
@@ -125,10 +128,20 @@ export class Router {
    */
   qs: Qs
 
+  /**
+   * The URLBuilder offers a type-safe API for creating URL for pre-registered
+   * routes or the route patterns.
+   *
+   * We recommend using the URLBuilder over the "makeUrl" and "makeSignedUrl"
+   * methods.
+   */
+  urlBuilder: URLBuilder<RoutesList extends LookupList ? RoutesList : never>
+
   constructor(app: Application<any>, encryption: Encryption, qsParser: Qs) {
     this.#app = app
     this.#encryption = encryption
     this.qs = qsParser
+    this.urlBuilder = new URLBuilder(this, this.#encryption)
   }
 
   /**
@@ -521,7 +534,7 @@ export class Router {
    * Create URL builder instance for a given domain.
    * @deprecated
    *
-   * Instead use "@adonisjs/core/services/url_builder" instead
+   * Instead use "@adonisjs/core/services/url_builder"
    */
   builderForDomain(domain: string) {
     return new UrlBuilder(this, domain)
@@ -531,7 +544,7 @@ export class Router {
    * Make URL to a pre-registered route
    *
    * @deprecated
-   * Instead use "@adonisjs/core/services/url_builder" instead
+   * Instead use "@adonisjs/core/services/url_builder"
    */
   makeUrl(
     routeIdentifier: string,
@@ -552,7 +565,7 @@ export class Router {
    * Makes a signed URL to a pre-registered route.
    *
    * @deprecated
-   * Instead use "@adonisjs/core/services/url_builder" instead
+   * Instead use "@adonisjs/core/services/url_builder"
    */
   makeSignedUrl(
     routeIdentifier: string,

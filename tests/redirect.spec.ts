@@ -202,6 +202,7 @@ test.group('Redirect', () => {
 
     const { url } = await httpServer.create((req, res) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router: route }).create()
+      // @ts-expect-error "Because RoutesList is empty"
       response.redirect().toRoute('posts.index')
       response.finish()
     })
@@ -217,6 +218,7 @@ test.group('Redirect', () => {
 
     const { url } = await httpServer.create((req, res) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router: route }).create()
+      // @ts-expect-error "Because RoutesList is empty"
       response.redirect().toRoute('post.show', { id: 1 })
       response.finish()
     })
@@ -236,6 +238,7 @@ test.group('Redirect', () => {
 
     const response = new ResponseFactory().merge({ encryption, router: route }).create()
 
+    // @ts-expect-error "Because RoutesList is empty"
     response.redirect().toRoute('post.create', {}, { domain: 'domain.example.com' })
 
     /**
@@ -253,6 +256,7 @@ test.group('Redirect', () => {
 
     const { url } = await httpServer.create((req, res) => {
       const response = new ResponseFactory().merge({ req, res, encryption, router: route }).create()
+      // @ts-expect-error "Because RoutesList is empty"
       response.redirect().withQs().toRoute('post.show', { id: 1 })
       response.finish()
     })
@@ -273,6 +277,7 @@ test.group('Redirect', () => {
       response
         .redirect()
         .withQs('user', 'virk')
+        // @ts-expect-error "Because RoutesList is empty"
         .toRoute('post.show', { id: 1 }, { qs: { published: true } })
 
       response.finish()
@@ -287,6 +292,7 @@ test.group('Redirect', () => {
       const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
 
       assert.throws(() => {
+        // @ts-expect-error "Because RoutesList is empty"
         response.redirect().toRoute('posts')
       }, 'Cannot lookup route "posts"')
 

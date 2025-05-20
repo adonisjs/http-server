@@ -42,6 +42,7 @@ test.group('Brisk Route', () => {
       pattern: '/',
       globalMatchers: {},
     })
+    // @ts-expect-error "Because RoutesList is empty"
     const route = brisk.redirect('/:page', { page: 'home' }).toJSON()
 
     assert.isFunction(route.handler)

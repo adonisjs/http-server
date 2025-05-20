@@ -18,13 +18,8 @@ import { Route } from './router/route.js'
 import { RouteGroup } from './router/group.js'
 import { BriskRoute } from './router/brisk.js'
 import { RouteResource } from './router/resource.js'
-import type {
-  RouteJSON,
-  RouteMatchers,
-  MatchItRouteToken,
-  RouteBuilderURLOptions,
-  RouteBuilderSignedURLOptions,
-} from './types/route.js'
+import type { SignedURLOptions, URLOptions } from './types/url_builder.js'
+import type { RouteJSON, RouteMatchers, MatchItRouteToken } from './types/route.js'
 
 const proxyCache = new Cache({ max: 200 })
 
@@ -170,7 +165,7 @@ export function createURL(
   identifierOrRoute: string | RouteJSON,
   qs: Qs,
   params?: any[] | { [param: string]: any },
-  options?: RouteBuilderURLOptions
+  options?: URLOptions
 ): string {
   const uriSegments: string[] = []
   const paramsArray = Array.isArray(params) ? params : null
@@ -255,7 +250,7 @@ export function createSignedURL(
   qs: Qs,
   encryption: Encryption,
   params?: any[] | { [param: string]: any },
-  options?: RouteBuilderSignedURLOptions
+  options?: SignedURLOptions
 ): string {
   /*
    * Making the signature from the qualified url. We do not prefix the "prefixUrl" when

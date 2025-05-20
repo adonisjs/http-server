@@ -11,9 +11,10 @@ import Macroable from '@poppinss/macroable'
 import type { Application } from '@adonisjs/application'
 
 import { Route } from './route.js'
+import type { URLOptions } from '../types/url_builder.js'
 import type { HttpContext } from '../http_context/main.js'
 import type { ParsedGlobalMiddleware } from '../types/middleware.js'
-import type { MakeUrlOptions, RouteFn, RouteMatchers } from '../types/route.js'
+import type { RouteFn, RouteMatchers, RoutesList } from '../types/route.js'
 
 /**
  * Brisk routes exposes the API to configure the route handler by chaining
@@ -83,21 +84,20 @@ export class BriskRoute extends Macroable {
    * Redirects to a given route. Params from the original request will
    * be used when no custom params are defined.
    */
-  redirect(
-    identifier: string,
-    params?: any[] | Record<string, any>,
-    options?: MakeUrlOptions & { status: number }
+  redirect<Identifier extends keyof RoutesList & string>(
+    identifier: Identifier,
+    params?: RoutesList[Identifier]['params'] | RoutesList[Identifier]['paramsTuple'],
+    options?: URLOptions & { status: number }
   ): Route {
     function redirectsToRoute(ctx: HttpContext) {
       const redirector = ctx.response.redirect()
       if (options?.status) {
         redirector.status(options.status)
       }
-
-      return redirector.toRoute(identifier, params || ctx.params, options)
+      return (redirector.toRoute as any)(identifier, params || ctx.params, options)
     }
-    Object.defineProperty(redirectsToRoute, 'listArgs', { value: identifier, writable: false })
 
+    Object.defineProperty(redirectsToRoute, 'listArgs', { value: identifier, writable: false })
     return this.setHandler(redirectsToRoute)
   }
 
@@ -110,11 +110,10 @@ export class BriskRoute extends Macroable {
       if (options?.status) {
         redirector.status(options.status)
       }
-
       return redirector.toPath(url)
     }
-    Object.defineProperty(redirectsToPath, 'listArgs', { value: url, writable: false })
 
+    Object.defineProperty(redirectsToPath, 'listArgs', { value: url, writable: false })
     return this.setHandler(redirectsToPath)
   }
 }
