@@ -12,6 +12,22 @@ import matchit from '@poppinss/matchit'
 import type { RouteMatchers, MatchItRouteToken } from './types/route.js'
 
 /**
+ * This function is similar to the intrinsic function encodeURI. However, it will not encode:
+ *  - The \, ^, or | characters
+ *  - The % character when it's part of a valid sequence
+ *  - [ and ] (for IPv6 hostnames)
+ *  - Replaces raw, unpaired surrogate pairs with the Unicode replacement character
+ *
+ * Some tests
+ * encodeURI('http://localhost/%20snow.html') // http://localhost/%2520snow.html
+ * encodeUrl('http://localhost/%20snow.html') // http://localhost/%20snow.html
+ *
+ * encodeURI('http://[::1]:8080/foo/bar') // http://%5B::1%5D:8080/foo/bar
+ * encodeUrl('http://[::1]:8080/foo/bar') // http://[::1]:8080/foo/bar
+ */
+export { default as encodeUrl } from 'encodeurl'
+
+/**
  * Parse a route pattern into an array of tokens. These tokes can be used
  * to match routes, or print them with semantic information.
  *
