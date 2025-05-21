@@ -225,24 +225,6 @@ export class Response extends Macroable {
    * - Buffer
    */
   #getDataType(content: any) {
-    if (content instanceof Uint8Array) {
-      return 'buffer'
-    }
-
-    /**
-     * Date instance
-     */
-    if (content instanceof Date) {
-      return 'date'
-    }
-
-    /**
-     * Regular expression
-     */
-    if (content instanceof RegExp) {
-      return 'regexp'
-    }
-
     const dataType = typeof content
     if (
       dataType === 'number' ||
@@ -257,6 +239,24 @@ export class Response extends Macroable {
      * Object
      */
     if (dataType === 'object') {
+      if (content instanceof Uint8Array) {
+        return 'buffer'
+      }
+
+      /**
+       * Regular expression
+       */
+      if (content instanceof RegExp) {
+        return 'regexp'
+      }
+
+      /**
+       * Date instance
+       */
+      if (content instanceof Date) {
+        return 'date'
+      }
+
       return 'object'
     }
 
