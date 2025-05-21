@@ -90,9 +90,7 @@ export class Request extends Macroable {
   #cookieParser?: CookieParser
 
   /**
-   * Parses copy of the URL with query string as a string and not
-   * object. This is done to build URL's with query string without
-   * stringifying the object
+   * Parsed URL with query string stored as a string.
    */
   parsedUrl: UrlWithStringQuery
 

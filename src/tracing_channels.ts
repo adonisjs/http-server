@@ -8,7 +8,7 @@
  */
 
 import diagnostics_channel from 'node:diagnostics_channel'
-import {
+import type {
   MiddlewareTracingData,
   HTTPRequestTracingData,
   RouteHandlerTracingData,
@@ -31,6 +31,14 @@ export const httpMiddleware = diagnostics_channel.tracingChannel<
 >('adonisjs:http.middleware')
 
 /**
+ * Traces the exception handler that converts errors into HTTP responses
+ */
+export const httpExceptionHandler =
+  diagnostics_channel.tracingChannel<'adonisjs:http.exception.handler'>(
+    'adonisjs:http.exception.handler'
+  )
+
+/**
  * Traces route handler executed during the HTTP request
  */
 export const httpRouteHandler = diagnostics_channel.tracingChannel<
@@ -44,5 +52,5 @@ export const httpRouteHandler = diagnostics_channel.tracingChannel<
  */
 export const httpResponseSerializer =
   diagnostics_channel.tracingChannel<'adonisjs:http.response.serializer'>(
-    'adonisjs:http.route.serializer'
+    'adonisjs:http.response.serializer'
   )

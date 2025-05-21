@@ -15,11 +15,11 @@ import type { HttpContext } from '../../http_context/main.js'
 import type { ServerErrorHandler } from '../../types/server.js'
 
 /**
- * The final handler is executed after the server middleware stack.
+ * The route finder is executed after the server middleware stack.
  * It looks for a matching route and executes the route middleware
  * stack.
  */
-export function finalHandler(
+export function routeFinder(
   router: Router,
   resolver: ContainerResolver<any>,
   ctx: HttpContext,

@@ -32,11 +32,11 @@ import { Request } from '../request.js'
 import { Response } from '../response.js'
 import { Router } from '../router/main.js'
 import { HttpContext } from '../http_context/main.js'
-import { finalHandler } from './factories/final_handler.js'
+import { routeFinder } from './factories/route_finder.js'
 import { writeResponse } from './factories/write_response.js'
 import { asyncLocalStorage } from '../http_context/local_storage.js'
 import { middlewareHandler } from './factories/middleware_handler.js'
-import { httpRequest } from '../tracing_channels.js'
+import { httpRequest, httpExceptionHandler } from '../tracing_channels.js'
 
 /**
  * The HTTP server implementation to handle incoming requests and respond using the
@@ -128,7 +128,14 @@ export class Server {
    */
   #requestErrorResponder: ServerErrorHandler['handle'] = (error, ctx) => {
     this.#resolvedErrorHandler.report(error, ctx)
-    return this.#resolvedErrorHandler.handle(error, ctx)
+
+    return httpExceptionHandler.tracePromise(
+      this.#resolvedErrorHandler.handle,
+      undefined,
+      undefined,
+      error,
+      ctx
+    )
   }
 
   /**
@@ -192,7 +199,7 @@ export class Server {
   #handleRequest(ctx: HttpContext, resolver: ContainerResolver<any>) {
     return this.#serverMiddlewareStack!.runner()
       .errorHandler((error) => this.#requestErrorResponder(error, ctx))
-      .finalHandler(finalHandler(this.#router!, resolver, ctx, this.#requestErrorResponder))
+      .finalHandler(routeFinder(this.#router!, resolver, ctx, this.#requestErrorResponder))
       .run(middlewareHandler(resolver, ctx))
       .catch((error) => {
         ctx.logger.fatal({ err: error }, 'Exception raised by error handler')
