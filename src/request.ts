@@ -210,6 +210,14 @@ export class Request extends Macroable {
   }
 
   /**
+   * Merge the request body with the new data object. The `all` property
+   * will be re-computed by merging the query and the request body.
+   */
+  merge(data: Record<string, any>) {
+    this.#requestData = { ...this.#requestData, ...data }
+  }
+
+  /**
    * Returns route params
    */
   params(): Record<string, any> {

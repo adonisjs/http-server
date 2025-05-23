@@ -198,6 +198,30 @@ test.group('Request', () => {
     })
   })
 
+  test('compute all when new data is added', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      request.setInitialBody({ username: 'virk' })
+      request.merge({ nick_name: 'nikk' })
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          body: request.body(),
+          all: request.all(),
+          original: request.original(),
+        })
+      )
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.deepEqual(body, {
+      body: { username: 'virk' },
+      all: { username: 'virk', nick_name: 'nikk' },
+      original: { username: 'virk' },
+    })
+  })
+
   test('read input value from request', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
