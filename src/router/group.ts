@@ -8,13 +8,13 @@
  */
 
 import Macroable from '@poppinss/macroable'
-import type { RouteMatcher, StoreRouteMiddleware } from '../types/route.js'
 import type { MiddlewareFn, ParsedNamedMiddleware } from '../types/middleware.js'
+import type { RouteMatcher, StoreRouteMiddleware } from '../types/route.js'
 
-import { Route } from './route.js'
+import { OneOrMore } from '../types/base.js'
 import { BriskRoute } from './brisk.js'
 import { RouteResource } from './resource.js'
-import { OneOrMore } from '../types/base.js'
+import { Route } from './route.js'
 
 /**
  * Group class exposes the API to take action on a group of routes.
@@ -239,5 +239,16 @@ export class RouteGroup extends Macroable {
    */
   middleware(middleware: OneOrMore<MiddlewareFn | ParsedNamedMiddleware>): this {
     return this.use(middleware)
+  }
+
+  /**
+   * Register api only for all route resources.
+   * The `create` and `edit` routes, which are meant to show forms will not be registered
+   */
+  apiOnly(): this {
+    this.routes
+      .filter((route) => route instanceof RouteResource)
+      .forEach((route) => route.apiOnly())
+    return this
   }
 }

@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/application/factories'
+import { test } from '@japa/runner'
 
 import { RouteResource } from '../../src/router/resource.js'
 

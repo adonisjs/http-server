@@ -7,15 +7,15 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/application/factories'
+import { test } from '@japa/runner'
 
-import { Route } from '../../src/router/route.js'
+import { defineNamedMiddleware } from '../../src/define_middleware.js'
 import { toRoutesJSON } from '../../src/helpers.js'
 import { BriskRoute } from '../../src/router/brisk.js'
 import { RouteGroup } from '../../src/router/group.js'
 import { RouteResource } from '../../src/router/resource.js'
-import { defineNamedMiddleware } from '../../src/define_middleware.js'
+import { Route } from '../../src/router/route.js'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 
@@ -1299,5 +1299,28 @@ test.group('Route group | matchers', () => {
         handler,
       },
     ])
+  })
+})
+
+test.group('Route group | api only', () => {
+  test('mark non-api routes deleted', ({ assert, expectTypeOf }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const resource = new RouteResource(app, [], {
+      resource: 'photos',
+      controller: '#controllers/photos',
+      globalMatchers: {},
+      shallow: true,
+    })
+
+    const group = new RouteGroup([resource])
+
+    group.apiOnly()
+
+    expectTypeOf(resource.apiOnly().only)
+      .parameter(0)
+      .toEqualTypeOf<('index' | 'store' | 'show' | 'update' | 'destroy')[]>()
+
+    assert.isTrue(resource.routes.find((route) => route.getName() === 'photos.create')!.isDeleted())
+    assert.isTrue(resource.routes.find((route) => route.getName() === 'photos.edit')!.isDeleted())
   })
 })
