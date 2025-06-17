@@ -84,18 +84,14 @@ test.group('Request', () => {
     })
   })
 
-  test('clone object using their clone method when exists', async ({ assert }) => {
+  test('clone class instances as null', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
       class File {
         constructor(public id: number) {}
-        clone() {
-          return new File(this.id)
-        }
       }
 
       request.setInitialBody({ username: 'virk', image: new File(10) })
-      request.body().image.id = 12
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
@@ -109,9 +105,56 @@ test.group('Request', () => {
 
     const { body } = await supertest(url).get('/')
     assert.deepEqual(body, {
-      body: { username: 'virk', image: { id: 12 } },
-      all: { username: 'virk', image: { id: 12 } },
-      original: { username: 'virk', image: { id: 10 } },
+      body: { username: 'virk', image: { id: 10 } },
+      all: { username: 'virk', image: { id: 10 } },
+      original: { username: 'virk', image: null },
+    })
+  })
+
+  test('clone nested class instances as null', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      class File {
+        constructor(public id: number) {}
+      }
+
+      request.setInitialBody({
+        users: [
+          { username: 'virk', image: new File(10) },
+          { username: 'nikk', image: new File(12) },
+        ],
+      })
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          body: request.body(),
+          all: request.all(),
+          original: request.original(),
+        })
+      )
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.deepEqual(body, {
+      body: {
+        users: [
+          { username: 'virk', image: { id: 10 } },
+          { username: 'nikk', image: { id: 12 } },
+        ],
+      },
+      all: {
+        users: [
+          { username: 'virk', image: { id: 10 } },
+          { username: 'nikk', image: { id: 12 } },
+        ],
+      },
+      original: {
+        users: [
+          { username: 'virk', image: null },
+          { username: 'nikk', image: null },
+        ],
+      },
     })
   })
 
