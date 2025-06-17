@@ -179,7 +179,13 @@ export class Request extends Macroable {
     /*
      * Freeze the original object
      */
-    this.#originalRequestData = Object.freeze(lodash.cloneDeep(this.#requestData))
+    this.#originalRequestData = Object.freeze(
+      lodash.cloneDeepWith(this.#requestData, (value) => {
+        if (is.object(value) && 'clone' in value && typeof value.clone === 'function') {
+          return value.clone()
+        }
+      })
+    )
   }
 
   /**

@@ -84,6 +84,37 @@ test.group('Request', () => {
     })
   })
 
+  test('clone object using their clone method when exists', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      class File {
+        constructor(public id: number) {}
+        clone() {
+          return new File(this.id)
+        }
+      }
+
+      request.setInitialBody({ username: 'virk', image: new File(10) })
+      request.body().image.id = 12
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          body: request.body(),
+          all: request.all(),
+          original: request.original(),
+        })
+      )
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.deepEqual(body, {
+      body: { username: 'virk', image: { id: 12 } },
+      all: { username: 'virk', image: { id: 12 } },
+      original: { username: 'virk', image: { id: 10 } },
+    })
+  })
+
   test('updating nested properties of request body must not impact the original body', async ({
     assert,
   }) => {
