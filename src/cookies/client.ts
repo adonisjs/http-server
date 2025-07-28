@@ -41,8 +41,8 @@ export class CookieClient {
   /**
    * Encode a key value pair to be sent in the cookie header
    */
-  encode(_: string, value: any): string | null {
-    return plainCookiesDriver.pack(value)
+  encode(_: string, value: any, stringify: boolean = true): string | null {
+    return stringify ? plainCookiesDriver.pack(value) : value
   }
 
   /**
@@ -66,7 +66,10 @@ export class CookieClient {
   /**
    * Decode an encoded cookie value
    */
-  decode(_: string, value: string) {
+  decode(_: string, value: string, stringified: boolean = true) {
+    if (!stringified) {
+      return value
+    }
     return plainCookiesDriver.canUnpack(value) ? plainCookiesDriver.unpack(value) : null
   }
 

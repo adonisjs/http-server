@@ -100,7 +100,7 @@ test.group('Cookie | parse', () => {
     assert.equal(parser.decode('username'), 'virk')
   })
 
-  test('get unencoded plain cookies', ({ assert }) => {
+  test('get non-stringified plain cookies', ({ assert }) => {
     const serialized = serializer.encode('username', 'virk', { encode: false })!
     const parser = new CookieParser(serialized, encryption)
 

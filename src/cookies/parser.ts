@@ -69,10 +69,10 @@ export class CookieParser {
 
   /**
    * Attempts to decode a cookie by the name. When calling this method,
-   * you are assuming that the cookie was just encoded in the first
+   * you are assuming that the cookie was just stringified in the first
    * place and not signed or encrypted.
    */
-  decode(key: string, encoded = true): any | null {
+  decode(key: string, stringified = true): any | null {
     /*
      * Ignore when initial value is not defined or null
      */
@@ -99,7 +99,7 @@ export class CookieParser {
      * Attempt to unpack and cache it for future. The value is only
      * when value it is not null.
      */
-    const parsed = encoded ? this.#client.decode(key, value) : value
+    const parsed = this.#client.decode(key, value, stringified)
     if (parsed !== null) {
       cache[key] = parsed
     }

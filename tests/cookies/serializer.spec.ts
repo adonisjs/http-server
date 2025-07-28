@@ -52,7 +52,7 @@ test.group('Cookie | serialize', () => {
     assert.isNull(serializer.encode('username', undefined))
   })
 
-  test("serialize and don't encode cookie", ({ assert }) => {
+  test("serialize and don't stringify cookie", ({ assert }) => {
     const serializer = new CookieSerializer(encryption)
     const serialized = serializer.encode('username', 'virk', { encode: false })
 
@@ -62,7 +62,7 @@ test.group('Cookie | serialize', () => {
     assert.equal(key, 'username')
     assert.equal(value, 'virk')
 
-    assert.isNull(serializer.encode('username', null, { encode: false }))
+    assert.isNull(serializer.encode('username', null, { stringify: false }))
     assert.isNull(serializer.encode('username', undefined, { encode: false }))
   })
 

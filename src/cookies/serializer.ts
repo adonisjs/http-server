@@ -29,18 +29,29 @@ export class CookieSerializer {
    * Encodes value as a plain cookie. By default, the plain value will be converted
    * to a string using "JSON.stringify" method and then encoded as a base64 string.
    *
-   * You can disable encoding of the cookie by setting `options.encoded = false`.
+   * You can disable cookie stringifaction by setting `options.stringify = false`.
    *
    * ```ts
    *  serializer.encode('name', 'virk')
+   *  serializer.encode('name', 'virk', { stringify: false })
    * ```
    */
   encode(
     key: string,
     value: any,
-    options?: Partial<CookieOptions & { encode: boolean }>
+    options?: Partial<
+      CookieOptions & {
+        /**
+         * @depreacted
+         * Instead use stringify option
+         */
+        encode: boolean
+        stringify: boolean
+      }
+    >
   ): string | null {
-    const packedValue = options?.encode === false ? value : this.#client.encode(key, value)
+    const stringify = options?.stringify ?? options?.encode
+    const packedValue = this.#client.encode(key, value, stringify)
     if (packedValue === null || packedValue === undefined) {
       return null
     }
