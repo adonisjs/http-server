@@ -7,9 +7,10 @@
  * file that was distributed with this source code.
  */
 
-import type { Constructor, LazyImport } from '@poppinss/types'
-import type { NextFn } from '@poppinss/middleware/types'
 import type { ContainerResolver } from '@adonisjs/fold'
+import type { NextFn } from '@poppinss/middleware/types'
+import type { Constructor, LazyImport } from '@poppinss/types'
+
 import type { HttpContext } from '../http_context/main.js'
 
 /**
@@ -61,3 +62,40 @@ export type ParsedNamedMiddleware = {
   handle: ParsedGlobalMiddleware['handle']
   args: any
 }
+
+/**
+ * Info node representing a middleware handler
+ */
+export type MiddlewareHandlerInfo =
+  | {
+      type: 'closure'
+      name: string
+    }
+  | {
+      type: 'named'
+      name: string
+      args: any | undefined
+      method: string
+      moduleNameOrPath: string
+    }
+  | {
+      type: 'global'
+      name?: string | undefined
+      method: string
+      moduleNameOrPath: string
+    }
+
+/**
+ * Info node representing route handler
+ */
+export type RouteHandlerInfo =
+  | {
+      type: 'closure'
+      name: string
+      args?: string
+    }
+  | {
+      type: 'controller'
+      method: string
+      moduleNameOrPath: string
+    }

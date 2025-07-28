@@ -14,9 +14,9 @@ import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { RouterFactory } from './router.js'
 import { Response } from '../src/response.js'
-import { Router } from '../src/router/main.js'
-import { ResponseConfig } from '../src/types/response.js'
+import { type Router } from '../src/router/main.js'
 import { QsParserFactory } from './qs_parser_factory.js'
+import { type ResponseConfig } from '../src/types/response.js'
 
 type FactoryParameters = {
   req: IncomingMessage

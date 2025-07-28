@@ -10,10 +10,10 @@
 import type { Encryption } from '@adonisjs/encryption'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { RouterFactory } from './router.js'
-import { URLBuilder } from '../src/url_builder.js'
-import type { Router } from '../src/router/main.js'
-import type { LookupList } from '../src/types/url_builder.js'
+import { RouterFactory } from './router.ts'
+import type { Router } from '../src/router/main.ts'
+import type { LookupList } from '../src/types/url_builder.ts'
+import { createSignedUrlBuilder, createUrlBuilder } from '../src/router/url_builder.ts'
 
 type FactoryParameters = {
   router: Router
@@ -21,7 +21,7 @@ type FactoryParameters = {
 }
 
 /**
- * URLBuilderFactory is used to create a URLBuilder instance for testing
+ * URLBuilderFactory is used to create route and signed route helpers
  */
 export class URLBuilderFactory<Routes extends LookupList> {
   #parameters: Partial<FactoryParameters> = {}
@@ -53,6 +53,9 @@ export class URLBuilderFactory<Routes extends LookupList> {
    * Create URL builder helpers
    */
   create() {
-    return new URLBuilder<Routes>(this.#createRouter(), this.#createEncryption())
+    return {
+      urlFor: createUrlBuilder<Routes>(this.#createRouter()),
+      signedUrlFor: createSignedUrlBuilder<Routes>(this.#createRouter(), this.#createEncryption()),
+    }
   }
 }

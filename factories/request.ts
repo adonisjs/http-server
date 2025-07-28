@@ -15,8 +15,8 @@ import { IncomingMessage, ServerResponse } from 'node:http'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { Request } from '../src/request.js'
-import { RequestConfig } from '../src/types/request.js'
 import { QsParserFactory } from './qs_parser_factory.js'
+import { type RequestConfig } from '../src/types/request.js'
 
 type FactoryParameters = {
   url: string

@@ -11,10 +11,10 @@ import Macroable from '@poppinss/macroable'
 import type { Application } from '@adonisjs/application'
 
 import { Route } from './route.js'
-import type { URLOptions } from '../types/url_builder.js'
 import type { HttpContext } from '../http_context/main.js'
 import type { ParsedGlobalMiddleware } from '../types/middleware.js'
-import type { RouteFn, RouteMatchers, RoutesList } from '../types/route.js'
+import type { RouteBuilderArguments, URLOptions } from '../types/url_builder.ts'
+import type { GetRoutesForMethod, RouteFn, RouteMatchers, RoutesList } from '../types/route.js'
 
 /**
  * Brisk routes exposes the API to configure the route handler by chaining
@@ -84,11 +84,11 @@ export class BriskRoute extends Macroable {
    * Redirects to a given route. Params from the original request will
    * be used when no custom params are defined.
    */
-  redirect<Identifier extends keyof RoutesList & string>(
-    identifier: Identifier,
-    params?: RoutesList[Identifier]['params'] | RoutesList[Identifier]['paramsTuple'],
-    options?: URLOptions & { status: number }
+  redirect<Identifier extends keyof GetRoutesForMethod<'GET'> & string>(
+    ...args: RouteBuilderArguments<RoutesList, Identifier, 'GET', URLOptions & { status: number }>
   ): Route {
+    const [identifier, params, options] = args as any[]
+
     function redirectsToRoute(ctx: HttpContext) {
       const redirector = ctx.response.redirect()
       if (options?.status) {

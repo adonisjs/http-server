@@ -1301,7 +1301,6 @@ test.group('Router | toJSON', () => {
     router.get('categories', [CategoriesControllerRef, 'index'])
 
     router.commit()
-    console.log(router.toJSON().root.map((r) => r.tokens))
     assert.containsSubset(router.toJSON(), {
       root: [
         {
@@ -1479,6 +1478,26 @@ test.group('Router | find', () => {
     router.commit()
     assert.isNull(router.find('users.show', 'blog.adonisjs.com'))
   })
+
+  test('limit search to a specific method', ({ assert }) => {
+    const router = new RouterFactory().create()
+
+    router.get('/users/:id', () => {}).as('users.show')
+    router.delete('/users/:id', () => {}).as('users.delete')
+
+    router.commit()
+    assert.isNull(router.find('/users/:id', undefined, 'put'))
+    assert.containsSubset(router.find('/users/:id', undefined, 'GET'), {
+      methods: ['GET', 'HEAD'],
+      name: 'users.show',
+      pattern: '/users/:id',
+    })
+    assert.containsSubset(router.find('/users/:id', undefined, 'get'), {
+      methods: ['GET', 'HEAD'],
+      name: 'users.show',
+      pattern: '/users/:id',
+    })
+  })
 })
 
 test.group('Lookup store | findByOrFail', () => {
@@ -1542,5 +1561,632 @@ test.group('Lookup store | has', () => {
     assert.isFalse(router.has('/users/:id'))
     router.commit()
     assert.isTrue(router.has('/users/:id'))
+  })
+})
+
+test.group('Router | generateTypes', () => {
+  test('generate url builder types', ({ assert }) => {
+    const router = new RouterFactory().create()
+
+    function handler() {}
+
+    router.get('/users/:id?', handler)
+    router.get('/docs/*', handler)
+    router
+      .group(() => {
+        router.resource('posts', 'PostsController')
+      })
+      .prefix('api')
+      .as('api')
+    router.get('comments', 'CommentsController.index')
+
+    router.commit()
+    assert.snapshot(router.generateTypes()).matchInline(`
+      "'ALL': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/docs/*': { paramsTuple: [...string[]], params: {'*': string[]} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        'api.posts.store': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+        '/comments': { paramsTuple?: [], params?: {} },
+      },
+      'GET': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/docs/*': { paramsTuple: [...string[]], params: {'*': string[]} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        '/comments': { paramsTuple?: [], params?: {} },
+      },
+      'HEAD': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/docs/*': { paramsTuple: [...string[]], params: {'*': string[]} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        '/comments': { paramsTuple?: [], params?: {} },
+      },
+      'POST': {
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.store': { paramsTuple?: [], params?: {} },
+      },
+      'PUT': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+      },
+      'PATCH': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+      },
+      'DELETE': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+      },"
+    `)
+
+    /**
+     * Generate types for all the available strategies
+     */
+    router.lookupStrategies(['name', 'pattern', 'controller'])
+    assert.snapshot(router.generateTypes()).matchInline(`
+      "'ALL': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/docs/*': { paramsTuple: [...string[]], params: {'*': string[]} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        'PostsController.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        'PostsController.create': { paramsTuple?: [], params?: {} },
+        'api.posts.store': { paramsTuple?: [], params?: {} },
+        'PostsController.store': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.update': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.destroy': { paramsTuple: [string], params: {'id': string} },
+        '/comments': { paramsTuple?: [], params?: {} },
+        'CommentsController.index': { paramsTuple?: [], params?: {} },
+      },
+      'GET': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/docs/*': { paramsTuple: [...string[]], params: {'*': string[]} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        'PostsController.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        'PostsController.create': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.edit': { paramsTuple: [string], params: {'id': string} },
+        '/comments': { paramsTuple?: [], params?: {} },
+        'CommentsController.index': { paramsTuple?: [], params?: {} },
+      },
+      'HEAD': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/docs/*': { paramsTuple: [...string[]], params: {'*': string[]} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        'PostsController.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        'PostsController.create': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.edit': { paramsTuple: [string], params: {'id': string} },
+        '/comments': { paramsTuple?: [], params?: {} },
+        'CommentsController.index': { paramsTuple?: [], params?: {} },
+      },
+      'POST': {
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.store': { paramsTuple?: [], params?: {} },
+        'PostsController.store': { paramsTuple?: [], params?: {} },
+      },
+      'PUT': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.update': { paramsTuple: [string], params: {'id': string} },
+      },
+      'PATCH': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.update': { paramsTuple: [string], params: {'id': string} },
+      },
+      'DELETE': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.destroy': { paramsTuple: [string], params: {'id': string} },
+      },"
+    `)
+  })
+
+  test('generate url builder types across domains', ({ assert }) => {
+    const router = new RouterFactory().create()
+
+    function handler() {}
+
+    router.get('/users/:id?', handler)
+    router
+      .group(() => {
+        router.resource('posts', 'PostsController')
+      })
+      .prefix('api')
+      .as('api')
+
+    router
+      .group(() => {
+        router.resource('posts', 'PostsController')
+      })
+      .prefix('api')
+      .as('api')
+      .domain('admin.adonisjs.com')
+
+    router.commit()
+    assert.snapshot(router.generateTypes()).matchInline(`
+      "'ALL': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        'api.posts.store': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.index': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.create': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.store': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+      },
+      'GET': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.index': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.create': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+      },
+      'HEAD': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.index': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.create': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+      },
+      'POST': {
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.store': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.store': { paramsTuple?: [], params?: {} },
+      },
+      'PUT': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.update': { paramsTuple: [string], params: {'id': string} },
+      },
+      'PATCH': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.update': { paramsTuple: [string], params: {'id': string} },
+      },
+      'DELETE': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+      },"
+    `)
+
+    /**
+     * Generate types for all the available strategies
+     */
+    router.lookupStrategies(['name', 'pattern', 'controller'])
+    assert.snapshot(router.generateTypes()).matchInline(`
+      "'ALL': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        'PostsController.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        'PostsController.create': { paramsTuple?: [], params?: {} },
+        'api.posts.store': { paramsTuple?: [], params?: {} },
+        'PostsController.store': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.update': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.destroy': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.index': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@PostsController.index': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.create': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@PostsController.create': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.store': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@PostsController.store': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@PostsController.show': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@PostsController.edit': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@PostsController.update': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@PostsController.destroy': { paramsTuple: [string], params: {'id': string} },
+      },
+      'GET': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        'PostsController.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        'PostsController.create': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.edit': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.index': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@PostsController.index': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.create': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@PostsController.create': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@PostsController.show': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@PostsController.edit': { paramsTuple: [string], params: {'id': string} },
+      },
+      'HEAD': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        'PostsController.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        'PostsController.create': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.edit': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.index': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@PostsController.index': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.create': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@PostsController.create': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@PostsController.show': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@PostsController.edit': { paramsTuple: [string], params: {'id': string} },
+      },
+      'POST': {
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.store': { paramsTuple?: [], params?: {} },
+        'PostsController.store': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@api.posts.store': { paramsTuple?: [], params?: {} },
+        'admin.adonisjs.com@PostsController.store': { paramsTuple?: [], params?: {} },
+      },
+      'PUT': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.update': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@PostsController.update': { paramsTuple: [string], params: {'id': string} },
+      },
+      'PATCH': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.update': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@PostsController.update': { paramsTuple: [string], params: {'id': string} },
+      },
+      'DELETE': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.destroy': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+        'admin.adonisjs.com@PostsController.destroy': { paramsTuple: [string], params: {'id': string} },
+      },"
+    `)
+  })
+
+  test('do not prefix domain to the route identifier when routes are not duplicate across domains', ({
+    assert,
+  }) => {
+    const router = new RouterFactory().create()
+
+    function handler() {}
+
+    router.get('/users/:id?', handler)
+    router
+      .group(() => {
+        router.resource('posts', 'PostsController')
+      })
+      .prefix('api')
+      .as('api')
+
+    router
+      .group(() => {
+        router.resource('comments', 'CommentsController')
+      })
+      .prefix('api')
+      .as('api')
+      .domain('admin.adonisjs.com')
+
+    router.commit()
+    assert.snapshot(router.generateTypes()).matchInline(`
+      "'ALL': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        'api.posts.store': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments': { paramsTuple?: [], params?: {} },
+        'api.comments.index': { paramsTuple?: [], params?: {} },
+        '/api/comments/create': { paramsTuple?: [], params?: {} },
+        'api.comments.create': { paramsTuple?: [], params?: {} },
+        'api.comments.store': { paramsTuple?: [], params?: {} },
+        '/api/comments/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.edit': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.update': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.destroy': { paramsTuple: [string], params: {'id': string} },
+      },
+      'GET': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments': { paramsTuple?: [], params?: {} },
+        'api.comments.index': { paramsTuple?: [], params?: {} },
+        '/api/comments/create': { paramsTuple?: [], params?: {} },
+        'api.comments.create': { paramsTuple?: [], params?: {} },
+        '/api/comments/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.edit': { paramsTuple: [string], params: {'id': string} },
+      },
+      'HEAD': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments': { paramsTuple?: [], params?: {} },
+        'api.comments.index': { paramsTuple?: [], params?: {} },
+        '/api/comments/create': { paramsTuple?: [], params?: {} },
+        'api.comments.create': { paramsTuple?: [], params?: {} },
+        '/api/comments/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.edit': { paramsTuple: [string], params: {'id': string} },
+      },
+      'POST': {
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.store': { paramsTuple?: [], params?: {} },
+        '/api/comments': { paramsTuple?: [], params?: {} },
+        'api.comments.store': { paramsTuple?: [], params?: {} },
+      },
+      'PUT': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.update': { paramsTuple: [string], params: {'id': string} },
+      },
+      'PATCH': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.update': { paramsTuple: [string], params: {'id': string} },
+      },
+      'DELETE': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.destroy': { paramsTuple: [string], params: {'id': string} },
+      },"
+    `)
+
+    /**
+     * Generate types for all the available strategies
+     */
+    router.lookupStrategies(['name', 'pattern', 'controller'])
+    assert.snapshot(router.generateTypes()).matchInline(`
+      "'ALL': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        'PostsController.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        'PostsController.create': { paramsTuple?: [], params?: {} },
+        'api.posts.store': { paramsTuple?: [], params?: {} },
+        'PostsController.store': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.update': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.destroy': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments': { paramsTuple?: [], params?: {} },
+        'api.comments.index': { paramsTuple?: [], params?: {} },
+        'CommentsController.index': { paramsTuple?: [], params?: {} },
+        '/api/comments/create': { paramsTuple?: [], params?: {} },
+        'api.comments.create': { paramsTuple?: [], params?: {} },
+        'CommentsController.create': { paramsTuple?: [], params?: {} },
+        'api.comments.store': { paramsTuple?: [], params?: {} },
+        'CommentsController.store': { paramsTuple?: [], params?: {} },
+        '/api/comments/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.show': { paramsTuple: [string], params: {'id': string} },
+        'CommentsController.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.edit': { paramsTuple: [string], params: {'id': string} },
+        'CommentsController.edit': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.update': { paramsTuple: [string], params: {'id': string} },
+        'CommentsController.update': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.destroy': { paramsTuple: [string], params: {'id': string} },
+        'CommentsController.destroy': { paramsTuple: [string], params: {'id': string} },
+      },
+      'GET': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        'PostsController.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        'PostsController.create': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.edit': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments': { paramsTuple?: [], params?: {} },
+        'api.comments.index': { paramsTuple?: [], params?: {} },
+        'CommentsController.index': { paramsTuple?: [], params?: {} },
+        '/api/comments/create': { paramsTuple?: [], params?: {} },
+        'api.comments.create': { paramsTuple?: [], params?: {} },
+        'CommentsController.create': { paramsTuple?: [], params?: {} },
+        '/api/comments/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.show': { paramsTuple: [string], params: {'id': string} },
+        'CommentsController.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.edit': { paramsTuple: [string], params: {'id': string} },
+        'CommentsController.edit': { paramsTuple: [string], params: {'id': string} },
+      },
+      'HEAD': {
+        '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.index': { paramsTuple?: [], params?: {} },
+        'PostsController.index': { paramsTuple?: [], params?: {} },
+        '/api/posts/create': { paramsTuple?: [], params?: {} },
+        'api.posts.create': { paramsTuple?: [], params?: {} },
+        'PostsController.create': { paramsTuple?: [], params?: {} },
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.show': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/posts/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.edit': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.edit': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments': { paramsTuple?: [], params?: {} },
+        'api.comments.index': { paramsTuple?: [], params?: {} },
+        'CommentsController.index': { paramsTuple?: [], params?: {} },
+        '/api/comments/create': { paramsTuple?: [], params?: {} },
+        'api.comments.create': { paramsTuple?: [], params?: {} },
+        'CommentsController.create': { paramsTuple?: [], params?: {} },
+        '/api/comments/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.show': { paramsTuple: [string], params: {'id': string} },
+        'CommentsController.show': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments/:id/edit': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.edit': { paramsTuple: [string], params: {'id': string} },
+        'CommentsController.edit': { paramsTuple: [string], params: {'id': string} },
+      },
+      'POST': {
+        '/api/posts': { paramsTuple?: [], params?: {} },
+        'api.posts.store': { paramsTuple?: [], params?: {} },
+        'PostsController.store': { paramsTuple?: [], params?: {} },
+        '/api/comments': { paramsTuple?: [], params?: {} },
+        'api.comments.store': { paramsTuple?: [], params?: {} },
+        'CommentsController.store': { paramsTuple?: [], params?: {} },
+      },
+      'PUT': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.update': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.update': { paramsTuple: [string], params: {'id': string} },
+        'CommentsController.update': { paramsTuple: [string], params: {'id': string} },
+      },
+      'PATCH': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.update': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.update': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.update': { paramsTuple: [string], params: {'id': string} },
+        'CommentsController.update': { paramsTuple: [string], params: {'id': string} },
+      },
+      'DELETE': {
+        '/api/posts/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.posts.destroy': { paramsTuple: [string], params: {'id': string} },
+        'PostsController.destroy': { paramsTuple: [string], params: {'id': string} },
+        '/api/comments/:id': { paramsTuple: [string], params: {'id': string} },
+        'api.comments.destroy': { paramsTuple: [string], params: {'id': string} },
+        'CommentsController.destroy': { paramsTuple: [string], params: {'id': string} },
+      },"
+    `)
   })
 })

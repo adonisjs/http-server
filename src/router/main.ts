@@ -40,8 +40,8 @@ import type {
   MakeSignedUrlOptions,
   GetControllerHandlers,
 } from '../types/route.js'
-import { URLBuilder } from '../url_builder.js'
-import type { LookupList } from '../types/url_builder.js'
+import { createSignedUrlBuilder, createUrlBuilder } from './url_builder.ts'
+import { type SignedURLOptions, type LookupList, type UrlFor } from '../types/url_builder.ts'
 
 /**
  * Router class exposes a unified API to register new routes, group them or
@@ -56,6 +56,12 @@ import type { LookupList } from '../types/url_builder.js'
  * ```
  */
 export class Router {
+  /**
+   * The lookup strategies to follow when generating URL builder
+   * types and client
+   */
+  #lookupStrategies: ('name' | 'pattern' | 'controller')[] = ['name', 'pattern']
+
   /**
    * Flag to avoid re-comitting routes to the store
    */
@@ -136,13 +142,19 @@ export class Router {
    * We recommend using the URLBuilder over the "makeUrl" and "makeSignedUrl"
    * methods.
    */
-  urlBuilder: URLBuilder<RoutesList extends LookupList ? RoutesList : never>
+  urlBuilder: {
+    urlFor: UrlFor<RoutesList extends LookupList ? RoutesList : never>
+    signedUrlFor: UrlFor<RoutesList extends LookupList ? RoutesList : never, SignedURLOptions>
+  }
 
   constructor(app: Application<any>, encryption: Encryption, qsParser: Qs) {
     this.#app = app
     this.#encryption = encryption
     this.qs = qsParser
-    this.urlBuilder = new URLBuilder(this, this.#encryption)
+    this.urlBuilder = {
+      urlFor: createUrlBuilder(this),
+      signedUrlFor: createSignedUrlBuilder(this, this.#encryption),
+    }
   }
 
   /**
@@ -172,6 +184,15 @@ export class Router {
    */
   parsePattern(pattern: string, matchers?: RouteMatchers) {
     return parseRoute(pattern, matchers)
+  }
+
+  /**
+   * Define the lookup strategies to follow when generating URL builder
+   * types and client.
+   */
+  lookupStrategies(strategies: ('name' | 'pattern' | 'controller')[]) {
+    this.#lookupStrategies = strategies
+    return this
   }
 
   /**
@@ -438,8 +459,19 @@ export class Router {
    * Finds a route by its identifier. The identifier can be the
    * route name, controller.method name or the route pattern
    * itself.
+   *
+   * When "followLookupStrategy" is enabled, the lookup will be performed
+   * on the basis of the lookup strategy enabled via the "lookupStrategies"
+   * method. The default lookupStrategy is "name" and "pattern".
    */
-  find(routeIdentifier: string, domain?: string): RouteJSON | null {
+  find(
+    routeIdentifier: string,
+    domain?: string,
+    method?: string,
+    followLookupStrategy?: boolean
+  ): RouteJSON | null {
+    method = method?.toUpperCase()
+
     /**
      * Search for route in all the domains when no domain name is
      * mentioned.
@@ -447,7 +479,7 @@ export class Router {
     if (!domain) {
       let route: RouteJSON | null = null
       for (const routeDomain of Object.keys(this.#routes)) {
-        route = this.find(routeIdentifier, routeDomain)
+        route = this.find(routeIdentifier, routeDomain, method, followLookupStrategy)
         if (route) {
           break
         }
@@ -460,13 +492,25 @@ export class Router {
       return null
     }
 
+    const lookupByName = !followLookupStrategy || this.#lookupStrategies.includes('name')
+    const lookupByPattern = !followLookupStrategy || this.#lookupStrategies.includes('pattern')
+    const lookupByController =
+      !followLookupStrategy || this.#lookupStrategies.includes('controller')
+
     return (
       routes.find((route) => {
-        if (route.name === routeIdentifier || route.pattern === routeIdentifier) {
+        if (method && !route.methods.includes(method)) {
+          return false
+        }
+
+        if (
+          (route.name === routeIdentifier && lookupByName) ||
+          (route.pattern === routeIdentifier && lookupByPattern)
+        ) {
           return true
         }
 
-        if (typeof route.handler === 'function') {
+        if (typeof route.handler === 'function' || !lookupByController) {
           return false
         }
 
@@ -481,9 +525,18 @@ export class Router {
    * itself.
    *
    * An error is raised when unable to find the route.
+   *
+   * When "followLookupStrategy" is enabled, the lookup will be performed
+   * on the basis of the lookup strategy enabled via the "lookupStrategies"
+   * method. The default lookupStrategy is "name" and "pattern".
    */
-  findOrFail(routeIdentifier: string, domain?: string): RouteJSON {
-    const route = this.find(routeIdentifier, domain)
+  findOrFail(
+    routeIdentifier: string,
+    domain?: string,
+    method?: string,
+    followLookupStrategy?: boolean
+  ): RouteJSON {
+    const route = this.find(routeIdentifier, domain, method, followLookupStrategy)
     if (!route) {
       throw new E_CANNOT_LOOKUP_ROUTE([routeIdentifier])
     }
@@ -495,9 +548,18 @@ export class Router {
    * Check if a route exists. The identifier can be the
    * route name, controller.method name or the route pattern
    * itself.
+   *
+   * When "followLookupStrategy" is enabled, the lookup will be performed
+   * on the basis of the lookup strategy enabled via the "lookupStrategies"
+   * method. The default lookupStrategy is "name" and "pattern".
    */
-  has(routeIdentifier: string, domain?: string): boolean {
-    return !!this.find(routeIdentifier, domain)
+  has(
+    routeIdentifier: string,
+    domain?: string,
+    method?: string,
+    followLookupStrategy?: boolean
+  ): boolean {
+    return !!this.find(routeIdentifier, domain, method, followLookupStrategy)
   }
 
   /**
@@ -505,6 +567,145 @@ export class Router {
    */
   toJSON(): { [domain: string]: RouteJSON[] } {
     return this.#routes
+  }
+
+  /**
+   * Generates types for the URL builder. These types must
+   * be written inside a file for the URL builder to
+   * pick them up.
+   */
+  generateTypes(indentation: number = 2) {
+    const routesList: {
+      [method: string]: {
+        [identifier: string]: {
+          hasRequiredParams: boolean
+          params: string[]
+          paramsTuple: string[]
+        }
+      }
+    } = {}
+
+    /**
+     * Tracks a route within the routesList
+     */
+    function trackRoute(this: Router, route: RouteJSON, domain?: string) {
+      let params: string[] = []
+      let paramsTuple: string[] = []
+      let hasRequiredParams: boolean = false
+
+      /**
+       * Looping over tokens to build the params object and
+       * the params tuple
+       */
+      for (let token of route.tokens) {
+        if (token.type === 1) {
+          hasRequiredParams = true
+          params.push(`'${token.val}': string`)
+          paramsTuple.push('string')
+        } else if (token.type === 3) {
+          params.push(`'${token.val}'?: string`)
+          paramsTuple.push('string?')
+        } else if (token.type === 2) {
+          hasRequiredParams = true
+          params.push(`'*': string[]`)
+          paramsTuple.push('...string[]')
+          break
+        }
+      }
+
+      route.methods.forEach((method) => {
+        routesList['ALL'] = routesList['ALL'] ?? {}
+        routesList[method] = routesList[method] ?? {}
+
+        const identifiers: string[] = []
+
+        /**
+         * Tracking route by its pattern. In case of duplicate pattern across
+         * domains, we only track the unique patterns, since they will always
+         * product the same output.
+         */
+        if (this.#lookupStrategies.includes('pattern')) {
+          if (!routesList[method][route.pattern]) {
+            identifiers.push(route.pattern)
+          }
+        }
+
+        /**
+         * Tracking route by its name. In case the same route already exists, we
+         * will prefix the domain to the route name to create a unique identifier.
+         */
+        if (this.#lookupStrategies.includes('name') && route.name) {
+          identifiers.push(
+            domain && routesList[method][route.name] ? `${domain}@${route.name}` : route.name
+          )
+        }
+
+        /**
+         * Tracking route by its controller reference. In case the same route
+         * already exists, we will prefix the domain to the controller reference
+         * to create a unique identifier.
+         */
+        if (
+          this.#lookupStrategies.includes('controller') &&
+          'reference' in route.handler &&
+          typeof route.handler.reference === 'string'
+        ) {
+          identifiers.push(
+            domain && routesList[method][route.handler.reference]
+              ? `${domain}@${route.handler.reference}`
+              : route.handler.reference
+          )
+        }
+
+        identifiers.forEach((identifier) => {
+          routesList['ALL'][identifier] = {
+            params,
+            paramsTuple,
+            hasRequiredParams,
+          }
+          routesList[method][identifier] = {
+            params,
+            paramsTuple,
+            hasRequiredParams,
+          }
+        })
+      })
+    }
+
+    const domains = Object.keys(this.#routes).filter((domain) => domain !== 'root')
+
+    /**
+     * Create routes list for all the domains. However, the root routes should
+     * be registered first so that they do not have any domain prefix in case
+     * of a naming conflict.
+     */
+    this.#routes['root'].forEach((route) => trackRoute.bind(this)(route))
+    domains.forEach((domain) =>
+      this.#routes[domain].forEach((route) => trackRoute.bind(this)(route, domain))
+    )
+
+    return Object.keys(routesList)
+      .reduce<string[]>((result, method) => {
+        result.push(`'${method}': {`)
+
+        Object.keys(routesList[method]).forEach((identifier) => {
+          const key = `'${identifier}'`
+          const { paramsTuple, hasRequiredParams, params } = routesList[method][identifier]
+
+          const dictName = hasRequiredParams ? 'params' : 'params?'
+          const tupleName = hasRequiredParams ? 'paramsTuple' : 'paramsTuple?'
+          const dictValue = `{${params.join(',')}}`
+          const tupleValue = `[${paramsTuple?.join(',')}]`
+
+          const value = `{ ${tupleName}: ${tupleValue}, ${dictName}: ${dictValue} }`
+          result.push(`${' '.repeat(indentation)}${key}: ${value},`)
+        })
+
+        result.push('},')
+
+        return result
+      }, [])
+      .join('\n')
   }
 
   /**

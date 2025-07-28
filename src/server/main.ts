@@ -15,7 +15,7 @@ import type { Encryption } from '@adonisjs/encryption'
 import type { Server as HttpsServer } from 'node:https'
 import type { Application } from '@adonisjs/application'
 import type { EmitterLike } from '@adonisjs/events/types'
-import { ContainerResolver, moduleCaller, moduleImporter } from '@adonisjs/fold'
+import { type ContainerResolver, moduleCaller, moduleImporter } from '@adonisjs/fold'
 import type { ServerResponse, IncomingMessage, Server as HttpServer } from 'node:http'
 import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.js'
 import type {

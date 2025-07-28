@@ -9,7 +9,7 @@
 
 import getPort from 'get-port'
 import { getActiveTest } from '@japa/runner'
-import { IncomingMessage, Server, ServerResponse, createServer } from 'node:http'
+import { type IncomingMessage, type Server, type ServerResponse, createServer } from 'node:http'
 
 export const httpServer = {
   async create(handler: (req: IncomingMessage, res: ServerResponse) => any | Promise<any>) {

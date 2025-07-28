@@ -234,3 +234,11 @@ export type MakeSignedUrlOptions = MakeUrlOptions & {
  * and the LookupStore
  */
 export interface RoutesList {}
+
+/**
+ * Helper to get routes for a given method from the RoutesList. The
+ * RoutesList is extended in the userland code.
+ */
+export type GetRoutesForMethod<Method> = {
+  [K in keyof RoutesList]: Method extends K ? RoutesList[Method] : never
+}

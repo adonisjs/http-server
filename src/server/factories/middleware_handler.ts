@@ -7,13 +7,13 @@
  * file that was distributed with this source code.
  */
 
-import type { NextFn } from '@poppinss/middleware/types'
 import type { ContainerResolver } from '@adonisjs/fold'
+import type { NextFn } from '@poppinss/middleware/types'
 
 import debug from '../../debug.js'
-import type { HttpContext } from '../../http_context/main.js'
-import { ParsedGlobalMiddleware } from '../../types/middleware.js'
 import { httpMiddleware } from '../../tracing_channels.js'
+import type { HttpContext } from '../../http_context/main.js'
+import { type ParsedGlobalMiddleware } from '../../types/middleware.js'
 
 /**
  * The middleware handler invokes the middleware functions.

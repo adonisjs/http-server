@@ -15,8 +15,8 @@ import type { Qs } from './qs.js'
 import { encodeUrl } from './helpers.js'
 import type { Response } from './response.js'
 import type { Router } from './router/main.js'
-import type { RoutesList } from './types/route.js'
-import type { RouteBuilderArguments, URLOptions } from './types/url_builder.js'
+import type { GetRoutesForMethod, RoutesList } from './types/route.js'
+import type { RouteBuilderArguments, URLOptions } from './types/url_builder.ts'
 
 /**
  * Exposes the API to construct redirect routes
@@ -146,8 +146,8 @@ export class Redirect {
   /**
    * Redirect the request using a route identifier.
    */
-  toRoute<Identifier extends keyof RoutesList & string>(
-    ...args: RouteBuilderArguments<RoutesList, Identifier, URLOptions>
+  toRoute<Identifier extends keyof GetRoutesForMethod<'GET'> & string>(
+    ...args: RouteBuilderArguments<RoutesList, Identifier, 'GET', URLOptions>
   ) {
     const [identifier, params, options] = args as any[]
     if (options && options.qs) {
@@ -155,7 +155,7 @@ export class Redirect {
       options.qs = undefined
     }
 
-    const url = (this.#router.urlBuilder.route as any)(identifier, params, options)
+    const url = (this.#router.urlBuilder.urlFor as any)(identifier, params, options)
     return this.toPath(url)
   }
 
