@@ -13,6 +13,7 @@ import type { Constructor, LazyImport } from '@poppinss/types'
 
 import type { ServerErrorHandler } from './server.js'
 import type { HttpContext } from '../http_context/main.js'
+import { type RouteMatcher, type MatchItRouteToken } from '../client/types.ts'
 import type { MiddlewareFn, ParsedGlobalMiddleware } from './middleware.js'
 
 /**
@@ -27,16 +28,6 @@ export type GetControllerHandlers<Controller extends Constructor<any>> = {
     ? K
     : never
 }[keyof InstanceType<Controller>]
-
-/**
- * Route token stored by matchit library
- */
-export type MatchItRouteToken = RouteMatcher & {
-  old: string
-  type: 0 | 1 | 2 | 3
-  val: string
-  end: string
-}
 
 /**
  * Route handler defined as a function
@@ -114,14 +105,6 @@ export type MatchedRoute = {
    * Route subdomains (if part of a subdomain)
    */
   subdomains: Record<string, any>
-}
-
-/**
- * Shape of a route param matcher
- */
-export type RouteMatcher = {
-  match?: RegExp
-  cast?: (value: string) => any
 }
 
 /**

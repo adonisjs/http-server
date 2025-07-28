@@ -16,7 +16,7 @@ import { encodeUrl } from './helpers.js'
 import type { Response } from './response.js'
 import type { Router } from './router/main.js'
 import type { GetRoutesForMethod, RoutesList } from './types/route.js'
-import type { RouteBuilderArguments, URLOptions } from './types/url_builder.ts'
+import type { RouteBuilderArguments, URLOptions } from './client/types.ts'
 
 /**
  * Exposes the API to construct redirect routes

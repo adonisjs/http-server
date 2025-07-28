@@ -21,11 +21,11 @@ export class Qs {
     this.#config = config
   }
 
-  parse(value: string) {
+  parse = (value: string) => {
     return parse(value, this.#config.parse)
   }
 
-  stringify(value: any) {
+  stringify = (value: any) => {
     return stringify(value, this.#config.stringify)
   }
 }

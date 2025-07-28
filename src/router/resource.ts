@@ -14,12 +14,13 @@ import type { Application } from '@adonisjs/application'
 import type { Constructor, LazyImport, OneOrMore } from '@poppinss/types'
 
 import { Route } from './route.js'
+import { type RouteMatcher } from '../client/types.ts'
+import type { ResourceActionNames, RouteMatchers } from '../types/route.js'
 import type {
   MiddlewareFn,
-  ParsedGlobalMiddleware,
   ParsedNamedMiddleware,
+  ParsedGlobalMiddleware,
 } from '../types/middleware.js'
-import type { ResourceActionNames, RouteMatcher, RouteMatchers } from '../types/route.js'
 
 /**
  * Route resource exposes the API to register multiple routes for a resource.

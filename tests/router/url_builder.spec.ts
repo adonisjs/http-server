@@ -149,7 +149,7 @@ test.group('URLBuilder', () => {
 
   test('create url for a route by the handler name', ({ assert }) => {
     const router = new RouterFactory().create()
-    router.lookupStrategies(['controller'])
+    router.updateLookupStrategies(['controller'])
 
     const { urlFor } = new URLBuilderFactory<{
       ALL: {
@@ -168,7 +168,7 @@ test.group('URLBuilder', () => {
 
   test('create url for a route by the handler name for the home path', ({ assert }) => {
     const router = new RouterFactory().create()
-    router.lookupStrategies(['controller'])
+    router.updateLookupStrategies(['controller'])
 
     const { urlFor } = new URLBuilderFactory<{
       ALL: {
@@ -357,7 +357,7 @@ test.group('URLBuilder', () => {
 
     assert.throws(
       () => urlFor('/users/*'),
-      'Cannot make URL for "/users/*". Invalid value provided for the wildcard param'
+      'Cannot make URL for "users.show". Invalid value provided for the wildcard param'
     )
   })
 

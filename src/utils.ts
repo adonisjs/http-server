@@ -8,17 +8,13 @@
  */
 
 import Cache from 'tmp-cache'
-import type { Encryption } from '@adonisjs/encryption'
-import { RuntimeException, InvalidArgumentsException } from '@poppinss/utils'
+import { InvalidArgumentsException } from '@poppinss/exception'
 
-import type { Qs } from './qs.js'
-import { parseRoute } from './helpers.js'
 import { type Route } from './router/route.js'
 import { RouteGroup } from './router/group.js'
 import { BriskRoute } from './router/brisk.js'
 import type { RouteJSON } from './types/route.js'
 import { RouteResource } from './router/resource.js'
-import type { SignedURLOptions, URLOptions } from './types/url_builder.ts'
 
 const proxyCache = new Cache({ max: 200 })
 
@@ -134,122 +130,4 @@ export function parseRange<T>(range: string, value: T): Record<number, T> {
     },
     {} as Record<number, T>
   )
-}
-
-/**
- * Makes URL for a given route pattern. The route pattern could be an
- * identifier or an array of tokens.
- */
-export function createURL(
-  identifierOrRoute: string | RouteJSON,
-  qs: Qs,
-  params?: any[] | { [param: string]: any },
-  options?: URLOptions
-): string {
-  const uriSegments: string[] = []
-  const paramsArray = Array.isArray(params) ? params : null
-  const paramsObject = !Array.isArray(params) ? (params ?? {}) : {}
-  const tokens =
-    typeof identifierOrRoute === 'string' ? parseRoute(identifierOrRoute) : identifierOrRoute.tokens
-  const identifier =
-    typeof identifierOrRoute === 'string' ? identifierOrRoute : identifierOrRoute.pattern
-
-  let paramsIndex = 0
-  for (const token of tokens) {
-    /**
-     * Static param
-     */
-    if (token.type === 0) {
-      uriSegments.push(token.val === '/' ? '' : `${token.val}${token.end}`)
-      continue
-    }
-
-    /**
-     * Wildcard param. It will always be the last param, hence we will provide
-     * it all the remaining values
-     */
-    if (token.type === 2) {
-      const values = paramsArray ? paramsArray.slice(paramsIndex) : paramsObject['*']
-      if (!Array.isArray(values) || !values.length) {
-        throw new RuntimeException(
-          `Cannot make URL for "${identifier}". Invalid value provided for the wildcard param`
-        )
-      }
-
-      uriSegments.push(`${values.join('/')}${token.end}`)
-      break
-    }
-
-    const paramName = token.val
-    const value = paramsArray ? paramsArray[paramsIndex] : paramsObject[paramName]
-    const isDefined = value !== undefined && value !== null
-
-    /**
-     * Required param
-     */
-    if (token.type === 1 && !isDefined) {
-      throw new RuntimeException(
-        `Cannot make URL for "${identifier}". Missing value for the "${paramName}" param`
-      )
-    }
-
-    if (isDefined) {
-      uriSegments.push(`${value}${token.end}`)
-    }
-
-    paramsIndex++
-  }
-
-  let URI = `/${uriSegments.join('/')}`
-
-  /**
-   * Prefix base URL
-   */
-  if (options?.prefixUrl) {
-    URI = `${options?.prefixUrl.replace(/\/$/, '')}${URI}`
-  }
-
-  /**
-   * Append query string
-   */
-  if (options?.qs) {
-    const queryString = qs.stringify(options?.qs)
-    URI = queryString ? `${URI}?${queryString}` : URI
-  }
-
-  return URI
-}
-
-/**
- * Makes signed URL for a given route pattern. The route pattern could be an
- * identifier or an array of tokens.
- */
-export function createSignedURL(
-  identifierOrRoute: string | RouteJSON,
-  qs: Qs,
-  encryption: Encryption,
-  params?: any[] | { [param: string]: any },
-  options?: SignedURLOptions
-): string {
-  /*
-   * Making the signature from the qualified url. We do not prefix the "prefixUrl" when
-   * making signature, since it just makes the signature big.
-   *
-   * There might be a case, when someone wants to generate signature for the same route
-   * on their 2 different domains, but we ignore that case for now and can consider
-   * it later (when someone asks for it)
-   */
-  const signature = encryption.verifier.sign(
-    createURL(identifierOrRoute, qs, params, {
-      ...options,
-      prefixUrl: undefined,
-    }),
-    options?.expiresIn,
-    options?.purpose
-  )
-
-  return createURL(identifierOrRoute, qs, params, {
-    ...options,
-    qs: { ...options?.qs, signature },
-  })
 }

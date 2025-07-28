@@ -14,7 +14,7 @@ import string from '@poppinss/utils/string'
 import { parseBindingReference } from '@adonisjs/fold'
 
 import { type CookieOptions } from './types/response.js'
-import type { RouteMatchers, MatchItRouteToken, RouteJSON } from './types/route.js'
+import type { RouteMatchers, RouteJSON } from './types/route.js'
 import {
   type RouteHandlerInfo,
   type MiddlewareFn,
@@ -22,6 +22,7 @@ import {
   type ParsedGlobalMiddleware,
   type ParsedNamedMiddleware,
 } from './types/middleware.ts'
+import { type MatchItRouteToken } from './client/types.ts'
 
 /**
  * This function is similar to the intrinsic function encodeURI. However, it will not encode:

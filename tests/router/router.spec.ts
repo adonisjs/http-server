@@ -1492,9 +1492,9 @@ test.group('Router | find', () => {
       name: 'users.show',
       pattern: '/users/:id',
     })
-    assert.containsSubset(router.find('/users/:id', undefined, 'get'), {
-      methods: ['GET', 'HEAD'],
-      name: 'users.show',
+    assert.containsSubset(router.find('/users/:id', undefined, 'DELETE'), {
+      methods: ['DELETE'],
+      name: 'users.delete',
       pattern: '/users/:id',
     })
   })
@@ -1645,7 +1645,7 @@ test.group('Router | generateTypes', () => {
     /**
      * Generate types for all the available strategies
      */
-    router.lookupStrategies(['name', 'pattern', 'controller'])
+    router.updateLookupStrategies(['name', 'pattern', 'controller'])
     assert.snapshot(router.generateTypes()).matchInline(`
       "'ALL': {
         '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
@@ -1829,7 +1829,7 @@ test.group('Router | generateTypes', () => {
     /**
      * Generate types for all the available strategies
      */
-    router.lookupStrategies(['name', 'pattern', 'controller'])
+    router.updateLookupStrategies(['name', 'pattern', 'controller'])
     assert.snapshot(router.generateTypes()).matchInline(`
       "'ALL': {
         '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },
@@ -2060,7 +2060,7 @@ test.group('Router | generateTypes', () => {
     /**
      * Generate types for all the available strategies
      */
-    router.lookupStrategies(['name', 'pattern', 'controller'])
+    router.updateLookupStrategies(['name', 'pattern', 'controller'])
     assert.snapshot(router.generateTypes()).matchInline(`
       "'ALL': {
         '/users/:id?': { paramsTuple?: [string?], params?: {'id'?: string} },

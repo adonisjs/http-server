@@ -7,6 +7,10 @@
  * file that was distributed with this source code.
  */
 
+/**
+ * Types shared with the client. These should never import other types
+ */
+
 import { type Prettify } from '@poppinss/types'
 
 /**
@@ -54,6 +58,59 @@ export type RouteBuilderArguments<
             ]
     >
   : never
+
+/**
+ * Shape of a route param matcher
+ */
+export type RouteMatcher = {
+  match?: RegExp
+  cast?: (value: string) => any
+}
+
+/**
+ * Route token stored by matchit library
+ */
+export type MatchItRouteToken = RouteMatcher & {
+  old: string
+  type: 0 | 1 | 2 | 3
+  val: string
+  end: string
+}
+
+/**
+ * Representation of route shared with the client
+ */
+export type ClientRouteJSON = {
+  /**
+   * A unique name for the route
+   */
+  name?: string
+
+  /**
+   * Route URI pattern
+   */
+  pattern: string
+
+  /**
+   * HTTP methods, the route responds to.
+   */
+  methods: string[]
+
+  /**
+   * Route domain
+   */
+  domain: string
+
+  /**
+   * Reference to the route handler
+   */
+  handler: { reference: any; handle: any } | Function
+
+  /**
+   * Tokens to be used to construct the route URL
+   */
+  tokens: MatchItRouteToken[]
+}
 
 /**
  * LookupList type is used by the URLBuilder to provide

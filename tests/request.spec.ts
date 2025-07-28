@@ -863,6 +863,10 @@ test.group('Request', () => {
         meta: {},
         name: '',
         execute: () => {},
+        methods: ['GET'],
+        domain: 'root',
+        tokens: [],
+        matchers: {},
         pattern: '/users/:id',
         handler: { reference: '#controllers/user', handle: () => {} },
       }

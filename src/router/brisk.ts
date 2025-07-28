@@ -13,7 +13,7 @@ import type { Application } from '@adonisjs/application'
 import { Route } from './route.js'
 import type { HttpContext } from '../http_context/main.js'
 import type { ParsedGlobalMiddleware } from '../types/middleware.js'
-import type { RouteBuilderArguments, URLOptions } from '../types/url_builder.ts'
+import type { RouteBuilderArguments, URLOptions } from '../client/types.ts'
 import type { GetRoutesForMethod, RouteFn, RouteMatchers, RoutesList } from '../types/route.js'
 
 /**

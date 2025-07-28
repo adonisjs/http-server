@@ -16,10 +16,10 @@ import type {
   StoreDomainNode,
   StoreMethodNode,
   StoreRoutesTree,
-  MatchItRouteToken,
 } from '../types/route.js'
 import debug from '../debug.js'
 import { parseRoute } from '../helpers.js'
+import { type MatchItRouteToken } from '../client/types.ts'
 
 /**
  * Store class is used to store a list of routes, along side with their tokens

@@ -12,8 +12,9 @@ import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { RouterFactory } from './router.ts'
 import type { Router } from '../src/router/main.ts'
-import type { LookupList } from '../src/types/url_builder.ts'
-import { createSignedUrlBuilder, createUrlBuilder } from '../src/router/url_builder.ts'
+import { type LookupList } from '../src/client/types.ts'
+import { createUrlBuilder } from '../src/client/url_builder.ts'
+import { createSignedUrlBuilder } from '../src/router/signed_url_builder.ts'
 
 type FactoryParameters = {
   router: Router
@@ -53,9 +54,15 @@ export class URLBuilderFactory<Routes extends LookupList> {
    * Create URL builder helpers
    */
   create() {
+    const router = this.#createRouter()
+
     return {
-      urlFor: createUrlBuilder<Routes>(this.#createRouter()),
-      signedUrlFor: createSignedUrlBuilder<Routes>(this.#createRouter(), this.#createEncryption()),
+      urlFor: createUrlBuilder<Routes>(router, router.qs.stringify),
+      signedUrlFor: createSignedUrlBuilder<Routes>(
+        router,
+        this.#createEncryption(),
+        router.qs.stringify
+      ),
     }
   }
 }

@@ -15,8 +15,11 @@ import type { Application } from '@adonisjs/application'
 import { moduleCaller, moduleImporter } from '@adonisjs/fold'
 import type { Constructor, LazyImport, OneOrMore } from '@poppinss/types'
 
+import debug from '../debug.js'
 import { execute } from './executor.js'
 import { dropSlash } from '../utils.js'
+import { parseRoute } from '../helpers.js'
+import { type RouteMatcher } from '../client/types.ts'
 
 import type {
   MiddlewareFn,
@@ -25,16 +28,13 @@ import type {
 } from '../types/middleware.js'
 
 import type {
-  GetControllerHandlers,
   RouteFn,
   RouteJSON,
-  RouteMatcher,
   RouteMatchers,
   StoreRouteHandler,
   StoreRouteMiddleware,
+  GetControllerHandlers,
 } from '../types/route.js'
-import debug from '../debug.js'
-import { parseRoute } from '../helpers.js'
 
 /**
  * The route class exposes the APIs for constructing a route using the
