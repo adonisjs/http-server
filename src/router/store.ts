@@ -9,12 +9,10 @@
 
 // @ts-expect-error
 import matchit from '@poppinss/matchit'
-import lodash from '@poppinss/utils/lodash'
 import { RuntimeException } from '@poppinss/utils'
 import type {
   RouteJSON,
   MatchedRoute,
-  StoreRouteNode,
   StoreDomainNode,
   StoreMethodNode,
   StoreRoutesTree,
@@ -83,7 +81,7 @@ export class RoutesStore {
   /**
    * Collects route params
    */
-  #collectRouteParams(route: StoreRouteNode, tokens: MatchItRouteToken[]) {
+  #collectRouteParams(route: RouteJSON, tokens: MatchItRouteToken[]) {
     const collectedParams: Set<string> = new Set()
 
     for (let token of tokens) {
@@ -105,12 +103,7 @@ export class RoutesStore {
   /**
    * Register route for a given domain and method
    */
-  #registerRoute(
-    domain: string,
-    method: string,
-    tokens: MatchItRouteToken[],
-    route: StoreRouteNode
-  ) {
+  #registerRoute(domain: string, method: string, tokens: MatchItRouteToken[], route: RouteJSON) {
     const methodRoutes = this.#getMethodNode(domain, method)
 
     /*
@@ -158,10 +151,7 @@ export class RoutesStore {
     /**
      * Create route node object for persistence
      */
-    const routeNode: StoreRouteNode = lodash.merge(
-      { meta: {} },
-      lodash.pick(route, ['pattern', 'handler', 'meta', 'middleware', 'name', 'execute'])
-    )
+    const routeNode: RouteJSON = { ...route }
 
     /**
      * Set route params

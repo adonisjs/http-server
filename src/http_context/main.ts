@@ -15,8 +15,8 @@ import { type ContainerResolver } from '@adonisjs/fold'
 
 import type { Request } from '../request.js'
 import type { Response } from '../response.js'
+import type { RouteJSON } from '../types/route.js'
 import { asyncLocalStorage } from './local_storage.js'
-import type { StoreRouteNode } from '../types/route.js'
 
 /**
  * Http context encapsulates properties for a given HTTP request. The
@@ -81,7 +81,7 @@ export class HttpContext extends Macroable {
    * Reference to the current route. Not available inside
    * server middleware
    */
-  route?: StoreRouteNode
+  route?: RouteJSON
 
   /**
    * A unique key for the current route

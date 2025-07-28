@@ -7,10 +7,10 @@
  * file that was distributed with this source code.
  */
 
-import type { StoreRouteNode } from './route.js'
+import type { RouteJSON } from './route.js'
 import type { HttpContext } from '../http_context/main.js'
 import type { MiddlewareFn, ParsedGlobalMiddleware, ParsedNamedMiddleware } from './middleware.js'
 
 export type HTTPRequestTracingData = HttpContext
 export type MiddlewareTracingData = ParsedGlobalMiddleware | ParsedNamedMiddleware | MiddlewareFn
-export type RouteHandlerTracingData = StoreRouteNode
+export type RouteHandlerTracingData = RouteJSON

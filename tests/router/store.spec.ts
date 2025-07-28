@@ -31,7 +31,7 @@ test.group('Store | add', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.tree, {
+    assert.containSubset(store.tree, {
       tokens: [
         [
           {
@@ -65,7 +65,6 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                execute,
                 middleware: new Middleware<any>(),
               },
             },
@@ -91,7 +90,7 @@ test.group('Store | add', () => {
       middleware: new Middleware<any>(),
     })
 
-    assert.deepEqual(store.tree, {
+    assert.containSubset(store.tree, {
       tokens: [
         [
           {
@@ -125,7 +124,6 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                execute,
                 middleware: new Middleware<any>(),
               },
             },
@@ -209,7 +207,7 @@ test.group('Store | add', () => {
     store.add(route)
     store.add(Object.assign({}, route, { methods: ['POST'] }))
 
-    assert.deepEqual(store.tree, {
+    assert.containSubset(store.tree, {
       tokens: [
         [
           {
@@ -243,7 +241,6 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                execute,
                 middleware: new Middleware<any>(),
               },
             },
@@ -269,7 +266,6 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                execute,
                 middleware: new Middleware<any>(),
               },
             },
@@ -297,7 +293,7 @@ test.group('Store | add', () => {
     store.add(route)
     store.add(Object.assign({}, route, { domain: 'root' }))
 
-    assert.deepEqual(store.tree, {
+    assert.containSubset(store.tree, {
       tokens: [
         [
           {
@@ -339,7 +335,6 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                execute,
                 middleware: new Middleware<any>(),
               },
             },
@@ -367,7 +362,6 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                execute,
                 middleware: new Middleware<any>(),
               },
             },
@@ -393,7 +387,7 @@ test.group('Store | add', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.tree, {
+    assert.containSubset(store.tree, {
       tokens: [
         [
           {
@@ -429,7 +423,6 @@ test.group('Store | add', () => {
                   params: ['id'],
                 },
                 handler,
-                execute,
                 middleware: new Middleware<any>(),
               },
             },
@@ -457,7 +450,6 @@ test.group('Store | add', () => {
                   params: ['id'],
                 },
                 handler,
-                execute,
                 middleware: new Middleware<any>(),
               },
             },
@@ -494,7 +486,7 @@ test.group('Store | add', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.tree, {
+    assert.containSubset(store.tree, {
       tokens: [
         [
           {
@@ -545,7 +537,6 @@ test.group('Store | add', () => {
                   params: [],
                 },
                 handler,
-                execute,
                 middleware: new Middleware<any>(),
               },
               'users/:id': {
@@ -554,7 +545,6 @@ test.group('Store | add', () => {
                   params: ['id'],
                 },
                 handler,
-                execute,
                 middleware: new Middleware<any>(),
               },
             },
@@ -582,11 +572,10 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.match('/', 'GET'), {
+    assert.containSubset(store.match('/', 'GET'), {
       route: {
         pattern: '/',
         handler,
-        execute,
         middleware: new Middleware<any>(),
         meta: {
           params: [],
@@ -614,11 +603,10 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.match('/virk', 'GET'), {
+    assert.containSubset(store.match('/virk', 'GET'), {
       route: {
         pattern: '/:username',
         handler,
-        execute,
         middleware: new Middleware<any>(),
         meta: {
           params: ['username'],
@@ -648,14 +636,13 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.match('/virk', 'GET'), {
+    assert.containSubset(store.match('/virk', 'GET'), {
       route: {
         pattern: '/:username?',
         handler,
         meta: {
           params: ['username'],
         },
-        execute,
         middleware: new Middleware<any>(),
       },
       params: {
@@ -665,11 +652,10 @@ test.group('Store | match', () => {
       routeKey: 'GET-/:username?',
     })
 
-    assert.deepEqual(store.match('/', 'GET'), {
+    assert.containSubset(store.match('/', 'GET'), {
       route: {
         pattern: '/:username?',
         handler,
-        execute,
         middleware: new Middleware<any>(),
         meta: {
           params: ['username'],
@@ -709,11 +695,10 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.match('/1', 'GET'), {
+    assert.containSubset(store.match('/1', 'GET'), {
       route: {
         pattern: '/:username',
         handler,
-        execute,
         middleware: new Middleware<any>(),
         meta: {
           params: ['username'],
@@ -759,14 +744,13 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.match('/1', 'GET'), {
+    assert.containSubset(store.match('/1', 'GET'), {
       route: {
         pattern: '/:id',
         handler,
         meta: {
           params: ['id'],
         },
-        execute,
         middleware: new Middleware<any>(),
       },
       params: {
@@ -900,7 +884,7 @@ test.group('Store | match', () => {
     })
 
     const domain = store.matchDomain('foo.com')
-    assert.deepEqual(
+    assert.containSubset(
       store.match('/1', 'GET', {
         tokens: domain,
         hostname: 'foo.com',
@@ -912,7 +896,6 @@ test.group('Store | match', () => {
           meta: {
             params: ['id'],
           },
-          execute,
           middleware: new Middleware<any>(),
         },
         params: {
@@ -941,7 +924,7 @@ test.group('Store | match', () => {
     })
 
     const domain = store.matchDomain('blog.adonisjs.com')
-    assert.deepEqual(
+    assert.containSubset(
       store.match('/1', 'GET', {
         tokens: domain,
         hostname: 'blog.adonisjs.com',
@@ -953,7 +936,6 @@ test.group('Store | match', () => {
           meta: {
             params: ['id'],
           },
-          execute,
           middleware: new Middleware<any>(),
         },
         params: {
@@ -1048,14 +1030,13 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.match('/users', 'GET'), {
+    assert.containSubset(store.match('/users', 'GET'), {
       route: {
         pattern: '/users/:id?',
         handler,
         meta: {
           params: ['id'],
         },
-        execute,
         middleware: new Middleware<any>(),
       },
       params: {},
@@ -1083,14 +1064,13 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.match('/users/1', 'GET'), {
+    assert.containSubset(store.match('/users/1', 'GET'), {
       route: {
         pattern: '/users/:id?',
         handler,
         meta: {
           params: ['id'],
         },
-        execute,
         middleware: new Middleware<any>(),
       },
       params: {
@@ -1133,14 +1113,13 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.match('/1', 'GET'), {
+    assert.containSubset(store.match('/1', 'GET'), {
       route: {
         pattern: '/:id',
         handler,
         meta: {
           params: ['id'],
         },
-        execute,
         middleware: new Middleware<any>(),
       },
       params: {
@@ -1170,14 +1149,13 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.match('/', 'GET'), {
+    assert.containSubset(store.match('/', 'GET'), {
       route: {
         pattern: '/:id?',
         handler,
         meta: {
           params: ['id'],
         },
-        execute,
         middleware: new Middleware<any>(),
       },
       params: {},
@@ -1206,14 +1184,13 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.deepEqual(store.match('/1/HELLO-WORLD', 'GET'), {
+    assert.containSubset(store.match('/1/HELLO-WORLD', 'GET'), {
       route: {
         pattern: '/:id/:slug',
         handler,
         meta: {
           params: ['id', 'slug'],
         },
-        execute,
         middleware: new Middleware<any>(),
       },
       params: {

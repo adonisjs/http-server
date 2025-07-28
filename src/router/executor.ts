@@ -8,7 +8,8 @@
  */
 
 import type { ContainerResolver } from '@adonisjs/fold'
-import type { StoreRouteNode } from '../types/route.js'
+
+import type { RouteJSON } from '../types/route.js'
 import type { HttpContext } from '../http_context/main.js'
 import type { ServerErrorHandler } from '../types/server.js'
 import { useReturnValue } from './factories/use_return_value.js'
@@ -19,7 +20,7 @@ import { httpMiddleware, httpRouteHandler } from '../tracing_channels.js'
  * handler
  */
 export function execute(
-  route: StoreRouteNode,
+  route: RouteJSON,
   resolver: ContainerResolver<any>,
   ctx: HttpContext,
   errorResponder: ServerErrorHandler['handle']

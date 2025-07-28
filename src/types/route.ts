@@ -64,47 +64,6 @@ export type StoreRouteMiddleware =
   | ({ name?: string; args?: any[] } & ParsedGlobalMiddleware)
 
 /**
- * Route node persisted within the routes store
- */
-export type StoreRouteNode = {
-  /**
-   * The execute function to execute the route middleware
-   * and the handler
-   */
-  execute: (
-    route: StoreRouteNode,
-    resolver: ContainerResolver<any>,
-    ctx: HttpContext,
-    errorResponder: ServerErrorHandler['handle']
-  ) => any
-
-  /**
-   * A unique name for the route
-   */
-  name?: string
-
-  /**
-   * Route URI pattern
-   */
-  pattern: string
-
-  /**
-   * Route handler
-   */
-  handler: StoreRouteHandler
-
-  /**
-   * Route middleware
-   */
-  middleware: Middleware<StoreRouteMiddleware>
-
-  /**
-   * Additional metadata associated with the route
-   */
-  meta: Record<string, any>
-}
-
-/**
  * An object of routes for a given HTTP method
  */
 export type StoreMethodNode = {
@@ -113,7 +72,7 @@ export type StoreMethodNode = {
     [pattern: string]: string
   }
   routes: {
-    [pattern: string]: StoreRouteNode
+    [pattern: string]: RouteJSON
   }
 }
 
@@ -139,7 +98,7 @@ export type StoreRoutesTree = {
  * Shape of the matched route for a pattern, method and domain.
  */
 export type MatchedRoute = {
-  route: StoreRouteNode
+  route: RouteJSON
 
   /**
    * A unique key for the looked up route
@@ -175,7 +134,43 @@ export type RouteMatchers = {
 /**
  * Representation of a route as JSON
  */
-export type RouteJSON = StoreRouteNode & {
+export type RouteJSON = {
+  /**
+   * The execute function to execute the route middleware
+   * and the handler
+   */
+  execute: (
+    route: RouteJSON,
+    resolver: ContainerResolver<any>,
+    ctx: HttpContext,
+    errorResponder: ServerErrorHandler['handle']
+  ) => any
+
+  /**
+   * A unique name for the route
+   */
+  name?: string
+
+  /**
+   * Route URI pattern
+   */
+  pattern: string
+
+  /**
+   * Route handler
+   */
+  handler: StoreRouteHandler
+
+  /**
+   * Route middleware
+   */
+  middleware: Middleware<StoreRouteMiddleware>
+
+  /**
+   * Additional metadata associated with the route
+   */
+  meta: Record<string, any>
+
   /**
    * Tokens to be used to construct the route URL
    */
