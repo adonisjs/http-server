@@ -13,12 +13,12 @@ import { RuntimeException, InvalidArgumentsException } from '@poppinss/utils'
 
 import type { Qs } from './qs.js'
 import { parseRoute } from './helpers.js'
-import { Route } from './router/route.js'
+import { type Route } from './router/route.js'
 import { RouteGroup } from './router/group.js'
 import { BriskRoute } from './router/brisk.js'
-import { RouteResource } from './router/resource.js'
 import type { RouteJSON } from './types/route.js'
-import type { SignedURLOptions, URLOptions } from './types/url_builder.js'
+import { RouteResource } from './router/resource.js'
+import type { SignedURLOptions, URLOptions } from './types/url_builder.ts'
 
 const proxyCache = new Cache({ max: 200 })
 

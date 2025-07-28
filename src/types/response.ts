@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Readable } from 'node:stream'
+import { type Readable } from 'node:stream'
 
 /**
  * Cookie options can that can be set on the response

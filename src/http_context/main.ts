@@ -11,7 +11,7 @@ import { inspect } from 'node:util'
 import Macroable from '@poppinss/macroable'
 import type { Logger } from '@adonisjs/logger'
 import { RuntimeException } from '@poppinss/utils'
-import { ContainerResolver } from '@adonisjs/fold'
+import { type ContainerResolver } from '@adonisjs/fold'
 
 import type { Request } from '../request.js'
 import type { Response } from '../response.js'
