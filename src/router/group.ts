@@ -12,8 +12,8 @@ import type { OneOrMore } from '@poppinss/types'
 import type { RouteMatcher, StoreRouteMiddleware } from '../types/route.js'
 import type { MiddlewareFn, ParsedNamedMiddleware } from '../types/middleware.js'
 
-import { Route } from './route.js'
 import { BriskRoute } from './brisk.js'
+import { type Route } from './route.js'
 import { RouteResource } from './resource.js'
 
 /**

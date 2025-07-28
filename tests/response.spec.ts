@@ -7,12 +7,12 @@
  * file that was distributed with this source code.
  */
 
-import { Buffer } from 'node:buffer'
 import etag from 'etag'
 import fsExtra from 'fs-extra'
 import { join } from 'node:path'
 import supertest from 'supertest'
 import { test } from '@japa/runner'
+import { Buffer } from 'node:buffer'
 import status from 'http-status-codes'
 import { Readable } from 'node:stream'
 import { fileURLToPath } from 'node:url'
@@ -20,7 +20,7 @@ import { AppFactory } from '@adonisjs/application/factories'
 import { createWriteStream, createReadStream } from 'node:fs'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { Response } from '../src/response.js'
+import { type Response } from '../src/response.js'
 import { RouterFactory } from '../factories/router.js'
 import { CookieParser } from '../src/cookies/parser.js'
 import { httpServer } from '../factories/http_server.js'

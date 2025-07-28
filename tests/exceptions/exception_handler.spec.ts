@@ -13,10 +13,10 @@ import { SimpleErrorReporter } from '@vinejs/vine'
 import { fieldContext } from '@vinejs/vine/factories'
 import { LoggerFactory } from '@adonisjs/logger/factories'
 
-import { errors, HttpContext } from '../../index.js'
+import { errors, type HttpContext } from '../../index.js'
 import { ExceptionHandler } from '../../src/exception_handler.js'
 import { HttpContextFactory } from '../../factories/http_context.js'
-import { StatusPageRange, StatusPageRenderer } from '../../src/types/server.js'
+import { type StatusPageRange, type StatusPageRenderer } from '../../src/types/server.js'
 
 test.group('Exception handler | handle', () => {
   test('handle error by pretty printing it using youch', async ({ assert }) => {
