@@ -11,9 +11,17 @@ import cookie from 'cookie'
 // @ts-expect-error
 import matchit from '@poppinss/matchit'
 import string from '@poppinss/utils/string'
+import { parseBindingReference } from '@adonisjs/fold'
 
-import { CookieOptions } from './types/response.js'
-import type { RouteMatchers, MatchItRouteToken } from './types/route.js'
+import { type CookieOptions } from './types/response.js'
+import type { RouteMatchers, MatchItRouteToken, RouteJSON } from './types/route.js'
+import {
+  type RouteHandlerInfo,
+  type MiddlewareFn,
+  type MiddlewareHandlerInfo,
+  type ParsedGlobalMiddleware,
+  type ParsedNamedMiddleware,
+} from './types/middleware.ts'
 
 /**
  * This function is similar to the intrinsic function encodeURI. However, it will not encode:
@@ -44,8 +52,8 @@ export { default as mime } from 'mime-types'
  *
  * - 0: (static) segment
  * - 1: (parameter) segment
- * - 2: (optional parameter) segment
- * - 3: (wildcard) segment
+ * - 2: (wildcard) segment
+ * - 3: (optional parameter) segment
  *
  * Value (val) refers to the segment value
  *
@@ -88,4 +96,51 @@ export function serializeCookie(
   }
 
   return cookie.serialize(key, value, { ...options, maxAge, expires })
+}
+
+/**
+ * Returns the info about a middleware handler. In case of lazy imports, the method
+ * will return the import path
+ */
+export async function middlewareInfo(
+  middleware: MiddlewareFn | ParsedGlobalMiddleware | ParsedNamedMiddleware
+): Promise<MiddlewareHandlerInfo> {
+  if (typeof middleware === 'function') {
+    return {
+      type: 'closure',
+      name: middleware.name || 'closure',
+    }
+  }
+
+  if ('args' in middleware) {
+    return {
+      type: 'named',
+      name: middleware.name,
+      args: middleware.args,
+      ...(await parseBindingReference([middleware.reference])),
+    }
+  }
+
+  return {
+    type: 'global',
+    name: middleware.name,
+    ...(await parseBindingReference([middleware.reference])),
+  }
+}
+
+/**
+ * Returns the info about a route handler. In case of lazy imports, the method
+ * will return the import path.
+ */
+export async function routeInfo(route: RouteJSON): Promise<RouteHandlerInfo> {
+  return 'reference' in route.handler
+    ? {
+        type: 'controller' as const,
+        ...(await parseBindingReference(route.handler.reference)),
+      }
+    : {
+        type: 'closure' as const,
+        name: route.handler.name || 'closure',
+        args: 'listArgs' in route.handler ? String(route.handler.listArgs) : undefined,
+      }
 }
