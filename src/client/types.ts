@@ -104,7 +104,7 @@ export type ClientRouteJSON = {
   /**
    * Reference to the route handler
    */
-  handler: { reference: any; handle: any } | Function
+  handler: { reference?: any } | Function
 
   /**
    * Tokens to be used to construct the route URL

@@ -2190,3 +2190,33 @@ test.group('Router | generateTypes', () => {
     `)
   })
 })
+
+test.group('Router | generateClient', () => {
+  test('generate URL builder client', ({ assert }) => {
+    const router = new RouterFactory().create()
+
+    function handler() {}
+
+    router.get('/users/:id?', handler)
+    router.get('/docs/*', handler)
+    router
+      .group(() => {
+        router.resource('posts', 'PostsController')
+      })
+      .prefix('api')
+      .as('api')
+    router.get('comments', 'CommentsController.index')
+
+    router.commit()
+    assert.snapshot(router.generateClient()).matchInline(`
+      "import type { RoutesList } from '@adonisjs/core/types/http'
+      import { RouterClient, createUrlBuilder, ClientRouteJSON } from 'adonisjs/core/http/client'
+
+      const routes = {\\"root\\":[{\\"pattern\\":\\"/users/:id?\\",\\"handler\\":{},\\"methods\\":[\\"GET\\",\\"HEAD\\"],\\"domain\\":\\"root\\",\\"tokens\\":[{\\"val\\":\\"users\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"id\\",\\"type\\":3,\\"end\\":\\"\\"}]},{\\"pattern\\":\\"/docs/*\\",\\"handler\\":{},\\"methods\\":[\\"GET\\",\\"HEAD\\"],\\"domain\\":\\"root\\",\\"tokens\\":[{\\"val\\":\\"docs\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"*\\",\\"type\\":2,\\"end\\":\\"\\"}]},{\\"pattern\\":\\"/api/posts\\",\\"name\\":\\"api.posts.index\\",\\"handler\\":{\\"reference\\":\\"PostsController.index\\"},\\"methods\\":[\\"GET\\",\\"HEAD\\"],\\"domain\\":\\"root\\",\\"tokens\\":[{\\"val\\":\\"api\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"posts\\",\\"type\\":0,\\"end\\":\\"\\"}]},{\\"pattern\\":\\"/api/posts/create\\",\\"name\\":\\"api.posts.create\\",\\"handler\\":{\\"reference\\":\\"PostsController.create\\"},\\"methods\\":[\\"GET\\",\\"HEAD\\"],\\"domain\\":\\"root\\",\\"tokens\\":[{\\"val\\":\\"api\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"posts\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"create\\",\\"type\\":0,\\"end\\":\\"\\"}]},{\\"pattern\\":\\"/api/posts\\",\\"name\\":\\"api.posts.store\\",\\"handler\\":{\\"reference\\":\\"PostsController.store\\"},\\"methods\\":[\\"POST\\"],\\"domain\\":\\"root\\",\\"tokens\\":[{\\"val\\":\\"api\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"posts\\",\\"type\\":0,\\"end\\":\\"\\"}]},{\\"pattern\\":\\"/api/posts/:id\\",\\"name\\":\\"api.posts.show\\",\\"handler\\":{\\"reference\\":\\"PostsController.show\\"},\\"methods\\":[\\"GET\\",\\"HEAD\\"],\\"domain\\":\\"root\\",\\"tokens\\":[{\\"val\\":\\"api\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"posts\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"id\\",\\"type\\":1,\\"end\\":\\"\\"}]},{\\"pattern\\":\\"/api/posts/:id/edit\\",\\"name\\":\\"api.posts.edit\\",\\"handler\\":{\\"reference\\":\\"PostsController.edit\\"},\\"methods\\":[\\"GET\\",\\"HEAD\\"],\\"domain\\":\\"root\\",\\"tokens\\":[{\\"val\\":\\"api\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"posts\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"id\\",\\"type\\":1,\\"end\\":\\"\\"},{\\"val\\":\\"edit\\",\\"type\\":0,\\"end\\":\\"\\"}]},{\\"pattern\\":\\"/api/posts/:id\\",\\"name\\":\\"api.posts.update\\",\\"handler\\":{\\"reference\\":\\"PostsController.update\\"},\\"methods\\":[\\"PUT\\",\\"PATCH\\"],\\"domain\\":\\"root\\",\\"tokens\\":[{\\"val\\":\\"api\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"posts\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"id\\",\\"type\\":1,\\"end\\":\\"\\"}]},{\\"pattern\\":\\"/api/posts/:id\\",\\"name\\":\\"api.posts.destroy\\",\\"handler\\":{\\"reference\\":\\"PostsController.destroy\\"},\\"methods\\":[\\"DELETE\\"],\\"domain\\":\\"root\\",\\"tokens\\":[{\\"val\\":\\"api\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"posts\\",\\"type\\":0,\\"end\\":\\"\\"},{\\"val\\":\\"id\\",\\"type\\":1,\\"end\\":\\"\\"}]},{\\"pattern\\":\\"/comments\\",\\"handler\\":{\\"reference\\":\\"CommentsController.index\\"},\\"methods\\":[\\"GET\\",\\"HEAD\\"],\\"domain\\":\\"root\\",\\"tokens\\":[{\\"val\\":\\"comments\\",\\"type\\":0,\\"end\\":\\"\\"}]}]} satisfies { [domain: string]: ClientRouteJSON[] }
+      const router = new RouterClient(routes)
+      export const urlFor = createUrlBuilder<RoutesList>(router, (qs) => {
+        return new URLSearchParams(qs).toString()
+      })"
+    `)
+  })
+})

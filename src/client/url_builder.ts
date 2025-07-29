@@ -22,7 +22,7 @@ import {
  */
 export function createURL(
   identifier: string,
-  tokens: MatchItRouteToken[],
+  tokens: Pick<MatchItRouteToken, 'val' | 'type' | 'end'>[],
   searchParamsStringifier: (qs: Record<string, any>) => string,
   params?: any[] | { [param: string]: any },
   options?: URLOptions

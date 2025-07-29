@@ -48,6 +48,7 @@ import {
   type SignedURLOptions,
   type RouteMatcher,
   type MatchItRouteToken,
+  type ClientRouteJSON,
 } from '../client/types.ts'
 
 /**
@@ -585,9 +586,13 @@ export class Router extends RouterClient<RouteJSON> {
           return {
             pattern: route.pattern,
             name: route.name,
-            controller,
+            handler: {
+              reference: controller,
+            },
+            methods: route.methods,
+            domain: route.domain,
             tokens: route.tokens.map((tokens) => {
-              return lodash.omit(tokens, ['cast', 'match']) as MatchItRouteToken
+              return lodash.pick(tokens, ['val', 'type', 'end']) as MatchItRouteToken
             }),
           }
         })
@@ -595,25 +600,18 @@ export class Router extends RouterClient<RouteJSON> {
         return result
       },
       {} as {
-        [domain: string]: {
-          pattern: string
-          name: string | undefined
-          controller: string | undefined
-          tokens: MatchItRouteToken[]
-        }[]
+        [domain: string]: ClientRouteJSON[]
       }
     )
 
-    return `
-    import type { RoutesList } from '@adonisjs/core/types/http'
-    import { RouterClient, createUrlBuilder } from '@adonisjs/http-server/client'
+    return `import type { RoutesList } from '@adonisjs/core/types/http'
+import { RouterClient, createUrlBuilder, ClientRouteJSON } from 'adonisjs/core/http/client'
 
-    const routes = ${JSON.stringify(routesForClient, null, 2)}
-    const router = new RouterClient(routes)
-    const urlBuilder = createUrlBuilder<RoutesList>(router, (qs) => {
-      return new URLSearchParams(qs).toString()
-    })
-    `
+const routes = ${JSON.stringify(routesForClient)} satisfies { [domain: string]: ClientRouteJSON[] }
+const router = new RouterClient(routes)
+export const urlFor = createUrlBuilder<RoutesList>(router, (qs) => {
+  return new URLSearchParams(qs).toString()
+})`
   }
 
   /**
