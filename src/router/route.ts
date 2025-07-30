@@ -10,8 +10,8 @@
 import is from '@sindresorhus/is'
 import Macroable from '@poppinss/macroable'
 import Middleware from '@poppinss/middleware'
-import { RuntimeException } from '@poppinss/utils'
 import type { Application } from '@adonisjs/application'
+import { RuntimeException } from '@poppinss/utils/exception'
 import { moduleCaller, moduleImporter } from '@adonisjs/fold'
 import type { Constructor, LazyImport, OneOrMore } from '@poppinss/types'
 

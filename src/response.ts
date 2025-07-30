@@ -14,13 +14,13 @@ import destroy from 'destroy'
 import { extname } from 'node:path'
 import { Buffer } from 'node:buffer'
 import onFinished from 'on-finished'
-import json from '@poppinss/utils/json'
 import { stat } from 'node:fs/promises'
 import Macroable from '@poppinss/macroable'
 import { createReadStream } from 'node:fs'
-import { RuntimeException } from '@poppinss/utils'
 import contentDisposition from 'content-disposition'
+import { safeStringify } from '@poppinss/utils/json'
 import type { Encryption } from '@adonisjs/encryption'
+import { RuntimeException } from '@poppinss/utils/exception'
 import { type ServerResponse, type IncomingMessage, type OutgoingHttpHeaders } from 'node:http'
 
 import type { Qs } from './qs.js'
@@ -323,7 +323,7 @@ export class Response extends Macroable {
      * Transforming date, number, boolean and object to a string
      */
     if (dataType === 'object') {
-      content = json.safeStringify(content)
+      content = safeStringify(content)
     } else if (
       dataType === 'number' ||
       dataType === 'boolean' ||

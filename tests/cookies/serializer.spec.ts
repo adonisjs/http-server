@@ -9,10 +9,11 @@
 
 import { test } from '@japa/runner'
 import { setTimeout } from 'node:timers/promises'
-import { base64, MessageBuilder } from '@poppinss/utils'
+import { MessageBuilder } from '@poppinss/utils'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { CookieSerializer } from '../../src/cookies/serializer.js'
+import base64 from '@poppinss/utils/base64'
 
 const encryption = new EncryptionFactory().create()
 

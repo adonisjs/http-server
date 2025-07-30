@@ -10,9 +10,9 @@
 import is from '@sindresorhus/is'
 import lodash from '@poppinss/utils/lodash'
 import { moduleImporter } from '@adonisjs/fold'
-import { RuntimeException } from '@poppinss/utils'
 import type { Encryption } from '@adonisjs/encryption'
 import type { Application } from '@adonisjs/application'
+import { RuntimeException } from '@poppinss/utils/exception'
 import type { Constructor, LazyImport } from '@poppinss/types'
 
 import debug from '../debug.js'

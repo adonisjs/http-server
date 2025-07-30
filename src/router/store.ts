@@ -9,7 +9,8 @@
 
 // @ts-expect-error
 import matchit from '@poppinss/matchit'
-import { RuntimeException } from '@poppinss/utils'
+import { RuntimeException } from '@poppinss/utils/exception'
+
 import type {
   RouteJSON,
   MatchedRoute,

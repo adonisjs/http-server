@@ -10,8 +10,8 @@
 import { inspect } from 'node:util'
 import Macroable from '@poppinss/macroable'
 import type { Logger } from '@adonisjs/logger'
-import { RuntimeException } from '@poppinss/utils'
 import { type ContainerResolver } from '@adonisjs/fold'
+import { RuntimeException } from '@poppinss/utils/exception'
 
 import type { Request } from '../request.js'
 import type { Response } from '../response.js'

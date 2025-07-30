@@ -8,8 +8,8 @@
  */
 
 import { test } from '@japa/runner'
-import { Exception } from '@poppinss/utils'
 import { SimpleErrorReporter } from '@vinejs/vine'
+import { Exception } from '@poppinss/utils/exception'
 import { fieldContext } from '@vinejs/vine/factories'
 import { LoggerFactory } from '@adonisjs/logger/factories'
 

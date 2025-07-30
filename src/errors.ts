@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { createError, Exception } from '@poppinss/utils'
+import { createError, Exception } from '@poppinss/utils/exception'
 import type { HttpContext } from './http_context/main.js'
 
 /**

@@ -9,6 +9,7 @@ export default defineConfig({
   dts: true,
   splitting: false,
   clean: false,
+  sourcemap: false,
   outDir: 'build',
   treeshake: 'smallest',
   target: 'esnext',

@@ -9,8 +9,8 @@
 
 import string from '@poppinss/utils/string'
 import Macroable from '@poppinss/macroable'
-import { RuntimeException } from '@poppinss/utils'
 import type { Application } from '@adonisjs/application'
+import { RuntimeException } from '@poppinss/utils/exception'
 import type { Constructor, LazyImport, OneOrMore } from '@poppinss/types'
 
 import { Route } from './route.js'
