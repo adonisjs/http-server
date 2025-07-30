@@ -166,6 +166,32 @@ test.group('Exception handler | handle', () => {
     assert.equal(ctx.response.getBody(), '400 status page')
   })
 
+  test('do not render status page for API requests', async ({ assert }) => {
+    class AppExceptionHandler extends ExceptionHandler {
+      protected renderStatusPages: boolean = true
+      protected debug: boolean = false
+      protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {
+        '400..499': (error, ctx) => {
+          return ctx.response.status(error.status).send('400 status page')
+        },
+      }
+    }
+
+    const exceptionHandler = new AppExceptionHandler()
+    const ctx = new HttpContextFactory().create()
+    ctx.request.request.headers.accept = 'application/json'
+
+    class MyError extends Exception {}
+
+    const error = new MyError('Something went wrong', { status: 401 })
+    await exceptionHandler.handle(error, ctx)
+
+    assert.equal(ctx.response.getStatus(), 401)
+    assert.deepEqual(ctx.response.getBody(), {
+      message: 'Something went wrong',
+    })
+  })
+
   test('do not render status page when exception has handle method', async ({ assert }) => {
     class AppExceptionHandler extends ExceptionHandler {
       protected renderStatusPages: boolean = true

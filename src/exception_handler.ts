@@ -14,6 +14,7 @@ import type { Level } from '@adonisjs/logger/types'
 import * as errors from './errors.js'
 import { parseRange } from './utils.js'
 import type { HttpContext } from './http_context/main.js'
+import { canWriteResponseBody } from './router/factories/use_return_value.ts'
 import type { HttpError, StatusPageRange, StatusPageRenderer } from './types/server.js'
 
 /**
@@ -212,6 +213,23 @@ export class ExceptionHandler extends Macroable {
    * Renders an error to HTML response
    */
   async renderErrorAsHTML(error: HttpError, ctx: HttpContext) {
+    /**
+     * Render status page
+     */
+    const statusPages = this.#expandStatusPages()
+    if (this.renderStatusPages && statusPages[error.status]) {
+      const statusPageResponse = await statusPages[error.status](error, ctx)
+
+      /**
+       * Use return value and convert it into a response
+       */
+      if (canWriteResponseBody(statusPageResponse, ctx)) {
+        return ctx.response.safeStatus(error.status).send(statusPageResponse)
+      }
+
+      return statusPageResponse
+    }
+
     if (this.isDebuggingEnabled(ctx)) {
       const { Youch } = await import('youch')
       const html = await new Youch().toHTML(error, {
@@ -347,26 +365,6 @@ export class ExceptionHandler extends Macroable {
      */
     if (httpError.code === 'E_VALIDATION_ERROR' && 'messages' in httpError) {
       return this.renderValidationError(httpError, ctx)
-    }
-
-    /**
-     * Render status page
-     */
-    const statusPages = this.#expandStatusPages()
-    if (this.renderStatusPages && statusPages[httpError.status]) {
-      const statusPageResponse = await statusPages[httpError.status](httpError, ctx)
-
-      /**
-       * Use return value and convert it into a response
-       */
-      if (
-        statusPageResponse !== undefined && // Return value is explicitly defined
-        !ctx.response.hasLazyBody && // Lazy body is not set
-        statusPageResponse !== ctx.response // Return value is not the instance of response object
-      ) {
-        return ctx.response.safeStatus(httpError.status).send(statusPageResponse)
-      }
-      return statusPageResponse
     }
 
     /**
