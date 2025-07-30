@@ -375,6 +375,33 @@ test.group('Server | Response handling', () => {
     assert.equal(status, 301)
     assert.equal(headers.location, '/dashboard')
   })
+
+  test('decode unicodes in route params and query string', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([])
+    server.getRouter().get('/posts/:lang/:slug', async ({ request, response }) =>
+      response.send({
+        ...request.all(),
+        ...request.params(),
+      })
+    )
+    await server.boot()
+
+    const { body } = await supertest(httpServer)
+      .get('/posts/fran%C3%A7ais/he%2Fllo?orderBy=fran%C3%A7ais')
+      .expect(200)
+
+    assert.deepEqual(body, {
+      lang: 'français',
+      orderBy: 'français',
+      slug: 'he/llo',
+    })
+  })
 })
 
 test.group('Server | middleware', () => {

@@ -947,7 +947,7 @@ test.group('Request', () => {
     })
 
     const { body } = await supertest(url).get('/')
-    assert.containsSubset(body, {
+    assert.containSubset(body, {
       body: {},
       cookies: {},
       headers: {},
@@ -955,7 +955,7 @@ test.group('Request', () => {
       method: 'GET',
       params: {},
       protocol: 'http',
-      query: null,
+      query: '',
       subdomains: {},
       url: '/',
     })

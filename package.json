@@ -98,7 +98,7 @@
   },
   "dependencies": {
     "@poppinss/macroable": "^1.0.5",
-    "@poppinss/matchit": "^3.1.2",
+    "@poppinss/matchit": "^3.2.0",
     "@poppinss/middleware": "^3.2.6",
     "@poppinss/utils": "^7.0.0-next.3",
     "@sindresorhus/is": "^7.0.2",

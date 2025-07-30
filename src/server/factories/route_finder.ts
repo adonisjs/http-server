@@ -29,7 +29,7 @@ export function routeFinder(
     const url = ctx.request.url()
     const method = ctx.request.method()
     const hostname = router.usingDomains ? ctx.request.hostname() : undefined
-    const route = router.match(url, method, hostname)
+    const route = router.match(url, method, ctx.request.parsedUrl.shouldDecodeParam, hostname)
 
     if (route) {
       ctx.params = route.params

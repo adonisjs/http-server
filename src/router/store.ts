@@ -181,6 +181,7 @@ export class RoutesStore {
   match(
     url: string,
     method: string,
+    shouldDecodeParam: boolean,
     domain?: { tokens: MatchItRouteToken[]; hostname: string }
   ): null | MatchedRoute {
     const domainName = domain?.tokens[0]?.old || 'root'
@@ -213,7 +214,7 @@ export class RoutesStore {
     return {
       route: route,
       routeKey: matchedMethod.routeKeys[route.pattern],
-      params: matchit.exec(url, matchedRoute),
+      params: matchit.exec(url, matchedRoute, shouldDecodeParam),
       subdomains: domain?.hostname ? matchit.exec(domain.hostname, domain.tokens) : {},
     }
   }

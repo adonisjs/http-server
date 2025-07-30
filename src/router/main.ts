@@ -617,15 +617,20 @@ export const urlFor = createUrlBuilder<RoutesList>(router, (qs) => {
   /**
    * Find route for a given URL, method and optionally domain
    */
-  match(uri: string, method: string, hostname?: string | null): null | MatchedRoute {
+  match(
+    uri: string,
+    method: string,
+    shouldDecodeParam: boolean,
+    hostname?: string | null
+  ): null | MatchedRoute {
     const matchingDomain = this.#store.matchDomain(hostname)
 
     return matchingDomain.length
-      ? this.#store.match(uri, method, {
+      ? this.#store.match(uri, method, shouldDecodeParam, {
           tokens: matchingDomain,
           hostname: hostname!,
         })
-      : this.#store.match(uri, method)
+      : this.#store.match(uri, method, shouldDecodeParam)
   }
 
   /**

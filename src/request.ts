@@ -17,12 +17,11 @@ import { safeEqual } from '@poppinss/utils'
 import Macroable from '@poppinss/macroable'
 import lodash from '@poppinss/utils/lodash'
 import type { Encryption } from '@adonisjs/encryption'
-import { parse, type UrlWithStringQuery } from 'node:url'
 import { type ServerResponse, type IncomingMessage, type IncomingHttpHeaders } from 'node:http'
 
 import type { Qs } from './qs.js'
-import { trustProxy } from './utils.js'
 import { CookieParser } from './cookies/parser.js'
+import { safeDecodeURI, trustProxy } from './utils.js'
 import { type RequestConfig } from './types/request.js'
 import type { HttpContext } from './http_context/main.js'
 
@@ -92,7 +91,11 @@ export class Request extends Macroable {
   /**
    * Parsed URL with query string stored as a string.
    */
-  parsedUrl: UrlWithStringQuery
+  parsedUrl: {
+    pathname: string
+    query: string
+    shouldDecodeParam: boolean
+  }
 
   /**
    * The ctx will be set by the context itself. It creates a circular
@@ -112,7 +115,7 @@ export class Request extends Macroable {
     this.#qsParser = qsParser
     this.#config = config
     this.#encryption = encryption
-    this.parsedUrl = parse(this.request.url!, false)
+    this.parsedUrl = safeDecodeURI(request.url!, false)
     this.#parseQueryString()
   }
 
@@ -454,12 +457,12 @@ export class Request extends Macroable {
       return 'https'
     }
 
-    if (!trustProxy(this.request.socket.remoteAddress!, this.#config.trustProxy)) {
-      return this.parsedUrl.protocol || 'http'
+    if (trustProxy(this.request.socket.remoteAddress!, this.#config.trustProxy)) {
+      const forwardedProtocol = this.header('X-Forwarded-Proto')
+      return forwardedProtocol ? forwardedProtocol.split(/\s*,\s*/)[0] : 'http'
     }
 
-    const forwardedProtocol = this.header('X-Forwarded-Proto')
-    return forwardedProtocol ? forwardedProtocol.split(/\s*,\s*/)[0] : 'http'
+    return 'http'
   }
 
   /**

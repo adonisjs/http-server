@@ -572,7 +572,7 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.containSubset(store.match('/', 'GET'), {
+    assert.containSubset(store.match('/', 'GET', false), {
       route: {
         pattern: '/',
         handler,
@@ -603,7 +603,7 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.containSubset(store.match('/virk', 'GET'), {
+    assert.containSubset(store.match('/virk', 'GET', false), {
       route: {
         pattern: '/:username',
         handler,
@@ -636,7 +636,7 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.containSubset(store.match('/virk', 'GET'), {
+    assert.containSubset(store.match('/virk', 'GET', false), {
       route: {
         pattern: '/:username?',
         handler,
@@ -652,7 +652,7 @@ test.group('Store | match', () => {
       routeKey: 'GET-/:username?',
     })
 
-    assert.containSubset(store.match('/', 'GET'), {
+    assert.containSubset(store.match('/', 'GET', false), {
       route: {
         pattern: '/:username?',
         handler,
@@ -695,7 +695,7 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.containSubset(store.match('/1', 'GET'), {
+    assert.containSubset(store.match('/1', 'GET', false), {
       route: {
         pattern: '/:username',
         handler,
@@ -744,7 +744,7 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.containSubset(store.match('/1', 'GET'), {
+    assert.containSubset(store.match('/1', 'GET', false), {
       route: {
         pattern: '/:id',
         handler,
@@ -885,7 +885,7 @@ test.group('Store | match', () => {
 
     const domain = store.matchDomain('foo.com')
     assert.containSubset(
-      store.match('/1', 'GET', {
+      store.match('/1', 'GET', false, {
         tokens: domain,
         hostname: 'foo.com',
       }),
@@ -925,7 +925,7 @@ test.group('Store | match', () => {
 
     const domain = store.matchDomain('blog.adonisjs.com')
     assert.containSubset(
-      store.match('/1', 'GET', {
+      store.match('/1', 'GET', false, {
         tokens: domain,
         hostname: 'blog.adonisjs.com',
       }),
@@ -965,7 +965,7 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.isNull(store.match('/1', 'POST'))
+    assert.isNull(store.match('/1', 'POST', false))
   })
 
   test('return null when unable to match the domain', ({ assert }) => {
@@ -985,7 +985,7 @@ test.group('Store | match', () => {
     })
 
     assert.isNull(
-      store.match('/1', 'POST', {
+      store.match('/1', 'POST', false, {
         tokens: [{ old: 'foo.com', end: '', type: 0, val: 'foo.com' }],
         hostname: 'foo.com',
       })
@@ -1008,7 +1008,7 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.isNull(store.match('/hello', 'GET'))
+    assert.isNull(store.match('/hello', 'GET', false))
   })
 
   test('do not match param against regex when param is optional and missing', ({ assert }) => {
@@ -1030,7 +1030,7 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.containSubset(store.match('/users', 'GET'), {
+    assert.containSubset(store.match('/users', 'GET', false), {
       route: {
         pattern: '/users/:id?',
         handler,
@@ -1064,7 +1064,7 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.containSubset(store.match('/users/1', 'GET'), {
+    assert.containSubset(store.match('/users/1', 'GET', false), {
       route: {
         pattern: '/users/:id?',
         handler,
@@ -1113,7 +1113,7 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.containSubset(store.match('/1', 'GET'), {
+    assert.containSubset(store.match('/1', 'GET', false), {
       route: {
         pattern: '/:id',
         handler,
@@ -1149,7 +1149,7 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.containSubset(store.match('/', 'GET'), {
+    assert.containSubset(store.match('/', 'GET', false), {
       route: {
         pattern: '/:id?',
         handler,
@@ -1184,7 +1184,7 @@ test.group('Store | match', () => {
       domain: 'root',
     })
 
-    assert.containSubset(store.match('/1/HELLO-WORLD', 'GET'), {
+    assert.containSubset(store.match('/1/HELLO-WORLD', 'GET', false), {
       route: {
         pattern: '/:id/:slug',
         handler,

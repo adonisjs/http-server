@@ -10,7 +10,6 @@
 import { join } from 'node:path'
 import autocannon from 'autocannon'
 import { fork } from 'node:child_process'
-import { getDirname } from '@poppinss/utils'
 
 function coolOff() {
   return new Promise((resolve) => setTimeout(resolve, 5000))
@@ -27,7 +26,7 @@ function autocannonRun(opts) {
 
 async function adonisRun() {
   console.log('ADONIS')
-  const forked = fork(join(getDirname(import.meta.url), 'adonisjs.js'))
+  const forked = fork(join(import.meta.dirname, 'adonisjs.js'))
 
   await coolOff()
   await autocannonRun({
@@ -50,7 +49,7 @@ async function adonisRun() {
 
 async function fastifyRun() {
   console.log('FASTIFY')
-  const forked = fork(join(getDirname(import.meta.url), 'fastify.js'))
+  const forked = fork(join(import.meta.dirname, 'fastify.js'))
 
   await coolOff()
   await autocannonRun({

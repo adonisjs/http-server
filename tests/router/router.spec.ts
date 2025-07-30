@@ -24,7 +24,7 @@ test.group('Router | add', () => {
     const deleteRoute = router.delete('/', '#controllers/home.destroy')
     const anyRoute = router.any('/', '#controllers/home.handle')
 
-    assert.containsSubset(getRoute.toJSON(), {
+    assert.containSubset(getRoute.toJSON(), {
       pattern: '/',
       methods: ['GET', 'HEAD'],
       meta: {},
@@ -33,7 +33,7 @@ test.group('Router | add', () => {
       name: undefined,
     })
 
-    assert.containsSubset(postRoute.toJSON(), {
+    assert.containSubset(postRoute.toJSON(), {
       pattern: '/',
       methods: ['POST'],
       meta: {},
@@ -42,7 +42,7 @@ test.group('Router | add', () => {
       name: undefined,
     })
 
-    assert.containsSubset(putRoute.toJSON(), {
+    assert.containSubset(putRoute.toJSON(), {
       pattern: '/',
       methods: ['PUT'],
       meta: {},
@@ -51,7 +51,7 @@ test.group('Router | add', () => {
       name: undefined,
     })
 
-    assert.containsSubset(patchRoute.toJSON(), {
+    assert.containSubset(patchRoute.toJSON(), {
       pattern: '/',
       methods: ['PATCH'],
       meta: {},
@@ -60,7 +60,7 @@ test.group('Router | add', () => {
       name: undefined,
     })
 
-    assert.containsSubset(deleteRoute.toJSON(), {
+    assert.containSubset(deleteRoute.toJSON(), {
       pattern: '/',
       methods: ['DELETE'],
       meta: {},
@@ -69,7 +69,7 @@ test.group('Router | add', () => {
       name: undefined,
     })
 
-    assert.containsSubset(anyRoute.toJSON(), {
+    assert.containSubset(anyRoute.toJSON(), {
       pattern: '/',
       methods: ['HEAD', 'OPTIONS', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
       meta: {},
@@ -106,7 +106,7 @@ test.group('Router | add', () => {
 
     router.commit()
 
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       root: [
         {
           domain: 'root',
@@ -157,7 +157,7 @@ test.group('Router | add', () => {
     router.commit()
 
     const routeJSON = router.toJSON()
-    assert.containsSubset(routeJSON, {
+    assert.containSubset(routeJSON, {
       root: [
         {
           domain: 'root',
@@ -167,7 +167,7 @@ test.group('Router | add', () => {
       ],
     })
 
-    assert.containsSubset(
+    assert.containSubset(
       [...routeJSON.root[0].middleware.all()],
       [
         {
@@ -201,7 +201,7 @@ test.group('Router | add', () => {
 
     router.commit()
 
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       'foo.com': [
         {
           domain: 'foo.com',
@@ -232,7 +232,7 @@ test.group('Router | add', () => {
 
     router.commit()
 
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       root: [
         {
           domain: 'root',
@@ -271,8 +271,8 @@ test.group('Router | add', () => {
     router.get('users/:user_id', handler).where('user_id', router.matchers.number())
     router.commit()
 
-    assert.isNull(router.match('/users/ ', 'GET'))
-    assert.isNotNull(router.match('/user/ ', 'GET')) // without matcher
+    assert.isNull(router.match('/users/ ', 'GET', false))
+    assert.isNotNull(router.match('/user/ ', 'GET', false)) // without matcher
   })
 
   test('apply route names in group', ({ assert }) => {
@@ -292,7 +292,7 @@ test.group('Router | add', () => {
 
     router.commit()
 
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       root: [
         {
           domain: 'root',
@@ -314,7 +314,7 @@ test.group('Router | add', () => {
     router.get('/', handler)
     router.commit()
 
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       root: [
         {
           domain: 'root',
@@ -341,7 +341,7 @@ test.group('Router | add', () => {
     router.get('/', handler)
     router.commit()
 
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       root: [
         {
           domain: 'root',
@@ -371,7 +371,7 @@ test.group('Router | add', () => {
     router.get('/', handler)
     router.commit()
 
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       root: [
         {
           domain: 'root',
@@ -397,7 +397,7 @@ test.group('Router | commit', () => {
     router.get('/', handler)
     router.commit()
 
-    assert.containsSubset(router.match('/', 'GET'), {
+    assert.containSubset(router.match('/', 'GET', false), {
       params: {},
       route: {
         handler,
@@ -425,7 +425,7 @@ test.group('Router | commit', () => {
 
     router.commit()
 
-    assert.containsSubset(router.match('/api', 'GET'), {
+    assert.containSubset(router.match('/api', 'GET', false), {
       params: {},
       route: {
         handler,
@@ -451,7 +451,7 @@ test.group('Router | commit', () => {
 
     router.commit()
 
-    assert.containsSubset(router.match('/api/posts', 'GET'), {
+    assert.containSubset(router.match('/api/posts', 'GET', false), {
       params: {},
       route: {
         meta: {
@@ -480,7 +480,7 @@ test.group('Router | commit', () => {
 
     router.commit()
 
-    assert.containsSubset(router.match('/api/v1/posts', 'GET'), {
+    assert.containSubset(router.match('/api/v1/posts', 'GET', false), {
       params: {},
       route: {
         meta: {
@@ -500,7 +500,7 @@ test.group('Router | commit', () => {
     router.shallowResource('posts.comments', 'CommentsController')
     router.commit()
 
-    assert.containsSubset(router.match('/comments/1', 'GET'), {
+    assert.containSubset(router.match('/comments/1', 'GET', false), {
       params: {
         id: '1',
       },
@@ -523,7 +523,7 @@ test.group('Router | commit', () => {
 
     router.commit()
 
-    assert.containsSubset(router.match('posts/2/comments/1', 'GET'), {
+    assert.containSubset(router.match('posts/2/comments/1', 'GET', false), {
       params: {
         id: '1',
         post_id: '2',
@@ -549,7 +549,7 @@ test.group('Router | commit', () => {
 
     router.commit()
 
-    assert.isNull(router.match('/', 'GET'))
+    assert.isNull(router.match('/', 'GET', false))
   })
 })
 
@@ -560,7 +560,7 @@ test.group('Router | match', () => {
     router.resource('photos', 'PhotosController')
     router.commit()
 
-    assert.containsSubset(router.match('photos', 'GET')!, {
+    assert.containSubset(router.match('photos', 'GET', false)!, {
       params: {},
       route: {
         meta: {
@@ -573,7 +573,7 @@ test.group('Router | match', () => {
       subdomains: {},
     })
 
-    assert.containsSubset(router.match('photos/create', 'GET'), {
+    assert.containSubset(router.match('photos/create', 'GET', false), {
       params: {},
       route: {
         meta: {
@@ -586,7 +586,7 @@ test.group('Router | match', () => {
       subdomains: {},
     })
 
-    assert.containsSubset(router.match('photos', 'POST')!, {
+    assert.containSubset(router.match('photos', 'POST', false)!, {
       params: {},
       route: {
         meta: {
@@ -599,7 +599,7 @@ test.group('Router | match', () => {
       subdomains: {},
     })
 
-    assert.containsSubset(router.match('photos/1', 'GET')!, {
+    assert.containSubset(router.match('photos/1', 'GET', false)!, {
       params: {
         id: '1',
       },
@@ -614,7 +614,7 @@ test.group('Router | match', () => {
       subdomains: {},
     })
 
-    assert.containsSubset(router.match('photos/1/edit', 'GET')!, {
+    assert.containSubset(router.match('photos/1/edit', 'GET', false)!, {
       params: {
         id: '1',
       },
@@ -629,7 +629,7 @@ test.group('Router | match', () => {
       subdomains: {},
     })
 
-    assert.containsSubset(router.match('photos/1', 'PUT')!, {
+    assert.containSubset(router.match('photos/1', 'PUT', false)!, {
       params: {
         id: '1',
       },
@@ -644,7 +644,7 @@ test.group('Router | match', () => {
       subdomains: {},
     })
 
-    assert.containsSubset(router.match('photos/1', 'DELETE')!, {
+    assert.containSubset(router.match('photos/1', 'DELETE', false)!, {
       params: {
         id: '1',
       },
@@ -666,21 +666,24 @@ test.group('Router | match', () => {
     router.get('photos/:id', '#controllers/photos.show').where('id', router.matchers.uuid())
     router.commit()
 
-    assert.isNull(router.match('photos/1', 'GET'))
-    assert.containsSubset(router.match('photos/78fee49A-3d79-43bc-b93f-1ac4ba9e925B', 'GET'), {
-      params: {
-        id: '78fee49a-3d79-43bc-b93f-1ac4ba9e925b',
-      },
-      route: {
-        meta: {
-          params: ['id'],
+    assert.isNull(router.match('photos/1', 'GET', false))
+    assert.containSubset(
+      router.match('photos/78fee49A-3d79-43bc-b93f-1ac4ba9e925B', 'GET', false),
+      {
+        params: {
+          id: '78fee49a-3d79-43bc-b93f-1ac4ba9e925b',
         },
-        pattern: '/photos/:id',
-        name: undefined,
-      },
-      routeKey: 'GET-/photos/:id',
-      subdomains: {},
-    })
+        route: {
+          meta: {
+            params: ['id'],
+          },
+          pattern: '/photos/:id',
+          name: undefined,
+        },
+        routeKey: 'GET-/photos/:id',
+        subdomains: {},
+      }
+    )
   })
 
   test('match route for a specific domain', ({ assert }) => {
@@ -694,7 +697,7 @@ test.group('Router | match', () => {
 
     router.commit()
 
-    assert.containsSubset(router.match('photos', 'GET', 'news.adonisjs.com')!, {
+    assert.containSubset(router.match('photos', 'GET', false, 'news.adonisjs.com')!, {
       params: {},
       route: {
         meta: {
@@ -720,7 +723,7 @@ test.group('Brisk route', () => {
     router.on('/').setHandler(handler)
     router.commit()
 
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       root: [
         {
           domain: 'root',
@@ -749,7 +752,7 @@ test.group('Brisk route', () => {
 
     router.commit()
 
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       root: [
         {
           name: 'v1.root',
@@ -778,7 +781,7 @@ test.group('Brisk route', () => {
 
     router.commit()
 
-    assert.containsSubset(router.match('/api/v1', 'GET'), {
+    assert.containSubset(router.match('/api/v1', 'GET', false), {
       params: {},
       route: {
         handler,
@@ -1001,7 +1004,7 @@ test.group('Regression', () => {
       .where('id', /^[a-z0-9]$/)
 
     router.commit()
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       root: [
         {
           pattern: '/:id',
@@ -1027,7 +1030,7 @@ test.group('Regression', () => {
       .prefix('/baz')
 
     router.commit()
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       root: [
         {
           pattern: '/baz/bar/foo',
@@ -1051,7 +1054,7 @@ test.group('Regression', () => {
 
     router.commit()
 
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       'foo.com': [
         {
           pattern: '/',
@@ -1075,7 +1078,7 @@ test.group('Regression', () => {
 
     router.commit()
 
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       root: [
         {
           name: 'auth.admin.showById',
@@ -1106,7 +1109,7 @@ test.group('Named middleware', () => {
 
     assert.isObject(namedMiddleware)
     assert.property(namedMiddleware, 'auth')
-    assert.containsSubset(namedMiddleware.auth(), { name: 'auth', args: undefined })
+    assert.containSubset(namedMiddleware.auth(), { name: 'auth', args: undefined })
   })
 })
 
@@ -1301,7 +1304,7 @@ test.group('Router | toJSON', () => {
     router.get('categories', [CategoriesControllerRef, 'index'])
 
     router.commit()
-    assert.containsSubset(router.toJSON(), {
+    assert.containSubset(router.toJSON(), {
       root: [
         {
           pattern: '/users/:id?',
@@ -1346,7 +1349,7 @@ test.group('Router | toJSON', () => {
     router.get('comments', 'CommentsController.index')
 
     router.commit()
-    assert.containsSubset(Array.from(router.toJSON().root[0].middleware.all()), [
+    assert.containSubset(Array.from(router.toJSON().root[0].middleware.all()), [
       {
         name: 'AuthMiddlewareRef',
         reference: AuthMiddlewareRef,
@@ -1375,7 +1378,7 @@ test.group('Router | toJSON', () => {
     router.commit()
     const routeMiddleware = Array.from(router.toJSON().root[0].middleware.all())
     assert.lengthOf(routeMiddleware, 3)
-    assert.containsSubset(routeMiddleware[0], {
+    assert.containSubset(routeMiddleware[0], {
       name: 'auth',
       reference: AuthMiddlewareRef,
     })
@@ -1390,7 +1393,7 @@ test.group('Router | find', () => {
 
     router.get('/users/:id', () => {})
     router.commit()
-    assert.containsSubset(router.find('/users/:id'), {
+    assert.containSubset(router.find('/users/:id'), {
       pattern: '/users/:id',
       meta: {},
       methods: ['GET'],
@@ -1405,7 +1408,7 @@ test.group('Router | find', () => {
 
     router.get('/users/:id', () => {}).as('users.show')
     router.commit()
-    assert.containsSubset(router.find('users.show'), {
+    assert.containSubset(router.find('users.show'), {
       pattern: '/users/:id',
       meta: {},
       methods: ['GET'],
@@ -1421,7 +1424,7 @@ test.group('Router | find', () => {
     router.get('/users/:id', '#controllers/users')
     router.commit()
 
-    assert.containsSubset(router.find('#controllers/users'), {
+    assert.containSubset(router.find('#controllers/users'), {
       pattern: '/users/:id',
       meta: {},
       methods: ['GET'],
@@ -1456,7 +1459,7 @@ test.group('Router | find', () => {
       .domain('blog.adonisjs.com')
 
     router.commit()
-    assert.containsSubset(router.find('posts.show'), {
+    assert.containSubset(router.find('posts.show'), {
       pattern: '/posts/:id',
       meta: {},
       methods: ['GET'],
@@ -1487,12 +1490,12 @@ test.group('Router | find', () => {
 
     router.commit()
     assert.isNull(router.find('/users/:id', undefined, 'put'))
-    assert.containsSubset(router.find('/users/:id', undefined, 'GET'), {
+    assert.containSubset(router.find('/users/:id', undefined, 'GET'), {
       methods: ['GET', 'HEAD'],
       name: 'users.show',
       pattern: '/users/:id',
     })
-    assert.containsSubset(router.find('/users/:id', undefined, 'DELETE'), {
+    assert.containSubset(router.find('/users/:id', undefined, 'DELETE'), {
       methods: ['DELETE'],
       name: 'users.delete',
       pattern: '/users/:id',
@@ -1506,7 +1509,7 @@ test.group('Lookup store | findByOrFail', () => {
     router.get('/users/:id', () => {})
     router.commit()
 
-    assert.containsSubset(router.findOrFail('/users/:id'), {
+    assert.containSubset(router.findOrFail('/users/:id'), {
       pattern: '/users/:id',
       meta: {},
       methods: ['GET'],
@@ -1521,7 +1524,7 @@ test.group('Lookup store | findByOrFail', () => {
     router.get('/users/:id', () => {}).as('users.show')
     router.commit()
 
-    assert.containsSubset(router.findOrFail('users.show'), {
+    assert.containSubset(router.findOrFail('users.show'), {
       pattern: '/users/:id',
       meta: {},
       methods: ['GET'],
@@ -1536,7 +1539,7 @@ test.group('Lookup store | findByOrFail', () => {
     router.get('/users/:id', '#controllers/users')
     router.commit()
 
-    assert.containsSubset(router.findOrFail('#controllers/users'), {
+    assert.containSubset(router.findOrFail('#controllers/users'), {
       pattern: '/users/:id',
       meta: {},
       methods: ['GET'],
