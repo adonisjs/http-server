@@ -345,7 +345,7 @@ export class Response extends Macroable {
         contentType = 'application/octet-stream; charset=utf-8'
         break
       case 'object':
-        content = JSON.stringify(content)
+        content = safeStringify(content)
         contentType = 'application/json; charset=utf-8'
         break
     }
