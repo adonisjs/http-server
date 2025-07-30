@@ -8,7 +8,7 @@
  */
 
 import Cache from 'tmp-cache'
-import { InvalidArgumentsException } from '@poppinss/exception'
+import { InvalidArgumentsException } from '@poppinss/utils/exception'
 
 import { type Route } from './router/route.js'
 import { RouteGroup } from './router/group.js'

@@ -13,7 +13,7 @@ import { moduleImporter } from '@adonisjs/fold'
 import type { Encryption } from '@adonisjs/encryption'
 import type { Application } from '@adonisjs/application'
 import { RuntimeException } from '@poppinss/utils/exception'
-import type { Constructor, LazyImport } from '@poppinss/types'
+import type { Constructor, LazyImport } from '@poppinss/utils/types'
 
 import debug from '../debug.js'
 import type { Qs } from '../qs.js'

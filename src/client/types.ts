@@ -11,7 +11,7 @@
  * Types shared with the client. These should never import other types
  */
 
-import { type Prettify } from '@poppinss/types'
+import { type Prettify } from '@poppinss/utils/types'
 
 /**
  * Options accepted by "url" and "route" helper methods

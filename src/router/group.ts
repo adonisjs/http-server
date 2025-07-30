@@ -8,7 +8,7 @@
  */
 
 import Macroable from '@poppinss/macroable'
-import type { OneOrMore } from '@poppinss/types'
+import type { OneOrMore } from '@poppinss/utils/types'
 
 import { type Route } from './route.js'
 import { BriskRoute } from './brisk.js'

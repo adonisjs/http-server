@@ -13,7 +13,7 @@ import Middleware from '@poppinss/middleware'
 import type { Application } from '@adonisjs/application'
 import { RuntimeException } from '@poppinss/utils/exception'
 import { moduleCaller, moduleImporter } from '@adonisjs/fold'
-import type { Constructor, LazyImport, OneOrMore } from '@poppinss/types'
+import type { Constructor, LazyImport, OneOrMore } from '@poppinss/utils/types'
 
 import debug from '../debug.js'
 import { execute } from './executor.js'

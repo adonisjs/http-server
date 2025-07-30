@@ -314,25 +314,40 @@ export class Response extends Macroable {
      * info
      */
     const dataType = this.#getDataType(content)
+    let contentType: string
 
     /**
      * ----------------------------------------
      * SERIALIZE CONTENT TO A STRING
      * ----------------------------------------
      *
-     * Transforming date, number, boolean and object to a string
+     * Transforming date, number, boolean and object to a string and
+     * finding their content-type
      */
-    if (dataType === 'object') {
-      content = safeStringify(content)
-    } else if (
-      dataType === 'number' ||
-      dataType === 'boolean' ||
-      dataType === 'bigint' ||
-      dataType === 'regexp'
-    ) {
-      content = String(content)
-    } else if (dataType === 'date') {
-      content = content.toISOString()
+    switch (dataType) {
+      case 'string':
+        contentType = (content as string).trimStart().startsWith('<')
+          ? 'text/html; charset=utf-8'
+          : 'text/plain; charset=utf-8'
+        break
+      case 'number':
+      case 'boolean':
+      case 'bigint':
+      case 'regexp':
+        content = String(content)
+        contentType = 'text/plain; charset=utf-8'
+        break
+      case 'date':
+        content = content.toISOString()
+        contentType = 'text/plain; charset=utf-8'
+        break
+      case 'buffer':
+        contentType = 'application/octet-stream; charset=utf-8'
+        break
+      case 'object':
+        content = JSON.stringify(content)
+        contentType = 'application/json; charset=utf-8'
+        break
     }
 
     /*
@@ -344,16 +359,7 @@ export class Response extends Macroable {
      * valid JSONP response
      */
     if (jsonpCallbackName) {
-      /*
-       * replace chars not allowed in JavaScript that are in JSON
-       * https://github.com/rack/rack-contrib/pull/37
-       */
       content = content.replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029')
-
-      // the /**/ is a specific security mitigation for "Rosetta Flash JSONP abuse"
-      // https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2014-4671
-      // http://miki.it/blog/2014/7/8/abusing-jsonp-with-rosetta-flash/
-      // http://drops.wooyun.org/tips/2554
       content = `/**/ typeof ${jsonpCallbackName} === 'function' && ${jsonpCallbackName}(${content});`
     }
 
@@ -414,25 +420,7 @@ export class Response extends Macroable {
       this.header('X-Content-Type-Options', 'nosniff')
       this.safeHeader('Content-Type', 'text/javascript; charset=utf-8')
     } else {
-      switch (dataType) {
-        case 'string':
-          const type = /^\s*</.test(content) ? 'text/html' : 'text/plain'
-          this.safeHeader('Content-Type', `${type}; charset=utf-8`)
-          break
-        case 'number':
-        case 'boolean':
-        case 'date':
-        case 'bigint':
-        case 'regexp':
-          this.safeHeader('Content-Type', 'text/plain; charset=utf-8')
-          break
-        case 'buffer':
-          this.safeHeader('Content-Type', 'application/octet-stream; charset=utf-8')
-          break
-        case 'object':
-          this.safeHeader('Content-Type', 'application/json; charset=utf-8')
-          break
-      }
+      this.safeHeader('Content-type', contentType)
     }
 
     this.#endResponse(content)

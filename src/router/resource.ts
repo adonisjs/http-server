@@ -11,7 +11,7 @@ import string from '@poppinss/utils/string'
 import Macroable from '@poppinss/macroable'
 import type { Application } from '@adonisjs/application'
 import { RuntimeException } from '@poppinss/utils/exception'
-import type { Constructor, LazyImport, OneOrMore } from '@poppinss/types'
+import type { Constructor, LazyImport, OneOrMore } from '@poppinss/utils/types'
 
 import { Route } from './route.js'
 import { type RouteMatcher } from '../client/types.ts'

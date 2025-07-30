@@ -9,7 +9,7 @@
 
 import type Middleware from '@poppinss/middleware'
 import type { ContainerResolver } from '@adonisjs/fold'
-import type { Constructor, LazyImport } from '@poppinss/types'
+import type { Constructor, LazyImport } from '@poppinss/utils/types'
 
 import type { ServerErrorHandler } from './server.js'
 import type { HttpContext } from '../http_context/main.js'
