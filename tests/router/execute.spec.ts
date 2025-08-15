@@ -12,10 +12,10 @@ import { moduleImporter } from '@adonisjs/fold'
 import type { NextFn } from '@poppinss/middleware/types'
 import { AppFactory } from '@adonisjs/application/factories'
 
-import { Route } from '../../src/router/route.js'
-import type { HttpContext } from '../../src/http_context/main.js'
-import { HttpContextFactory } from '../../factories/http_context.js'
-import { defineNamedMiddleware } from '../../src/define_middleware.js'
+import { Route } from '../../src/router/route.ts'
+import type { HttpContext } from '../../src/http_context/main.ts'
+import { HttpContextFactory } from '../../factories/http_context.ts'
+import { defineNamedMiddleware } from '../../src/define_middleware.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 

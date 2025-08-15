@@ -9,9 +9,9 @@
 
 import type { Encryption } from '@adonisjs/encryption'
 
-import { CookieClient } from './client.js'
-import { serializeCookie } from '../helpers.js'
-import type { CookieOptions } from '../types/response.js'
+import { CookieClient } from './client.ts'
+import { serializeCookie } from '../helpers.ts'
+import type { CookieOptions } from '../types/response.ts'
 
 /**
  * Cookies serializer is used to serialize a value to be set on the `Set-Cookie`

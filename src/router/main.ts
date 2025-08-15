@@ -15,22 +15,22 @@ import type { Application } from '@adonisjs/application'
 import { RuntimeException } from '@poppinss/utils/exception'
 import type { Constructor, LazyImport } from '@poppinss/utils/types'
 
-import debug from '../debug.js'
-import type { Qs } from '../qs.js'
-import { Route } from './route.js'
-import { RouteGroup } from './group.js'
-import { BriskRoute } from './brisk.js'
-import { RoutesStore } from './store.js'
-import { parseRoute } from '../helpers.js'
-import { toRoutesJSON } from '../utils.js'
-import { RouteResource } from './resource.js'
+import debug from '../debug.ts'
+import type { Qs } from '../qs.ts'
+import { Route } from './route.ts'
+import { RouteGroup } from './group.ts'
+import { BriskRoute } from './brisk.ts'
+import { RoutesStore } from './store.ts'
+import { parseRoute } from '../helpers.ts'
+import { toRoutesJSON } from '../utils.ts'
+import { RouteResource } from './resource.ts'
 import { RouterClient } from '../client/router.ts'
-import { UrlBuilder } from './legacy/url_builder.js'
-import { RouteMatchers as Matchers } from './matchers.js'
-import { defineNamedMiddleware } from '../define_middleware.js'
+import { UrlBuilder } from './legacy/url_builder.ts'
+import { RouteMatchers as Matchers } from './matchers.ts'
+import { defineNamedMiddleware } from '../define_middleware.ts'
 import { createURL, createUrlBuilder } from '../client/url_builder.ts'
 import { createSignedURL, createSignedUrlBuilder } from './signed_url_builder.ts'
-import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.js'
+import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.ts'
 
 import type {
   RouteFn,
@@ -41,7 +41,7 @@ import type {
   MakeUrlOptions,
   MakeSignedUrlOptions,
   GetControllerHandlers,
-} from '../types/route.js'
+} from '../types/route.ts'
 import {
   type UrlFor,
   type LookupList,

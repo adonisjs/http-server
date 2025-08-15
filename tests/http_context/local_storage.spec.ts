@@ -8,9 +8,9 @@
  */
 
 import { test } from '@japa/runner'
-import { type HttpContext } from '../../src/http_context/main.js'
-import { HttpContextFactory } from '../../factories/http_context.js'
-import { asyncLocalStorage } from '../../src/http_context/local_storage.js'
+import { type HttpContext } from '../../src/http_context/main.ts'
+import { HttpContextFactory } from '../../factories/http_context.ts'
+import { asyncLocalStorage } from '../../src/http_context/local_storage.ts'
 
 test.group('Http context | local storage', () => {
   test('get http context inside a local storage scope', async ({ assert }) => {

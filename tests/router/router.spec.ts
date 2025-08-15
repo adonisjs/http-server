@@ -11,7 +11,7 @@ import { parse } from 'qs'
 import { test } from '@japa/runner'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { RouterFactory } from '../../factories/router.js'
+import { RouterFactory } from '../../factories/router.ts'
 
 test.group('Router | add', () => {
   test('add routes', ({ assert }) => {

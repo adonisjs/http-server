@@ -12,9 +12,9 @@ import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/application/factories'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { RouterFactory } from '../factories/router.js'
-import { httpServer } from '../factories/http_server.js'
-import { ResponseFactory } from '../factories/response.js'
+import { RouterFactory } from '../factories/router.ts'
+import { httpServer } from '../factories/http_server.ts'
+import { ResponseFactory } from '../factories/response.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 

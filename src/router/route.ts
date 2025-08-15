@@ -15,17 +15,17 @@ import { RuntimeException } from '@poppinss/utils/exception'
 import { moduleCaller, moduleImporter } from '@adonisjs/fold'
 import type { Constructor, LazyImport, OneOrMore } from '@poppinss/utils/types'
 
-import debug from '../debug.js'
-import { execute } from './executor.js'
-import { dropSlash } from '../utils.js'
-import { parseRoute } from '../helpers.js'
+import debug from '../debug.ts'
+import { execute } from './executor.ts'
+import { dropSlash } from '../utils.ts'
+import { parseRoute } from '../helpers.ts'
 import { type RouteMatcher } from '../client/types.ts'
 
 import type {
   MiddlewareFn,
   ParsedNamedMiddleware,
   ParsedGlobalMiddleware,
-} from '../types/middleware.js'
+} from '../types/middleware.ts'
 
 import type {
   RouteFn,
@@ -34,7 +34,7 @@ import type {
   StoreRouteHandler,
   StoreRouteMiddleware,
   GetControllerHandlers,
-} from '../types/route.js'
+} from '../types/route.ts'
 
 /**
  * The route class exposes the APIs for constructing a route using the

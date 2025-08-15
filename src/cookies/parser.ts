@@ -10,7 +10,7 @@
 import cookie from 'cookie'
 import type { Encryption } from '@adonisjs/encryption'
 
-import { CookieClient } from './client.js'
+import { CookieClient } from './client.ts'
 
 /**
  * Cookie parser parses the HTTP `cookie` header and collects all cookies

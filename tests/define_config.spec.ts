@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { test } from '@japa/runner'
-import { defineConfig } from '../index.js'
 import proxyAddr from 'proxy-addr'
+import { test } from '@japa/runner'
+import { defineConfig } from '../index.ts'
 
 test.group('Define config', () => {
   test('define server config', ({ assert }) => {

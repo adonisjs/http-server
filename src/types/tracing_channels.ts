@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import type { RouteJSON } from './route.js'
-import type { HttpContext } from '../http_context/main.js'
-import type { MiddlewareFn, ParsedGlobalMiddleware, ParsedNamedMiddleware } from './middleware.js'
+import type { RouteJSON } from './route.ts'
+import type { HttpContext } from '../http_context/main.ts'
+import type { MiddlewareFn, ParsedGlobalMiddleware, ParsedNamedMiddleware } from './middleware.ts'
 
 export type HTTPRequestTracingData = HttpContext
 export type MiddlewareTracingData = ParsedGlobalMiddleware | ParsedNamedMiddleware | MiddlewareFn

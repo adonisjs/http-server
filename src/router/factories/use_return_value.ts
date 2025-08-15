@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { type HttpContext } from '../../http_context/main.js'
+import { type HttpContext } from '../../http_context/main.ts'
 
 /**
  * Check if the value can be used to write the response body. Returns

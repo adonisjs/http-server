@@ -8,7 +8,7 @@
  */
 
 import { AsyncLocalStorage } from 'node:async_hooks'
-import type { HttpContext } from './main.js'
+import type { HttpContext } from './main.ts'
 
 /**
  * Async local storage for HTTP context

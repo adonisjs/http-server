@@ -14,7 +14,7 @@ import type {
   MiddlewareAsClass,
   ParsedGlobalMiddleware,
   ParsedNamedMiddleware,
-} from './types/middleware.js'
+} from './types/middleware.ts'
 
 /**
  * Converts a middleware name and its lazy import to a factory function. The function

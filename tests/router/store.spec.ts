@@ -10,9 +10,9 @@
 import { test } from '@japa/runner'
 import Middleware from '@poppinss/middleware'
 
-import { parseRoute } from '../../src/helpers.js'
-import { execute } from '../../src/router/executor.js'
-import { RoutesStore } from '../../src/router/store.js'
+import { parseRoute } from '../../src/helpers.ts'
+import { execute } from '../../src/router/executor.ts'
+import { RoutesStore } from '../../src/router/store.ts'
 
 test.group('Store | add', () => {
   test('add route without explicit domain', ({ assert }) => {

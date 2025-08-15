@@ -9,10 +9,10 @@
 
 import type { ContainerResolver } from '@adonisjs/fold'
 
-import * as errors from '../../errors.js'
-import type { Router } from '../../router/main.js'
-import type { HttpContext } from '../../http_context/main.js'
-import type { ServerErrorHandler } from '../../types/server.js'
+import * as errors from '../../errors.ts'
+import type { Router } from '../../router/main.ts'
+import type { HttpContext } from '../../http_context/main.ts'
+import type { ServerErrorHandler } from '../../types/server.ts'
 
 /**
  * The route finder is executed after the server middleware stack.

@@ -11,9 +11,9 @@ import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/application/factories'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { Router } from '../../src/router/main.js'
-import { RequestFactory } from '../../factories/request.js'
-import { QsParserFactory } from '../../factories/qs_parser_factory.js'
+import { Router } from '../../src/router/main.ts'
+import { RequestFactory } from '../../factories/request.ts'
+import { QsParserFactory } from '../../factories/qs_parser_factory.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 

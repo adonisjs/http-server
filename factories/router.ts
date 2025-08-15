@@ -12,8 +12,8 @@ import type { Application } from '@adonisjs/application'
 import { AppFactory } from '@adonisjs/application/factories'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { Router } from '../src/router/main.js'
-import { QsParserFactory } from './qs_parser_factory.js'
+import { Router } from '../src/router/main.ts'
+import { QsParserFactory } from './qs_parser_factory.ts'
 
 type FactoryParameters = {
   app: Application<any>

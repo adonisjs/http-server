@@ -8,7 +8,7 @@
  */
 
 import { createError, Exception } from '@poppinss/utils/exception'
-import type { HttpContext } from './http_context/main.js'
+import type { HttpContext } from './http_context/main.ts'
 
 /**
  * Thrown when unable to find a matching route for the given request

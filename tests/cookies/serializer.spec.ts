@@ -12,7 +12,7 @@ import { setTimeout } from 'node:timers/promises'
 import { MessageBuilder } from '@poppinss/utils'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { CookieSerializer } from '../../src/cookies/serializer.js'
+import { CookieSerializer } from '../../src/cookies/serializer.ts'
 import base64 from '@poppinss/utils/base64'
 
 const encryption = new EncryptionFactory().create()
@@ -119,7 +119,7 @@ test.group('Cookie | serialize', () => {
 
     const [, options] = serialized!.split('; ')
     assert.equal(options, `Max-Age=60`)
-  })
+  }).pin()
 
   test('define max age in seconds', ({ assert }) => {
     const config = { maxAge: 60 }

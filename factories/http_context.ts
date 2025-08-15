@@ -11,11 +11,11 @@ import { Container } from '@adonisjs/fold'
 import type { Logger } from '@adonisjs/logger'
 import { LoggerFactory } from '@adonisjs/logger/factories'
 
-import { RequestFactory } from './request.js'
-import { ResponseFactory } from './response.js'
-import type { Request } from '../src/request.js'
-import type { Response } from '../src/response.js'
-import { HttpContext } from '../src/http_context/main.js'
+import { RequestFactory } from './request.ts'
+import { ResponseFactory } from './response.ts'
+import type { Request } from '../src/request.ts'
+import type { Response } from '../src/response.ts'
+import { HttpContext } from '../src/http_context/main.ts'
 
 type FactoryParameters = {
   request: Request

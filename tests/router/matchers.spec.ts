@@ -9,7 +9,7 @@
 
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
-import { RouteMatchers } from '../../src/router/matchers.js'
+import { RouteMatchers } from '../../src/router/matchers.ts'
 
 test.group('Matchers', () => {
   test('get matcher for a number', ({ assert }) => {

@@ -10,11 +10,11 @@
 import Macroable from '@poppinss/macroable'
 import type { Application } from '@adonisjs/application'
 
-import { Route } from './route.js'
-import type { HttpContext } from '../http_context/main.js'
-import type { ParsedGlobalMiddleware } from '../types/middleware.js'
+import { Route } from './route.ts'
+import type { HttpContext } from '../http_context/main.ts'
+import type { ParsedGlobalMiddleware } from '../types/middleware.ts'
 import type { RouteBuilderArguments, URLOptions } from '../client/types.ts'
-import type { GetRoutesForMethod, RouteFn, RouteMatchers, RoutesList } from '../types/route.js'
+import type { GetRoutesForMethod, RouteFn, RouteMatchers, RoutesList } from '../types/route.ts'
 
 /**
  * Brisk routes exposes the API to configure the route handler by chaining

@@ -12,7 +12,7 @@ import type {
   MiddlewareTracingData,
   HTTPRequestTracingData,
   RouteHandlerTracingData,
-} from './types/tracing_channels.js'
+} from './types/tracing_channels.ts'
 
 /**
  * Traces every HTTP request handled by the {@link Server} class.

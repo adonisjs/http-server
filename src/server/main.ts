@@ -17,26 +17,26 @@ import type { Application } from '@adonisjs/application'
 import type { EmitterLike } from '@adonisjs/events/types'
 import { type ContainerResolver, moduleCaller, moduleImporter } from '@adonisjs/fold'
 import type { ServerResponse, IncomingMessage, Server as HttpServer } from 'node:http'
-import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.js'
+import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.ts'
 import type {
   ServerConfig,
   HttpServerEvents,
   ServerErrorHandler,
   ErrorHandlerAsAClass,
   TestingMiddlewarePipeline,
-} from '../types/server.js'
+} from '../types/server.ts'
 
-import { Qs } from '../qs.js'
-import debug from '../debug.js'
-import { Request } from '../request.js'
-import { Response } from '../response.js'
-import { Router } from '../router/main.js'
-import { HttpContext } from '../http_context/main.js'
-import { routeFinder } from './factories/route_finder.js'
-import { writeResponse } from './factories/write_response.js'
-import { asyncLocalStorage } from '../http_context/local_storage.js'
-import { middlewareHandler } from './factories/middleware_handler.js'
-import { httpRequest, httpExceptionHandler } from '../tracing_channels.js'
+import { Qs } from '../qs.ts'
+import debug from '../debug.ts'
+import { Request } from '../request.ts'
+import { Response } from '../response.ts'
+import { Router } from '../router/main.ts'
+import { HttpContext } from '../http_context/main.ts'
+import { routeFinder } from './factories/route_finder.ts'
+import { writeResponse } from './factories/write_response.ts'
+import { asyncLocalStorage } from '../http_context/local_storage.ts'
+import { middlewareHandler } from './factories/middleware_handler.ts'
+import { httpRequest, httpExceptionHandler } from '../tracing_channels.ts'
 
 /**
  * The HTTP server implementation to handle incoming requests and respond using the

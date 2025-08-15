@@ -16,11 +16,11 @@ import type { NextFn } from '@poppinss/middleware/types'
 import { AppFactory } from '@adonisjs/application/factories'
 import { createServer, IncomingMessage, ServerResponse } from 'node:http'
 
-import { Router } from '../src/router/main.js'
-import { HttpContext } from '../src/http_context/main.js'
-import { ServerFactory } from '../factories/server_factory.js'
-import { defineNamedMiddleware } from '../src/define_middleware.js'
-import { type HttpRequestFinishedPayload, type HttpServerEvents } from '../src/types/server.js'
+import { Router } from '../src/router/main.ts'
+import { HttpContext } from '../src/http_context/main.ts'
+import { ServerFactory } from '../factories/server_factory.ts'
+import { defineNamedMiddleware } from '../src/define_middleware.ts'
+import { type HttpRequestFinishedPayload, type HttpServerEvents } from '../src/types/server.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 

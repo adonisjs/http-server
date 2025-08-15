@@ -9,11 +9,11 @@
 
 import type { ContainerResolver } from '@adonisjs/fold'
 
-import type { RouteJSON } from '../types/route.js'
-import type { HttpContext } from '../http_context/main.js'
-import type { ServerErrorHandler } from '../types/server.js'
-import { useReturnValue } from './factories/use_return_value.js'
-import { httpMiddleware, httpRouteHandler } from '../tracing_channels.js'
+import type { RouteJSON } from '../types/route.ts'
+import type { HttpContext } from '../http_context/main.ts'
+import type { ServerErrorHandler } from '../types/server.ts'
+import { useReturnValue } from './factories/use_return_value.ts'
+import { httpMiddleware, httpRouteHandler } from '../tracing_channels.ts'
 
 /**
  * Executor to execute the route middleware pipeline the route

@@ -13,7 +13,7 @@ import { Emitter } from '@adonisjs/events'
 import { Encryption } from '@adonisjs/encryption'
 import { Application } from '@adonisjs/application'
 
-import { defineConfig, Server } from '../build/index.js'
+import { defineConfig, Server } from '../build/index.ts'
 
 const app = new Application(new URL('./', import.meta.url), {
   environment: 'web',

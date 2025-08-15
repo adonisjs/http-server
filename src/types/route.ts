@@ -11,10 +11,10 @@ import type Middleware from '@poppinss/middleware'
 import type { ContainerResolver } from '@adonisjs/fold'
 import type { Constructor, LazyImport } from '@poppinss/utils/types'
 
-import type { ServerErrorHandler } from './server.js'
-import type { HttpContext } from '../http_context/main.js'
+import type { ServerErrorHandler } from './server.ts'
+import type { HttpContext } from '../http_context/main.ts'
 import { type RouteMatcher, type MatchItRouteToken } from '../client/types.ts'
-import type { MiddlewareFn, ParsedGlobalMiddleware } from './middleware.js'
+import type { MiddlewareFn, ParsedGlobalMiddleware } from './middleware.ts'
 
 /**
  * Returns a union of methods from a controller that accepts

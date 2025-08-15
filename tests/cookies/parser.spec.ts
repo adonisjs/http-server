@@ -10,8 +10,8 @@
 import { test } from '@japa/runner'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { CookieParser } from '../../src/cookies/parser.js'
-import { CookieSerializer } from '../../src/cookies/serializer.js'
+import { CookieParser } from '../../src/cookies/parser.ts'
+import { CookieSerializer } from '../../src/cookies/serializer.ts'
 
 const encryption = new EncryptionFactory().create()
 const serializer = new CookieSerializer(encryption)

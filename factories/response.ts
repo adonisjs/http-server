@@ -12,11 +12,11 @@ import type { Encryption } from '@adonisjs/encryption'
 import { IncomingMessage, ServerResponse } from 'node:http'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { RouterFactory } from './router.js'
-import { Response } from '../src/response.js'
-import { type Router } from '../src/router/main.js'
-import { QsParserFactory } from './qs_parser_factory.js'
-import { type ResponseConfig } from '../src/types/response.js'
+import { RouterFactory } from './router.ts'
+import { Response } from '../src/response.ts'
+import { type Router } from '../src/router/main.ts'
+import { QsParserFactory } from './qs_parser_factory.ts'
+import { type ResponseConfig } from '../src/types/response.ts'
 
 type FactoryParameters = {
   req: IncomingMessage

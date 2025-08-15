@@ -8,7 +8,7 @@
  */
 
 import { test } from '@japa/runner'
-import { matchRoute } from '../src/helpers.js'
+import { matchRoute } from '../src/helpers.ts'
 
 test.group('Match route', () => {
   test('return url params when a match is found', ({ assert }) => {

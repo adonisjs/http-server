@@ -11,11 +11,11 @@ import is from '@sindresorhus/is'
 import Macroable from '@poppinss/macroable'
 import type { Level } from '@adonisjs/logger/types'
 
-import * as errors from './errors.js'
-import { parseRange } from './utils.js'
-import type { HttpContext } from './http_context/main.js'
+import * as errors from './errors.ts'
+import { parseRange } from './utils.ts'
+import type { HttpContext } from './http_context/main.ts'
 import { canWriteResponseBody } from './router/factories/use_return_value.ts'
-import type { HttpError, StatusPageRange, StatusPageRenderer } from './types/server.js'
+import type { HttpError, StatusPageRange, StatusPageRenderer } from './types/server.ts'
 
 /**
  * The base HTTP exception handler one can inherit from to handle

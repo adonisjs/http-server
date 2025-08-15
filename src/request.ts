@@ -19,11 +19,11 @@ import lodash from '@poppinss/utils/lodash'
 import type { Encryption } from '@adonisjs/encryption'
 import { type ServerResponse, type IncomingMessage, type IncomingHttpHeaders } from 'node:http'
 
-import type { Qs } from './qs.js'
-import { CookieParser } from './cookies/parser.js'
-import { safeDecodeURI, trustProxy } from './utils.js'
-import { type RequestConfig } from './types/request.js'
-import type { HttpContext } from './http_context/main.js'
+import type { Qs } from './qs.ts'
+import { CookieParser } from './cookies/parser.ts'
+import { safeDecodeURI, trustProxy } from './utils.ts'
+import { type RequestConfig } from './types/request.ts'
+import type { HttpContext } from './http_context/main.ts'
 
 /**
  * HTTP Request class exposes the interface to consistently read values

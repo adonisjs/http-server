@@ -13,8 +13,8 @@ import matchit from '@poppinss/matchit'
 import string from '@poppinss/utils/string'
 import { parseBindingReference } from '@adonisjs/fold'
 
-import { type CookieOptions } from './types/response.js'
-import type { RouteMatchers, RouteJSON } from './types/route.js'
+import { type CookieOptions } from './types/response.ts'
+import type { RouteMatchers, RouteJSON } from './types/route.ts'
 import {
   type RouteHandlerInfo,
   type MiddlewareFn,

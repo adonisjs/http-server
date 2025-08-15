@@ -10,7 +10,7 @@
 import { test } from '@japa/runner'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { CookieClient } from '../../src/cookies/client.js'
+import { CookieClient } from '../../src/cookies/client.ts'
 
 const encryption = new EncryptionFactory().create()
 

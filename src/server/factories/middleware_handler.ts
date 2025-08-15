@@ -10,10 +10,10 @@
 import type { ContainerResolver } from '@adonisjs/fold'
 import type { NextFn } from '@poppinss/middleware/types'
 
-import debug from '../../debug.js'
-import { httpMiddleware } from '../../tracing_channels.js'
-import type { HttpContext } from '../../http_context/main.js'
-import { type ParsedGlobalMiddleware } from '../../types/middleware.js'
+import debug from '../../debug.ts'
+import { httpMiddleware } from '../../tracing_channels.ts'
+import type { HttpContext } from '../../http_context/main.ts'
+import { type ParsedGlobalMiddleware } from '../../types/middleware.ts'
 
 /**
  * The middleware handler invokes the middleware functions.

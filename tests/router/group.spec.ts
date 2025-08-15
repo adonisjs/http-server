@@ -10,12 +10,12 @@
 import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/application/factories'
 
-import { Route } from '../../src/router/route.js'
-import { toRoutesJSON } from '../../src/utils.js'
-import { BriskRoute } from '../../src/router/brisk.js'
-import { RouteGroup } from '../../src/router/group.js'
-import { RouteResource } from '../../src/router/resource.js'
-import { defineNamedMiddleware } from '../../src/define_middleware.js'
+import { Route } from '../../src/router/route.ts'
+import { toRoutesJSON } from '../../src/utils.ts'
+import { BriskRoute } from '../../src/router/brisk.ts'
+import { RouteGroup } from '../../src/router/group.ts'
+import { RouteResource } from '../../src/router/resource.ts'
+import { defineNamedMiddleware } from '../../src/define_middleware.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 

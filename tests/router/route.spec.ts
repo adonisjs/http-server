@@ -10,8 +10,8 @@
 import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/application/factories'
 
-import { Route } from '../../src/router/route.js'
-import { defineNamedMiddleware } from '../../src/define_middleware.js'
+import { Route } from '../../src/router/route.ts'
+import { defineNamedMiddleware } from '../../src/define_middleware.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 

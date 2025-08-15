@@ -13,10 +13,10 @@ import type { Logger } from '@adonisjs/logger'
 import { type ContainerResolver } from '@adonisjs/fold'
 import { RuntimeException } from '@poppinss/utils/exception'
 
-import type { Request } from '../request.js'
-import type { Response } from '../response.js'
-import type { RouteJSON } from '../types/route.js'
-import { asyncLocalStorage } from './local_storage.js'
+import type { Request } from '../request.ts'
+import type { Response } from '../response.ts'
+import type { RouteJSON } from '../types/route.ts'
+import { asyncLocalStorage } from './local_storage.ts'
 
 /**
  * Http context encapsulates properties for a given HTTP request. The

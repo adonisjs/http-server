@@ -10,12 +10,12 @@
 import Macroable from '@poppinss/macroable'
 import type { OneOrMore } from '@poppinss/utils/types'
 
-import { type Route } from './route.js'
-import { BriskRoute } from './brisk.js'
-import { RouteResource } from './resource.js'
+import { type Route } from './route.ts'
+import { BriskRoute } from './brisk.ts'
+import { RouteResource } from './resource.ts'
 import type { RouteMatcher } from '../client/types.ts'
 import { type StoreRouteMiddleware } from '../types/route.ts'
-import type { MiddlewareFn, ParsedNamedMiddleware } from '../types/middleware.js'
+import type { MiddlewareFn, ParsedNamedMiddleware } from '../types/middleware.ts'
 
 /**
  * Group class exposes the API to take action on a group of routes.

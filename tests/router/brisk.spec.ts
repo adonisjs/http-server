@@ -9,7 +9,7 @@
 
 import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/application/factories'
-import { BriskRoute } from '../../src/router/brisk.js'
+import { BriskRoute } from '../../src/router/brisk.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 

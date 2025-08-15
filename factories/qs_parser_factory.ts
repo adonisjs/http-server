@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import { Qs } from '../src/qs.js'
-import type { QSParserConfig } from '../src/types/qs.js'
+import { Qs } from '../src/qs.ts'
+import type { QSParserConfig } from '../src/types/qs.ts'
 
 /**
  * QS Parser factory is used to generate the query string

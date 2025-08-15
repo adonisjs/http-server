@@ -8,7 +8,7 @@
  */
 
 import { test } from '@japa/runner'
-import { defineNamedMiddleware } from '../src/define_middleware.js'
+import { defineNamedMiddleware } from '../src/define_middleware.ts'
 
 test.group('Define named middleware', () => {
   test('define a collection of named middleware', ({ assert, expectTypeOf }) => {
@@ -30,7 +30,7 @@ test.group('Define named middleware', () => {
 
     assert.isObject(namedMiddleware)
     assert.property(namedMiddleware, 'auth')
-    assert.containsSubset(namedMiddleware.auth(), { name: 'auth', args: undefined })
+    assert.containSubset(namedMiddleware.auth(), { name: 'auth', args: undefined })
   })
 
   test('infer types for middleware options', ({ assert, expectTypeOf }) => {

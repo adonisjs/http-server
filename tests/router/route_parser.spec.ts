@@ -10,7 +10,7 @@
 // @ts-expect-error
 import matchit from '@poppinss/matchit'
 import { test } from '@japa/runner'
-import { parseRoute } from '../../src/helpers.js'
+import { parseRoute } from '../../src/helpers.ts'
 
 test.group('Route parser', () => {
   test('parse route with params', ({ assert }) => {

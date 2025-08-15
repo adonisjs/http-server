@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { type Router } from '../main.js'
+import { type Router } from '../main.ts'
 
 /**
  * URL builder class is used to create URIs for pre-registered

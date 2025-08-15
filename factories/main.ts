@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-export { RouterFactory } from './router.js'
-export { RequestFactory } from './request.js'
-export { ResponseFactory } from './response.js'
-export { ServerFactory } from './server_factory.js'
-export { HttpContextFactory } from './http_context.js'
-export { QsParserFactory } from './qs_parser_factory.js'
+export { RouterFactory } from './router.ts'
+export { RequestFactory } from './request.ts'
+export { ResponseFactory } from './response.ts'
+export { ServerFactory } from './server_factory.ts'
+export { HttpContextFactory } from './http_context.ts'
+export { QsParserFactory } from './qs_parser_factory.ts'

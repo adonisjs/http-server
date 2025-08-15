@@ -8,7 +8,7 @@
  */
 
 import { parse, stringify } from 'qs'
-import { type QSParserConfig } from './types/qs.js'
+import { type QSParserConfig } from './types/qs.ts'
 
 /**
  * Query string parser used to parse and stringify query

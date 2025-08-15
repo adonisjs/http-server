@@ -8,8 +8,8 @@
  */
 
 import { test } from '@japa/runner'
-import type { HttpContext } from '../../src/http_context/main.js'
-import { type GetControllerHandlers } from '../../src/types/route.js'
+import type { HttpContext } from '../../src/http_context/main.ts'
+import { type GetControllerHandlers } from '../../src/types/route.ts'
 
 test.group('Router types', () => {
   test('infer route handlers from controller constructor', ({ expectTypeOf }) => {

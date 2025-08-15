@@ -10,11 +10,11 @@
 import Cache from 'tmp-cache'
 import { InvalidArgumentsException } from '@poppinss/utils/exception'
 
-import { type Route } from './router/route.js'
-import { RouteGroup } from './router/group.js'
-import { BriskRoute } from './router/brisk.js'
-import type { RouteJSON } from './types/route.js'
-import { RouteResource } from './router/resource.js'
+import { type Route } from './router/route.ts'
+import { RouteGroup } from './router/group.ts'
+import { BriskRoute } from './router/brisk.ts'
+import type { RouteJSON } from './types/route.ts'
+import { RouteResource } from './router/resource.ts'
 
 const proxyCache = new Cache({ max: 200 })
 

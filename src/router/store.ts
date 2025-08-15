@@ -17,9 +17,9 @@ import type {
   StoreDomainNode,
   StoreMethodNode,
   StoreRoutesTree,
-} from '../types/route.js'
-import debug from '../debug.js'
-import { parseRoute } from '../helpers.js'
+} from '../types/route.ts'
+import debug from '../debug.ts'
+import { parseRoute } from '../helpers.ts'
 import { type MatchItRouteToken } from '../client/types.ts'
 
 /**

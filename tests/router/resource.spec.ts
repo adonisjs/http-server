@@ -10,7 +10,7 @@
 import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/application/factories'
 
-import { RouteResource } from '../../src/router/resource.js'
+import { RouteResource } from '../../src/router/resource.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 

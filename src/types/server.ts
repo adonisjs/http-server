@@ -10,10 +10,10 @@
 import type { Constructor } from '@poppinss/utils/types'
 import type { ErrorHandler, FinalHandler } from '@poppinss/middleware/types'
 
-import type { QSParserConfig } from './qs.js'
-import type { RequestConfig } from './request.js'
-import type { ResponseConfig } from './response.js'
-import type { HttpContext } from '../http_context/main.js'
+import type { QSParserConfig } from './qs.ts'
+import type { RequestConfig } from './request.ts'
+import type { ResponseConfig } from './response.ts'
+import type { HttpContext } from '../http_context/main.ts'
 
 /**
  * Normalized HTTP error used by the exception

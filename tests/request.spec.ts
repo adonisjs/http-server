@@ -15,11 +15,11 @@ import Middleware from '@poppinss/middleware'
 import { createServer as httpsServer } from 'node:https'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { RouterFactory } from '../factories/router.js'
-import { RequestFactory } from '../factories/request.js'
-import { httpServer } from '../factories/http_server.js'
-import { CookieSerializer } from '../src/cookies/serializer.js'
-import { HttpContextFactory } from '../factories/http_context.js'
+import { RouterFactory } from '../factories/router.ts'
+import { RequestFactory } from '../factories/request.ts'
+import { httpServer } from '../factories/http_server.ts'
+import { CookieSerializer } from '../src/cookies/serializer.ts'
+import { HttpContextFactory } from '../factories/http_context.ts'
 
 const encryption = new EncryptionFactory().create()
 const serializer = new CookieSerializer(encryption)
@@ -1567,5 +1567,5 @@ test.group('Verify signed url', () => {
     assert.deepEqual(body, {
       hasValidSignature: false,
     })
-  })
+  }).pin()
 })

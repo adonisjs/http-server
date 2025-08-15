@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import type { HttpContext } from '../../http_context/main.js'
+import type { HttpContext } from '../../http_context/main.ts'
 
 /**
  * Writes the response to the socket. The "finish" method can

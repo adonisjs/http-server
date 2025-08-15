@@ -14,9 +14,9 @@ import type { Application } from '@adonisjs/application'
 import { AppFactory } from '@adonisjs/application/factories'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { Server } from '../src/server/main.js'
-import { defineConfig } from '../src/define_config.js'
-import type { ServerConfig } from '../src/types/server.js'
+import { Server } from '../src/server/main.ts'
+import { defineConfig } from '../src/define_config.ts'
+import type { ServerConfig } from '../src/types/server.ts'
 
 type FactoryParameters = {
   app: Application<any>

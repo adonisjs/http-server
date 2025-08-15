@@ -20,11 +20,11 @@ import { AppFactory } from '@adonisjs/application/factories'
 import { createWriteStream, createReadStream } from 'node:fs'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { type Response } from '../src/response.js'
-import { RouterFactory } from '../factories/router.js'
-import { CookieParser } from '../src/cookies/parser.js'
-import { httpServer } from '../factories/http_server.js'
-import { ResponseFactory } from '../factories/response.js'
+import { type Response } from '../src/response.ts'
+import { RouterFactory } from '../factories/router.ts'
+import { CookieParser } from '../src/cookies/parser.ts'
+import { httpServer } from '../factories/http_server.ts'
+import { ResponseFactory } from '../factories/response.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 const BASE_PATH = fileURLToPath(BASE_URL)

@@ -9,9 +9,9 @@
 
 import type { Encryption } from '@adonisjs/encryption'
 
-import * as plainCookiesDriver from './drivers/plain.js'
-import * as signedCookiesDriver from './drivers/signed.js'
-import * as encryptedCookiesDriver from './drivers/encrypted.js'
+import * as plainCookiesDriver from './drivers/plain.ts'
+import * as signedCookiesDriver from './drivers/signed.ts'
+import * as encryptedCookiesDriver from './drivers/encrypted.ts'
 
 /**
  * Cookie client exposes the API to parse/set AdonisJS cookies
