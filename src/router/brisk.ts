@@ -12,9 +12,14 @@ import type { Application } from '@adonisjs/application'
 
 import { Route } from './route.ts'
 import type { HttpContext } from '../http_context/main.ts'
+import type { RouteFn, RouteMatchers } from '../types/route.ts'
 import type { ParsedGlobalMiddleware } from '../types/middleware.ts'
-import type { RouteBuilderArguments, URLOptions } from '../client/types.ts'
-import type { GetRoutesForMethod, RouteFn, RouteMatchers, RoutesList } from '../types/route.ts'
+import type {
+  RoutesList,
+  URLOptions,
+  GetRoutesForMethod,
+  RouteBuilderArguments,
+} from '../types/url_builder.ts'
 
 /**
  * Brisk routes exposes the API to configure the route handler by chaining

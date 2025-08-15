@@ -119,7 +119,7 @@ test.group('Cookie | serialize', () => {
 
     const [, options] = serialized!.split('; ')
     assert.equal(options, `Max-Age=60`)
-  }).pin()
+  })
 
   test('define max age in seconds', ({ assert }) => {
     const config = { maxAge: 60 }

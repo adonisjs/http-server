@@ -7,14 +7,9 @@
  * file that was distributed with this source code.
  */
 
-import { type RouterClient } from './router.ts'
-import {
-  type UrlFor,
-  type LookupList,
-  type URLOptions,
-  type ClientRouteJSON,
-  type MatchItRouteToken,
-} from './types.ts'
+import { type Router } from './main.ts'
+import { type MatchItRouteToken } from '../types/route.ts'
+import { type UrlFor, type LookupList, type URLOptions } from '../types/url_builder.ts'
 
 /**
  * Makes URL for a given route pattern. The route pattern could be an
@@ -101,7 +96,7 @@ export function createURL(
  * Creates the URLBuilder helper
  */
 export function createUrlBuilder<Routes extends LookupList>(
-  router: RouterClient<ClientRouteJSON>,
+  router: Router,
   searchParamsStringifier: (qs: Record<string, any>) => string
 ): UrlFor<Routes> {
   let domainsList: string[]

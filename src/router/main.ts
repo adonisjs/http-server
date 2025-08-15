@@ -8,7 +8,6 @@
  */
 
 import is from '@sindresorhus/is'
-import lodash from '@poppinss/utils/lodash'
 import { moduleImporter } from '@adonisjs/fold'
 import type { Encryption } from '@adonisjs/encryption'
 import type { Application } from '@adonisjs/application'
@@ -24,32 +23,29 @@ import { RoutesStore } from './store.ts'
 import { parseRoute } from '../helpers.ts'
 import { toRoutesJSON } from '../utils.ts'
 import { RouteResource } from './resource.ts'
-import { RouterClient } from '../client/router.ts'
 import { UrlBuilder } from './legacy/url_builder.ts'
 import { RouteMatchers as Matchers } from './matchers.ts'
+import { createURL, createUrlBuilder } from './url_builder.ts'
 import { defineNamedMiddleware } from '../define_middleware.ts'
-import { createURL, createUrlBuilder } from '../client/url_builder.ts'
 import { createSignedURL, createSignedUrlBuilder } from './signed_url_builder.ts'
 import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.ts'
 
 import type {
   RouteFn,
   RouteJSON,
-  RoutesList,
   MatchedRoute,
   RouteMatchers,
   MakeUrlOptions,
   MakeSignedUrlOptions,
   GetControllerHandlers,
+  RouteMatcher,
 } from '../types/route.ts'
 import {
   type UrlFor,
   type LookupList,
+  type RoutesList,
   type SignedURLOptions,
-  type RouteMatcher,
-  type MatchItRouteToken,
-  type ClientRouteJSON,
-} from '../client/types.ts'
+} from '../types/url_builder.ts'
 
 /**
  * Router class exposes a unified API to register new routes, group them or
@@ -63,7 +59,7 @@ import {
  * })
  * ```
  */
-export class Router extends RouterClient<RouteJSON> {
+export class Router {
   /**
    * Flag to avoid re-comitting routes to the store
    */
@@ -143,8 +139,12 @@ export class Router extends RouterClient<RouteJSON> {
     signedUrlFor: UrlFor<RoutesList extends LookupList ? RoutesList : never, SignedURLOptions>
   }
 
+  /**
+   * List of route references kept for lookup.
+   */
+  protected routes: { [domain: string]: RouteJSON[] } = {}
+
   constructor(app: Application<any>, encryption: Encryption, qsParser: Qs) {
-    super()
     this.#app = app
     this.#encryption = encryption
     this.qs = qsParser
@@ -152,6 +152,14 @@ export class Router extends RouterClient<RouteJSON> {
       urlFor: createUrlBuilder(this, this.qs.stringify),
       signedUrlFor: createSignedUrlBuilder(this, this.#encryption, this.qs.stringify),
     }
+  }
+
+  /**
+   * Register route JSON payload
+   */
+  protected register(route: RouteJSON) {
+    this.routes[route.domain] = this.routes[route.domain] || []
+    this.routes[route.domain].push(route)
   }
 
   /**
@@ -435,6 +443,132 @@ export class Router extends RouterClient<RouteJSON> {
   }
 
   /**
+   * The lookup strategies to follow when generating URL builder
+   * types and client
+   */
+  lookupStrategies: ('name' | 'pattern' | 'controller')[] = ['name', 'pattern']
+
+  /**
+   * Define the lookup strategies to follow when generating URL builder
+   * types and client.
+   */
+  updateLookupStrategies(strategies: ('name' | 'pattern' | 'controller')[]) {
+    this.lookupStrategies = strategies
+    return this
+  }
+
+  /**
+   * Finds a route by its identifier. The identifier can be the
+   * route name, controller.method name or the route pattern
+   * itself.
+   *
+   * When "followLookupStrategy" is enabled, the lookup will be performed
+   * on the basis of the lookup strategy enabled via the "lookupStrategies"
+   * method. The default lookupStrategy is "name" and "pattern".
+   */
+  find(
+    routeIdentifier: string,
+    domain?: string,
+    method?: string,
+    followLookupStrategy?: boolean
+  ): RouteJSON | null {
+    /**
+     * Search for route in all the domains when no domain name is
+     * mentioned.
+     */
+    if (!domain) {
+      let route: RouteJSON | null = null
+      for (const routeDomain of Object.keys(this.routes)) {
+        route = this.find(routeIdentifier, routeDomain, method, followLookupStrategy)
+        if (route) {
+          break
+        }
+      }
+      return route
+    }
+
+    const routes = this.routes[domain]
+    if (!routes) {
+      return null
+    }
+
+    const lookupByName = !followLookupStrategy || this.lookupStrategies.includes('name')
+    const lookupByPattern = !followLookupStrategy || this.lookupStrategies.includes('pattern')
+    const lookupByController = !followLookupStrategy || this.lookupStrategies.includes('controller')
+
+    return (
+      routes.find((route) => {
+        if (method && !route.methods.includes(method)) {
+          return false
+        }
+
+        if (
+          (route.name === routeIdentifier && lookupByName) ||
+          (route.pattern === routeIdentifier && lookupByPattern)
+        ) {
+          return true
+        }
+
+        if (typeof route.handler === 'function' || !lookupByController) {
+          return false
+        }
+
+        return route.handler.reference === routeIdentifier
+      }) || null
+    )
+  }
+
+  /**
+   * Finds a route by its identifier. The identifier can be the
+   * route name, controller.method name or the route pattern
+   * itself.
+   *
+   * An error is raised when unable to find the route.
+   *
+   * When "followLookupStrategy" is enabled, the lookup will be performed
+   * on the basis of the lookup strategy enabled via the "lookupStrategies"
+   * method. The default lookupStrategy is "name" and "pattern".
+   */
+  findOrFail(
+    routeIdentifier: string,
+    domain?: string,
+    method?: string,
+    followLookupStrategy?: boolean
+  ): RouteJSON {
+    const route = this.find(routeIdentifier, domain, method, followLookupStrategy)
+    if (!route) {
+      throw new Error(`Cannot lookup route "${routeIdentifier}"`)
+    }
+
+    return route
+  }
+
+  /**
+   * Check if a route exists. The identifier can be the
+   * route name, controller.method name or the route pattern
+   * itself.
+   *
+   * When "followLookupStrategy" is enabled, the lookup will be performed
+   * on the basis of the lookup strategy enabled via the "lookupStrategies"
+   * method. The default lookupStrategy is "name" and "pattern".
+   */
+  has(
+    routeIdentifier: string,
+    domain?: string,
+    method?: string,
+    followLookupStrategy?: boolean
+  ): boolean {
+    return !!this.find(routeIdentifier, domain, method, followLookupStrategy)
+  }
+
+  /**
+   * Returns a list of routes grouped by their domain names
+   */
+  toJSON(): { [domain: string]: RouteJSON[] } {
+    return this.routes
+  }
+
+  /**
    * Generates types for the URL builder. These types must
    * be written inside a file for the URL builder to
    * pick them up.
@@ -571,47 +705,6 @@ export class Router extends RouterClient<RouteJSON> {
         return result
       }, [])
       .join('\n')
-  }
-
-  generateClient() {
-    const routesForClient = Object.keys(this.routes).reduce(
-      (result, domain) => {
-        const routes = this.routes[domain]
-        result[domain] = routes.map((route) => {
-          const controller =
-            'reference' in route.handler && typeof route.handler.reference === 'string'
-              ? route.handler.reference
-              : undefined
-
-          return {
-            pattern: route.pattern,
-            name: route.name,
-            handler: {
-              reference: controller,
-            },
-            methods: route.methods,
-            domain: route.domain,
-            tokens: route.tokens.map((tokens) => {
-              return lodash.pick(tokens, ['val', 'type', 'end']) as MatchItRouteToken
-            }),
-          }
-        })
-
-        return result
-      },
-      {} as {
-        [domain: string]: ClientRouteJSON[]
-      }
-    )
-
-    return `import type { RoutesList } from '@adonisjs/core/types/http'
-import { RouterClient, createUrlBuilder, ClientRouteJSON } from 'adonisjs/core/http/client'
-
-const routes = ${JSON.stringify(routesForClient)} satisfies { [domain: string]: ClientRouteJSON[] }
-const router = new RouterClient(routes)
-export const urlFor = createUrlBuilder<RoutesList>(router, (qs) => {
-  return new URLSearchParams(qs).toString()
-})`
   }
 
   /**

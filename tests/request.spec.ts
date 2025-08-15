@@ -1567,5 +1567,5 @@ test.group('Verify signed url', () => {
     assert.deepEqual(body, {
       hasValidSignature: false,
     })
-  }).pin()
+  })
 })

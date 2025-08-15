@@ -13,10 +13,6 @@
     ".": "./build/index.js",
     "./helpers": "./build/src/helpers.js",
     "./types": "./build/src/types/main.js",
-    "./client": {
-      "import": "./build/client.js",
-      "require": "./build/client.cjs"
-    },
     "./factories": "./build/factories/main.js"
   },
   "engines": {
@@ -28,8 +24,7 @@
     "typecheck": "tsc --noEmit",
     "precompile": "npm run lint",
     "compile": "tsup-node && tsc --emitDeclarationOnly --declaration",
-    "compile:client": "tsup-node --config=bin/build_client.ts",
-    "build": "npm run compile && npm run compile:client",
+    "build": "npm run compile",
     "prebenchmark": "npm run build",
     "benchmark": "node benchmarks/index.js",
     "release": "release-it",

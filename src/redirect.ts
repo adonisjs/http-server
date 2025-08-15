@@ -15,8 +15,12 @@ import type { Qs } from './qs.ts'
 import { encodeUrl } from './helpers.ts'
 import type { Response } from './response.ts'
 import type { Router } from './router/main.ts'
-import type { GetRoutesForMethod, RoutesList } from './types/route.ts'
-import type { RouteBuilderArguments, URLOptions } from './client/types.ts'
+import type {
+  RoutesList,
+  URLOptions,
+  GetRoutesForMethod,
+  RouteBuilderArguments,
+} from './types/url_builder.ts'
 
 /**
  * Exposes the API to construct redirect routes

@@ -58,7 +58,7 @@ test.group('Http exception', () => {
     assert.equal(exception.message, 'HTTP Exception')
     assert.equal(exception.status, 500)
     assert.equal(exception.code, 'E_HTTP_EXCEPTION')
-  }).pin()
+  })
 
   test('create http exception with undefined body', ({ assert }) => {
     const exception = E_HTTP_EXCEPTION.invoke(undefined, 500)

@@ -19,7 +19,6 @@ import debug from '../debug.ts'
 import { execute } from './executor.ts'
 import { dropSlash } from '../utils.ts'
 import { parseRoute } from '../helpers.ts'
-import { type RouteMatcher } from '../client/types.ts'
 
 import type {
   MiddlewareFn,
@@ -30,6 +29,7 @@ import type {
 import type {
   RouteFn,
   RouteJSON,
+  RouteMatcher,
   RouteMatchers,
   StoreRouteHandler,
   StoreRouteMiddleware,

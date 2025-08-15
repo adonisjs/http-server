@@ -9,15 +9,10 @@
 
 import type { Encryption } from '@adonisjs/encryption'
 
-import { createURL } from '../client/url_builder.ts'
-import { type RouterClient } from '../client/router.ts'
-import {
-  type UrlFor,
-  type LookupList,
-  type ClientRouteJSON,
-  type SignedURLOptions,
-  type MatchItRouteToken,
-} from '../client/types.ts'
+import { type Router } from './main.ts'
+import { createURL } from './url_builder.ts'
+import { type MatchItRouteToken } from '../types/route.ts'
+import { type UrlFor, type LookupList, type SignedURLOptions } from '../types/url_builder.ts'
 
 /**
  * Makes signed URL for a given route pattern. The route pattern could be an
@@ -58,7 +53,7 @@ export function createSignedURL(
  * Creates the URLBuilder helper for making signed URLs
  */
 export function createSignedUrlBuilder<Routes extends LookupList>(
-  router: RouterClient<ClientRouteJSON>,
+  router: Router,
   encryption: Encryption,
   searchParamsStringifier: (qs: Record<string, any>) => string
 ): UrlFor<Routes, SignedURLOptions> {

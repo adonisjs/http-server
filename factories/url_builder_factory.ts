@@ -12,8 +12,8 @@ import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { RouterFactory } from './router.ts'
 import type { Router } from '../src/router/main.ts'
-import { type LookupList } from '../src/client/types.ts'
-import { createUrlBuilder } from '../src/client/url_builder.ts'
+import { type LookupList } from '../src/types/url_builder.ts'
+import { createUrlBuilder } from '../src/router/url_builder.ts'
 import { createSignedUrlBuilder } from '../src/router/signed_url_builder.ts'
 
 type FactoryParameters = {

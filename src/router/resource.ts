@@ -14,8 +14,7 @@ import { RuntimeException } from '@poppinss/utils/exception'
 import type { Constructor, LazyImport, OneOrMore } from '@poppinss/utils/types'
 
 import { Route } from './route.ts'
-import { type RouteMatcher } from '../client/types.ts'
-import type { ResourceActionNames, RouteMatchers } from '../types/route.ts'
+import type { ResourceActionNames, RouteMatcher, RouteMatchers } from '../types/route.ts'
 import type {
   MiddlewareFn,
   ParsedNamedMiddleware,
