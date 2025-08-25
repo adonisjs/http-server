@@ -388,6 +388,15 @@ export class Router extends LookupStore {
   }
 
   /**
+   * Reload the router by unfreezing it and cleaning the store.
+   */
+  reload() {
+    this.#store = new RoutesStore()
+    this.#commited = false
+    this.commit()
+  }
+
+  /**
    * Find route for a given URL, method and optionally domain
    */
   match(url: string, method: string, hostname?: string | null): null | MatchedRoute {
