@@ -15,105 +15,6 @@ import { RequestFactory } from '../../factories/request.ts'
 import { URLBuilderFactory } from '../../factories/url_builder_factory.ts'
 
 test.group('URLBuilder', () => {
-  test('create url for a route by route name', ({ assert }) => {
-    const router = new RouterFactory().create()
-    const { urlFor } = new URLBuilderFactory<{
-      ALL: {
-        '/users/:id': {
-          params: { id: string }
-          paramsTuple: [string]
-        }
-      }
-    }>()
-      .merge({ router })
-      .create()
-
-    router.get('/users/:id', () => {})
-    router.commit()
-    assert.equal(urlFor('/users/:id', { id: '1' }), '/users/1')
-  })
-
-  test('create url for a specific methods', ({ assert }) => {
-    const router = new RouterFactory().create()
-    const { urlFor } = new URLBuilderFactory<{
-      ALL: {
-        '/users/:id': {
-          params: { id: string }
-          paramsTuple: [string]
-        }
-      }
-      GET: {
-        '/users/:id': {
-          params: { id: string }
-          paramsTuple: [string]
-        }
-      }
-      POST: {
-        '/users': {
-          params?: {}
-          paramsTuple: [string]
-        }
-      }
-      PUT: {
-        '/users/:id': {
-          params: { id: string }
-          paramsTuple: [string]
-        }
-      }
-      PATCH: {
-        '/users/:id': {
-          params: { id: string }
-          paramsTuple: [string]
-        }
-      }
-      DELETE: {
-        '/users/:id': {
-          params: { id: string }
-          paramsTuple: [string]
-        }
-      }
-    }>()
-      .merge({ router })
-      .create()
-
-    router.route('/users', ['POST'], () => {})
-    router.route('/users/:id', ['GET', 'PUT', 'PATCH', 'DELETE'], () => {})
-    router.commit()
-
-    assert.containsSubset(urlFor.get('/users/:id', { id: '1' }), { method: 'get', url: '/users/1' })
-    assert.equal(`${urlFor.get('/users/:id', { id: '1' })}`, '/users/1')
-
-    assert.containsSubset(urlFor.post('/users'), {
-      method: 'post',
-      url: '/users',
-    })
-    assert.equal(`${urlFor.post('/users')}`, '/users')
-
-    assert.containsSubset(urlFor.put('/users/:id', { id: '1' }), {
-      method: 'put',
-      url: '/users/1',
-    })
-    assert.equal(`${urlFor.put('/users/:id', { id: '1' })}`, '/users/1')
-
-    assert.containsSubset(urlFor.patch('/users/:id', { id: '1' }), {
-      method: 'patch',
-      url: '/users/1',
-    })
-    assert.equal(`${urlFor.patch('/users/:id', { id: '1' })}`, '/users/1')
-
-    assert.containsSubset(urlFor.delete('/users/:id', { id: '1' }), {
-      method: 'delete',
-      url: '/users/1',
-    })
-    assert.equal(`${urlFor.delete('/users/:id', { id: '1' })}`, '/users/1')
-
-    assert.containsSubset(urlFor.method('GET', '/users/:id', { id: '1' }), {
-      method: 'GET',
-      url: '/users/1',
-    })
-    assert.equal(`${urlFor.method('GET', '/users/:id', { id: '1' })}`, '/users/1')
-  })
-
   test('create url for a route by its name', ({ assert }) => {
     const router = new RouterFactory().create()
     const { urlFor } = new URLBuilderFactory<{
@@ -132,6 +33,88 @@ test.group('URLBuilder', () => {
     assert.equal(urlFor('users.show', ['1']), '/users/1')
   })
 
+  test('create url for a specific methods', ({ assert }) => {
+    const router = new RouterFactory().create()
+
+    const { urlFor } = new URLBuilderFactory<{
+      ALL: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+      }
+      GET: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+      }
+      POST: {
+        'users.index': {
+          params?: {}
+          paramsTuple: [string]
+        }
+      }
+      PUT: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+      }
+      PATCH: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+      }
+      DELETE: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+      }
+    }>()
+      .merge({ router })
+      .create()
+
+    router.route('/users', ['POST'], () => {}).as('users.index')
+    router.route('/users/:id', ['GET', 'PUT', 'PATCH', 'DELETE'], () => {}).as('users.show')
+    router.commit()
+
+    assert.containSubset(urlFor.get('users.show', { id: '1' }), { method: 'get', url: '/users/1' })
+    assert.equal(`${urlFor.get('users.show', { id: '1' })}`, '/users/1')
+
+    assert.containSubset(urlFor.post('users.index'), {
+      method: 'post',
+      url: '/users',
+    })
+    assert.equal(`${urlFor.post('users.index')}`, '/users')
+
+    assert.containSubset(urlFor.put('users.show', { id: '1' }), {
+      method: 'put',
+      url: '/users/1',
+    })
+    assert.equal(`${urlFor.put('users.show', { id: '1' })}`, '/users/1')
+
+    assert.containSubset(urlFor.patch('users.show', { id: '1' }), {
+      method: 'patch',
+      url: '/users/1',
+    })
+    assert.equal(`${urlFor.patch('users.show', { id: '1' })}`, '/users/1')
+
+    assert.containSubset(urlFor.delete('users.show', { id: '1' }), {
+      method: 'delete',
+      url: '/users/1',
+    })
+    assert.equal(`${urlFor.delete('users.show', { id: '1' })}`, '/users/1')
+
+    assert.containSubset(urlFor.method('GET', 'users.show', { id: '1' }), {
+      method: 'GET',
+      url: '/users/1',
+    })
+    assert.equal(`${urlFor.method('GET', 'users.show', { id: '1' })}`, '/users/1')
+  })
+
   test('create url for a route by its name for the home path', ({ assert }) => {
     const router = new RouterFactory().create()
     const { urlFor } = new URLBuilderFactory<{
@@ -145,42 +128,6 @@ test.group('URLBuilder', () => {
     router.route('/', ['GET'], () => {}).as('home')
     router.commit()
     assert.equal(urlFor('home'), '/')
-  })
-
-  test('create url for a route by the handler name', ({ assert }) => {
-    const router = new RouterFactory().create()
-    router.updateLookupStrategies(['controller'])
-
-    const { urlFor } = new URLBuilderFactory<{
-      ALL: {
-        '#controllers/posts': {
-          params: { id: string }
-        }
-      }
-    }>()
-      .merge({ router })
-      .create()
-
-    router.route('/users/:id', ['GET'], '#controllers/posts')
-    router.commit()
-    assert.equal(urlFor('#controllers/posts', { id: '1' }), '/users/1')
-  })
-
-  test('create url for a route by the handler name for the home path', ({ assert }) => {
-    const router = new RouterFactory().create()
-    router.updateLookupStrategies(['controller'])
-
-    const { urlFor } = new URLBuilderFactory<{
-      ALL: {
-        '#controllers/home': {}
-      }
-    }>()
-      .merge({ router })
-      .create()
-
-    router.route('/', ['GET'], '#controllers/home')
-    router.commit()
-    assert.equal(urlFor('#controllers/home'), '/')
   })
 
   test('create and verify signed routes', async ({ assert }) => {
@@ -215,37 +162,37 @@ test.group('URLBuilder', () => {
 
     const { signedUrlFor } = new URLBuilderFactory<{
       ALL: {
-        '/users/:id': {
+        'users.show': {
           params: { id: string }
           paramsTuple: [string]
         }
       }
       GET: {
-        '/users/:id': {
+        'users.show': {
           params: { id: string }
           paramsTuple: [string]
         }
       }
       POST: {
-        '/users': {
+        'users.store': {
           params?: {}
           paramsTuple: [string]
         }
       }
       PUT: {
-        '/users/:id': {
+        'users.update': {
           params: { id: string }
           paramsTuple: [string]
         }
       }
       PATCH: {
-        '/users/:id': {
+        'users.update': {
           params: { id: string }
           paramsTuple: [string]
         }
       }
       DELETE: {
-        '/users/:id': {
+        'users.delete': {
           params: { id: string }
           paramsTuple: [string]
         }
@@ -254,8 +201,10 @@ test.group('URLBuilder', () => {
       .merge({ router, encryption })
       .create()
 
-    router.route('/users', ['POST'], () => {})
-    router.route('/users/:id', ['GET', 'PUT', 'PATCH', 'DELETE'], () => {})
+    router.route('/users', ['POST'], () => {}).as('users.store')
+    router.route('/users/:id', ['GET'], () => {}).as('users.show')
+    router.route('/users/:id', ['PUT', 'PATCH'], () => {}).as('users.update')
+    router.route('/users/:id', ['DELETE'], () => {}).as('users.delete')
     router.commit()
 
     function verifySignature(uri: string) {
@@ -268,12 +217,12 @@ test.group('URLBuilder', () => {
       assert.isTrue(request.hasValidSignature())
     }
 
-    verifySignature(`${signedUrlFor.get('/users/:id', { id: '1' })}`)
-    verifySignature(`${signedUrlFor.post('/users')}`)
-    verifySignature(`${signedUrlFor.put('/users/:id', { id: '1' })}`)
-    verifySignature(`${signedUrlFor.patch('/users/:id', { id: '1' })}`)
-    verifySignature(`${signedUrlFor.delete('/users/:id', { id: '1' })}`)
-    verifySignature(`${signedUrlFor.method('GET', '/users/:id', { id: '1' })}`)
+    verifySignature(`${signedUrlFor.get('users.show', { id: '1' })}`)
+    verifySignature(`${signedUrlFor.post('users.store')}`)
+    verifySignature(`${signedUrlFor.put('users.update', { id: '1' })}`)
+    verifySignature(`${signedUrlFor.patch('users.update', { id: '1' })}`)
+    verifySignature(`${signedUrlFor.delete('users.delete', { id: '1' })}`)
+    verifySignature(`${signedUrlFor.method('GET', 'users.show', { id: '1' })}`)
   })
 
   test('create and verify signed URLs with query string', async ({ assert }) => {
@@ -322,7 +271,7 @@ test.group('URLBuilder', () => {
     const router = new RouterFactory().create()
     const { urlFor } = new URLBuilderFactory<{
       ALL: {
-        '/users/:id?': { paramsTuple: [string?]; params?: { id?: string } }
+        'users.show': { paramsTuple: [string?]; params?: { id?: string } }
       }
     }>()
       .merge({ router })
@@ -330,34 +279,35 @@ test.group('URLBuilder', () => {
 
     router.route('/users/:id?', ['GET'], () => {}).as('users.show')
     router.commit()
-    assert.equal(urlFor('/users/:id?'), '/users')
+    assert.equal(urlFor('users.show'), '/users')
+    assert.equal(urlFor('users.show', ['1']), '/users/1')
   })
 
   test('make route with wildcard params', ({ assert }) => {
     const router = new RouterFactory().create()
     const { urlFor } = new URLBuilderFactory<{
       ALL: {
-        '/users/*': { paramsTuple: [string[]]; params: { '*': string[] } }
+        'users.list': { paramsTuple: [string[]]; params: { '*': string[] } }
       }
     }>()
       .merge({ router })
       .create()
 
-    router.route('/users/*', ['GET'], () => {}).as('users.show')
+    router.route('/users/*', ['GET'], () => {}).as('users.list')
     router.commit()
-    assert.equal(urlFor('/users/*', { '*': ['1', '2', '3'] }), '/users/1/2/3')
+    assert.equal(urlFor('users.list', { '*': ['1', '2', '3'] }), '/users/1/2/3')
   })
 
   test('raise error when wildcard params are missing', ({ assert }) => {
     const router = new RouterFactory().create()
     const { urlFor } = new URLBuilderFactory().merge({ router }).create()
 
-    router.route('/users/*', ['GET'], () => {}).as('users.show')
+    router.route('/users/*', ['GET'], () => {}).as('users.list')
     router.commit()
 
     assert.throws(
-      () => urlFor('/users/*'),
-      'Cannot make URL for "users.show". Invalid value provided for the wildcard param'
+      () => urlFor('users.list'),
+      'Cannot make URL for "users.list". Invalid value provided for the wildcard param'
     )
   })
 
@@ -365,11 +315,11 @@ test.group('URLBuilder', () => {
     const router = new RouterFactory().create()
     const { urlFor } = new URLBuilderFactory().merge({ router }).create()
 
-    router.route('/users', ['GET'], () => {}).as('users.show')
+    router.route('/users', ['GET'], () => {}).as('users.index')
     router.commit()
 
     assert.equal(
-      urlFor('/users', undefined, { prefixUrl: 'https://adonisjs.com' }),
+      urlFor('users.index', undefined, { prefixUrl: 'https://adonisjs.com' }),
       'https://adonisjs.com/users'
     )
   })
@@ -378,11 +328,11 @@ test.group('URLBuilder', () => {
     const router = new RouterFactory().create()
     const { urlFor } = new URLBuilderFactory().merge({ router }).create()
 
-    router.route('/users', ['GET'], () => {}).as('users.show')
+    router.route('users', ['GET'], () => {}).as('users.index')
     router.commit()
 
     assert.equal(
-      urlFor('/users', undefined, {
+      urlFor('users.index', undefined, {
         qs: {
           sort: 'id',
           fields: ['username', 'email'],
@@ -397,13 +347,13 @@ test.group('URLBuilder', () => {
     const encryption = new EncryptionFactory().create()
     const { signedUrlFor } = new URLBuilderFactory().merge({ router, encryption }).create()
 
-    router.route('/users', ['GET'], () => {}).as('users.show')
+    router.route('/users', ['GET'], () => {}).as('users.index')
     router.commit()
 
     const request = new RequestFactory()
       .merge({
         encryption,
-        url: signedUrlFor('/users'),
+        url: signedUrlFor('users.index'),
       })
       .create()
 
@@ -415,13 +365,13 @@ test.group('URLBuilder', () => {
     const encryption = new EncryptionFactory().create()
     const { signedUrlFor } = new URLBuilderFactory().merge({ router, encryption }).create()
 
-    router.route('/users', ['GET'], () => {}).as('users.show')
+    router.route('/users', ['GET'], () => {}).as('users.index')
     router.commit()
 
     const request = new RequestFactory()
       .merge({
         encryption,
-        url: signedUrlFor('/users', undefined, {
+        url: signedUrlFor('users.index', undefined, {
           qs: {
             sort: 'id',
             fields: ['username', 'email'],
@@ -437,10 +387,10 @@ test.group('URLBuilder', () => {
     const router = new RouterFactory().create()
     const { urlFor } = new URLBuilderFactory<{
       ALL: {
-        '/users/:id': {
+        'users.show': {
           params: { id: string }
         }
-        '/posts/:id': {
+        'posts.show': {
           params: { id: string }
         }
       }
@@ -448,11 +398,14 @@ test.group('URLBuilder', () => {
       .merge({ router })
       .create()
 
-    router.route('/users/:id', ['GET'], () => {})
-    router.route('/posts/:id', ['GET'], () => {}).domain('blog.adonisjs.com')
+    router.route('/users/:id', ['GET'], () => {}).as('users.show')
+    router
+      .route('/posts/:id', ['GET'], () => {})
+      .as('posts.show')
+      .domain('blog.adonisjs.com')
     router.commit()
 
-    assert.equal(urlFor('/posts/:id', { id: '1' }), '/posts/1')
+    assert.equal(urlFor('posts.show', { id: '1' }), '/posts/1')
   })
 
   test('make url for a route from specific domain', ({ assert }) => {

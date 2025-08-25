@@ -415,7 +415,7 @@ export class Router {
        */
       if (route.name && routeNames.has(route.name)) {
         throw new RuntimeException(
-          `Route with duplicate name found. A route with name "${route.name}" already exists`
+          `A route with name "${route.name}" already exists. It may happen when two routes use the same controller, so make sure to give explicit names to these routes`
         )
       }
 
@@ -443,34 +443,18 @@ export class Router {
   }
 
   /**
-   * The lookup strategies to follow when generating URL builder
-   * types and client
-   */
-  lookupStrategies: ('name' | 'pattern' | 'controller')[] = ['name', 'pattern']
-
-  /**
-   * Define the lookup strategies to follow when generating URL builder
-   * types and client.
-   */
-  updateLookupStrategies(strategies: ('name' | 'pattern' | 'controller')[]) {
-    this.lookupStrategies = strategies
-    return this
-  }
-
-  /**
    * Finds a route by its identifier. The identifier can be the
    * route name, controller.method name or the route pattern
    * itself.
    *
-   * When "followLookupStrategy" is enabled, the lookup will be performed
-   * on the basis of the lookup strategy enabled via the "lookupStrategies"
-   * method. The default lookupStrategy is "name" and "pattern".
+   * When "disableLegacyLookup" is set, the lookup will be performed
+   * only using the route name
    */
   find(
     routeIdentifier: string,
     domain?: string,
     method?: string,
-    followLookupStrategy?: boolean
+    disableLegacyLookup?: boolean
   ): RouteJSON | null {
     /**
      * Search for route in all the domains when no domain name is
@@ -479,7 +463,7 @@ export class Router {
     if (!domain) {
       let route: RouteJSON | null = null
       for (const routeDomain of Object.keys(this.routes)) {
-        route = this.find(routeIdentifier, routeDomain, method, followLookupStrategy)
+        route = this.find(routeIdentifier, routeDomain, method, disableLegacyLookup)
         if (route) {
           break
         }
@@ -492,9 +476,14 @@ export class Router {
       return null
     }
 
-    const lookupByName = !followLookupStrategy || this.lookupStrategies.includes('name')
-    const lookupByPattern = !followLookupStrategy || this.lookupStrategies.includes('pattern')
-    const lookupByController = !followLookupStrategy || this.lookupStrategies.includes('controller')
+    const lookupByName = true
+
+    /**
+     * Pattern and controller are supported for legacy reasons. However
+     * the URL builder only works with names
+     */
+    const lookupByPattern = !disableLegacyLookup
+    const lookupByController = !disableLegacyLookup
 
     return (
       routes.find((route) => {
@@ -525,17 +514,16 @@ export class Router {
    *
    * An error is raised when unable to find the route.
    *
-   * When "followLookupStrategy" is enabled, the lookup will be performed
-   * on the basis of the lookup strategy enabled via the "lookupStrategies"
-   * method. The default lookupStrategy is "name" and "pattern".
+   * When "disableLegacyLookup" is set, the lookup will be performed
+   * only using the route name
    */
   findOrFail(
     routeIdentifier: string,
     domain?: string,
     method?: string,
-    followLookupStrategy?: boolean
+    disableLegacyLookup?: boolean
   ): RouteJSON {
-    const route = this.find(routeIdentifier, domain, method, followLookupStrategy)
+    const route = this.find(routeIdentifier, domain, method, disableLegacyLookup)
     if (!route) {
       throw new Error(`Cannot lookup route "${routeIdentifier}"`)
     }
@@ -619,40 +607,12 @@ export class Router {
         const identifiers: string[] = []
 
         /**
-         * Tracking route by its pattern. In case of duplicate pattern across
-         * domains, we only track the unique patterns, since they will always
-         * product the same output.
-         */
-        if (this.lookupStrategies.includes('pattern')) {
-          if (!routesList[method][route.pattern]) {
-            identifiers.push(route.pattern)
-          }
-        }
-
-        /**
          * Tracking route by its name. In case the same route already exists, we
          * will prefix the domain to the route name to create a unique identifier.
          */
-        if (this.lookupStrategies.includes('name') && route.name) {
+        if (route.name) {
           identifiers.push(
             domain && routesList[method][route.name] ? `${domain}@${route.name}` : route.name
-          )
-        }
-
-        /**
-         * Tracking route by its controller reference. In case the same route
-         * already exists, we will prefix the domain to the controller reference
-         * to create a unique identifier.
-         */
-        if (
-          this.lookupStrategies.includes('controller') &&
-          'reference' in route.handler &&
-          typeof route.handler.reference === 'string'
-        ) {
-          identifiers.push(
-            domain && routesList[method][route.handler.reference]
-              ? `${domain}@${route.handler.reference}`
-              : route.handler.reference
           )
         }
 

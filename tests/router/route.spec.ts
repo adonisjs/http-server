@@ -578,4 +578,48 @@ test.group('Route', () => {
       name: undefined,
     })
   })
+
+  test('auto name route after its string based controller and method', ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL)
+
+    const route = new Route(app, [], {
+      pattern: 'posts/:id',
+      methods: ['GET'],
+      handler: '#controllers/posts_controller.show',
+      globalMatchers: {},
+    })
+
+    assert.equal(route.getName(), 'posts.show')
+  })
+
+  test('auto name route after its lazily imported controller and method', ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL)
+
+    const PostsController = () => import('#controllers/posts_controller' as any)
+    const route = new Route(app, [], {
+      pattern: 'posts/:id',
+      methods: ['GET'],
+      handler: [PostsController, 'show'],
+      globalMatchers: {},
+    })
+
+    assert.equal(route.getName(), 'posts.show')
+  })
+
+  test('auto name route after its eagerly imported controller and method', ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL)
+
+    class PostsController {
+      async show() {}
+    }
+
+    const route = new Route(app, [], {
+      pattern: 'posts/:id',
+      methods: ['GET'],
+      handler: [PostsController, 'show'],
+      globalMatchers: {},
+    })
+
+    assert.equal(route.getName(), 'posts.show')
+  })
 })

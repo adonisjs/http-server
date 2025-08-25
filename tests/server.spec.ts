@@ -308,10 +308,13 @@ test.group('Server | Response handling', () => {
 
     server.use([])
 
-    server.getRouter().get('/dashboard', () => 'dashboard')
+    server
+      .getRouter()
+      .get('/dashboard', () => 'dashboard')
+      .as('dashboard')
 
     // @ts-expect-error "Because RoutesList" does not have this route
-    server.getRouter().on('/').redirect('/dashboard')
+    server.getRouter().on('/').redirect('dashboard')
 
     await server.boot()
 
@@ -347,10 +350,13 @@ test.group('Server | Response handling', () => {
 
     server.use([])
 
-    server.getRouter().get('/dashboard', () => 'dashboard')
+    server
+      .getRouter()
+      .get('/dashboard', () => 'dashboard')
+      .as('dashboard')
 
     // @ts-expect-error "Because RoutesList" does not have this route
-    server.getRouter().on('/').redirect('/dashboard', {}, { status: 301 })
+    server.getRouter().on('/').redirect('dashboard', {}, { status: 301 })
 
     await server.boot()
 

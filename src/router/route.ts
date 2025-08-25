@@ -35,6 +35,8 @@ import type {
   StoreRouteMiddleware,
   GetControllerHandlers,
 } from '../types/route.ts'
+import StringBuilder from '@poppinss/utils/string_builder'
+import string from '@poppinss/utils/string'
 
 /**
  * The route class exposes the APIs for constructing a route using the
@@ -126,8 +128,11 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
     this.#routerMiddleware = routerMiddleware
     this.#pattern = options.pattern
     this.#methods = options.methods
-    this.#handler = this.#resolveRouteHandle(options.handler)
     this.#globalMatchers = options.globalMatchers
+
+    const { handler, routeName } = this.#resolveRouteHandle(options.handler)
+    this.#handler = handler
+    this.#name = routeName
   }
 
   /**
@@ -149,9 +154,14 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
       const moduleRefId = parts.join('.')
 
       return {
-        reference: handler,
-        ...moduleImporter(() => this.#app.import(moduleRefId), method).toHandleMethod(),
-        name: handler,
+        handler: {
+          reference: handler,
+          ...moduleImporter(() => this.#app.import(moduleRefId), method).toHandleMethod(),
+          name: handler,
+        },
+        routeName: `${new StringBuilder(moduleRefId.split('/').pop()!)
+          .removeSuffix('controller')
+          .snakeCase()}.${string.snakeCase(method)}`,
       }
     }
 
@@ -159,13 +169,21 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
      * Using a lazily imported controller
      */
     if (Array.isArray(handler)) {
+      const controller = handler[0]
+      const method = (handler[1] as string) ?? 'handle'
+
       /**
        * The first item of the tuple is a class constructor
        */
-      if (is.class(handler[0])) {
+      if (is.class(controller)) {
         return {
-          reference: handler,
-          ...moduleCaller(handler[0], (handler[1] || 'handle') as string).toHandleMethod(),
+          handler: {
+            reference: handler,
+            ...moduleCaller(controller, method).toHandleMethod(),
+          },
+          routeName: `${new StringBuilder(controller.name)
+            .removeSuffix('controller')
+            .snakeCase()}.${string.snakeCase(method)}`,
         }
       }
 
@@ -174,12 +192,17 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
        * loads the controller
        */
       return {
-        reference: handler,
-        ...moduleImporter(handler[0], (handler[1] || 'handle') as string).toHandleMethod(),
+        handler: {
+          reference: handler,
+          ...moduleImporter(controller, method).toHandleMethod(),
+        },
+        routeName: `${new StringBuilder(controller.name)
+          .removeSuffix('controller')
+          .snakeCase()}.${string.snakeCase(method)}`,
       }
     }
 
-    return handler
+    return { handler }
   }
 
   /**

@@ -39,7 +39,7 @@ export type RouteBuilderArguments<
   Options extends any = URLOptions,
 > = Routes extends LookupList
   ? Prettify<
-      undefined extends Routes[Method][Identifier]['params']
+      Routes[Method][Identifier]['params'] extends undefined
         ? [identifier: Identifier, params?: undefined, options?: Options]
         : [undefined] extends [Routes[Method][Identifier]['params']]
           ? [
