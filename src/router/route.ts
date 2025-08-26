@@ -202,9 +202,11 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
           importExpression: String(controller),
           ...moduleImporter(controller, method).toHandleMethod(),
         } satisfies StoreRouteHandler,
-        routeName: `${new StringBuilder(controller.name)
-          .removeSuffix('controller')
-          .snakeCase()}.${string.snakeCase(method)}`,
+        routeName: controller.name
+          ? `${new StringBuilder(controller.name)
+              .removeSuffix('controller')
+              .snakeCase()}.${string.snakeCase(method)}`
+          : undefined,
       }
     }
 
