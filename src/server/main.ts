@@ -132,7 +132,7 @@ export class Server {
     return httpExceptionHandler.tracePromise(
       this.#resolvedErrorHandler.handle,
       undefined,
-      undefined,
+      this.#resolvedErrorHandler,
       error,
       ctx
     )

@@ -843,9 +843,13 @@ test.group('Server | error handler', () => {
 
     class ErrorHandler {
       report() {}
+      toResponse() {
+        return 'handled by error handler'
+      }
+
       handle(error: any, { response }: HttpContext) {
         assert.equal(error.message, 'Something went wrong')
-        response.status(200).send('handled by error handler')
+        response.status(200).send(this.toResponse())
       }
     }
 

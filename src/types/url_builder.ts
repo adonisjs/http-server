@@ -54,13 +54,6 @@ export type RouteBuilderArguments<
     >
   : never
 
-export type LookupListRoute = {
-  paramsTuple?: [...any[]]
-  params?: {
-    [name: string]: any
-  }
-}
-
 /**
  * LookupList type is used by the URLBuilder to provide
  * type-safety when creating URLs.
@@ -68,6 +61,12 @@ export type LookupListRoute = {
  * There is no runtime property that matches this type. Its
  * purely for type-inference.
  */
+export type LookupListRoute = {
+  paramsTuple?: [...any[]]
+  params?: {
+    [name: string]: any
+  }
+}
 export type LookupList = {
   [method: string]: {
     [identifier: string]: LookupListRoute
