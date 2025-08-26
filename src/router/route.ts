@@ -24,7 +24,6 @@ import type {
   MiddlewareFn,
   ParsedNamedMiddleware,
   ParsedGlobalMiddleware,
-  RouteHandlerInfo,
 } from '../types/middleware.ts'
 
 import type {

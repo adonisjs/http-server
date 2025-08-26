@@ -868,7 +868,12 @@ test.group('Request', () => {
         tokens: [],
         matchers: {},
         pattern: '/users/:id',
-        handler: { reference: '#controllers/user', handle: () => {} },
+        handler: {
+          reference: '#controllers/user',
+          handle: () => {},
+          importExpression: '#controllers/user',
+          method: 'handle',
+        },
       }
 
       res.writeHead(200, { 'content-type': 'application/json' })
