@@ -13,6 +13,12 @@ import { EncryptionFactory } from '@adonisjs/encryption/factories'
 import { RouterFactory } from '../../factories/router.ts'
 import { RequestFactory } from '../../factories/request.ts'
 import { URLBuilderFactory } from '../../factories/url_builder_factory.ts'
+import {
+  type UrlFor,
+  type URLOptions,
+  type GetRoutesForMethod,
+  type RouteBuilderArguments,
+} from '../../src/types/url_builder.ts'
 
 test.group('URLBuilder', () => {
   test('create url for a route by its name', ({ assert }) => {
@@ -481,5 +487,164 @@ test.group('URLBuilder', () => {
       () => urlFor('news.adonisjs.com@posts.show'),
       'Cannot lookup route "news.adonisjs.com@posts.show"'
     )
+  })
+})
+
+test.group('URLBuilder | types', () => {
+  test('return all available routes for a given method', ({ expectTypeOf }) => {
+    type Routes = {
+      ALL: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+        'users.list': {
+          params?: { id?: string }
+          paramsTuple?: [string?]
+        }
+        'users.store': {
+          params: {}
+          paramsTuple: []
+        }
+      }
+      GET: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+        'users.list': {
+          params?: { id?: string }
+          paramsTuple?: [string?]
+        }
+      }
+      POST: {
+        'users.store': {
+          params: {}
+          paramsTuple: []
+        }
+      }
+    }
+
+    expectTypeOf<GetRoutesForMethod<Routes, 'GET'>>().toEqualTypeOf<{
+      'users.show': {
+        params: { id: string }
+        paramsTuple: [string]
+      }
+      'users.list': {
+        params?: { id?: string }
+        paramsTuple?: [string?]
+      }
+    }>()
+
+    expectTypeOf<GetRoutesForMethod<Routes, 'POST'>>().toEqualTypeOf<{
+      'users.store': {
+        params: {}
+        paramsTuple: []
+      }
+    }>()
+
+    expectTypeOf<GetRoutesForMethod<Routes, 'PUT'>>().toEqualTypeOf<never>()
+  })
+
+  test('create a URL builder from routes list', ({ expectTypeOf }) => {
+    type Routes = {
+      ALL: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+        'users.list': {
+          params?: { id?: string }
+          paramsTuple?: [string?]
+        }
+        'users.store': {
+          params: {}
+          paramsTuple: []
+        }
+      }
+      GET: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+        'users.list': {
+          params?: { id?: string }
+          paramsTuple?: [string?]
+        }
+      }
+      POST: {
+        'users.store': {
+          params: {}
+          paramsTuple: []
+        }
+      }
+    }
+
+    expectTypeOf<GetRoutesForMethod<Routes, 'GET'>>().toEqualTypeOf<{
+      'users.show': {
+        params: { id: string }
+        paramsTuple: [string]
+      }
+      'users.list': {
+        params?: { id?: string }
+        paramsTuple?: [string?]
+      }
+    }>()
+
+    expectTypeOf<UrlFor<Routes>['get']>().parameters.toEqualTypeOf<
+      | [
+          identifier: 'users.show' | 'users.list',
+          params: { id: string } | [string],
+          options?: URLOptions | undefined,
+        ]
+      | [
+          identifier: 'users.show' | 'users.list',
+          params?: { id?: string } | [string?],
+          options?: URLOptions | undefined,
+        ]
+    >()
+  })
+
+  test('return arguments accepted by the URL builder for a given route', ({ expectTypeOf }) => {
+    type Routes = {
+      ALL: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+        'users.list': {
+          params?: { id?: string }
+          paramsTuple?: [string?]
+        }
+        'users.store': {
+          params: {}
+          paramsTuple: []
+        }
+      }
+      GET: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+        'users.list': {
+          params?: { id?: string }
+          paramsTuple?: [string?]
+        }
+      }
+      POST: {
+        'users.store': {
+          params: {}
+          paramsTuple: []
+        }
+      }
+    }
+
+    expectTypeOf<RouteBuilderArguments<'users.show', Routes['GET']['users.show']>>().toEqualTypeOf<
+      [
+        identifier: 'users.show',
+        params: [string] | { id: string },
+        options?: URLOptions | undefined,
+      ]
+    >()
   })
 })

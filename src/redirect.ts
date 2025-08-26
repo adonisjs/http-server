@@ -17,6 +17,7 @@ import type { Response } from './response.ts'
 import type { Router } from './router/main.ts'
 import type {
   RoutesList,
+  LookupList,
   URLOptions,
   GetRoutesForMethod,
   RouteBuilderArguments,
@@ -150,8 +151,10 @@ export class Redirect {
   /**
    * Redirect the request using a route identifier.
    */
-  toRoute<Identifier extends keyof GetRoutesForMethod<'GET'> & string>(
-    ...args: RouteBuilderArguments<RoutesList, Identifier, 'GET', URLOptions>
+  toRoute<Identifier extends keyof GetRoutesForMethod<RoutesList, 'GET'> & string>(
+    ...args: RoutesList extends LookupList
+      ? RouteBuilderArguments<Identifier, RoutesList['GET'][Identifier], URLOptions>
+      : []
   ) {
     const [identifier, params, options] = args as any[]
     if (options && options.qs) {

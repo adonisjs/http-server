@@ -16,6 +16,7 @@ import type { RouteFn, RouteMatchers } from '../types/route.ts'
 import type { ParsedGlobalMiddleware } from '../types/middleware.ts'
 import type {
   RoutesList,
+  LookupList,
   URLOptions,
   GetRoutesForMethod,
   RouteBuilderArguments,
@@ -89,8 +90,10 @@ export class BriskRoute extends Macroable {
    * Redirects to a given route. Params from the original request will
    * be used when no custom params are defined.
    */
-  redirect<Identifier extends keyof GetRoutesForMethod<'GET'> & string>(
-    ...args: RouteBuilderArguments<RoutesList, Identifier, 'GET', URLOptions & { status: number }>
+  redirect<Identifier extends keyof GetRoutesForMethod<RoutesList, 'GET'> & string>(
+    ...args: RoutesList extends LookupList
+      ? RouteBuilderArguments<Identifier, RoutesList['GET'][Identifier], URLOptions>
+      : []
   ): Route {
     const [identifier, params, options] = args as any[]
 
