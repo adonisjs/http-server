@@ -638,7 +638,7 @@ export class Router {
      * be registered first so that they do not have any domain prefix in case
      * of a naming conflict.
      */
-    this.routes['root'].forEach((route) => trackRoute.bind(this)(route))
+    this.routes['root']?.forEach((route) => trackRoute.bind(this)(route))
     domains.forEach((domain) =>
       this.routes[domain].forEach((route) => trackRoute.bind(this)(route, domain))
     )
