@@ -57,6 +57,9 @@ export type RouteFn = (ctx: HttpContext) => any
 export type StoreRouteHandler =
   | RouteFn
   | {
+      name?: string
+      method: string
+      importExpression: string | null
       reference: string | [LazyImport<Constructor<any>> | Constructor<any>, any?]
       handle: (
         resolver: ContainerResolver<any>,

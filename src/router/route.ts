@@ -24,6 +24,7 @@ import type {
   MiddlewareFn,
   ParsedNamedMiddleware,
   ParsedGlobalMiddleware,
+  RouteHandlerInfo,
 } from '../types/middleware.ts'
 
 import type {
@@ -155,10 +156,12 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
 
       return {
         handler: {
+          method,
           reference: handler,
+          importExpression: moduleRefId,
           ...moduleImporter(() => this.#app.import(moduleRefId), method).toHandleMethod(),
           name: handler,
-        },
+        } satisfies StoreRouteHandler,
         routeName: `${new StringBuilder(moduleRefId.split('/').pop()!)
           .removeSuffix('controller')
           .snakeCase()}.${string.snakeCase(method)}`,
@@ -178,9 +181,11 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
       if (is.class(controller)) {
         return {
           handler: {
+            method,
             reference: handler,
+            importExpression: null,
             ...moduleCaller(controller, method).toHandleMethod(),
-          },
+          } satisfies StoreRouteHandler,
           routeName: `${new StringBuilder(controller.name)
             .removeSuffix('controller')
             .snakeCase()}.${string.snakeCase(method)}`,
@@ -193,9 +198,11 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
        */
       return {
         handler: {
+          method,
           reference: handler,
+          importExpression: String(controller),
           ...moduleImporter(controller, method).toHandleMethod(),
-        },
+        } satisfies StoreRouteHandler,
         routeName: `${new StringBuilder(controller.name)
           .removeSuffix('controller')
           .snakeCase()}.${string.snakeCase(method)}`,
