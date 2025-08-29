@@ -11,6 +11,10 @@ import type { RouteJSON } from './route.ts'
 import type { HttpContext } from '../http_context/main.ts'
 import type { MiddlewareFn, ParsedGlobalMiddleware, ParsedNamedMiddleware } from './middleware.ts'
 
-export type HTTPRequestTracingData = HttpContext
-export type MiddlewareTracingData = ParsedGlobalMiddleware | ParsedNamedMiddleware | MiddlewareFn
-export type RouteHandlerTracingData = RouteJSON
+export type HTTPRequestTracingData = { ctx: HttpContext }
+export type MiddlewareTracingData = {
+  middleware: ParsedGlobalMiddleware | ParsedNamedMiddleware | MiddlewareFn
+}
+export type RouteHandlerTracingData = {
+  route: RouteJSON
+}

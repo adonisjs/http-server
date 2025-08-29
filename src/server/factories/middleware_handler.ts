@@ -23,7 +23,7 @@ export function middlewareHandler(resolver: ContainerResolver<any>, ctx: HttpCon
     debug('executing middleware %s', fn.name)
     return httpMiddleware.tracePromise(
       fn.handle,
-      fn,
+      httpMiddleware.hasSubscribers ? { middleware: fn } : undefined,
       undefined,
       resolver,
       ctx,

@@ -18,33 +18,33 @@ import type {
  * Traces every HTTP request handled by the {@link Server} class.
  */
 export const httpRequest = diagnostics_channel.tracingChannel<
-  'adonisjs:http.request',
+  'adonisjs.http.request',
   HTTPRequestTracingData
->('adonisjs:http.request')
+>('adonisjs.http.request')
 
 /**
  * Traces middleware executed during the HTTP request
  */
 export const httpMiddleware = diagnostics_channel.tracingChannel<
-  'adonisjs:http.middleware',
+  'adonisjs.http.middleware',
   MiddlewareTracingData
->('adonisjs:http.middleware')
+>('adonisjs.http.middleware')
 
 /**
  * Traces the exception handler that converts errors into HTTP responses
  */
 export const httpExceptionHandler =
   diagnostics_channel.tracingChannel<'adonisjs:http.exception.handler'>(
-    'adonisjs:http.exception.handler'
+    'adonisjs.http.exception.handler'
   )
 
 /**
  * Traces route handler executed during the HTTP request
  */
 export const httpRouteHandler = diagnostics_channel.tracingChannel<
-  'adonisjs:http.route.handler',
+  'adonisjs.http.route.handler',
   RouteHandlerTracingData
->('adonisjs:http.route.handler')
+>('adonisjs.http.route.handler')
 
 /**
  * Traces non-stream and non-file download responses written by the AdonisJS
@@ -52,5 +52,5 @@ export const httpRouteHandler = diagnostics_channel.tracingChannel<
  */
 export const httpResponseSerializer =
   diagnostics_channel.tracingChannel<'adonisjs:http.response.serializer'>(
-    'adonisjs:http.response.serializer'
+    'adonisjs.http.response.serializer'
   )

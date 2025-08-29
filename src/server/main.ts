@@ -402,10 +402,22 @@ export class Server {
      */
     if (this.usingAsyncLocalStorage) {
       return asyncLocalStorage.storage!.run(ctx, () =>
-        httpRequest.tracePromise(this.#handleRequest, ctx, this, ctx, resolver)
+        httpRequest.tracePromise(
+          this.#handleRequest,
+          httpRequest.hasSubscribers ? { ctx } : undefined,
+          this,
+          ctx,
+          resolver
+        )
       )
     }
 
-    return httpRequest.tracePromise(this.#handleRequest, ctx, this, ctx, resolver)
+    return httpRequest.tracePromise(
+      this.#handleRequest,
+      httpRequest.hasSubscribers ? { ctx } : undefined,
+      this,
+      ctx,
+      resolver
+    )
   }
 }

@@ -33,7 +33,7 @@ export function execute(
         return (
           httpRouteHandler.tracePromise(
             ($ctx: HttpContext) => Promise.resolve((route.handler as Function)($ctx)),
-            route,
+            httpRouteHandler.hasSubscribers ? { route } : undefined,
             undefined,
             ctx
           ) as unknown as Promise<any>
@@ -43,7 +43,7 @@ export function execute(
       return (
         httpRouteHandler.tracePromise(
           route.handler.handle,
-          route,
+          httpRouteHandler.hasSubscribers ? { route } : undefined,
           undefined,
           resolver,
           ctx
@@ -54,7 +54,7 @@ export function execute(
       if (typeof middleware === 'function') {
         return httpMiddleware.tracePromise(
           middleware,
-          middleware,
+          httpMiddleware.hasSubscribers ? { middleware } : undefined,
           undefined,
           ctx,
           next
@@ -63,7 +63,7 @@ export function execute(
 
       return httpMiddleware.tracePromise(
         middleware.handle,
-        middleware,
+        httpMiddleware.hasSubscribers ? { middleware } : undefined,
         undefined,
         resolver,
         ctx,
