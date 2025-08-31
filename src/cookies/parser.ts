@@ -23,6 +23,9 @@ import { CookieClient } from './client.ts'
  * server.
  */
 export class CookieParser {
+  /**
+   * Cookie client instance for handling cookie operations
+   */
   #client: CookieClient
 
   /**
@@ -45,6 +48,12 @@ export class CookieParser {
    */
   #cookies: Record<string, any>
 
+  /**
+   * Create a new instance of CookieParser
+   * 
+   * @param cookieHeader - The raw cookie header string from the request
+   * @param encryption - The encryption instance for cookie operations
+   */
   constructor(cookieHeader: string, encryption: Encryption) {
     this.#client = new CookieClient(encryption)
     this.#cookies = this.#parse(cookieHeader)
@@ -52,6 +61,9 @@ export class CookieParser {
 
   /**
    * Parses the request `cookie` header
+   * 
+   * @param cookieHeader - The cookie header string to parse
+   * @returns Parsed cookies as key-value pairs
    */
   #parse(cookieHeader?: string) {
     /*
@@ -71,6 +83,10 @@ export class CookieParser {
    * Attempts to decode a cookie by the name. When calling this method,
    * you are assuming that the cookie was just stringified in the first
    * place and not signed or encrypted.
+   * 
+   * @param key - The cookie key to decode
+   * @param stringified - Whether the cookie value was stringified
+   * @returns The decoded cookie value or null if decoding fails
    */
   decode(key: string, stringified = true): any | null {
     /*
@@ -110,6 +126,9 @@ export class CookieParser {
   /**
    * Attempts to unsign a cookie by the name. When calling this method,
    * you are assuming that the cookie was signed in the first place.
+   * 
+   * @param key - The cookie key to unsign
+   * @returns The original cookie value or null if unsigning fails
    */
   unsign(key: string): null | any {
     /*
@@ -149,6 +168,9 @@ export class CookieParser {
   /**
    * Attempts to decrypt a cookie by the name. When calling this method,
    * you are assuming that the cookie was encrypted in the first place.
+   * 
+   * @param key - The cookie key to decrypt
+   * @returns The decrypted cookie value or null if decryption fails
    */
   decrypt(key: string): null | any {
     /*
@@ -189,6 +211,8 @@ export class CookieParser {
    * Returns an object of cookies key-value pair. Do note, the
    * cookies are not decoded, unsigned or decrypted inside this
    * list.
+   * 
+   * @returns Raw cookies as key-value pairs
    */
   list() {
     return this.#cookies

@@ -89,22 +89,34 @@ export class Request extends Macroable {
   #cookieParser?: CookieParser
 
   /**
-   * Parsed URL with query string stored as a string.
+   * Parsed URL with query string stored as a string and decode flag
    */
   parsedUrl: {
+    /** The pathname portion of the URL */
     pathname: string
+    /** The query string portion of the URL */
     query: string
+    /** Flag indicating whether parameters should be decoded */
     shouldDecodeParam: boolean
   }
 
   /**
-   * The ctx will be set by the context itself. It creates a circular
-   * reference
+   * HTTP context reference - creates a circular reference when set by the context
    */
   ctx?: HttpContext
 
+  /**
+   * Creates a new Request instance wrapping the native Node.js HTTP request
+   * @param request - Native Node.js incoming message instance
+   * @param response - Native Node.js server response instance
+   * @param encryption - Encryption module for cookie and URL signing
+   * @param config - Request configuration options
+   * @param qsParser - Query string parser instance
+   */
   constructor(
+    /** Native Node.js incoming message instance */
     public request: IncomingMessage,
+    /** Native Node.js server response instance */
     public response: ServerResponse,
     encryption: Encryption,
     config: RequestConfig,
@@ -120,9 +132,9 @@ export class Request extends Macroable {
   }
 
   /**
-   * Parses the query string
+   * Parses the query string from the parsed URL and updates internal state
    */
-  #parseQueryString() {
+  #parseQueryString(): void {
     if (this.parsedUrl.query) {
       this.updateQs(this.#qsParser.parse(this.parsedUrl.query))
       this.#originalRequestData = { ...this.#requestData }
@@ -130,9 +142,9 @@ export class Request extends Macroable {
   }
 
   /**
-   * Initiates the cookie parser lazily
+   * Initiates the cookie parser lazily when first needed
    */
-  #initiateCookieParser() {
+  #initiateCookieParser(): void {
     if (!this.#cookieParser) {
       this.#cookieParser = new CookieParser(this.header('cookie')!, this.#encryption)
     }
@@ -143,13 +155,14 @@ export class Request extends Macroable {
    * the request headers only when one of the content-negotiation
    * methods are used.
    */
-  #initiateAccepts() {
+  #initiateAccepts(): void {
     this.#lazyAccepts = this.#lazyAccepts || accepts(this.request)
   }
 
   /**
    * Returns the request id from the `x-request-id` header. The
    * header is untouched, if it already exists.
+   * @returns The request ID or undefined if not found/generated
    */
   id(): string | undefined {
     let requestId = this.header('x-request-id')
@@ -168,8 +181,10 @@ export class Request extends Macroable {
    *
    * This method is supposed to be invoked by the body parser and must be called only
    * once. For further mutations make use of `updateBody` method.
+   * @param body - Parsed request body data
+   * @returns {void}
    */
-  setInitialBody(body: Record<string, any>) {
+  setInitialBody(body: Record<string, any>): void {
     if (this.#originalRequestData && Object.isFrozen(this.#originalRequestData)) {
       throw new Error('Cannot re-set initial body. Use "request.updateBody" instead')
     }
@@ -186,8 +201,10 @@ export class Request extends Macroable {
    * Update the request body with new data object. The `all` property
    * will be re-computed by merging the query string and request
    * body.
+   * @param body - New request body data to set
+   * @returns {void}
    */
-  updateBody(body: Record<string, any>) {
+  updateBody(body: Record<string, any>): void {
     this.#requestBody = body
     this.#requestData = { ...this.#requestBody, ...this.#requestQs }
   }
@@ -195,22 +212,27 @@ export class Request extends Macroable {
   /**
    * Update the request raw body. Bodyparser sets this when unable to parse
    * the request body or when request is multipart/form-data.
+   * @param rawBody - Raw request body as string
+   * @returns {void}
    */
-  updateRawBody(rawBody: string) {
+  updateRawBody(rawBody: string): void {
     this.#rawRequestBody = rawBody
   }
 
   /**
    * Update the query string with the new data object. The `all` property
    * will be re-computed by merging the query and the request body.
+   * @param data - New query string data to set
+   * @returns {void}
    */
-  updateQs(data: Record<string, any>) {
+  updateQs(data: Record<string, any>): void {
     this.#requestQs = data
     this.#requestData = { ...this.#requestBody, ...this.#requestQs }
   }
 
   /**
    * Returns route params
+   * @returns {Record<string, any>} Object containing route parameters
    */
   params(): Record<string, any> {
     return this.ctx?.params || {}
@@ -218,6 +240,7 @@ export class Request extends Macroable {
 
   /**
    * Returns the query string object by reference
+   * @returns {Record<string, any>} Object containing parsed query string parameters
    */
   qs(): Record<string, any> {
     return this.#requestQs
@@ -225,6 +248,7 @@ export class Request extends Macroable {
 
   /**
    * Returns reference to the request body
+   * @returns {Record<string, any>} Object containing parsed request body
    */
   body(): Record<string, any> {
     return this.#requestBody
@@ -233,6 +257,7 @@ export class Request extends Macroable {
   /**
    * Returns reference to the merged copy of request body
    * and query string
+   * @returns {Record<string, any>} Object containing merged request body and query parameters
    */
   all(): Record<string, any> {
     return this.#requestData
@@ -241,6 +266,7 @@ export class Request extends Macroable {
   /**
    * Returns reference to the merged copy of original request
    * query string and body
+   * @returns {Record<string, any>} Object containing original merged request data
    */
   original(): Record<string, any> {
     return this.#originalRequestData
@@ -251,6 +277,7 @@ export class Request extends Macroable {
    *
    * Ideally you must be dealing with the parsed body accessed using [[input]], [[all]] or
    * [[post]] methods. The `raw` body is always a string.
+   * @returns {string | null} Raw request body as string or null if not set
    */
   raw(): string | null {
     return this.#rawRequestBody || null
@@ -267,6 +294,9 @@ export class Request extends Macroable {
    * // with default value
    * request.input('username', 'virk')
    * ```
+   * @param key - Key to lookup in request data
+   * @param defaultValue - Default value when key is not found
+   * @returns Value from request data or default value
    */
   input(key: string, defaultValue?: any): any {
     return lodash.get(this.#requestData, key, defaultValue)
@@ -282,6 +312,9 @@ export class Request extends Macroable {
    * // with default value
    * request.param('id', 1)
    * ```
+   * @param key - Parameter key to lookup
+   * @param defaultValue - Default value when parameter is not found
+   * @returns Value from route parameters or default value
    */
   param(key: string, defaultValue?: any): any {
     return lodash.get(this.params(), key, defaultValue)
@@ -294,6 +327,8 @@ export class Request extends Macroable {
    * ```js
    * request.except(['_csrf'])
    * ```
+   * @param keys - Array of keys to exclude from the result
+   * @returns {Record<string, any>} Object with all request data except specified keys
    */
   except(keys: string[]): Record<string, any> {
     return lodash.omit(this.#requestData, keys)
@@ -306,6 +341,8 @@ export class Request extends Macroable {
    * ```js
    * request.only(['username', 'age'])
    * ```
+   * @param keys - Array of keys to include in the result
+   * @returns {{ [K in T]: any }} Object with only the specified keys from request data
    */
   only<T extends string>(keys: T[]): { [K in T]: any } {
     return lodash.pick(this.#requestData, keys) as { [K in T]: any }
@@ -320,6 +357,7 @@ export class Request extends Macroable {
    * ```js
    * request.intended()
    * ```
+   * @returns {string} Original HTTP method from the request
    */
   intended(): string {
     return this.request.method!
@@ -338,6 +376,7 @@ export class Request extends Macroable {
    * ```js
    * request.method()
    * ```
+   * @returns {string} HTTP method (potentially spoofed)
    */
   method(): string {
     if (this.#config.allowMethodSpoofing && this.intended() === 'POST') {
@@ -348,6 +387,7 @@ export class Request extends Macroable {
 
   /**
    * Returns a copy of headers as an object
+   * @returns {IncomingHttpHeaders} Object containing all HTTP headers
    */
   headers(): IncomingHttpHeaders {
     return this.request.headers
@@ -356,6 +396,9 @@ export class Request extends Macroable {
   /**
    * Returns value for a given header key. The default value is
    * used when original value is `undefined`.
+   * @param key - Header name to lookup
+   * @param defaultValue - Default value when header is not found
+   * @returns {string | undefined} Header value or default value if not found
    */
   header(key: string, defaultValue?: any): string | undefined {
     key = key.toLowerCase()
@@ -400,6 +443,7 @@ export class Request extends Macroable {
    * ```
    *
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
+   * @returns {string} Client IP address
    */
   ip(): string {
     const ipFn = this.#config.getIp
@@ -427,6 +471,7 @@ export class Request extends Macroable {
    * ```
    *
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
+   * @returns {string[]} Array of IP addresses from most to least trusted
    */
   ips(): string[] {
     return proxyaddr.all(this.request, this.#config.trustProxy)
@@ -451,6 +496,7 @@ export class Request extends Macroable {
    * ```
    *
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
+   * @returns {string} Request protocol ('http' or 'https')
    */
   protocol(): string {
     if ('encrypted' in this.request.socket) {
@@ -469,6 +515,7 @@ export class Request extends Macroable {
    * Returns a boolean telling if request is served over `https`
    * or not. Check [[protocol]] method to know how protocol is
    * fetched.
+   * @returns {boolean} True if request is served over HTTPS
    */
   secure(): boolean {
     return this.protocol() === 'https'
@@ -490,6 +537,7 @@ export class Request extends Macroable {
    * ```
    *
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
+   * @returns {string | null} Request host or null if not found
    */
   host(): string | null {
     let host = this.header('host')
@@ -525,6 +573,7 @@ export class Request extends Macroable {
    * ```
    *
    * The value of trustProxy is passed directly to [proxy-addr](https://www.npmjs.com/package/proxy-addr)
+   * @returns {string | null} Request hostname (without port) or null if not found
    */
   hostname(): string | null {
     const host = this.host()
@@ -548,6 +597,7 @@ export class Request extends Macroable {
    * returned if [[hostname]] is `null` or is an IP address.
    *
    * Also `www` is not considered as a subdomain
+   * @returns {string[]} Array of subdomains (excluding www)
    */
   subdomains(): string[] {
     const hostname = this.hostname()
@@ -576,6 +626,7 @@ export class Request extends Macroable {
   /**
    * Returns a boolean telling, if request `X-Requested-With === 'xmlhttprequest'`
    * or not.
+   * @returns {boolean} True if request is an AJAX request
    */
   ajax(): boolean {
     const xRequestedWith = this.header('X-Requested-With', '')
@@ -585,6 +636,7 @@ export class Request extends Macroable {
   /**
    * Returns a boolean telling, if request has `X-Pjax` header
    * set or not
+   * @returns {boolean} True if request is a PJAX request
    */
   pjax(): boolean {
     return !!this.header('X-Pjax')
@@ -600,6 +652,8 @@ export class Request extends Macroable {
    * // include query string
    * request.url(true)
    * ```
+   * @param includeQueryString - Whether to include query string in the URL
+   * @returns {string} Request pathname, optionally with query string
    */
   url(includeQueryString?: boolean): string {
     const pathname = this.parsedUrl.pathname!
@@ -619,6 +673,8 @@ export class Request extends Macroable {
    * // include query string
    * request.completeUrl(true)
    * ```
+   * @param includeQueryString - Whether to include query string in the URL
+   * @returns {string} Complete URL including protocol and host
    */
   completeUrl(includeQueryString?: boolean): string {
     const protocol = this.protocol()
@@ -628,6 +684,8 @@ export class Request extends Macroable {
 
   /**
    * Find if the current HTTP request is for the given route or the routes
+   * @param routeIdentifier - Route name, pattern, or handler reference to match
+   * @returns {boolean} True if the request matches any of the given route identifiers
    */
   matchesRoute(routeIdentifier: string | string[]): boolean {
     /**
@@ -684,6 +742,8 @@ export class Request extends Macroable {
    *  // process XML
    * }
    * ```
+   * @param types - Array of content types to match against
+   * @returns {string | null} Best matching content type or null if no match
    */
   is(types: string[]): string | null {
     return typeIs(this.request, types) || null
@@ -709,6 +769,8 @@ export class Request extends Macroable {
    *     // decide yourself
    * }
    * ```
+   * @param types - Array of types to match against Accept header
+   * @returns {T | null} Best matching accept type or null if no match
    */
   accepts<T extends string>(types: T[]): T | null {
     this.#initiateAccepts()
@@ -721,6 +783,7 @@ export class Request extends Macroable {
    *
    * Make sure to check [accepts](https://www.npmjs.com/package/accepts) package
    * docs too.
+   * @returns {string[]} Array of accepted types in preference order
    */
   types(): string[] {
     this.#initiateAccepts()
@@ -747,6 +810,8 @@ export class Request extends Macroable {
    *     return view.render('about', { lang: 'en' })
    * }
    * ```
+   * @param languages - Array of languages to match against Accept-Language header
+   * @returns {T | null} Best matching language or null if no match
    */
   language<T extends string>(languages: T[]): T | null {
     this.#initiateAccepts()
@@ -759,6 +824,7 @@ export class Request extends Macroable {
    *
    * Make sure to check [accepts](https://www.npmjs.com/package/accepts) package
    * docs too.
+   * @returns {string[]} Array of accepted languages in preference order
    */
   languages(): string[] {
     this.#initiateAccepts()
@@ -783,6 +849,8 @@ export class Request extends Macroable {
    *     // make ISO-8859-1 friendly response
    * }
    * ```
+   * @param charsets - Array of charsets to match against Accept-Charset header
+   * @returns {T | null} Best matching charset or null if no match
    */
   charset<T extends string>(charsets: T[]): T | null {
     this.#initiateAccepts()
@@ -795,6 +863,7 @@ export class Request extends Macroable {
    *
    * Make sure to check [accepts](https://www.npmjs.com/package/accepts) package
    * docs too.
+   * @returns {string[]} Array of accepted charsets in preference order
    */
   charsets(): string[] {
     this.#initiateAccepts()
@@ -809,6 +878,8 @@ export class Request extends Macroable {
    *
    * Make sure to check [accepts](https://www.npmjs.com/package/accepts) package
    * docs too.
+   * @param encodings - Array of encodings to match against Accept-Encoding header
+   * @returns {T | null} Best matching encoding or null if no match
    */
   encoding<T extends string>(encodings: T[]): T | null {
     this.#initiateAccepts()
@@ -816,11 +887,12 @@ export class Request extends Macroable {
   }
 
   /**
-   * Return the charsets that the request accepts, in the order of the
+   * Return the encodings that the request accepts, in the order of the
    * client's preference (most preferred first).
    *
    * Make sure to check [accepts](https://www.npmjs.com/package/accepts) package
    * docs too.
+   * @returns {string[]} Array of accepted encodings in preference order
    */
   encodings(): string[] {
     this.#initiateAccepts()
@@ -829,6 +901,7 @@ export class Request extends Macroable {
 
   /**
    * Returns a boolean telling if request has body
+   * @returns {boolean} True if request contains a body
    */
   hasBody(): boolean {
     return typeIs.hasBody(this.request)
@@ -857,6 +930,7 @@ export class Request extends Macroable {
    *   response.send(responseBody)
    * }
    * ```
+   * @returns {boolean} True if client cache is fresh (should return 304)
    */
   fresh(): boolean {
     if (['GET', 'HEAD'].indexOf(this.intended()) === -1) {
@@ -873,6 +947,7 @@ export class Request extends Macroable {
 
   /**
    * Opposite of [[fresh]]
+   * @returns {boolean} True if client cache is stale (should send new response)
    */
   stale(): boolean {
     return !this.fresh()
@@ -881,8 +956,9 @@ export class Request extends Macroable {
   /**
    * Returns all parsed and signed cookies. Signed cookies ensures
    * that their value isn't tampered.
+   * @returns {{ [key: string]: any }} Object containing all parsed cookies
    */
-  cookiesList() {
+  cookiesList(): { [key: string]: any } {
     this.#initiateCookieParser()
     return this.#cookieParser!.list()
   }
@@ -890,6 +966,9 @@ export class Request extends Macroable {
   /**
    * Returns value for a given key from signed cookies. Optional
    * defaultValue is returned when actual value is undefined.
+   * @param key - Cookie name to lookup
+   * @param defaultValue - Default value when cookie is not found
+   * @returns Cookie value or default value if not found
    */
   cookie(key: string, defaultValue?: string): any {
     this.#initiateCookieParser()
@@ -897,8 +976,11 @@ export class Request extends Macroable {
   }
 
   /**
-   * Returns value for a given key from signed cookies. Optional
+   * Returns value for a given key from encrypted cookies. Optional
    * defaultValue is returned when actual value is undefined.
+   * @param key - Cookie name to lookup
+   * @param defaultValue - Default value when cookie is not found
+   * @returns Decrypted cookie value or default value if not found
    */
   encryptedCookie(key: string, defaultValue?: string): any {
     this.#initiateCookieParser()
@@ -908,6 +990,9 @@ export class Request extends Macroable {
   /**
    * Returns value for a given key from unsigned cookies. Optional
    * defaultValue is returned when actual value is undefined.
+   * @param key - Cookie name to lookup
+   * @param options - Options object with defaultValue and encoded flag
+   * @returns Plain cookie value or default value if not found
    */
   plainCookie(key: string, options?: { defaultValue?: string; encoded?: boolean }): any
   plainCookie(key: string, defaultValue?: string, encoded?: boolean): any
@@ -929,10 +1014,12 @@ export class Request extends Macroable {
   }
 
   /**
-   * Returns a boolean telling if a signed url as a valid signature
+   * Returns a boolean telling if a signed url has a valid signature
    * or not.
+   * @param purpose - Optional purpose for signature verification
+   * @returns {boolean} True if the signed URL has a valid signature
    */
-  hasValidSignature(purpose?: string) {
+  hasValidSignature(purpose?: string): boolean {
     const { signature, ...rest } = this.qs()
     if (!signature) {
       return false
@@ -955,6 +1042,7 @@ export class Request extends Macroable {
 
   /**
    * Serializes request to JSON format
+   * @returns Object representation of the request
    */
   serialize() {
     return {
@@ -975,6 +1063,7 @@ export class Request extends Macroable {
 
   /**
    * toJSON copy of the request
+   * @returns JSON representation of the request
    */
   toJSON() {
     return this.serialize()

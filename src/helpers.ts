@@ -11,9 +11,11 @@ import cookie from 'cookie'
 // @ts-expect-error
 import matchit from '@poppinss/matchit'
 import string from '@poppinss/utils/string'
+import { type Encryption } from '@adonisjs/encryption'
 import { parseBindingReference } from '@adonisjs/fold'
 
 import { type CookieOptions } from './types/response.ts'
+import { type SignedURLOptions, type URLOptions } from './types/url_builder.ts'
 import type { RouteMatchers, RouteJSON, MatchItRouteToken } from './types/route.ts'
 import {
   type MiddlewareFn,
@@ -58,6 +60,10 @@ export { default as mime } from 'mime-types'
  * Value (val) refers to the segment value
  *
  * end refers to be the suffix or the segment (if any)
+ *
+ * @param pattern - The route pattern to parse
+ * @param matchers - Optional route matchers
+ * @returns {MatchItRouteToken[]} Array of parsed route tokens
  */
 export function parseRoute(pattern: string, matchers?: RouteMatchers): MatchItRouteToken[] {
   const tokens = matchit.parse(pattern, matchers)
@@ -65,8 +71,143 @@ export function parseRoute(pattern: string, matchers?: RouteMatchers): MatchItRo
 }
 
 /**
+ * Makes URL for a given route pattern using its parsed tokens. The
+ * tokens could be generated using the "parseRoute" method.
+ *
+ * @param pattern - The route pattern
+ * @param tokens - Array of parsed route tokens
+ * @param searchParamsStringifier - Function to stringify query parameters
+ * @param params - Route parameters as array or object
+ * @param options - URL options
+ * @returns {string} The generated URL
+ */
+export function createURL(
+  pattern: string,
+  tokens: Pick<MatchItRouteToken, 'val' | 'type' | 'end'>[],
+  searchParamsStringifier: (qs: Record<string, any>) => string,
+  params?: any[] | { [param: string]: any },
+  options?: URLOptions
+): string {
+  const uriSegments: string[] = []
+  const paramsArray = Array.isArray(params) ? params : null
+  const paramsObject = !Array.isArray(params) ? (params ?? {}) : {}
+
+  let paramsIndex = 0
+  for (const token of tokens) {
+    /**
+     * Static param
+     */
+    if (token.type === 0) {
+      uriSegments.push(token.val === '/' ? '' : `${token.val}${token.end}`)
+      continue
+    }
+
+    /**
+     * Wildcard param. It will always be the last param, hence we will provide
+     * it all the remaining values
+     */
+    if (token.type === 2) {
+      const values = paramsArray ? paramsArray.slice(paramsIndex) : paramsObject['*']
+      if (!Array.isArray(values) || !values.length) {
+        throw new Error(
+          `Cannot make URL for "${pattern}". Invalid value provided for the wildcard param`
+        )
+      }
+
+      uriSegments.push(`${values.join('/')}${token.end}`)
+      break
+    }
+
+    const paramName = token.val
+    const value = paramsArray ? paramsArray[paramsIndex] : paramsObject[paramName]
+    const isDefined = value !== undefined && value !== null
+
+    /**
+     * Required param
+     */
+    if (token.type === 1 && !isDefined) {
+      throw new Error(
+        `Cannot make URL for "${pattern}". Missing value for the "${paramName}" param`
+      )
+    }
+
+    if (isDefined) {
+      uriSegments.push(`${value}${token.end}`)
+    }
+
+    paramsIndex++
+  }
+
+  let URI = `/${uriSegments.join('/')}`
+
+  /**
+   * Prefix base URL
+   */
+  if (options?.prefixUrl) {
+    URI = `${options?.prefixUrl.replace(/\/$/, '')}${URI}`
+  }
+
+  /**
+   * Append query string
+   */
+  if (options?.qs) {
+    const queryString = searchParamsStringifier(options?.qs)
+    URI = queryString ? `${URI}?${queryString}` : URI
+  }
+
+  return URI
+}
+
+/**
+ * Makes signed URL for a given route pattern using its parsed tokens. The
+ * tokens could be generated using the "parseRoute" method.
+ *
+ * @param identifier - Route identifier
+ * @param tokens - Array of parsed route tokens
+ * @param searchParamsStringifier - Function to stringify query parameters
+ * @param encryption - Encryption instance for signing
+ * @param params - Route parameters as array or object
+ * @param options - Signed URL options
+ * @returns {string} The generated signed URL
+ */
+export function createSignedURL(
+  identifier: string,
+  tokens: MatchItRouteToken[],
+  searchParamsStringifier: (qs: Record<string, any>) => string,
+  encryption: Encryption,
+  params?: any[] | { [param: string]: any },
+  options?: SignedURLOptions
+): string {
+  /*
+   * Making the signature from the qualified url. We do not prefix the "prefixUrl" when
+   * making signature, since it just makes the signature big.
+   *
+   * There might be a case, when someone wants to generate signature for the same route
+   * on their 2 different domains, but we ignore that case for now and can consider
+   * it later (when someone asks for it)
+   */
+  const signature = encryption.verifier.sign(
+    createURL(identifier, tokens, searchParamsStringifier, params, {
+      ...options,
+      prefixUrl: undefined,
+    }),
+    options?.expiresIn,
+    options?.purpose
+  )
+
+  return createURL(identifier, tokens, searchParamsStringifier, params, {
+    ...options,
+    qs: { ...options?.qs, signature },
+  })
+}
+
+/**
  * Match a given URI with an array of patterns and extract the params
  * from the URL. Null value is returned in case of no match
+ *
+ * @param url - The URL to match
+ * @param patterns - Array of route patterns to match against
+ * @returns {null | Record<string, string>} Extracted parameters or null if no match
  */
 export function matchRoute(url: string, patterns: string[]): null | Record<string, string> {
   const tokensBucket = patterns.map((pattern) => parseRoute(pattern))
@@ -81,6 +222,11 @@ export function matchRoute(url: string, patterns: string[]): null | Record<strin
 /**
  * Serialize the value of a cookie to a string you can send via
  * set-cookie response header.
+ *
+ * @param key - Cookie name
+ * @param value - Cookie value
+ * @param options - Cookie options
+ * @returns {string} Serialized cookie string
  */
 export function serializeCookie(
   key: string,
@@ -101,6 +247,9 @@ export function serializeCookie(
 /**
  * Returns the info about a middleware handler. In case of lazy imports, the method
  * will return the import path
+ *
+ * @param middleware - The middleware function or parsed middleware
+ * @returns {Promise<MiddlewareHandlerInfo>} Promise resolving to middleware handler information
  */
 export async function middlewareInfo(
   middleware: MiddlewareFn | ParsedGlobalMiddleware | ParsedNamedMiddleware
@@ -131,6 +280,9 @@ export async function middlewareInfo(
 /**
  * Returns the info about a route handler. In case of lazy imports, the method
  * will return the import path.
+ *
+ * @param route - The route JSON object
+ * @returns {Promise<RouteHandlerInfo>} Promise resolving to route handler information
  */
 export async function routeInfo(route: RouteJSON): Promise<RouteHandlerInfo> {
   return 'reference' in route.handler

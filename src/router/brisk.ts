@@ -57,6 +57,12 @@ export class BriskRoute extends Macroable {
    */
   route: null | Route = null
 
+  /**
+   * Creates a new BriskRoute instance
+   * @param app - The AdonisJS application instance
+   * @param routerMiddleware - Array of global middleware registered on the router
+   * @param options - Configuration options for the brisk route
+   */
   constructor(
     app: Application<any>,
     routerMiddleware: ParsedGlobalMiddleware[],
@@ -74,6 +80,8 @@ export class BriskRoute extends Macroable {
 
   /**
    * Set handler for the brisk route
+   * @param handler - The route handler function
+   * @returns The created route instance
    */
   setHandler(handler: RouteFn): Route {
     this.route = new Route(this.#app, this.#routerMiddleware, {
@@ -89,6 +97,8 @@ export class BriskRoute extends Macroable {
   /**
    * Redirects to a given route. Params from the original request will
    * be used when no custom params are defined.
+   * @param args - Route identifier, parameters, and options for building the redirect URL
+   * @returns The created route instance
    */
   redirect<Identifier extends keyof GetRoutesForMethod<RoutesList, 'GET'> & string>(
     ...args: RoutesList extends LookupList
@@ -111,6 +121,9 @@ export class BriskRoute extends Macroable {
 
   /**
    * Redirect request to a fixed URL
+   * @param url - The URL to redirect to
+   * @param options - Optional redirect options including HTTP status code
+   * @returns The created route instance
    */
   redirectToPath(url: string, options?: { status: number }): Route {
     function redirectsToPath(ctx: HttpContext) {

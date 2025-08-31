@@ -140,6 +140,8 @@ export class RoutesStore {
    *   }
    * })
    * ```
+   * @param route - The route to add to the store
+   * @returns Current RoutesStore instance for method chaining
    */
   add(route: RouteJSON): this {
     /**
@@ -177,6 +179,11 @@ export class RoutesStore {
    * The domain parameter has to be a registered pattern and not the fully
    * qualified runtime domain. You must call `matchDomain` first to fetch
    * the pattern for qualified domain
+   * @param url - The URL to match
+   * @param method - HTTP method
+   * @param shouldDecodeParam - Whether to decode parameters
+   * @param domain - Optional domain tokens and hostname
+   * @returns Matched route or null if no match found
    */
   match(
     url: string,
@@ -221,6 +228,8 @@ export class RoutesStore {
 
   /**
    * Match hostname against registered domains.
+   * @param hostname - The hostname to match
+   * @returns Array of matched domain tokens
    */
   matchDomain(hostname?: string | null): MatchItRouteToken[] {
     if (!hostname || !this.usingDomains) {

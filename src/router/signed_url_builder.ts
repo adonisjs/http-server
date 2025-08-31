@@ -10,47 +10,15 @@
 import type { Encryption } from '@adonisjs/encryption'
 
 import { type Router } from './main.ts'
-import { createURL } from './url_builder.ts'
-import { type MatchItRouteToken } from '../types/route.ts'
+import { createSignedURL } from '../helpers.ts'
 import { type UrlFor, type LookupList, type SignedURLOptions } from '../types/url_builder.ts'
 
 /**
- * Makes signed URL for a given route pattern. The route pattern could be an
- * identifier or an array of tokens.
- */
-export function createSignedURL(
-  identifier: string,
-  tokens: MatchItRouteToken[],
-  searchParamsStringifier: (qs: Record<string, any>) => string,
-  encryption: Encryption,
-  params?: any[] | { [param: string]: any },
-  options?: SignedURLOptions
-): string {
-  /*
-   * Making the signature from the qualified url. We do not prefix the "prefixUrl" when
-   * making signature, since it just makes the signature big.
-   *
-   * There might be a case, when someone wants to generate signature for the same route
-   * on their 2 different domains, but we ignore that case for now and can consider
-   * it later (when someone asks for it)
-   */
-  const signature = encryption.verifier.sign(
-    createURL(identifier, tokens, searchParamsStringifier, params, {
-      ...options,
-      prefixUrl: undefined,
-    }),
-    options?.expiresIn,
-    options?.purpose
-  )
-
-  return createURL(identifier, tokens, searchParamsStringifier, params, {
-    ...options,
-    qs: { ...options?.qs, signature },
-  })
-}
-
-/**
  * Creates the URLBuilder helper for making signed URLs
+ * @param router - The router instance
+ * @param encryption - Encryption service for signing URLs
+ * @param searchParamsStringifier - Function to stringify query string parameters
+ * @returns URL builder function for creating signed URLs
  */
 export function createSignedUrlBuilder<Routes extends LookupList>(
   router: Router,

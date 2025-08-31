@@ -13,37 +13,40 @@ import type { HttpContext } from './main.ts'
 /**
  * Async local storage for HTTP context
  */
+/**
+ * Async local storage for HTTP context
+ */
 export const asyncLocalStorage: {
-  isEnabled: boolean
-  storage: null | AsyncLocalStorage<HttpContext>
-  create(): AsyncLocalStorage<HttpContext>
-  destroy(): void
-} = {
   /**
-   * Check if the async local storage for the HTTP
-   * context is enabled or not
+   * Check if the async local storage for the HTTP context is enabled or not
    */
-  isEnabled: false,
-
+  isEnabled: boolean
   /**
    * HTTP context storage instance for the current scope
    */
+  storage: null | AsyncLocalStorage<HttpContext>
+  /**
+   * Create the storage instance. This method must be called only once.
+   *
+   * @returns {AsyncLocalStorage<HttpContext>} The created storage instance
+   */
+  create(): AsyncLocalStorage<HttpContext>
+  /**
+   * Destroy the create storage instance
+   */
+  destroy(): void
+} = {
+  isEnabled: false,
+
   storage: null,
 
-  /**
-   * Create the storage instance. This method must be called only
-   * once.
-   */
-  create() {
+  create(): AsyncLocalStorage<HttpContext> {
     this.isEnabled = true
     this.storage = new AsyncLocalStorage<HttpContext>()
     return this.storage
   },
 
-  /**
-   * Destroy the create storage instance
-   */
-  destroy() {
+  destroy(): void {
     this.isEnabled = false
     this.storage = null
   },

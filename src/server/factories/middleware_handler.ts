@@ -16,9 +16,25 @@ import type { HttpContext } from '../../http_context/main.ts'
 import { type ParsedGlobalMiddleware } from '../../types/middleware.ts'
 
 /**
- * The middleware handler invokes the middleware functions.
+ * Creates a middleware execution handler that invokes middleware functions with tracing support
+ *
+ * This factory function returns a middleware execution handler that:
+ * - Executes middleware with debug logging
+ * - Provides distributed tracing through tracing channels
+ * - Passes the container resolver, HTTP context, and next function to middleware
+ *
+ * @param resolver - Container resolver for dependency injection
+ * @param ctx - HTTP context containing request/response data
+ * @returns Middleware execution function
  */
 export function middlewareHandler(resolver: ContainerResolver<any>, ctx: HttpContext) {
+  /**
+   * Executes a single middleware function with tracing and debug logging
+   *
+   * @param fn - Parsed middleware configuration with handle method
+   * @param next - Next function to call the next middleware in the stack
+   * @returns Promise that resolves when middleware execution completes
+   */
   return function (fn: ParsedGlobalMiddleware, next: NextFn) {
     debug('executing middleware %s', fn.name)
     return httpMiddleware.tracePromise(

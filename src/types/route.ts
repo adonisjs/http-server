@@ -16,26 +16,31 @@ import type { HttpContext } from '../http_context/main.ts'
 import type { MiddlewareFn, ParsedGlobalMiddleware } from './middleware.ts'
 
 /**
- * Shape of a route param matcher
+ * Configuration for matching and casting route parameters
  */
 export type RouteMatcher = {
+  /** Regular expression to match parameter values */
   match?: RegExp
+  /** Function to cast string parameter values to specific types */
   cast?: (value: string) => any
 }
 
 /**
- * Route token stored by matchit library
+ * Route token structure used internally by the matchit routing library
  */
 export type MatchItRouteToken = RouteMatcher & {
+  /** Original token string */
   old: string
+  /** Token type identifier (0=static, 1=param, 2=wildcard, 3=optional) */
   type: 0 | 1 | 2 | 3
+  /** Token value */
   val: string
+  /** Token end delimiter */
   end: string
 }
 
 /**
- * Returns a union of methods from a controller that accepts
- * the context as the first argument.
+ * Extracts method names from a controller class that accept HttpContext as first parameter
  */
 export type GetControllerHandlers<Controller extends Constructor<any>> = {
   [K in keyof InstanceType<Controller>]: InstanceType<Controller>[K] extends (
@@ -47,20 +52,25 @@ export type GetControllerHandlers<Controller extends Constructor<any>> = {
 }[keyof InstanceType<Controller>]
 
 /**
- * Route handler defined as a function
+ * Route handler implemented as a function that accepts HTTP context
  */
 export type RouteFn = (ctx: HttpContext) => any
 
 /**
- * Route handler persisted with the route store
+ * Route handler representation stored in the route registry
  */
 export type StoreRouteHandler =
   | RouteFn
   | {
+      /** Optional name for the handler */
       name?: string
+      /** Method name on the controller */
       method: string
+      /** Dynamic import expression for lazy loading */
       importExpression: string | null
+      /** Reference to controller class or method */
       reference: string | [LazyImport<Constructor<any>> | Constructor<any>, any?]
+      /** Handler execution function */
       handle: (
         resolver: ContainerResolver<any>,
         ...args: [ctx: HttpContext, ...injections: any[]]
@@ -68,47 +78,53 @@ export type StoreRouteHandler =
     }
 
 /**
- * The middleware persisted with the route store
+ * Middleware representation stored with route information
  */
 export type StoreRouteMiddleware =
   | MiddlewareFn
   | ({ name?: string; args?: any[] } & ParsedGlobalMiddleware)
 
 /**
- * An object of routes for a given HTTP method
+ * Route storage structure for a specific HTTP method containing tokens and route mappings
  */
 export type StoreMethodNode = {
+  /** Array of route tokens for pattern matching */
   tokens: MatchItRouteToken[][]
+  /** Mapping from route patterns to unique route keys */
   routeKeys: {
     [pattern: string]: string
   }
+  /** Mapping from route patterns to route definitions */
   routes: {
     [pattern: string]: RouteJSON
   }
 }
 
 /**
- * Each domain node container an object of methods. Each method
- * object has nested routes.
+ * Domain-specific route storage containing method-based route organization
  */
 export type StoreDomainNode = {
+  /** HTTP method to method node mapping */
   [method: string]: StoreMethodNode
 }
 
 /**
- * Routes tree stored within the routes store
+ * Complete route tree structure organizing routes by domains and methods
  */
 export type StoreRoutesTree = {
+  /** Global route tokens for pattern matching */
   tokens: MatchItRouteToken[][]
+  /** Domain-based route organization */
   domains: {
     [domain: string]: StoreDomainNode
   }
 }
 
 /**
- * Shape of the matched route for a pattern, method and domain.
+ * Result of successful route matching containing route details and extracted parameters
  */
 export type MatchedRoute = {
+  /** The matched route definition */
   route: RouteJSON
 
   /**
@@ -128,14 +144,15 @@ export type MatchedRoute = {
 }
 
 /**
- * A collection of route matchers
+ * Collection of parameter matchers indexed by parameter name
  */
 export type RouteMatchers = {
+  /** Parameter name to matcher mapping */
   [param: string]: RouteMatcher
 }
 
 /**
- * Representation of a route as JSON
+ * Complete route definition with all metadata, handlers, and execution context
  */
 export type RouteJSON = {
   /**
@@ -196,7 +213,7 @@ export type RouteJSON = {
 }
 
 /**
- * Resource action names
+ * Standard RESTful resource action names for CRUD operations
  */
 export type ResourceActionNames =
   | 'create'
@@ -208,21 +225,27 @@ export type ResourceActionNames =
   | 'destroy'
 
 /**
- * Options accepted by makeUrl method
+ * Options for URL generation (deprecated - use URLBuilder instead)
  * @deprecated
  */
 export type MakeUrlOptions = {
+  /** Query string parameters to append */
   qs?: Record<string, any>
+  /** Domain name to use for the URL */
   domain?: string
+  /** Prefix to prepend to the generated URL */
   prefixUrl?: string
+  /** Whether to disable route lookup optimization */
   disableRouteLookup?: boolean
 }
 
 /**
- * Options accepted by makeSignedUrl method
+ * Options for signed URL generation (deprecated - use URLBuilder instead)
  * @deprecated
  */
 export type MakeSignedUrlOptions = MakeUrlOptions & {
+  /** Expiration time for the signed URL */
   expiresIn?: string | number
+  /** Purpose identifier for the signed URL */
   purpose?: string
 }

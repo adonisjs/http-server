@@ -18,6 +18,10 @@ import { httpMiddleware, httpRouteHandler } from '../tracing_channels.ts'
 /**
  * Executor to execute the route middleware pipeline the route
  * handler
+ * @param route - The route JSON object containing route information
+ * @param resolver - Container resolver for dependency injection
+ * @param ctx - The HTTP context instance
+ * @param errorResponder - Error handler function for handling errors
  */
 export function execute(
   route: RouteJSON,

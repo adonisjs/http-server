@@ -27,7 +27,7 @@ export class HttpContext extends Macroable {
    * Find if async localstorage is enabled for HTTP requests
    * or not
    */
-  static get usingAsyncLocalStorage() {
+  static get usingAsyncLocalStorage(): boolean {
     return asyncLocalStorage.isEnabled
   }
 
@@ -98,6 +98,14 @@ export class HttpContext extends Macroable {
    */
   subdomains: Record<string, any> = {}
 
+  /**
+   * Creates a new HttpContext instance
+   *
+   * @param {Request} request - The HTTP request instance
+   * @param {Response} response - The HTTP response instance
+   * @param {Logger} logger - The logger instance
+   * @param {ContainerResolver<any>} containerResolver - The IoC container resolver
+   */
   constructor(
     public request: Request,
     public response: Response,

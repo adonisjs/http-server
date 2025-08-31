@@ -110,6 +110,12 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
    */
   #middleware: StoreRouteMiddleware[][] = []
 
+  /**
+   * Creates a new Route instance
+   * @param app - The AdonisJS application instance
+   * @param routerMiddleware - Array of global middleware registered on the router
+   * @param options - Configuration options for the route
+   */
   constructor(
     app: Application<any>,
     routerMiddleware: ParsedGlobalMiddleware[],
@@ -269,6 +275,8 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
   /**
    * Define prefix for the route. Calling this method multiple times
    * applies multiple prefixes in the reverse order.
+   * @param prefix - The prefix to add to the route
+   * @returns Current Route instance for method chaining
    */
   prefix(prefix: string): this {
     this.#prefixes.push(prefix)

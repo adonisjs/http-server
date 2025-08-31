@@ -39,14 +39,31 @@ import { middlewareHandler } from './factories/middleware_handler.ts'
 import { httpRequest, httpExceptionHandler } from '../tracing_channels.ts'
 
 /**
- * The HTTP server implementation to handle incoming requests and respond using the
- * registered routes.
+ * The Server class provides the core HTTP server implementation for AdonisJS.
+ *
+ * It handles incoming HTTP requests by processing them through middleware pipelines,
+ * routing them to appropriate handlers, and managing response generation. The server
+ * supports custom error handling, middleware registration, and various Node.js HTTP
+ * server configurations.
+ *
+ * @example
+ * ```ts
+ * const server = new Server(app, encryption, emitter, logger, config)
+ * server.use([AuthMiddleware, CorsMiddleware])
+ * server.errorHandler(() => import('./error_handler.ts'))
+ * await server.boot()
+ *
+ * http.createServer(server.handle.bind(server))
+ * ```
  */
 export class Server {
+  /**
+   * Flag indicating whether the server has been booted and initialized
+   */
   #booted: boolean = false
 
   /**
-   * The default error handler to use
+   * Built-in fallback error handler used when no custom handler is registered
    */
   #defaultErrorHandler: ServerErrorHandler = {
     report() {},
@@ -56,75 +73,68 @@ export class Server {
   }
 
   /**
-   * Logger instance, a child logger is added
-   * to the context to have request specific
-   * logging capabilities.
+   * Logger instance for server-level logging (child loggers are created per request)
    */
   #logger: Logger
 
   /**
-   * Registered error handler (if any)
+   * Lazy import reference to the custom error handler class
    */
   #errorHandler?: LazyImport<ErrorHandlerAsAClass>
 
   /**
-   * Resolved error handler is an instance of the lazily imported error
-   * handler class.
+   * Active error handler instance (either custom or default)
    */
   #resolvedErrorHandler: ServerErrorHandler = this.#defaultErrorHandler
 
   /**
-   * Emitter is required to notify when a request finishes
+   * Event emitter for HTTP server lifecycle events
    */
   #emitter: EmitterLike<HttpServerEvents>
 
   /**
-   * The application instance to be shared with the router
+   * AdonisJS application instance providing IoC container and configuration
    */
   #app: Application<any>
 
   /**
-   * The encryption instance to be shared with the router
+   * Encryption service for secure cookie handling and data encryption
    */
   #encryption: Encryption
 
   /**
-   * Server config
+   * Server configuration settings including timeouts, middleware options, etc.
    */
   #config: ServerConfig
 
   /**
-   * Query string parser used by the server
+   * Query string parser instance for URL parameter processing
    */
   #qsParser: Qs
 
   /**
-   * Server middleware stack runs on every incoming HTTP request
+   * Compiled middleware stack that executes on every incoming HTTP request
    */
   #serverMiddlewareStack?: Middleware<ParsedGlobalMiddleware>
 
   /**
-   * Reference to the router used by the server
+   * Router instance responsible for route registration and matching
    */
   #router: Router
 
   /**
-   * Reference to the underlying Node HTTP server in use
+   * Reference to the underlying Node.js HTTP or HTTPS server instance
    */
   #nodeHttpServer?: HttpServer | HttpsServer
 
   /**
-   * Middleware store to be shared with the routes
+   * Collection of registered global middleware before compilation
    */
   #middleware: ParsedGlobalMiddleware[] = []
 
   /**
-   * The request error response is attached to the middleware
-   * pipeline to intercept errors and invoke the user
-   * registered error handler.
-   *
-   * We share this with the route middleware pipeline as well,
-   * so that it does not throw any exceptions
+   * Error responder function that handles exceptions in middleware and routes.
+   * Reports errors and delegates handling to the configured error handler.
    */
   #requestErrorResponder: ServerErrorHandler['handle'] = (error, ctx) => {
     this.#resolvedErrorHandler.report(error, ctx)
@@ -139,19 +149,28 @@ export class Server {
   }
 
   /**
-   * Check if the server has already been booted
+   * Indicates whether the server has completed its boot process
    */
   get booted() {
     return this.#booted
   }
 
   /**
-   * Know if async local storage is enabled or not.
+   * Indicates whether async local storage is enabled for request context
    */
   get usingAsyncLocalStorage() {
     return asyncLocalStorage.isEnabled
   }
 
+  /**
+   * Creates a new Server instance
+   *
+   * @param app - AdonisJS application instance
+   * @param encryption - Encryption service for secure operations
+   * @param emitter - Event emitter for server lifecycle events
+   * @param logger - Logger instance for server operations
+   * @param config - Server configuration settings
+   */
   constructor(
     app: Application<any>,
     encryption: Encryption,
@@ -172,7 +191,7 @@ export class Server {
   }
 
   /**
-   * Create async local storage store when enabled
+   * Initializes or destroys async local storage based on configuration
    */
   #createAsyncLocalStore() {
     if (this.#config.useAsyncLocalStorage) {
@@ -184,7 +203,7 @@ export class Server {
   }
 
   /**
-   * Creates an instance of the server middleware stack
+   * Compiles registered middleware into a frozen middleware stack for execution
    */
   #createServerMiddlewareStack() {
     this.#serverMiddlewareStack = new Middleware()
@@ -194,7 +213,11 @@ export class Server {
   }
 
   /**
-   * Handles the HTTP request
+   * Processes an HTTP request through the middleware pipeline and routing
+   *
+   * @param ctx - HTTP context containing request/response objects
+   * @param resolver - Container resolver for dependency injection
+   * @returns Promise that resolves when request processing is complete
    */
   #handleRequest(ctx: HttpContext, resolver: ContainerResolver<any>) {
     return this.#serverMiddlewareStack!.runner()
@@ -209,7 +232,10 @@ export class Server {
   }
 
   /**
-   * Creates a pipeline of middleware.
+   * Creates a testing middleware pipeline for unit/integration testing
+   *
+   * @param middleware - Array of middleware classes to include in pipeline
+   * @returns TestingMiddlewarePipeline instance for test execution
    */
   pipeline(middleware: MiddlewareAsClass[]): TestingMiddlewarePipeline {
     const middlewareStack = new Middleware<ParsedGlobalMiddleware>()
@@ -241,9 +267,10 @@ export class Server {
   }
 
   /**
-   * Define an array of middleware to use on all the incoming HTTP request.
-   * Calling this method multiple times pushes to the existing list
-   * of middleware
+   * Registers global middleware to run on all incoming HTTP requests
+   *
+   * @param middleware - Array of lazy-imported middleware classes
+   * @returns The Server instance for method chaining
    */
   use(middleware: LazyImport<MiddlewareAsClass>[]): this {
     middleware.forEach((one) =>
@@ -257,8 +284,10 @@ export class Server {
   }
 
   /**
-   * Register a custom error handler for HTTP requests.
-   * All errors will be reported to this method
+   * Registers a custom error handler for HTTP request processing
+   *
+   * @param handler - Lazy import of the error handler class
+   * @returns The Server instance for method chaining
    */
   errorHandler(handler: LazyImport<ErrorHandlerAsAClass>): this {
     this.#errorHandler = handler
@@ -266,10 +295,12 @@ export class Server {
   }
 
   /**
-   * Boot the server. Calling this method performs the following actions.
+   * Initializes the server by compiling middleware, committing routes, and resolving handlers
    *
-   * - Register routes with the store.
-   * - Resolve and construct the error handler.
+   * Performs the following operations:
+   * - Compiles the middleware stack
+   * - Commits registered routes to the router
+   * - Resolves and instantiates the custom error handler
    */
   async boot() {
     if (this.#booted) {
@@ -304,7 +335,9 @@ export class Server {
   }
 
   /**
-   * Set the HTTP server instance used to listen for requests.
+   * Configures the underlying Node.js HTTP/HTTPS server with timeout settings
+   *
+   * @param server - Node.js HTTP or HTTPS server instance
    */
   setNodeServer(server: HttpServer | HttpsServer) {
     server.timeout = this.#config.timeout ?? server.timeout
@@ -315,37 +348,52 @@ export class Server {
   }
 
   /**
-   * Returns reference to the underlying HTTP server
-   * in use
+   * Gets the underlying Node.js HTTP/HTTPS server instance
+   *
+   * @returns The configured server instance or undefined if not set
    */
   getNodeServer() {
     return this.#nodeHttpServer
   }
 
   /**
-   * Returns reference to the router instance used
-   * by the server.
+   * Gets the router instance used for route registration and matching
+   *
+   * @returns The Router instance
    */
   getRouter(): Router {
     return this.#router
   }
 
   /**
-   * Creates an instance of the [[Request]] class
+   * Creates a Request instance from Node.js request/response objects
+   *
+   * @param req - Node.js IncomingMessage
+   * @param res - Node.js ServerResponse
+   * @returns New Request instance
    */
   createRequest(req: IncomingMessage, res: ServerResponse) {
     return new Request(req, res, this.#encryption, this.#config, this.#qsParser)
   }
 
   /**
-   * Creates an instance of the [[Response]] class
+   * Creates a Response instance from Node.js request/response objects
+   *
+   * @param req - Node.js IncomingMessage
+   * @param res - Node.js ServerResponse
+   * @returns New Response instance
    */
   createResponse(req: IncomingMessage, res: ServerResponse) {
     return new Response(req, res, this.#encryption, this.#config, this.#router, this.#qsParser)
   }
 
   /**
-   * Creates an instance of the [[HttpContext]] class
+   * Creates an HttpContext instance with request-specific logger
+   *
+   * @param request - Request instance
+   * @param response - Response instance
+   * @param resolver - Container resolver for dependency injection
+   * @returns New HttpContext instance
    */
   createHttpContext(request: Request, response: Response, resolver: ContainerResolver<any>) {
     return new HttpContext(
@@ -357,7 +405,9 @@ export class Server {
   }
 
   /**
-   * Returns a list of server middleware stack
+   * Gets the list of registered global middleware
+   *
+   * @returns Array of parsed global middleware
    */
   getMiddlewareList(): ParsedGlobalMiddleware[] {
     return this.#serverMiddlewareStack
@@ -366,7 +416,11 @@ export class Server {
   }
 
   /**
-   * Handle request
+   * Handles an incoming HTTP request by creating context and processing through pipeline
+   *
+   * @param req - Node.js IncomingMessage
+   * @param res - Node.js ServerResponse
+   * @returns Promise that resolves when request processing is complete
    */
   handle(req: IncomingMessage, res: ServerResponse) {
     /**

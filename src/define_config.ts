@@ -10,11 +10,9 @@
 import proxyAddr from 'proxy-addr'
 import string from '@poppinss/utils/string'
 import lodash from '@poppinss/utils/lodash'
-import type { ServerConfig } from './types/server.ts'
+import { type DeepPartial } from '@poppinss/utils/types'
 
-type DeepPartial<T> = {
-  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
-}
+import type { ServerConfig } from './types/server.ts'
 
 type UserDefinedServerConfig = DeepPartial<
   Omit<ServerConfig, 'trustProxy'> & {

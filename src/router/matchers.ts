@@ -16,6 +16,7 @@ export class RouteMatchers extends Macroable {
   /**
    * Enforce value to be a number and also casts it to number data
    * type
+   * @returns Route matcher configuration for numeric values
    */
   number() {
     return { match: /^[0-9]+$/, cast: (value: string) => Number(value) }
@@ -23,6 +24,7 @@ export class RouteMatchers extends Macroable {
 
   /**
    * Enforce value to be formatted as uuid
+   * @returns Route matcher configuration for UUID values
    */
   uuid() {
     return {
@@ -33,6 +35,7 @@ export class RouteMatchers extends Macroable {
 
   /**
    * Enforce value to be formatted as slug
+   * @returns Route matcher configuration for slug values
    */
   slug() {
     return { match: /^[^\s-_](?!.*?[-_]{2,})([a-z0-9-\\]{1,})[^\s]*[^-_\s]$/ }

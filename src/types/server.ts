@@ -16,71 +16,86 @@ import type { ResponseConfig } from './response.ts'
 import type { HttpContext } from '../http_context/main.ts'
 
 /**
- * Normalized HTTP error used by the exception
- * handler.
+ * Normalized HTTP error structure used by exception handlers
  */
 export type HttpError = {
+  /** Error message describing the issue */
   message: string
+  /** HTTP status code */
   status: number
+  /** Optional error code identifier */
   code?: string
+  /** Optional stack trace */
   stack?: string
+  /** Optional underlying cause of the error */
   cause?: any
+  /** Optional additional error messages */
   messages?: any
+  /** Optional validation or field errors */
   errors?: any
+  /** Optional custom error handler method */
   handle?: (...args: any[]) => any
+  /** Optional error reporting method */
   report?: (...args: any[]) => any
 }
 
 /**
- * The pipeline for executing middleware during tests
+ * Pipeline interface for executing middleware chains during testing
  */
 export interface TestingMiddlewarePipeline {
+  /** Set the final handler for the pipeline */
   finalHandler(handler: FinalHandler): this
+  /** Set the error handler for the pipeline */
   errorHandler(handler: ErrorHandler): this
+  /** Execute the middleware pipeline with the given context */
   run(ctx: HttpContext): Promise<any>
 }
 
 /**
- * The expression to define a status page range
+ * Expression format for defining HTTP status code ranges for error pages
  */
 export type StatusPageRange = `${number}..${number}` | `${number}` | number
 
 /**
- * The callback function to render status page for a given
- * error.
+ * Callback function to render custom status pages for HTTP errors
  */
 export type StatusPageRenderer = (error: HttpError, ctx: HttpContext) => any | Promise<any>
 
 /**
- * Data type for the "http:request_completed" event
+ * Payload structure for the http:request_completed event
  */
 export type HttpRequestFinishedPayload = {
+  /** HTTP context for the completed request */
   ctx: HttpContext
+  /** Request duration as a high-resolution time tuple */
   duration: [number, number]
 }
 
 /**
- * Events emitted by the HttpServer
+ * Event types and payloads emitted by the HTTP server
  */
 export type HttpServerEvents = {
+  /** Event fired when an HTTP request is completed */
   'http:request_completed': HttpRequestFinishedPayload
 }
 
 /**
- * Error handler to handle HTTP errors
+ * Interface for handling and reporting HTTP errors in the server
  */
 export type ServerErrorHandler = {
+  /** Method to report errors for logging or monitoring */
   report: (error: any, ctx: HttpContext) => any
+  /** Method to handle errors and send appropriate responses */
   handle: (error: any, ctx: HttpContext) => any
 }
 
 /**
- * Error handler represented as a class
+ * Constructor type for error handler classes that implement ServerErrorHandler
  */
 export type ErrorHandlerAsAClass = Constructor<ServerErrorHandler>
 
 /**
- * Config accepted by the HTTP server
+ * Complete configuration options for the HTTP server extending request and response configs
  */
 export type ServerConfig = RequestConfig &
   ResponseConfig & {

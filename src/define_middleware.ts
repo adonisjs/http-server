@@ -10,10 +10,10 @@
 import { moduleImporter } from '@adonisjs/fold'
 import type { LazyImport, UnWrapLazyImport } from '@poppinss/utils/types'
 import type {
-  GetMiddlewareArgs,
   MiddlewareAsClass,
-  ParsedGlobalMiddleware,
+  GetMiddlewareArgs,
   ParsedNamedMiddleware,
+  ParsedGlobalMiddleware,
 } from './types/middleware.ts'
 
 /**

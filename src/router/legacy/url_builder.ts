@@ -52,8 +52,16 @@ export class UrlBuilder {
    */
   #router: Router
 
+  /**
+   * Domain to use for URL generation
+   */
   #domain: string | undefined
 
+  /**
+   * Creates a new UrlBuilder instance
+   * @param router - The router instance
+   * @param domain - Optional domain for URL generation
+   */
   constructor(router: Router, domain?: string) {
     this.#router = router
     this.#domain = domain
@@ -115,6 +123,8 @@ export class UrlBuilder {
    *
    * @deprecated
    * Instead use "@adonisjs/core/services/url_builder" instead
+   * @param identifier - Route identifier to generate URL for
+   * @returns Generated URL string
    */
   make(identifier: string): string {
     return this.#router.makeUrl(identifier, this.#params, {

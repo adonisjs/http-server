@@ -77,6 +77,12 @@ export class RouteResource<
    */
   routes: Route[] = []
 
+  /**
+   * Creates a new RouteResource instance
+   * @param app - The AdonisJS application instance
+   * @param routerMiddleware - Array of global middleware registered on the router
+   * @param options - Configuration options for the route resource
+   */
   constructor(
     app: Application<any>,
     routerMiddleware: ParsedGlobalMiddleware[],
@@ -198,6 +204,8 @@ export class RouteResource<
 
   /**
    * Register only given routes and remove others
+   * @param names - Array of action names to keep
+   * @returns Current RouteResource instance with filtered actions
    */
   only<Name extends ActionNames>(names: Name[]): RouteResource<Name> {
     this.#filter(names, true).forEach((route) => route.markAsDeleted())
@@ -206,6 +214,8 @@ export class RouteResource<
 
   /**
    * Register all routes, except the one's defined
+   * @param names - Array of action names to exclude
+   * @returns Current RouteResource instance with filtered actions
    */
   except<Name extends ActionNames>(names: Name[]): RouteResource<Exclude<ActionNames, Name>> {
     this.#filter(names, false).forEach((route) => route.markAsDeleted())
@@ -215,6 +225,7 @@ export class RouteResource<
   /**
    * Register api only routes. The `create` and `edit` routes, which
    * are meant to show forms will not be registered
+   * @returns Current RouteResource instance without create and edit actions
    */
   apiOnly(): RouteResource<Exclude<ActionNames, 'create' | 'edit'>> {
     return this.except(['create', 'edit'] as ActionNames[])
@@ -222,6 +233,9 @@ export class RouteResource<
 
   /**
    * Define matcher for params inside the resource
+   * @param key - The parameter name to match
+   * @param matcher - The matcher pattern (RegExp, string, or RouteMatcher)
+   * @returns Current RouteResource instance for method chaining
    */
   where(key: string, matcher: RouteMatcher | string | RegExp): this {
     this.routes.forEach((route) => {
@@ -233,8 +247,16 @@ export class RouteResource<
 
   /**
    * Tap into multiple routes to configure them by their name
+   * @param callback - Function to configure routes
+   * @returns Current RouteResource instance for method chaining
    */
   tap(callback: (route: Route) => void): this
+  /**
+   * Tap into multiple routes to configure them by their name
+   * @param actions - Action name(s) to configure
+   * @param callback - Function to configure matching routes
+   * @returns Current RouteResource instance for method chaining
+   */
   tap(actions: ActionNames | ActionNames[], callback: (route: Route) => void): this
   tap(
     actions: ((route: Route) => void) | ActionNames | ActionNames[],
@@ -259,6 +281,8 @@ export class RouteResource<
 
   /**
    * Set the param name for a given resource
+   * @param resources - Object mapping resource names to parameter names
+   * @returns Current RouteResource instance for method chaining
    */
   params(resources: { [resource: string]: string }): this {
     Object.keys(resources).forEach((resource) => {
@@ -282,6 +306,9 @@ export class RouteResource<
    *
    * Calling this method multiple times will append middleware
    * to existing list.
+   * @param actions - Action name(s) or '*' for all actions
+   * @param middleware - Middleware function(s) to apply
+   * @returns Current RouteResource instance for method chaining
    */
   use(
     actions: ActionNames | ActionNames[] | '*',
@@ -297,6 +324,9 @@ export class RouteResource<
 
   /**
    * @alias use
+   * @param actions - Action name(s) or '*' for all actions
+   * @param middleware - Middleware function(s) to apply
+   * @returns Current RouteResource instance for method chaining
    */
   middleware(
     actions: ActionNames | ActionNames[] | '*',
@@ -307,6 +337,9 @@ export class RouteResource<
 
   /**
    * Prepend name to all the routes
+   * @param name - The name to prepend to all route names
+   * @param normalizeName - Whether to normalize the name to snake_case
+   * @returns Current RouteResource instance for method chaining
    */
   as(name: string, normalizeName: boolean = true): this {
     name = normalizeName ? string.snakeCase(name) : name

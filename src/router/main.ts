@@ -20,25 +20,25 @@ import { Route } from './route.ts'
 import { RouteGroup } from './group.ts'
 import { BriskRoute } from './brisk.ts'
 import { RoutesStore } from './store.ts'
-import { parseRoute } from '../helpers.ts'
 import { toRoutesJSON } from '../utils.ts'
 import { RouteResource } from './resource.ts'
+import { createUrlBuilder } from './url_builder.ts'
 import { UrlBuilder } from './legacy/url_builder.ts'
 import { RouteMatchers as Matchers } from './matchers.ts'
-import { createURL, createUrlBuilder } from './url_builder.ts'
 import { defineNamedMiddleware } from '../define_middleware.ts'
-import { createSignedURL, createSignedUrlBuilder } from './signed_url_builder.ts'
+import { createSignedUrlBuilder } from './signed_url_builder.ts'
+import { createSignedURL, createURL, parseRoute } from '../helpers.ts'
 import type { MiddlewareAsClass, ParsedGlobalMiddleware } from '../types/middleware.ts'
 
 import type {
   RouteFn,
   RouteJSON,
   MatchedRoute,
+  RouteMatcher,
   RouteMatchers,
   MakeUrlOptions,
   MakeSignedUrlOptions,
   GetControllerHandlers,
-  RouteMatcher,
 } from '../types/route.ts'
 import {
   type UrlFor,
@@ -144,6 +144,12 @@ export class Router {
    */
   protected routes: { [domain: string]: RouteJSON[] } = {}
 
+  /**
+   * Creates a new Router instance
+   * @param app - The AdonisJS application instance
+   * @param encryption - Encryption service for signed URLs
+   * @param qsParser - Query string parser for URL generation
+   */
   constructor(app: Application<any>, encryption: Encryption, qsParser: Qs) {
     this.#app = app
     this.#encryption = encryption
@@ -178,6 +184,8 @@ export class Router {
 
   /**
    * Parses the route pattern
+   * @param pattern - The route pattern to parse
+   * @param matchers - Optional route matchers
    */
   parsePattern(pattern: string, matchers?: RouteMatchers) {
     return parseRoute(pattern, matchers)
@@ -187,6 +195,8 @@ export class Router {
    * Define an array of middleware to use on all the routes.
    * Calling this method multiple times pushes to the
    * existing list of middleware
+   * @param middleware - Array of middleware classes to apply globally
+   * @returns Current Router instance for method chaining
    */
   use(middleware: LazyImport<MiddlewareAsClass>[]): this {
     middleware.forEach((one) =>
@@ -203,6 +213,8 @@ export class Router {
    * Define a collection of named middleware. The defined collection is
    * not registered anywhere, but instead converted in a new collection
    * of functions you can apply on the routes, or router groups.
+   * @param collection - Object mapping middleware names to middleware classes
+   * @returns Named middleware functions
    */
   named<NamedMiddleware extends Record<string, LazyImport<MiddlewareAsClass>>>(
     collection: NamedMiddleware
@@ -212,6 +224,10 @@ export class Router {
 
   /**
    * Add route for a given pattern and methods
+   * @param pattern - The route pattern
+   * @param methods - Array of HTTP methods
+   * @param handler - Route handler (function, string, or controller tuple)
+   * @returns The created route instance
    */
   route<T extends Constructor<any>>(
     pattern: string,
@@ -231,6 +247,9 @@ export class Router {
 
   /**
    * Define a route that handles all common HTTP methods
+   * @param pattern - The route pattern
+   * @param handler - Route handler (function, string, or controller tuple)
+   * @returns The created route instance
    */
   any<T extends Constructor<any>>(
     pattern: string,
@@ -245,6 +264,9 @@ export class Router {
 
   /**
    * Define `GET` route
+   * @param pattern - The route pattern
+   * @param handler - Route handler (function, string, or controller tuple)
+   * @returns The created route instance
    */
   get<T extends Constructor<any>>(
     pattern: string,
@@ -255,6 +277,9 @@ export class Router {
 
   /**
    * Define `POST` route
+   * @param pattern - The route pattern
+   * @param handler - Route handler (function, string, or controller tuple)
+   * @returns The created route instance
    */
   post<T extends Constructor<any>>(
     pattern: string,
@@ -265,6 +290,9 @@ export class Router {
 
   /**
    * Define `PUT` route
+   * @param pattern - The route pattern
+   * @param handler - Route handler (function, string, or controller tuple)
+   * @returns The created route instance
    */
   put<T extends Constructor<any>>(
     pattern: string,
@@ -275,6 +303,9 @@ export class Router {
 
   /**
    * Define `PATCH` route
+   * @param pattern - The route pattern
+   * @param handler - Route handler (function, string, or controller tuple)
+   * @returns The created route instance
    */
   patch<T extends Constructor<any>>(
     pattern: string,
@@ -285,6 +316,9 @@ export class Router {
 
   /**
    * Define `DELETE` route
+   * @param pattern - The route pattern
+   * @param handler - Route handler (function, string, or controller tuple)
+   * @returns The created route instance
    */
   delete<T extends Constructor<any>>(
     pattern: string,
@@ -296,6 +330,8 @@ export class Router {
   /**
    * Creates a group of routes. A route group can apply transforms
    * to routes in bulk
+   * @param callback - Function that defines routes within the group
+   * @returns The created route group instance
    */
   group(callback: () => void) {
     /*
@@ -330,6 +366,9 @@ export class Router {
 
   /**
    * Registers a route resource with conventional set of routes
+   * @param resource - The resource name
+   * @param controller - Controller to handle the resource
+   * @returns The created route resource instance
    */
   resource(resource: string, controller: string | LazyImport<Constructor<any>> | Constructor<any>) {
     const resourceInstance = new RouteResource(this.#app, this.#middleware, {
@@ -345,6 +384,9 @@ export class Router {
 
   /**
    * Register a route resource with shallow nested routes.
+   * @param resource - The resource name
+   * @param controller - Controller to handle the resource
+   * @returns The created route resource instance
    */
   shallowResource(
     resource: string,
@@ -363,6 +405,8 @@ export class Router {
 
   /**
    * Returns a brisk route instance for a given URL pattern
+   * @param pattern - The route pattern
+   * @returns The created brisk route instance
    */
   on(pattern: string) {
     const briskRoute = new BriskRoute(this.#app, this.#middleware, {
@@ -377,6 +421,9 @@ export class Router {
   /**
    * Define matcher for a given param. The global params are applied
    * on all the routes (unless overridden at the route level).
+   * @param param - The parameter name to match
+   * @param matcher - The matcher pattern (RegExp, string, or RouteMatcher)
+   * @returns Current Router instance for method chaining
    */
   where(param: string, matcher: RouteMatcher | string | RegExp): this {
     if (typeof matcher === 'string') {
@@ -449,6 +496,11 @@ export class Router {
    *
    * When "disableLegacyLookup" is set, the lookup will be performed
    * only using the route name
+   * @param routeIdentifier - Route name, pattern, or controller reference
+   * @param domain - Optional domain to search within
+   * @param method - Optional HTTP method to filter by
+   * @param disableLegacyLookup - Whether to disable legacy lookup strategies
+   * @returns Found route or null if not found
    */
   find(
     routeIdentifier: string,
@@ -516,6 +568,12 @@ export class Router {
    *
    * When "disableLegacyLookup" is set, the lookup will be performed
    * only using the route name
+   * @param routeIdentifier - Route name, pattern, or controller reference
+   * @param domain - Optional domain to search within
+   * @param method - Optional HTTP method to filter by
+   * @param disableLegacyLookup - Whether to disable legacy lookup strategies
+   * @returns Found route
+   * @throws Error when route is not found
    */
   findOrFail(
     routeIdentifier: string,
@@ -539,6 +597,11 @@ export class Router {
    * When "followLookupStrategy" is enabled, the lookup will be performed
    * on the basis of the lookup strategy enabled via the "lookupStrategies"
    * method. The default lookupStrategy is "name" and "pattern".
+   * @param routeIdentifier - Route name, pattern, or controller reference
+   * @param domain - Optional domain to search within
+   * @param method - Optional HTTP method to filter by
+   * @param followLookupStrategy - Whether to follow the configured lookup strategy
+   * @returns True if route exists, false otherwise
    */
   has(
     routeIdentifier: string,
@@ -551,6 +614,7 @@ export class Router {
 
   /**
    * Returns a list of routes grouped by their domain names
+   * @returns Object mapping domain names to route arrays
    */
   toJSON(): { [domain: string]: RouteJSON[] } {
     return this.routes
@@ -560,6 +624,8 @@ export class Router {
    * Generates types for the URL builder. These types must
    * be written inside a file for the URL builder to
    * pick them up.
+   * @param indentation - Indentation level for generated types
+   * @returns Generated TypeScript types as string
    */
   generateTypes(indentation: number = 0) {
     const routesList: {
@@ -669,6 +735,11 @@ export class Router {
 
   /**
    * Find route for a given URL, method and optionally domain
+   * @param uri - The URI to match
+   * @param method - HTTP method
+   * @param shouldDecodeParam - Whether to decode parameters
+   * @param hostname - Optional hostname for domain matching
+   * @returns Matched route or null if no match found
    */
   match(
     uri: string,

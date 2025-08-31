@@ -19,8 +19,16 @@ import type { CookieOptions } from '../types/response.ts'
  * and then set them individually using the `set-cookie` header.
  */
 export class CookieSerializer {
+  /**
+   * Cookie client instance for handling cookie operations
+   */
   #client: CookieClient
 
+  /**
+   * Create a new instance of CookieSerializer
+   * 
+   * @param encryption - The encryption instance for cookie operations
+   */
   constructor(encryption: Encryption) {
     this.#client = new CookieClient(encryption)
   }
@@ -35,6 +43,11 @@ export class CookieSerializer {
    *  serializer.encode('name', 'virk')
    *  serializer.encode('name', 'virk', { stringify: false })
    * ```
+   * 
+   * @param key - The cookie key
+   * @param value - The value to encode
+   * @param options - Cookie encoding options
+   * @returns The serialized cookie string or null if encoding fails
    */
   encode(
     key: string,
@@ -62,6 +75,11 @@ export class CookieSerializer {
   /**
    * Sign a key-value pair to a signed cookie. The signed value has a
    * verification hash attached to it to detect data tampering.
+   * 
+   * @param key - The cookie key
+   * @param value - The value to sign
+   * @param options - Cookie options
+   * @returns The serialized signed cookie string or null if signing fails
    */
   sign(key: string, value: any, options?: Partial<CookieOptions>): string | null {
     const packedValue = this.#client.sign(key, value)
@@ -74,6 +92,11 @@ export class CookieSerializer {
 
   /**
    * Encrypts a key-value pair to an encrypted cookie.
+   * 
+   * @param key - The cookie key
+   * @param value - The value to encrypt
+   * @param options - Cookie options
+   * @returns The serialized encrypted cookie string or null if encryption fails
    */
   encrypt(key: string, value: any, options?: Partial<CookieOptions>): string | null {
     const packedValue = this.#client.encrypt(key, value)

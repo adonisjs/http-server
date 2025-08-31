@@ -15,9 +15,19 @@ import type { HttpContext } from '../../http_context/main.ts'
 import type { ServerErrorHandler } from '../../types/server.ts'
 
 /**
- * The route finder is executed after the server middleware stack.
- * It looks for a matching route and executes the route middleware
- * stack.
+ * Creates a route finder function that matches HTTP requests to registered routes
+ *
+ * This factory function returns a route handler that:
+ * - Matches incoming requests against registered routes
+ * - Extracts route parameters and subdomains
+ * - Executes the matched route's handler and middleware
+ * - Throws E_ROUTE_NOT_FOUND error for unmatched requests
+ *
+ * @param router - Router instance containing registered routes
+ * @param resolver - Container resolver for dependency injection
+ * @param ctx - HTTP context containing request/response data
+ * @param errorResponder - Error handler for route execution errors
+ * @returns Route execution function
  */
 export function routeFinder(
   router: Router,
@@ -25,6 +35,11 @@ export function routeFinder(
   ctx: HttpContext,
   errorResponder: ServerErrorHandler['handle']
 ) {
+  /**
+   * Finds and executes a matching route for the current request
+   *
+   * @returns Promise that resolves when route execution completes or rejects with route not found error
+   */
   return function () {
     const url = ctx.request.url()
     const method = ctx.request.method()

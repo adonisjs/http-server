@@ -18,14 +18,26 @@ import * as encryptedCookiesDriver from './drivers/encrypted.ts'
  * as a client.
  */
 export class CookieClient {
+  /**
+   * Private encryption instance used for signing and encrypting cookies
+   */
   #encryption: Encryption
 
+  /**
+   * Create a new instance of CookieClient
+   * 
+   * @param encryption - The encryption instance for cookie operations
+   */
   constructor(encryption: Encryption) {
     this.#encryption = encryption
   }
 
   /**
    * Encrypt a key value pair to be sent in the cookie header
+   * 
+   * @param key - The cookie key
+   * @param value - The value to encrypt
+   * @returns The encrypted cookie string or null if encryption fails
    */
   encrypt(key: string, value: any): string | null {
     return encryptedCookiesDriver.pack(key, value, this.#encryption)
@@ -33,6 +45,10 @@ export class CookieClient {
 
   /**
    * Sign a key value pair to be sent in the cookie header
+   * 
+   * @param key - The cookie key
+   * @param value - The value to sign
+   * @returns The signed cookie string or null if signing fails
    */
   sign(key: string, value: any): string | null {
     return signedCookiesDriver.pack(key, value, this.#encryption)
@@ -40,6 +56,11 @@ export class CookieClient {
 
   /**
    * Encode a key value pair to be sent in the cookie header
+   * 
+   * @param _ - Unused key parameter
+   * @param value - The value to encode
+   * @param stringify - Whether to stringify the value before encoding
+   * @returns The encoded cookie string or null if encoding fails
    */
   encode(_: string, value: any, stringify: boolean = true): string | null {
     return stringify ? plainCookiesDriver.pack(value) : value
@@ -47,6 +68,10 @@ export class CookieClient {
 
   /**
    * Unsign a signed cookie value
+   * 
+   * @param key - The cookie key
+   * @param value - The signed cookie value to unsign
+   * @returns The original value if valid signature, null otherwise
    */
   unsign(key: string, value: string) {
     return signedCookiesDriver.canUnpack(value)
@@ -56,6 +81,10 @@ export class CookieClient {
 
   /**
    * Decrypt an encrypted cookie value
+   * 
+   * @param key - The cookie key
+   * @param value - The encrypted cookie value to decrypt
+   * @returns The decrypted value or null if decryption fails
    */
   decrypt(key: string, value: string) {
     return encryptedCookiesDriver.canUnpack(value)
@@ -65,6 +94,11 @@ export class CookieClient {
 
   /**
    * Decode an encoded cookie value
+   * 
+   * @param _ - Unused key parameter
+   * @param value - The encoded cookie value to decode
+   * @param stringified - Whether the value was stringified during encoding
+   * @returns The decoded value or null if decoding fails
    */
   decode(_: string, value: string, stringified: boolean = true) {
     if (!stringified) {
@@ -75,6 +109,10 @@ export class CookieClient {
 
   /**
    * Parse response cookie
+   * 
+   * @param key - The cookie key
+   * @param value - The cookie value to parse
+   * @returns The parsed value or undefined if parsing fails
    */
   parse(key: string, value: any) {
     /**

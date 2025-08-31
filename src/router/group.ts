@@ -26,6 +26,10 @@ export class RouteGroup extends Macroable {
    */
   #middleware: StoreRouteMiddleware[] = []
 
+  /**
+   * Creates a new RouteGroup instance
+   * @param routes - Array of routes that belong to this group
+   */
   constructor(public routes: (Route | RouteGroup | RouteResource | BriskRoute)[]) {
     super()
   }
@@ -161,6 +165,9 @@ export class RouteGroup extends Macroable {
    * Route.group(() => {
    * }).where('id', /^[0-9]+/)
    * ```
+   * @param param - The parameter name to match
+   * @param matcher - The matcher pattern (RegExp, string, or RouteMatcher)
+   * @returns Current RouteGroup instance for method chaining
    */
   where(param: string, matcher: RouteMatcher | string | RegExp): this {
     this.routes.forEach((route) => this.#updateRouteMatchers(route, param, matcher))
@@ -174,6 +181,8 @@ export class RouteGroup extends Macroable {
    * Route.group(() => {
    * }).prefix('v1')
    * ```
+   * @param prefix - The prefix to add to all routes in the group
+   * @returns Current RouteGroup instance for method chaining
    */
   prefix(prefix: string): this {
     this.routes.forEach((route) => this.#setRoutePrefix(route, prefix))
@@ -187,6 +196,8 @@ export class RouteGroup extends Macroable {
    * Route.group(() => {
    * }).domain(':name.adonisjs.com')
    * ```
+   * @param domain - The domain pattern for all routes in the group
+   * @returns Current RouteGroup instance for method chaining
    */
   domain(domain: string): this {
     this.routes.forEach((route) => this.#updateRouteDomain(route, domain))
@@ -200,6 +211,8 @@ export class RouteGroup extends Macroable {
    * Route.group(() => {
    * }).as('version1')
    * ```
+   * @param name - The name to prepend to all route names in the group
+   * @returns Current RouteGroup instance for method chaining
    */
   as(name: string): this {
     this.routes.forEach((route) => this.#updateRouteName(route, name))
@@ -212,6 +225,8 @@ export class RouteGroup extends Macroable {
    * Route.group(() => {
    * }).use(middleware.auth())
    * ```
+   * @param middleware - Middleware function(s) to apply to all routes in the group
+   * @returns Current RouteGroup instance for method chaining
    */
   use(middleware: OneOrMore<MiddlewareFn | ParsedNamedMiddleware>): this {
     /**
@@ -236,6 +251,8 @@ export class RouteGroup extends Macroable {
 
   /**
    * @alias use
+   * @param middleware - Middleware function(s) to apply to all routes in the group
+   * @returns Current RouteGroup instance for method chaining
    */
   middleware(middleware: OneOrMore<MiddlewareFn | ParsedNamedMiddleware>): this {
     return this.use(middleware)

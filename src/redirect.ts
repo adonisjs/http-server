@@ -28,25 +28,47 @@ import type {
  */
 export class Redirect {
   /**
-   * A boolean to forward the existing query string
+   * Flag indicating whether to forward the existing query string from the current request
    */
   #forwardQueryString = false
 
   /**
-   * The status code for the redirect
+   * HTTP status code to use for the redirect response (defaults to 302)
    */
   #statusCode = 302
 
   /**
-   * A custom query string to forward
+   * Custom query string parameters to include in the redirect URL
    */
   #queryString: Record<string, any> = {}
 
+  /**
+   * Reference to the Node.js incoming HTTP request
+   */
   #request: IncomingMessage
+
+  /**
+   * Reference to the AdonisJS response instance
+   */
   #response: Response
+
+  /**
+   * Reference to the AdonisJS router instance for URL building
+   */
   #router: Router
+
+  /**
+   * Query string parser instance
+   */
   #qs: Qs
 
+  /**
+   * Creates a new Redirect instance for handling HTTP redirects
+   * @param request - Node.js incoming HTTP request
+   * @param response - AdonisJS response instance
+   * @param router - AdonisJS router instance
+   * @param qs - Query string parser instance
+   */
   constructor(request: IncomingMessage, response: Response, router: Router, qs: Qs) {
     this.#request = request
     this.#response = response
@@ -55,7 +77,9 @@ export class Redirect {
   }
 
   /**
-   * Sends response by setting require headers
+   * Sends the redirect response by setting required headers and status code
+   * @param url - Target URL for redirection
+   * @param query - Query string parameters to append
    */
   #sendResponse(url: string, query: Record<string, any>) {
     const stringified = this.#qs.stringify(query)
@@ -70,7 +94,8 @@ export class Redirect {
   }
 
   /**
-   * Returns the referrer url
+   * Extracts and returns the referrer URL from request headers
+   * @returns {string} The referrer URL or '/' if not found
    */
   #getReferrerUrl(): string {
     let url = this.#request.headers['referer'] || this.#request.headers['referrer'] || '/'
@@ -78,7 +103,9 @@ export class Redirect {
   }
 
   /**
-   * Set a custom status code.
+   * Sets a custom HTTP status code for the redirect response
+   * @param statusCode - HTTP status code to use (e.g., 301, 302, 307)
+   * @returns {this} The Redirect instance for method chaining
    */
   status(statusCode: number): this {
     this.#statusCode = statusCode
@@ -86,8 +113,8 @@ export class Redirect {
   }
 
   /**
-   * Clearing query string values added using the
-   * "withQs" method
+   * Clears any query string values previously added using the withQs method
+   * @returns {this} The Redirect instance for method chaining
    */
   clearQs(): this {
     this.#forwardQueryString = false
@@ -96,9 +123,13 @@ export class Redirect {
   }
 
   /**
-   * Define query string for the redirect. Not passing
-   * any value will forward the current request query
-   * string.
+   * Defines query string parameters for the redirect URL
+   * - No arguments: forwards current request query string
+   * - Object argument: adds multiple key-value pairs
+   * - String arguments: adds single key-value pair
+   * @param name - Query parameter name or object of parameters
+   * @param value - Value for the query parameter (when name is string)
+   * @returns {this} The Redirect instance for method chaining
    */
   withQs(): this
   withQs(values: Record<string, any>): this
@@ -119,7 +150,8 @@ export class Redirect {
   }
 
   /**
-   * Redirect to the previous path.
+   * Redirects to the previous path using the Referer header
+   * Falls back to '/' if no referrer is found
    */
   back() {
     let query: Record<string, any> = {}
@@ -149,7 +181,8 @@ export class Redirect {
   }
 
   /**
-   * Redirect the request using a route identifier.
+   * Redirects to a route using its identifier (name, pattern, or handler reference)
+   * @param args - Route identifier, parameters, and options for URL building
    */
   toRoute<Identifier extends keyof GetRoutesForMethod<RoutesList, 'GET'> & string>(
     ...args: RoutesList extends LookupList
@@ -167,7 +200,8 @@ export class Redirect {
   }
 
   /**
-   * Redirect the request using a path.
+   * Redirects to a specific URL path
+   * @param url - Target URL path for redirection
    */
   toPath(url: string) {
     let query: Record<string, any> = {}

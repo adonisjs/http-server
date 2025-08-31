@@ -42,90 +42,93 @@ import type {
 const CACHEABLE_HTTP_METHODS = ['GET', 'HEAD']
 
 /**
- * The response is a wrapper over [ServerResponse](https://nodejs.org/api/http.html#http_class_http_serverresponse)
- * streamlining the process of writing response body and automatically setting up appropriate headers.
+ * The Response class provides a fluent API for constructing HTTP responses.
+ *
+ * It wraps Node.js ServerResponse and streamlines the process of writing
+ * response body, setting headers, handling cookies, redirects, and streaming.
+ *
+ * @example
+ * ```ts
+ * response.status(200).json({ message: 'Hello World' })
+ * response.redirect('/dashboard')
+ * response.download('/path/to/file.pdf')
+ * ```
  */
 export class Response extends Macroable {
   /**
-   * Query string parser
+   * Query string parser instance used for URL manipulation
    */
   #qs: Qs
 
   /**
-   * Outgoing headers
+   * Collection of outgoing HTTP headers to be sent with the response
    */
   #headers: OutgoingHttpHeaders = {}
 
   /**
-   * Has explicit status been set
+   * Flag indicating whether an explicit status code has been set
    */
   #hasExplicitStatus = false
 
   /**
-   * Cookies serializer to serialize the outgoing cookies
+   * Cookie serializer instance for handling cookie encryption, signing, and encoding
    */
   #cookieSerializer: CookieSerializer
 
   /**
-   * Router is used to make the redirect URLs from routes
+   * Router instance used for generating redirect URLs from route definitions
    */
   #router: Router
 
   /**
-   * Response config
+   * Configuration object containing response-related settings
    */
   #config: ResponseConfig
 
   /**
-   * Does response has body set that will written to the
-   * response socket at the end of the request
+   * Indicates whether the response has any content (body, stream, or file) ready to be sent
    */
   get hasLazyBody(): boolean {
     return !!(this.lazyBody.content || this.lazyBody.fileToStream || this.lazyBody.stream)
   }
 
   /**
-   * Find if the response has non-stream content
+   * Indicates whether the response has non-stream content set
    */
   get hasContent(): boolean {
     return !!this.lazyBody.content
   }
 
   /**
-   * Returns true when response body is set using "response.stream"
-   * method
+   * Indicates whether the response body is set as a readable stream
    */
   get hasStream(): boolean {
     return !!this.lazyBody.stream
   }
 
   /**
-   * Returns true when response body is set using "response.download"
-   * or "response.attachment" methods
+   * Indicates whether the response is configured to stream a file
    */
   get hasFileToStream(): boolean {
     return !!this.lazyBody.fileToStream
   }
 
   /**
-   * Returns the response content. Check if the response
-   * has content using the "hasContent" method
+   * The response content data
    */
   get content() {
     return this.lazyBody.content
   }
 
   /**
-   * Returns reference to the stream set using "response.stream"
-   * method
+   * The readable stream instance configured for the response
    */
   get outgoingStream() {
     return this.lazyBody.stream?.[0]
   }
 
   /**
-   * Returns reference to the file path set using "response.stream"
-   * method.
+   * Configuration for file streaming including path and etag generation flag
    */
   get fileToStream() {
     return this.lazyBody.fileToStream
@@ -137,9 +140,8 @@ export class Response extends Macroable {
   }
 
   /**
-   * Lazy body is used to set the response body. However, do not
-   * write it on the socket immediately unless `response.finish`
-   * is called.
+   * Lazy body container that holds response content until ready to send.
+   * Contains different types of response data: content, stream, or fileToStream.
    */
   lazyBody: Partial<{
     content: [any, boolean, string?]
@@ -148,11 +150,20 @@ export class Response extends Macroable {
   }> = {}
 
   /**
-   * The ctx will be set by the context itself. It creates a circular
-   * reference
+   * HTTP context reference (creates circular dependency with HttpContext)
    */
   ctx?: HttpContext
 
+  /**
+   * Creates a new Response instance
+   *
+   * @param request - Node.js IncomingMessage instance
+   * @param response - Node.js ServerResponse instance
+   * @param encryption - Encryption service for cookie handling
+   * @param config - Response configuration settings
+   * @param router - Router instance for URL generation
+   * @param qs - Query string parser
+   */
   constructor(
     public request: IncomingMessage,
     public response: ServerResponse,
@@ -170,34 +181,31 @@ export class Response extends Macroable {
   }
 
   /**
-   * Returns a boolean telling if response is finished or not.
-   * Any more attempts to update headers or body will result
-   * in raised exceptions.
+   * Indicates whether the response has been completely sent
    */
   get finished(): boolean {
     return this.response.writableFinished
   }
 
   /**
-   * Returns a boolean telling if response headers has been sent or not.
-   * Any more attempts to update headers will result in raised
-   * exceptions.
+   * Indicates whether response headers have been sent to the client
    */
   get headersSent(): boolean {
     return this.response.headersSent
   }
 
   /**
-   * Returns a boolean telling if response headers and body is written
-   * or not. When value is `true`, you can feel free to write headers
-   * and body.
+   * Indicates whether the response is still pending (headers and body can still be modified)
    */
   get isPending(): boolean {
     return !this.headersSent && !this.finished
   }
 
   /**
-   * Normalizes header value to a string or an array of string
+   * Normalizes header value to a string or an array of strings
+   *
+   * @param value - The header value to normalize
+   * @returns Normalized header value
    */
   #castHeaderValue(value: any): string | string[] {
     return Array.isArray(value) ? value.map(String) : String(value)
@@ -205,6 +213,9 @@ export class Response extends Macroable {
 
   /**
    * Ends the response by flushing headers and writing body
+   *
+   * @param body - Optional response body
+   * @param statusCode - Optional status code
    */
   #endResponse(body?: any, statusCode?: number) {
     this.writeHead(statusCode)
@@ -215,14 +226,18 @@ export class Response extends Macroable {
   }
 
   /**
-   * Returns type for the content body. Only following types are allowed
+   * Determines the data type of the content for serialization
    *
+   * Supported types:
    * - Dates
    * - Arrays
    * - Booleans
    * - Objects
    * - Strings
    * - Buffer
+   *
+   * @param content - The content to analyze
+   * @returns The determined data type as string
    */
   #getDataType(content: any) {
     const dataType = typeof content
@@ -264,10 +279,17 @@ export class Response extends Macroable {
   }
 
   /**
-   * Writes the body with appropriate response headers. Etag header is set
-   * when `generateEtag` is set to `true`.
+   * Writes the response body with appropriate headers and content type detection
    *
-   * Empty body results in `204`.
+   * Automatically sets:
+   * - Content-Type based on content analysis
+   * - Content-Length header
+   * - ETag header (if enabled)
+   * - Status code 204 for empty bodies
+   *
+   * @param content - The response content
+   * @param generateEtag - Whether to generate ETag header
+   * @param jsonpCallbackName - Optional JSONP callback name
    */
   protected writeBody(content: any, generateEtag: boolean, jsonpCallbackName?: string): void {
     const hasEmptyBody = content === null || content === undefined || content === ''
@@ -427,7 +449,16 @@ export class Response extends Macroable {
   }
 
   /**
-   * Stream the body to the response and handles cleaning up the stream
+   * Streams the response body and handles error cleanup
+   *
+   * Manages stream lifecycle including:
+   * - Error handling with custom callbacks
+   * - Proper stream cleanup to prevent memory leaks
+   * - Response finalization
+   *
+   * @param body - The readable stream to pipe
+   * @param errorCallback - Optional custom error handler
+   * @returns Promise that resolves when streaming is complete
    */
   protected streamBody(
     body: ResponseStream,
@@ -494,7 +525,19 @@ export class Response extends Macroable {
   }
 
   /**
-   * Downloads a file by streaming it to the response
+   * Streams a file for download with proper headers and caching support
+   *
+   * Sets appropriate headers:
+   * - Last-Modified based on file stats
+   * - Content-Type based on file extension
+   * - Content-Length from file size
+   * - ETag (if enabled)
+   *
+   * Handles HEAD requests and cache validation (304 responses).
+   *
+   * @param filePath - Path to the file to stream
+   * @param generateEtag - Whether to generate ETag header
+   * @param errorCallback - Optional custom error handler
    */
   protected async streamFileForDownload(
     filePath: string,
@@ -573,19 +616,19 @@ export class Response extends Macroable {
   }
 
   /**
-   * Listen for the event the response is written
-   * to the TCP socket.
+   * Registers a callback to be called when the response is finished
    *
-   * Under the hood the callback is registered with
-   * the "https://github.com/jshttp/on-finished" package
+   * The callback is executed when the response has been completely sent.
+   * Uses the "on-finished" package internally.
+   *
+   * @param callback - Function to call when response is finished
    */
   onFinish(callback: (err: Error | null, response: ServerResponse) => void) {
     onFinished(this.response, callback)
   }
 
   /**
-   * Writes headers with the Node.js res object using the
-   * response.setHeader method
+   * Transfers all buffered headers to the underlying Node.js response object
    */
   relayHeaders() {
     if (!this.headersSent) {
@@ -599,7 +642,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Calls res.writeHead on the Node.js res object.
+   * Writes the response status code and headers
+   *
+   * @param statusCode - Optional status code to set
+   * @returns The Response instance for chaining
    */
   writeHead(statusCode?: number): this {
     this.response.writeHead(statusCode || this.response.statusCode, this.#headers)
@@ -607,8 +653,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Returns the existing value for a given HTTP response
-   * header.
+   * Gets the value of a response header
+   *
+   * @param key - Header name
+   * @returns The header value
    */
   getHeader(key: string) {
     const value = this.#headers[key.toLowerCase()]
@@ -616,7 +664,9 @@ export class Response extends Macroable {
   }
 
   /**
-   * Get response headers
+   * Gets all response headers as an object
+   *
+   * @returns Object containing all headers
    */
   getHeaders() {
     return {
@@ -626,14 +676,15 @@ export class Response extends Macroable {
   }
 
   /**
-   * Set header on the response. To `append` values to the existing header, we suggest
-   * using [[append]] method.
+   * Sets a response header (replaces existing value)
    *
-   * If `value` is non existy, then header won't be set.
+   * @param key - Header name
+   * @param value - Header value (ignored if null/undefined)
+   * @returns The Response instance for chaining
    *
    * @example
-   * ```js
-   * response.header('content-type', 'application/json')
+   * ```ts
+   * response.header('Content-Type', 'application/json')
    * ```
    */
   header(key: string, value: CastableHeader): this {
@@ -646,14 +697,15 @@ export class Response extends Macroable {
   }
 
   /**
-   * Append value to an existing header. To replace the value, we suggest using
-   * [[header]] method.
+   * Appends a value to an existing response header
    *
-   * If `value` is not existy, then header won't be set.
+   * @param key - Header name
+   * @param value - Header value to append (ignored if null/undefined)
+   * @returns The Response instance for chaining
    *
    * @example
-   * ```js
-   * response.append('set-cookie', 'username=virk')
+   * ```ts
+   * response.append('Set-Cookie', 'session=abc123')
    * ```
    */
   append(key: string, value: CastableHeader): this {
@@ -685,7 +737,11 @@ export class Response extends Macroable {
   }
 
   /**
-   * Adds HTTP response header, when it doesn't exists already.
+   * Sets a header only if it doesn't already exist
+   *
+   * @param key - Header name
+   * @param value - Header value
+   * @returns The Response instance for chaining
    */
   safeHeader(key: string, value: CastableHeader): this {
     if (!this.getHeader(key)) {
@@ -695,7 +751,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Removes the existing response header from being sent.
+   * Removes a response header
+   *
+   * @param key - Header name to remove
+   * @returns The Response instance for chaining
    */
   removeHeader(key: string): this {
     key = key.toLowerCase()
@@ -709,14 +768,19 @@ export class Response extends Macroable {
   }
 
   /**
-   * Returns the status code for the response
+   * Gets the current response status code
+   *
+   * @returns The HTTP status code
    */
   getStatus(): number {
     return this.response.statusCode
   }
 
   /**
-   * Set HTTP status code
+   * Sets the response status code
+   *
+   * @param code - HTTP status code
+   * @returns The Response instance for chaining
    */
   status(code: number): this {
     this.#hasExplicitStatus = true
@@ -725,8 +789,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Set's status code only when it's not explictly
-   * set
+   * Sets the status code only if not explicitly set already
+   *
+   * @param code - HTTP status code
+   * @returns The Response instance for chaining
    */
   safeStatus(code: number): this {
     if (this.#hasExplicitStatus) {
@@ -738,15 +804,16 @@ export class Response extends Macroable {
   }
 
   /**
-   * Set response type by looking up for the mime-type using
-   * partial types like file extensions.
+   * Sets the Content-Type header based on mime type lookup
    *
-   * Make sure to read [mime-types](https://www.npmjs.com/package/mime-types) docs
-   * too.
+   * @param type - File extension or mime type
+   * @param charset - Optional character encoding
+   * @returns The Response instance for chaining
    *
    * @example
-   * ```js
-   * response.type('.json') // Content-type: application/json
+   * ```ts
+   * response.type('.json') // Content-Type: application/json
+   * response.type('html', 'utf-8') // Content-Type: text/html; charset=utf-8
    * ```
    */
   type(type: string, charset?: string): this {
@@ -757,7 +824,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Set the Vary HTTP header
+   * Sets the Vary HTTP header for cache control
+   *
+   * @param field - Header field name(s) to vary on
+   * @returns The Response instance for chaining
    */
   vary(field: string | string[]): this {
     vary(this.response, field)
@@ -765,10 +835,11 @@ export class Response extends Macroable {
   }
 
   /**
-   * Set etag by computing hash from the body. This class will set the etag automatically
-   * when `etag = true` in the defined config object.
+   * Sets the ETag header by computing a hash from the response body
    *
-   * Use this function, when you want to compute etag manually for some other resons.
+   * @param body - The response body to hash
+   * @param weak - Whether to generate a weak ETag
+   * @returns The Response instance for chaining
    */
   setEtag(body: any, weak: boolean = false): this {
     this.header('Etag', etag(body, { weak }))
@@ -776,8 +847,9 @@ export class Response extends Macroable {
   }
 
   /**
-   * Set X-Request-Id header by copying the header value from the request if it exists.
+   * Sets the X-Request-Id header by copying from the incoming request
    *
+   * @returns The Response instance for chaining
    */
   setRequestId(): this {
     const requestId = this.request.headers['x-request-id']
@@ -788,27 +860,20 @@ export class Response extends Macroable {
   }
 
   /**
-   * Returns a boolean telling if the new response etag evaluates same
-   * as the request header `if-none-match`. In case of `true`, the
-   * server must return `304` response, telling the browser to
-   * use the client cache.
+   * Checks if the response is fresh (client cache is valid)
    *
-   * You won't have to deal with this method directly, since AdonisJs will
-   * handle this for you when `http.etag = true` inside `config/app.js` file.
+   * Compares ETags and modified dates between request and response
+   * to determine if a 304 Not Modified response should be sent.
    *
-   * However, this is how you can use it manually.
+   * @returns True if client cache is fresh, false otherwise
    *
    * @example
-   * ```js
-   * const responseBody = view.render('some-view')
-   *
-   * // sets the HTTP etag header for response
-   * response.setEtag(responseBody)
-   *
+   * ```ts
+   * response.setEtag(content)
    * if (response.fresh()) {
-   *   response.sendStatus(304)
+   *   response.status(304).send(null)
    * } else {
-   *   response.send(responseBody)
+   *   response.send(content)
    * }
    * ```
    */
@@ -829,8 +894,9 @@ export class Response extends Macroable {
   }
 
   /**
-   * Returns the response body. Returns null when response
-   * body is a stream
+   * Gets the response body content
+   *
+   * @returns The response body or null if not set or is a stream
    */
   getBody() {
     if (this.lazyBody.content) {
@@ -841,34 +907,37 @@ export class Response extends Macroable {
   }
 
   /**
-   * Send the body as response and optionally generate etag. The default value
-   * is read from `config/app.js` file, using `http.etag` property.
+   * Sends the response body with optional ETag generation
    *
-   * This method buffers the body if `explicitEnd = true`, which is the default
-   * behavior and do not change, unless you know what you are doing.
+   * @param body - The response body
+   * @param generateEtag - Whether to generate ETag header (defaults to config)
    */
   send(body: any, generateEtag: boolean = this.#config.etag): void {
     this.lazyBody.content = [body, generateEtag]
   }
 
   /**
-   * Alias of [[send]]
+   * Sends a JSON response (alias for send)
+   *
+   * @param body - The response body to serialize as JSON
+   * @param generateEtag - Whether to generate ETag header
    */
   json(body: any, generateEtag: boolean = this.#config.etag): void {
     return this.send(body, generateEtag)
   }
 
   /**
-   * Writes response as JSONP. The callback name is resolved as follows, with priority
-   * from top to bottom.
+   * Sends a JSONP response with callback wrapping
    *
-   * 1. Explicitly defined as 2nd Param.
-   * 2. Fetch from request query string.
-   * 3. Use the config value `http.jsonpCallbackName` from `config/app.js`.
-   * 4. Fallback to `callback`.
+   * Callback name resolution priority:
+   * 1. Explicit callbackName parameter
+   * 2. Query string parameter
+   * 3. Config value
+   * 4. Default "callback"
    *
-   * This method buffers the body if `explicitEnd = true`, which is the default
-   * behavior and do not change, unless you know what you are doing.
+   * @param body - The response body
+   * @param callbackName - JSONP callback function name
+   * @param generateEtag - Whether to generate ETag header
    */
   jsonp(
     body: any,
@@ -879,27 +948,20 @@ export class Response extends Macroable {
   }
 
   /**
-   * Pipe stream to the response. This method will gracefully destroy
-   * the stream, avoiding memory leaks.
+   * Pipes a readable stream to the response with graceful error handling
    *
-   * If `raiseErrors=false`, then this method will self handle all the exceptions by
-   * writing a generic HTTP response. To have more control over the error, it is
-   * recommended to set `raiseErrors=true` and wrap this function inside a
-   * `try/catch` statement.
-   *
-   * Streaming a file from the disk and showing 404 when file is missing.
+   * @param body - The readable stream to pipe
+   * @param errorCallback - Optional custom error handler
    *
    * @example
-   * ```js
-   * // Errors handled automatically with generic HTTP response
+   * ```ts
+   * // Auto error handling
    * response.stream(fs.createReadStream('file.txt'))
    *
-   * // Manually handle (note the await call)
-   * try {
-   *   await response.stream(fs.createReadStream('file.txt'))
-   * } catch () {
-   *   response.status(404).send('File not found')
-   * }
+   * // Custom error handling
+   * response.stream(stream, (error) => {
+   *   return error.code === 'ENOENT' ? ['Not found', 404] : ['Error', 500]
+   * })
    * ```
    */
   stream(
@@ -914,28 +976,22 @@ export class Response extends Macroable {
   }
 
   /**
-   * Download file by streaming it from the file path. This method will setup
-   * appropriate `Content-type`, `Content-type` and `Last-modified` headers.
+   * Downloads a file by streaming it with appropriate headers
    *
-   * Unexpected stream errors are handled gracefully to avoid memory leaks.
+   * Automatically sets:
+   * - Content-Type from file extension
+   * - Content-Length from file size
+   * - Last-Modified from file stats
+   * - ETag (if enabled)
    *
-   * If `raiseErrors=false`, then this method will self handle all the exceptions by
-   * writing a generic HTTP response. To have more control over the error, it is
-   * recommended to set `raiseErrors=true` and wrap this function inside a
-   * `try/catch` statement.
+   * @param filePath - Path to the file to download
+   * @param generateEtag - Whether to generate ETag header
+   * @param errorCallback - Optional custom error handler
    *
    * @example
-   * ```js
-   * // Errors handled automatically with generic HTTP response
-   * response.download('somefile.jpg')
-   *
-   * // Manually handle (note the await call)
-   * try {
-   *   await response.download('somefile.jpg')
-   * } catch (error) {
-   *   response.status(error.code === 'ENOENT' ? 404 : 500)
-   *   response.send('Cannot process file')
-   * }
+   * ```ts
+   * response.download('/path/to/file.pdf')
+   * response.download('/images/photo.jpg', true, (err) => ['Custom error', 500])
    * ```
    */
   download(
@@ -947,10 +1003,13 @@ export class Response extends Macroable {
   }
 
   /**
-   * Download the file by forcing the user to save the file vs displaying it
-   * within the browser.
+   * Forces file download by setting Content-Disposition header
    *
-   * Internally calls [[download]]
+   * @param filePath - Path to the file to download
+   * @param name - Optional filename for download (defaults to original filename)
+   * @param disposition - Content-Disposition type (defaults to 'attachment')
+   * @param generateEtag - Whether to generate ETag header
+   * @param errorCallback - Optional custom error handler
    */
   attachment(
     filePath: string,
@@ -965,11 +1024,14 @@ export class Response extends Macroable {
   }
 
   /**
-   * Set the location header.
+   * Sets the Location header for redirects
+   *
+   * @param url - The URL to redirect to
+   * @returns The Response instance for chaining
    *
    * @example
-   * ```js
-   * response.location('/login')
+   * ```ts
+   * response.location('/dashboard')
    * ```
    */
   location(url: string): this {
@@ -978,12 +1040,17 @@ export class Response extends Macroable {
   }
 
   /**
-   * Redirect the request.
+   * Redirects the request to a different URL
+   *
+   * @param path - Optional path to redirect to
+   * @param forwardQueryString - Whether to forward current query string
+   * @param statusCode - HTTP status code for redirect (default: 302)
+   * @returns Redirect instance when called without path, void when redirecting
    *
    * @example
-   * ```js
-   * response.redirect('/foo')
-   * response.redirect().toRoute('foo.bar')
+   * ```ts
+   * response.redirect('/dashboard')
+   * response.redirect().toRoute('users.show', { id: 1 })
    * response.redirect().back()
    * ```
    */
@@ -1012,16 +1079,22 @@ export class Response extends Macroable {
   }
 
   /**
-   * Abort the request with custom body and a status code. 400 is
-   * used when status is not defined
+   * Aborts the request with a custom response body and status code
+   *
+   * @param body - Response body for the aborted request
+   * @param status - HTTP status code (defaults to 400)
+   * @throws Always throws an HTTP exception
    */
   abort(body: any, status?: number): never {
     throw E_HTTP_REQUEST_ABORTED.invoke(body, status || ResponseStatus.BadRequest)
   }
 
   /**
-   * Abort the request with custom body and a status code when
-   * passed condition returns `true`
+   * Conditionally aborts the request if the condition is truthy
+   *
+   * @param condition - Condition to evaluate
+   * @param body - Response body for the aborted request
+   * @param status - HTTP status code (defaults to 400)
    */
   abortIf(
     condition: unknown,
@@ -1034,8 +1107,11 @@ export class Response extends Macroable {
   }
 
   /**
-   * Abort the request with custom body and a status code when
-   * passed condition returns `false`
+   * Conditionally aborts the request if the condition is falsy
+   *
+   * @param condition - Condition to evaluate
+   * @param body - Response body for the aborted request
+   * @param status - HTTP status code (defaults to 400)
    */
   abortUnless<T>(
     condition: T,
@@ -1048,8 +1124,12 @@ export class Response extends Macroable {
   }
 
   /**
-   * Set signed cookie as the response header. The inline options overrides
-   * all options from the config.
+   * Sets a signed cookie in the response
+   *
+   * @param key - Cookie name
+   * @param value - Cookie value
+   * @param options - Cookie options (overrides config defaults)
+   * @returns The Response instance for chaining
    */
   cookie(key: string, value: any, options?: Partial<CookieOptions>): this {
     options = Object.assign({}, this.#config.cookie, options)
@@ -1064,8 +1144,12 @@ export class Response extends Macroable {
   }
 
   /**
-   * Set encrypted cookie as the response header. The inline options overrides
-   * all options from the config.
+   * Sets an encrypted cookie in the response
+   *
+   * @param key - Cookie name
+   * @param value - Cookie value
+   * @param options - Cookie options (overrides config defaults)
+   * @returns The Response instance for chaining
    */
   encryptedCookie(key: string, value: any, options?: Partial<CookieOptions>): this {
     options = Object.assign({}, this.#config.cookie, options)
@@ -1080,8 +1164,12 @@ export class Response extends Macroable {
   }
 
   /**
-   * Set unsigned cookie as the response header. The inline options overrides
-   * all options from the config.
+   * Sets a plain (unsigned/unencrypted) cookie in the response
+   *
+   * @param key - Cookie name
+   * @param value - Cookie value
+   * @param options - Cookie options including encode flag
+   * @returns The Response instance for chaining
    */
   plainCookie(
     key: string,
@@ -1100,7 +1188,11 @@ export class Response extends Macroable {
   }
 
   /**
-   * Clear existing cookie.
+   * Clears an existing cookie by setting it to expire
+   *
+   * @param key - Cookie name to clear
+   * @param options - Cookie options (should match original cookie options)
+   * @returns The Response instance for chaining
    */
   clearCookie(key: string, options?: Partial<CookieOptions>): this {
     options = Object.assign({}, this.#config.cookie, options)
@@ -1113,10 +1205,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Finishes the response by writing the lazy body, when `explicitEnd = true`
-   * and response is already pending.
+   * Finalizes and sends the response
    *
-   * Calling this method twice or when `explicitEnd = false` is noop.
+   * Writes the buffered body (content, stream, or file) to the client.
+   * This method is idempotent - calling it multiple times has no effect.
    */
   finish() {
     if (!this.isPending) {
@@ -1142,7 +1234,7 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "100" status code
+   * Sends a 100 Continue response
    */
   continue(): void {
     this.status(ResponseStatus.Continue)
@@ -1150,7 +1242,7 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "101" status code
+   * Sends a 101 Switching Protocols response
    */
   switchingProtocols(): void {
     this.status(ResponseStatus.SwitchingProtocols)
@@ -1158,7 +1250,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "200" status code
+   * Sends a 200 OK response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   ok(body: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.Ok)
@@ -1166,7 +1261,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "201" status code
+   * Sends a 201 Created response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   created(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.Created)
@@ -1174,7 +1272,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "202" status code
+   * Sends a 202 Accepted response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   accepted(body: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.Accepted)
@@ -1182,7 +1283,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "203" status code
+   * Sends a 203 Non-Authoritative Information response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   nonAuthoritativeInformation(body: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.NonAuthoritativeInformation)
@@ -1190,7 +1294,7 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "204" status code
+   * Sends a 204 No Content response
    */
   noContent(): void {
     this.status(ResponseStatus.NoContent)
@@ -1198,7 +1302,7 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "205" status code
+   * Sends a 205 Reset Content response
    */
   resetContent(): void {
     this.status(ResponseStatus.ResetContent)
@@ -1206,7 +1310,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "206" status code
+   * Sends a 206 Partial Content response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   partialContent(body: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.PartialContent)
@@ -1214,7 +1321,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "300" status code
+   * Sends a 300 Multiple Choices response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   multipleChoices(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.MultipleChoices)
@@ -1222,7 +1332,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "301" status code
+   * Sends a 301 Moved Permanently response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   movedPermanently(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.MovedPermanently)
@@ -1230,7 +1343,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "302" status code
+   * Sends a 302 Found (Moved Temporarily) response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   movedTemporarily(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.Found)
@@ -1238,7 +1354,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "303" status code
+   * Sends a 303 See Other response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   seeOther(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.SeeOther)
@@ -1246,7 +1365,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "304" status code
+   * Sends a 304 Not Modified response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   notModified(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.NotModified)
@@ -1254,7 +1376,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "305" status code
+   * Sends a 305 Use Proxy response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   useProxy(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.UseProxy)
@@ -1262,7 +1387,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "307" status code
+   * Sends a 307 Temporary Redirect response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   temporaryRedirect(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.TemporaryRedirect)
@@ -1270,7 +1398,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "400" status code
+   * Sends a 400 Bad Request response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   badRequest(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.BadRequest)
@@ -1278,7 +1409,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "401" status code
+   * Sends a 401 Unauthorized response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   unauthorized(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.Unauthorized)
@@ -1286,7 +1420,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "402" status code
+   * Sends a 402 Payment Required response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   paymentRequired(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.PaymentRequired)
@@ -1294,7 +1431,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "403" status code
+   * Sends a 403 Forbidden response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   forbidden(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.Forbidden)
@@ -1302,7 +1442,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "404" status code
+   * Sends a 404 Not Found response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   notFound(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.NotFound)
@@ -1310,7 +1453,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "405" status code
+   * Sends a 405 Method Not Allowed response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   methodNotAllowed(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.MethodNotAllowed)
@@ -1318,7 +1464,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "406" status code
+   * Sends a 406 Not Acceptable response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   notAcceptable(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.NotAcceptable)
@@ -1326,7 +1475,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "407" status code
+   * Sends a 407 Proxy Authentication Required response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   proxyAuthenticationRequired(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.ProxyAuthenticationRequired)
@@ -1334,7 +1486,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "408" status code
+   * Sends a 408 Request Timeout response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   requestTimeout(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.RequestTimeout)
@@ -1342,7 +1497,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "409" status code
+   * Sends a 409 Conflict response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   conflict(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.Conflict)
@@ -1350,7 +1508,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "401" status code
+   * Sends a 410 Gone response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   gone(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.Gone)
@@ -1358,7 +1519,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "411" status code
+   * Sends a 411 Length Required response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   lengthRequired(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.LengthRequired)
@@ -1366,7 +1530,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "412" status code
+   * Sends a 412 Precondition Failed response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   preconditionFailed(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.PreconditionFailed)
@@ -1374,7 +1541,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "413" status code
+   * Sends a 413 Payload Too Large response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   requestEntityTooLarge(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.PayloadTooLarge)
@@ -1382,7 +1552,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "414" status code
+   * Sends a 414 URI Too Long response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   requestUriTooLong(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.URITooLong)
@@ -1390,7 +1563,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "415" status code
+   * Sends a 415 Unsupported Media Type response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   unsupportedMediaType(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.UnsupportedMediaType)
@@ -1398,7 +1574,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "416" status code
+   * Sends a 416 Range Not Satisfiable response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   requestedRangeNotSatisfiable(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.RangeNotSatisfiable)
@@ -1406,7 +1585,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "417" status code
+   * Sends a 417 Expectation Failed response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   expectationFailed(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.ExpectationFailed)
@@ -1414,7 +1596,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "422" status code
+   * Sends a 422 Unprocessable Entity response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   unprocessableEntity(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.UnprocessableEntity)
@@ -1422,7 +1607,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "429" status code
+   * Sends a 429 Too Many Requests response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   tooManyRequests(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.TooManyRequests)
@@ -1430,7 +1618,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "500" status code
+   * Sends a 500 Internal Server Error response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   internalServerError(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.InternalServerError)
@@ -1438,7 +1629,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "501" status code
+   * Sends a 501 Not Implemented response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   notImplemented(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.NotImplemented)
@@ -1446,7 +1640,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "502" status code
+   * Sends a 502 Bad Gateway response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   badGateway(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.BadGateway)
@@ -1454,7 +1651,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "503" status code
+   * Sends a 503 Service Unavailable response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   serviceUnavailable(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.ServiceUnavailable)
@@ -1462,7 +1662,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "504" status code
+   * Sends a 504 Gateway Timeout response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   gatewayTimeout(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.GatewayTimeout)
@@ -1470,7 +1673,10 @@ export class Response extends Macroable {
   }
 
   /**
-   * Shorthand method to finish request with "505" status code
+   * Sends a 505 HTTP Version Not Supported response
+   *
+   * @param body - Response body
+   * @param generateEtag - Whether to generate ETag header
    */
   httpVersionNotSupported(body?: any, generateEtag?: boolean): void {
     this.status(ResponseStatus.HTTPVersionNotSupported)

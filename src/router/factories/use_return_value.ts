@@ -12,6 +12,9 @@ import { type HttpContext } from '../../http_context/main.ts'
 /**
  * Check if the value can be used to write the response body. Returns
  * false when the response body has already been set
+ * @param value - The value to check
+ * @param ctx - The HTTP context instance
+ * @returns True if value can be used for response body
  */
 export function canWriteResponseBody(value: any, ctx: HttpContext): boolean {
   return (
@@ -24,6 +27,8 @@ export function canWriteResponseBody(value: any, ctx: HttpContext): boolean {
 /**
  * A factory function that uses the return value of the request
  * pipeline as the response
+ * @param ctx - The HTTP context instance
+ * @returns Function that handles return values
  */
 export function useReturnValue(ctx: HttpContext) {
   return function (value: any) {

@@ -10,28 +10,36 @@
 import { type Readable } from 'node:stream'
 
 /**
- * Cookie options can that can be set on the response
+ * Configuration options for HTTP cookies that can be set on the response
  */
 export type CookieOptions = {
+  /** Domain name for the cookie */
   domain: string
+  /** Expiration date for the cookie or function that returns the date */
   expires: Date | (() => Date)
+  /** Whether the cookie should be accessible only through HTTP(S) */
   httpOnly: boolean
+  /** Maximum age of the cookie in seconds or as a string */
   maxAge: number | string
+  /** URL path for which the cookie is valid */
   path: string
+  /** SameSite attribute to control cross-site request behavior */
   sameSite: boolean | 'lax' | 'none' | 'strict'
+  /** Whether the cookie should only be sent over HTTPS */
   secure: boolean
+  /** Whether the cookie should be partitioned (optional) */
   partitioned?: boolean
+  /** Priority level for the cookie (optional) */
   priority?: 'low' | 'medium' | 'high'
 }
 
 /**
- * Types from which response header can be casted to a
- * string
+ * Types that can be cast to a string for HTTP response headers
  */
 export type CastableHeader = string | number | boolean | string[] | number[] | boolean[]
 
 /**
- * Config accepted by response the class
+ * Configuration options for HTTP response handling and processing
  */
 export type ResponseConfig = {
   /**
@@ -50,12 +58,12 @@ export type ResponseConfig = {
   jsonpCallbackName: string
 
   /**
-   * Options to set cookies
+   * Default options to apply when setting cookies
    */
   cookie: Partial<CookieOptions>
 }
 
 /**
- * Stream that can be piped to the "response.stream" method
+ * A readable stream that can be piped to the response stream method
  */
 export type ResponseStream = Readable

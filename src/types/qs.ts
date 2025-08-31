@@ -7,7 +7,11 @@
  * file that was distributed with this source code.
  */
 
+/**
+ * Configuration options for query string parsing and stringification
+ */
 export type QSParserConfig = {
+  /** Configuration options for parsing query strings */
   parse: {
     /**
      * Nesting depth till the parameters should be parsed.
@@ -47,6 +51,7 @@ export type QSParserConfig = {
     comma: boolean
   }
 
+  /** Configuration options for stringifying query objects */
   stringify: {
     /**
      * URI encode the stringified query string

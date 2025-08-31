@@ -8,7 +8,7 @@
  */
 
 /**
- * Shape of the request config
+ * Configuration options for HTTP request handling and processing
  */
 export type RequestConfig = {
   /**

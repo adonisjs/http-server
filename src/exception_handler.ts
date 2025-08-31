@@ -31,36 +31,40 @@ import type { HttpError, StatusPageRange, StatusPageRenderer } from './types/ser
  */
 export class ExceptionHandler extends Macroable {
   /**
-   * Computed from the status pages property
+   * Cached expanded status pages mapping individual status codes to their renderers
+   * Computed from the statusPages property when first accessed
    */
   #expandedStatusPages?: Record<number, StatusPageRenderer>
 
   /**
-   * Whether or not to render debug info. When set to true, the errors
-   * will have the complete error stack.
+   * Controls whether to include debug information in error responses
+   * When enabled, errors include complete stack traces and detailed debugging info
+   * Defaults to true in non-production environments
    */
   protected debug: boolean = process.env.NODE_ENV !== 'production'
 
   /**
-   * Whether or not to render status pages. When set to true, the unhandled
-   * errors with matching status codes will be rendered using a status
-   * page.
+   * Controls whether to render custom status pages for unhandled errors
+   * When enabled, errors with matching status codes use configured status page renderers
+   * Defaults to true in production environments
    */
   protected renderStatusPages: boolean = process.env.NODE_ENV === 'production'
 
   /**
-   * A collection of error status code range and the view to render.
+   * Mapping of HTTP status code ranges to their corresponding page renderers
+   * Supports ranges like '400-499' or individual codes like '404'
    */
   protected statusPages: Record<StatusPageRange, StatusPageRenderer> = {}
 
   /**
-   * Enable/disable errors reporting
+   * Controls whether errors should be reported to logging systems
+   * When disabled, errors are handled but not logged or reported
    */
   protected reportErrors: boolean = true
 
   /**
-   * An array of exception classes to ignore when
-   * reporting an error
+   * Array of exception class constructors to exclude from error reporting
+   * These exceptions are handled but not logged or reported to external systems
    */
   protected ignoreExceptions: any[] = [
     errors.E_HTTP_EXCEPTION,
@@ -70,19 +74,21 @@ export class ExceptionHandler extends Macroable {
   ]
 
   /**
-   * An array of HTTP status codes to ignore when reporting
-   * an error
+   * Array of HTTP status codes to exclude from error reporting
+   * Errors with these status codes are handled but not logged
    */
   protected ignoreStatuses: number[] = [400, 422, 401]
 
   /**
-   * An array of error codes to ignore when reporting
-   * an error
+   * Array of custom error codes to exclude from error reporting
+   * Errors with these codes are handled but not logged
    */
   protected ignoreCodes: string[] = []
 
   /**
-   * Expands status pages
+   * Expands status page ranges into individual status code mappings
+   * Creates a cached lookup table for faster status page resolution
+   * @returns Mapping of status codes to renderers
    */
   #expandStatusPages() {
     if (!this.#expandedStatusPages) {
@@ -100,8 +106,10 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * Forcefully tweaking the type of the error object to
-   * have known properties.
+   * Normalizes any thrown value into a standardized HttpError object
+   * Ensures the error has required properties like message and status
+   * @param error - Any thrown value (Error, string, object, etc.)
+   * @returns {HttpError} Normalized error object with status and message
    */
   #toHttpError(error: unknown): HttpError {
     const httpError: any = is.object(error) ? error : new Error(String(error))
@@ -115,7 +123,10 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * Error reporting context
+   * Provides additional context information for error reporting
+   * Includes request ID when available for correlation across logs
+   * @param ctx - HTTP context containing request information
+   * @returns Additional context data for error reporting
    */
   protected context(ctx: HttpContext): any {
     const requestId = ctx.request.id()
@@ -127,8 +138,10 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * Returns the log level for an error based upon the error
-   * status code.
+   * Determines the appropriate log level based on HTTP status code
+   * 5xx errors are logged as 'error', 4xx as 'warn', others as 'info'
+   * @param error - HTTP error object with status code
+   * @returns {Level} Appropriate logging level for the error
    */
   protected getErrorLogLevel(error: HttpError): Level {
     if (error.status >= 500) {
@@ -143,15 +156,20 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * A boolean to control if errors should be rendered with
-   * all the available debugging info.
+   * Determines whether debug information should be included in error responses
+   * Override this method to implement context-specific debug control
+   * @param _ - HTTP context (unused in base implementation)
+   * @returns {boolean} True if debugging should be enabled
    */
   protected isDebuggingEnabled(_: HttpContext): boolean {
     return this.debug
   }
 
   /**
-   * Returns a boolean by checking if an error should be reported.
+   * Determines whether an error should be reported to logging systems
+   * Checks against ignore lists for exceptions, status codes, and error codes
+   * @param error - HTTP error to evaluate for reporting
+   * @returns {boolean} True if the error should be reported
    */
   protected shouldReport(error: HttpError): boolean {
     if (this.reportErrors === false) {
@@ -174,7 +192,10 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * Renders an error to JSON response
+   * Renders an error as a JSON response
+   * In debug mode, includes full stack trace using Youch
+   * @param error - HTTP error to render
+   * @param ctx - HTTP context for the request
    */
   async renderErrorAsJSON(error: HttpError, ctx: HttpContext) {
     if (this.isDebuggingEnabled(ctx)) {
@@ -188,7 +209,10 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * Renders an error to JSON API response
+   * Renders an error as a JSON API compliant response
+   * Follows JSON API specification for error objects
+   * @param error - HTTP error to render
+   * @param ctx - HTTP context for the request
    */
   async renderErrorAsJSONAPI(error: HttpError, ctx: HttpContext) {
     if (this.isDebuggingEnabled(ctx)) {
@@ -210,7 +234,10 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * Renders an error to HTML response
+   * Renders an error as an HTML response
+   * Uses status pages if configured, otherwise shows debug info or simple message
+   * @param error - HTTP error to render
+   * @param ctx - HTTP context for the request
    */
   async renderErrorAsHTML(error: HttpError, ctx: HttpContext) {
     /**
@@ -244,8 +271,10 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * Renders the validation error message to a JSON
-   * response
+   * Renders validation error messages as a JSON response
+   * Returns errors in a simple format with field-specific messages
+   * @param error - Validation error containing messages array
+   * @param ctx - HTTP context for the request
    */
   async renderValidationErrorAsJSON(error: HttpError, ctx: HttpContext) {
     ctx.response.status(error.status).send({
@@ -254,8 +283,10 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * Renders the validation error message as per JSON API
-   * spec
+   * Renders validation error messages as JSON API compliant response
+   * Transforms validation messages to JSON API error object format
+   * @param error - Validation error containing messages array
+   * @param ctx - HTTP context for the request
    */
   async renderValidationErrorAsJSONAPI(error: HttpError, ctx: HttpContext) {
     ctx.response.status(error.status).send({
@@ -273,7 +304,10 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * Renders the validation error as an HTML string
+   * Renders validation error messages as an HTML response
+   * Creates simple HTML list of field errors separated by line breaks
+   * @param error - Validation error containing messages array
+   * @param ctx - HTTP context for the request
    */
   async renderValidationErrorAsHTML(error: HttpError, ctx: HttpContext) {
     ctx.response
@@ -289,7 +323,10 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * Renders the error to response
+   * Renders an error to the appropriate response format based on content negotiation
+   * Supports HTML, JSON API, and JSON formats based on Accept headers
+   * @param error - HTTP error to render
+   * @param ctx - HTTP context for the request
    */
   renderError(error: HttpError, ctx: HttpContext) {
     switch (ctx.request.accepts(['html', 'application/vnd.api+json', 'json'])) {
@@ -304,7 +341,10 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * Renders the validation error to response
+   * Renders validation errors to the appropriate response format based on content negotiation
+   * Supports HTML, JSON API, and JSON formats for validation error messages
+   * @param error - Validation error to render
+   * @param ctx - HTTP context for the request
    */
   renderValidationError(error: HttpError, ctx: HttpContext) {
     switch (ctx.request.accepts(['html', 'application/vnd.api+json', 'json'])) {
@@ -319,7 +359,10 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * Reports an error during an HTTP request
+   * Reports an error to logging systems if reporting is enabled
+   * Allows errors to self-report via their own report method if available
+   * @param error - Any error object to report
+   * @param ctx - HTTP context for additional reporting context
    */
   async report(error: unknown, ctx: HttpContext) {
     const httpError = this.#toHttpError(error)
@@ -347,7 +390,10 @@ export class ExceptionHandler extends Macroable {
   }
 
   /**
-   * Handles the error during the HTTP request.
+   * Handles errors during HTTP request processing
+   * Delegates to error's own handle method if available, otherwise renders response
+   * @param error - Any error object to handle
+   * @param ctx - HTTP context for error handling
    */
   async handle(error: unknown, ctx: HttpContext) {
     const httpError = this.#toHttpError(error)
