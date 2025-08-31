@@ -11,7 +11,7 @@ import type { Encryption } from '@adonisjs/encryption'
 
 /**
  * Encrypt a value to be set as cookie
- * 
+ *
  * @param key - The cookie key used for encryption
  * @param value - The value to encrypt
  * @param encryption - The encryption instance
@@ -27,7 +27,7 @@ export function pack(key: string, value: any, encryption: Encryption): null | st
 /**
  * Returns a boolean, if the unpack method from this module can attempt
  * to unpack encrypted value.
- * 
+ *
  * @param encryptedValue - The encrypted value to check
  * @returns True if the value can be unpacked by this module
  */
@@ -39,7 +39,7 @@ export function canUnpack(encryptedValue: string) {
  * Attempts to unpack the encrypted cookie value. Returns null, when fails to do so.
  * Only call this method, when `canUnpack` returns true, otherwise runtime
  * exceptions can be raised.
- * 
+ *
  * @param key - The cookie key used for decryption
  * @param encryptedValue - The encrypted value to decrypt
  * @param encryption - The encryption instance

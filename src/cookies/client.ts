@@ -25,7 +25,7 @@ export class CookieClient {
 
   /**
    * Create a new instance of CookieClient
-   * 
+   *
    * @param encryption - The encryption instance for cookie operations
    */
   constructor(encryption: Encryption) {
@@ -34,7 +34,7 @@ export class CookieClient {
 
   /**
    * Encrypt a key value pair to be sent in the cookie header
-   * 
+   *
    * @param key - The cookie key
    * @param value - The value to encrypt
    * @returns The encrypted cookie string or null if encryption fails
@@ -45,7 +45,7 @@ export class CookieClient {
 
   /**
    * Sign a key value pair to be sent in the cookie header
-   * 
+   *
    * @param key - The cookie key
    * @param value - The value to sign
    * @returns The signed cookie string or null if signing fails
@@ -56,7 +56,7 @@ export class CookieClient {
 
   /**
    * Encode a key value pair to be sent in the cookie header
-   * 
+   *
    * @param _ - Unused key parameter
    * @param value - The value to encode
    * @param stringify - Whether to stringify the value before encoding
@@ -68,7 +68,7 @@ export class CookieClient {
 
   /**
    * Unsign a signed cookie value
-   * 
+   *
    * @param key - The cookie key
    * @param value - The signed cookie value to unsign
    * @returns The original value if valid signature, null otherwise
@@ -81,7 +81,7 @@ export class CookieClient {
 
   /**
    * Decrypt an encrypted cookie value
-   * 
+   *
    * @param key - The cookie key
    * @param value - The encrypted cookie value to decrypt
    * @returns The decrypted value or null if decryption fails
@@ -94,7 +94,7 @@ export class CookieClient {
 
   /**
    * Decode an encoded cookie value
-   * 
+   *
    * @param _ - Unused key parameter
    * @param value - The encoded cookie value to decode
    * @param stringified - Whether the value was stringified during encoding
@@ -109,7 +109,7 @@ export class CookieClient {
 
   /**
    * Parse response cookie
-   * 
+   *
    * @param key - The cookie key
    * @param value - The cookie value to parse
    * @returns The parsed value or undefined if parsing fails

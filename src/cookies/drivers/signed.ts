@@ -12,7 +12,7 @@ import type { Encryption } from '@adonisjs/encryption'
 /**
  * Signs a value to be shared as a cookie. The signed output has a
  * hash to verify tampering with the original value
- * 
+ *
  * @param key - The cookie key used for signing
  * @param value - The value to sign
  * @param encryption - The encryption instance
@@ -28,7 +28,7 @@ export function pack(key: string, value: any, encryption: Encryption): null | st
 /**
  * Returns a boolean, if the unpack method from this module can attempt
  * to unpack the signed value.
- * 
+ *
  * @param signedValue - The signed value to check
  * @returns True if the value can be unpacked by this module
  */
@@ -39,7 +39,7 @@ export function canUnpack(signedValue: string) {
 /**
  * Attempts to unpack the signed value. Make sure to call `canUnpack` before
  * calling this method.
- * 
+ *
  * @param key - The cookie key used for verification
  * @param signedValue - The signed value to verify and unpack
  * @param encryption - The encryption instance

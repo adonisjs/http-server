@@ -26,7 +26,7 @@ export class CookieSerializer {
 
   /**
    * Create a new instance of CookieSerializer
-   * 
+   *
    * @param encryption - The encryption instance for cookie operations
    */
   constructor(encryption: Encryption) {
@@ -43,7 +43,7 @@ export class CookieSerializer {
    *  serializer.encode('name', 'virk')
    *  serializer.encode('name', 'virk', { stringify: false })
    * ```
-   * 
+   *
    * @param key - The cookie key
    * @param value - The value to encode
    * @param options - Cookie encoding options
@@ -75,7 +75,7 @@ export class CookieSerializer {
   /**
    * Sign a key-value pair to a signed cookie. The signed value has a
    * verification hash attached to it to detect data tampering.
-   * 
+   *
    * @param key - The cookie key
    * @param value - The value to sign
    * @param options - Cookie options
@@ -92,7 +92,7 @@ export class CookieSerializer {
 
   /**
    * Encrypts a key-value pair to an encrypted cookie.
-   * 
+   *
    * @param key - The cookie key
    * @param value - The value to encrypt
    * @param options - Cookie options
