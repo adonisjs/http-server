@@ -15,6 +15,9 @@ import type { QSParserConfig } from '../src/types/qs.ts'
  * parser for testing
  */
 export class QsParserFactory {
+  /**
+   * Default configuration options for the QS parser
+   */
   #options: QSParserConfig = {
     parse: {
       depth: 5,
@@ -32,7 +35,8 @@ export class QsParserFactory {
   }
 
   /**
-   * Merge encryption factory options
+   * Merge QS parser factory options
+   * @param options - Partial options to merge with existing configuration
    */
   merge(
     options: Partial<{
@@ -46,7 +50,7 @@ export class QsParserFactory {
   }
 
   /**
-   * Create instance of the logger class
+   * Create instance of the QS parser class
    */
   create() {
     return new Qs(this.#options)

@@ -25,6 +25,9 @@ type FactoryParameters = {
  * URLBuilderFactory is used to create route and signed route helpers
  */
 export class URLBuilderFactory<Routes extends LookupList> {
+  /**
+   * Factory parameters for creating URL builder instances
+   */
   #parameters: Partial<FactoryParameters> = {}
 
   /**
@@ -44,6 +47,7 @@ export class URLBuilderFactory<Routes extends LookupList> {
 
   /**
    * Merge factory params
+   * @param params - Partial factory parameters to merge
    */
   merge(params: Partial<FactoryParameters>) {
     Object.assign(this.#parameters, params)

@@ -31,6 +31,9 @@ type FactoryParameters = {
  * testing
  */
 export class ResponseFactory {
+  /**
+   * Factory parameters for creating response instances
+   */
   #parameters: Partial<FactoryParameters> = {}
 
   /**
@@ -67,6 +70,7 @@ export class ResponseFactory {
 
   /**
    * Returns the HTTP res object
+   * @param req - The incoming message request object
    */
   #createResponse(req: IncomingMessage) {
     return this.#parameters.res || new ServerResponse(req)
@@ -82,6 +86,7 @@ export class ResponseFactory {
 
   /**
    * Merge factory params
+   * @param params - Partial factory parameters to merge
    */
   merge(params: Partial<FactoryParameters>) {
     Object.assign(this.#parameters, params)

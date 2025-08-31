@@ -28,6 +28,9 @@ type FactoryParameters = {
  * testing
  */
 export class HttpContextFactory {
+  /**
+   * Factory parameters for creating HTTP context instances
+   */
   #parameters: Partial<FactoryParameters> = {}
 
   /**
@@ -53,6 +56,7 @@ export class HttpContextFactory {
 
   /**
    * Merge factory params
+   * @param params - Partial factory parameters to merge
    */
   merge(params: Partial<FactoryParameters>) {
     Object.assign(this.#parameters, params)
@@ -60,7 +64,7 @@ export class HttpContextFactory {
   }
 
   /**
-   * Create request
+   * Create HTTP context instance
    */
   create() {
     return new HttpContext(

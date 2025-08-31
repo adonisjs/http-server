@@ -31,6 +31,9 @@ type FactoryParameters = {
  * testing
  */
 export class ServerFactory {
+  /**
+   * Factory parameters for creating server instances
+   */
   #parameters: Partial<FactoryParameters> = {}
 
   /**
@@ -71,6 +74,7 @@ export class ServerFactory {
 
   /**
    * Merge factory params
+   * @param params - Partial factory parameters to merge
    */
   merge(params: Partial<FactoryParameters>) {
     Object.assign(this.#parameters, params)

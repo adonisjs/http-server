@@ -11,7 +11,14 @@ import getPort from 'get-port'
 import { getActiveTest } from '@japa/runner'
 import { type IncomingMessage, type Server, type ServerResponse, createServer } from 'node:http'
 
+/**
+ * HTTP server factory for testing purposes
+ */
 export const httpServer = {
+  /**
+   * Creates a new HTTP server for testing with automatic cleanup
+   * @param handler - The request handler function
+   */
   async create(handler: (req: IncomingMessage, res: ServerResponse) => any | Promise<any>) {
     const server = createServer(handler)
     const test = getActiveTest()

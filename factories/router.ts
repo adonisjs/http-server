@@ -25,6 +25,9 @@ type FactoryParameters = {
  * testing
  */
 export class RouterFactory {
+  /**
+   * Factory parameters for creating router instances
+   */
   #parameters: Partial<FactoryParameters> = {}
 
   /**
@@ -44,6 +47,7 @@ export class RouterFactory {
 
   /**
    * Merge factory params
+   * @param params - Partial factory parameters to merge
    */
   merge(params: Partial<FactoryParameters>) {
     Object.assign(this.#parameters, params)
