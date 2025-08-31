@@ -32,7 +32,8 @@
     "format": "prettier --write .",
     "prepublishOnly": "npm run build",
     "lint": "eslint",
-    "quick:test": "node --import=@poppinss/ts-exec --enable-source-maps bin/test.ts"
+    "quick:test": "node --import=@poppinss/ts-exec --enable-source-maps bin/test.ts",
+    "docs": "typedoc"
   },
   "keywords": [
     "http",
@@ -88,6 +89,7 @@
     "release-it": "^19.0.4",
     "supertest": "^7.1.4",
     "tsup": "^8.5.0",
+    "typedoc": "^0.28.11",
     "typescript": "^5.9.2",
     "youch": "^4.1.0-beta.11"
   },
