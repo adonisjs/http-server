@@ -759,9 +759,7 @@ export class Router {
 
   /**
    * Create URL builder instance.
-   * @deprecated
-   *
-   * Instead use "@adonisjs/core/services/url_builder" instead
+   * @deprecated Instead use "@adonisjs/core/services/url_builder" instead
    */
   builder() {
     return new UrlBuilder(this)

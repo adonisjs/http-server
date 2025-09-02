@@ -307,7 +307,7 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
   }
 
   /**
-   * @alias use
+   * Alias for {@link Route.use}
    */
   middleware(middleware: OneOrMore<MiddlewareFn | ParsedNamedMiddleware>): this {
     return this.use(middleware)

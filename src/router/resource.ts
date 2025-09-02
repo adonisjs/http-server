@@ -323,7 +323,7 @@ export class RouteResource<
   }
 
   /**
-   * @alias use
+   * Alias for {@link RouteResource.use}
    * @param actions - Action name(s) or '*' for all actions
    * @param middleware - Middleware function(s) to apply
    * @returns Current RouteResource instance for method chaining

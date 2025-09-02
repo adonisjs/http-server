@@ -22,8 +22,7 @@ import { type Router } from '../main.ts'
  *  .make('categories.posts.index')
  * ```
  *
- * @deprecated
- * Instead use "@adonisjs/core/services/url_builder" instead
+ * @deprecated Instead use "@adonisjs/core/services/url_builder" instead
  */
 export class UrlBuilder {
   /**
@@ -69,8 +68,7 @@ export class UrlBuilder {
 
   /**
    * Prefix a custom base URL to the final URI
-   * @deprecated
-   * Instead use "@adonisjs/core/services/url_builder" instead
+   * @deprecated Instead use "@adonisjs/core/services/url_builder" instead
    */
   prefixUrl(url: string): this {
     this.#baseUrl = url
@@ -80,8 +78,7 @@ export class UrlBuilder {
   /**
    * Disable route lookup. Calling this method considers
    * the "identifier" as the route pattern
-   * @deprecated
-   * Instead use "@adonisjs/core/services/url_builder" instead
+   * @deprecated Instead use "@adonisjs/core/services/url_builder" instead
    */
   disableRouteLookup(): this {
     this.#shouldPerformLookup = false
@@ -90,8 +87,7 @@ export class UrlBuilder {
 
   /**
    * Append query string to the final URI
-   * @deprecated
-   * Instead use "@adonisjs/core/services/url_builder" instead
+   * @deprecated Instead use "@adonisjs/core/services/url_builder" instead
    */
   qs(queryString?: Record<string, any>): this {
     if (!queryString) {
@@ -104,8 +100,7 @@ export class UrlBuilder {
 
   /**
    * Specify params to apply to the route pattern
-   * @deprecated
-   * Instead use "@adonisjs/core/services/url_builder" instead
+   * @deprecated Instead use "@adonisjs/core/services/url_builder" instead
    */
   params(params?: any[] | Record<string, any>): this {
     if (!params) {
@@ -121,8 +116,7 @@ export class UrlBuilder {
    * route name, controller.method name or the route pattern
    * itself.
    *
-   * @deprecated
-   * Instead use "@adonisjs/core/services/url_builder" instead
+   * @deprecated Instead use "@adonisjs/core/services/url_builder" instead
    * @param identifier - Route identifier to generate URL for
    * @returns Generated URL string
    */
@@ -140,8 +134,7 @@ export class UrlBuilder {
    * route name, controller.method name or the route pattern
    * itself.
    *
-   * @deprecated
-   * Instead use "@adonisjs/core/services/url_builder" instead
+   * @deprecated Instead use "@adonisjs/core/services/url_builder" instead
    *
    */
   makeSigned(identifier: string, options?: { expiresIn?: string | number; purpose?: string }) {

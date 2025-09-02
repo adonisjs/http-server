@@ -225,8 +225,7 @@ export type ResourceActionNames =
   | 'destroy'
 
 /**
- * Options for URL generation (deprecated - use URLBuilder instead)
- * @deprecated
+ * @deprecated Options for URL generation (use URLBuilder instead)
  */
 export type MakeUrlOptions = {
   /** Query string parameters to append */
@@ -240,8 +239,7 @@ export type MakeUrlOptions = {
 }
 
 /**
- * Options for signed URL generation (deprecated - use URLBuilder instead)
- * @deprecated
+ * @deprecated Options for signed URL generation (use URLBuilder instead)
  */
 export type MakeSignedUrlOptions = MakeUrlOptions & {
   /** Expiration time for the signed URL */

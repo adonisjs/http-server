@@ -250,7 +250,7 @@ export class RouteGroup extends Macroable {
   }
 
   /**
-   * @alias use
+   * Alias for {@link RouteGroup.use}
    * @param middleware - Middleware function(s) to apply to all routes in the group
    * @returns Current RouteGroup instance for method chaining
    */

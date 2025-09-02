@@ -1,7 +1,6 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "name": "@adonisjs/http-server",
-  "entryPoints": ["./index.ts", "./src/helpers.ts", "./src/types/main.ts", "./factories/main.ts"],
   "out": "docs",
   "theme": "default",
   "includeVersion": true,
@@ -9,21 +8,8 @@
   "excludePrivate": true,
   "excludeProtected": true,
   "excludeInternal": true,
-  "readme": "README.md",
+  "readme": "none",
   "gitRevision": "main",
-  "sort": ["source-order"],
-  "categorizeByGroup": false,
-  "defaultCategory": "Other",
-  "categoryOrder": [
-    "Server",
-    "Router",
-    "Request",
-    "Response",
-    "Cookies",
-    "Context",
-    "Middleware",
-    "Errors",
-    "Types",
-    "Other"
-  ]
+  "entryPoints": ["./index.ts", "./src/helpers.ts", "./src/types/main.ts", "./factories/main.ts"],
+  "sort": ["source-order"]
 }
