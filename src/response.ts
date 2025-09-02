@@ -1040,21 +1040,38 @@ export class Response extends Macroable {
   }
 
   /**
-   * Redirects the request to a different URL
+   * Returns a Redirect instance for fluent API usage
    *
-   * @param path - Optional path to redirect to
-   * @param forwardQueryString - Whether to forward current query string
-   * @param statusCode - HTTP status code for redirect (default: 302)
-   * @returns Redirect instance when called without path, void when redirecting
+   * Use this overload when you want to use methods like `.toRoute()`, `.back()`,
+   * `.withQs()`, or other redirect builder methods.
+   *
+   * @returns Redirect instance for chaining redirect methods
+   *
+   * @example
+   * ```ts
+   * response.redirect().toRoute('users.show', { id: 1 })
+   * response.redirect().back()
+   * response.redirect().withQs().toPath('/dashboard')
+   * ```
+   */
+  redirect(): Redirect
+  /**
+   * Performs an immediate redirect to the specified path
+   *
+   * This overload directly redirects the request with the provided parameters.
+   * Use this when you have a simple redirect without needing the fluent API.
+   *
+   * @param path - The path or URL to redirect to (use 'back' for referrer redirect)
+   * @param forwardQueryString - Whether to forward current query string parameters
+   * @param statusCode - HTTP status code for redirect (defaults to 302 Found)
    *
    * @example
    * ```ts
    * response.redirect('/dashboard')
-   * response.redirect().toRoute('users.show', { id: 1 })
-   * response.redirect().back()
+   * response.redirect('/users', true, 301) // with query forwarding and 301 status
+   * response.redirect('back') // redirect to referrer
    * ```
    */
-  redirect(): Redirect
   redirect(path: string, forwardQueryString?: boolean, statusCode?: number): void
   redirect(
     path?: string,

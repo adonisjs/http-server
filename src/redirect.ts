@@ -123,16 +123,53 @@ export class Redirect {
   }
 
   /**
-   * Defines query string parameters for the redirect URL
-   * - No arguments: forwards current request query string
-   * - Object argument: adds multiple key-value pairs
-   * - String arguments: adds single key-value pair
-   * @param name - Query parameter name or object of parameters
-   * @param value - Value for the query parameter (when name is string)
-   * @returns {this} The Redirect instance for method chaining
+   * Forwards the current request's query string to the redirect URL
+   *
+   * Use this overload when you want to preserve all existing query parameters
+   * from the current request in the redirect URL.
+   *
+   * @returns The Redirect instance for method chaining
+   *
+   * @example
+   * ```ts
+   * // If current URL is '/search?q=hello&page=2'
+   * response.redirect().withQs().toPath('/results')
+   * // Redirects to: '/results?q=hello&page=2'
+   * ```
    */
   withQs(): this
+  /**
+   * Adds multiple query string parameters to the redirect URL
+   *
+   * Use this overload when you want to add several query parameters at once
+   * using an object with key-value pairs.
+   *
+   * @param values - Object containing query parameter names and values
+   * @returns The Redirect instance for method chaining
+   *
+   * @example
+   * ```ts
+   * response.redirect().withQs({ page: 1, sort: 'name' }).toPath('/users')
+   * // Redirects to: '/users?page=1&sort=name'
+   * ```
+   */
   withQs(values: Record<string, any>): this
+  /**
+   * Adds a single query string parameter to the redirect URL
+   *
+   * Use this overload when you want to add just one query parameter
+   * with a specific name and value.
+   *
+   * @param name - The query parameter name
+   * @param value - The query parameter value
+   * @returns The Redirect instance for method chaining
+   *
+   * @example
+   * ```ts
+   * response.redirect().withQs('success', 'true').toPath('/dashboard')
+   * // Redirects to: '/dashboard?success=true'
+   * ```
+   */
   withQs(name: string, value: any): this
   withQs(name?: Record<string, any> | string, value?: any): this {
     if (typeof name === 'undefined') {
