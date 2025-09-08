@@ -10,8 +10,9 @@
 import type { ContainerResolver } from '@adonisjs/fold'
 import type { NextFn } from '@poppinss/middleware/types'
 import type { Constructor, LazyImport } from '@poppinss/utils/types'
-
 import type { HttpContext } from '../http_context/main.ts'
+
+export { NextFn }
 
 /**
  * Middleware represented as a class constructor that implements a handle method
