@@ -711,7 +711,7 @@ export class Router {
 
     return Object.keys(routesList)
       .reduce<string[]>((result, method) => {
-        result.push(`${' '.repeat(indentation)}'${method}': {`)
+        result.push(`${' '.repeat(indentation)}${method}: {`)
 
         Object.keys(routesList[method]).forEach((identifier) => {
           const key = `'${identifier}'`
