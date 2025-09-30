@@ -722,11 +722,11 @@ export class Router {
           const dictValue = `{${params.join(',')}}`
           const tupleValue = `[${paramsTuple?.join(',')}]`
 
-          const value = `{ ${tupleName}: ${tupleValue}, ${dictName}: ${dictValue} }`
-          result.push(`${' '.repeat(indentation + 2)}${key}: ${value},`)
+          const value = `{ ${tupleName}: ${tupleValue}; ${dictName}: ${dictValue} }`
+          result.push(`${' '.repeat(indentation + 2)}${key}: ${value}`)
         })
 
-        result.push(`${' '.repeat(indentation)}},`)
+        result.push(`${' '.repeat(indentation)}}`)
 
         return result
       }, [])
