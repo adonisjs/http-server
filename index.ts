@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+export { Qs } from './src/qs.ts'
 export * as errors from './src/errors.ts'
 export { Request } from './src/request.ts'
 export { Response } from './src/response.ts'
