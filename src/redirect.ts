@@ -7,7 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import { parse } from 'node:url'
 import type { IncomingMessage } from 'node:http'
 
 import debug from './debug.ts'
@@ -22,6 +21,7 @@ import type {
   GetRoutesForMethod,
   RouteBuilderArguments,
 } from './types/url_builder.ts'
+import { safeDecodeURI } from './utils.ts'
 
 /**
  * Exposes the API to construct redirect routes
@@ -194,7 +194,7 @@ export class Redirect {
     let query: Record<string, any> = {}
 
     const referrerUrl = this.#getReferrerUrl()
-    const url = parse(referrerUrl)
+    const url = safeDecodeURI(referrerUrl, false)
 
     debug('referrer url "%s"', referrerUrl)
     debug('referrer base url "%s"', url.pathname)
@@ -247,7 +247,7 @@ export class Redirect {
      * Extract query string from the current URL
      */
     if (this.#forwardQueryString) {
-      query = this.#qs.parse(parse(this.#request.url!).query || '')
+      query = this.#qs.parse(safeDecodeURI(this.#request.url!, false).query || '')
     }
 
     /**
