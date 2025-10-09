@@ -14,6 +14,7 @@ import string from '@poppinss/utils/string'
 import { type Encryption } from '@adonisjs/encryption'
 import { parseBindingReference } from '@adonisjs/fold'
 
+import { safeDecodeURI } from './utils.ts'
 import { type CookieOptions } from './types/response.ts'
 import { type SignedURLOptions, type URLOptions } from './types/url_builder.ts'
 import type { RouteMatchers, RouteJSON, MatchItRouteToken } from './types/route.ts'
@@ -24,6 +25,7 @@ import {
   type ParsedGlobalMiddleware,
   type ParsedNamedMiddleware,
 } from './types/middleware.ts'
+import { type Qs } from './qs.ts'
 
 /**
  * This function is similar to the intrinsic function encodeURI. However, it will not encode:
@@ -295,4 +297,27 @@ export async function routeInfo(route: RouteJSON): Promise<RouteHandlerInfo> {
         name: route.handler.name || 'closure',
         args: 'listArgs' in route.handler ? String(route.handler.listArgs) : undefined,
       }
+}
+
+/**
+ * Appends query string parameters to a URI. Existing query parameters
+ * in the URI are merged with the new ones.
+ *
+ * @param uri - The base URI to append query string to
+ * @param queryString - Object containing query parameters to append
+ * @param qsParser - Query string parser instance for stringify/parse operations
+ *
+ * @example
+ * ```ts
+ * const result = appendQueryString('/users', { page: 1, limit: 10 }, qsParser)
+ * // Returns: '/users?page=1&limit=10'
+ *
+ * const result2 = appendQueryString('/users?sort=name', { page: 1 }, qsParser)
+ * // Returns: '/users?sort=name&page=1'
+ * ```
+ */
+export function appendQueryString(uri: string, queryString: Record<string, any>, qsParser: Qs) {
+  const { query, pathname } = safeDecodeURI(uri, false)
+  const mergedQueryString = qsParser.stringify(Object.assign(qsParser.parse(query), queryString))
+  return mergedQueryString ? `${pathname}?${mergedQueryString}` : pathname
 }
