@@ -124,7 +124,7 @@ export type UrlFor<Routes extends LookupList, Options extends any = URLOptions> 
       Routes['GET'][RouteIdentifier],
       Options
     >
-  ): { method: 'get'; url: string; form: { action: string; method: 'get' } }
+  ): { method: 'GET'; url: string; form: { action: string; method: 'GET' } }
 
   /**
    * Make URL for a POST route. An error will be raised if the route doesn't
@@ -141,7 +141,7 @@ export type UrlFor<Routes extends LookupList, Options extends any = URLOptions> 
       Routes['POST'][RouteIdentifier],
       Options
     >
-  ): { method: 'post'; url: string; form: { action: string; method: 'post' } }
+  ): { method: 'POST'; url: string; form: { action: string; method: 'POST' } }
 
   /**
    * Make URL for a PUT route. An error will be raised if the route doesn't
@@ -158,7 +158,7 @@ export type UrlFor<Routes extends LookupList, Options extends any = URLOptions> 
       Routes['PUT'][RouteIdentifier],
       Options
     >
-  ): { method: 'put'; url: string; form: { action: string; method: 'put' } }
+  ): { method: 'PUT'; url: string; form: { action: string; method: 'PUT' } }
 
   /**
    * Make URL for a PATCH route. An error will be raised if the route doesn't
@@ -175,7 +175,7 @@ export type UrlFor<Routes extends LookupList, Options extends any = URLOptions> 
       Routes['PATCH'][RouteIdentifier],
       Options
     >
-  ): { method: 'patch'; url: string; form: { action: string; method: 'patch' } }
+  ): { method: 'PATCH'; url: string; form: { action: string; method: 'PATCH' } }
 
   /**
    * Make URL for a DELETE route. An error will be raised if the route doesn't
@@ -192,7 +192,7 @@ export type UrlFor<Routes extends LookupList, Options extends any = URLOptions> 
       Routes['DELETE'][RouteIdentifier],
       Options
     >
-  ): { method: 'delete'; url: string; form: { action: string; method: 'delete' } }
+  ): { method: 'DELETE'; url: string; form: { action: string; method: 'DELETE' } }
 
   /**
    * Make URL for a custom route method. An error will be raised if the route doesn't

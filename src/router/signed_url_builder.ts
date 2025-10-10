@@ -57,8 +57,9 @@ export function createSignedUrlBuilder<Routes extends LookupList>(
   }
 
   signedRoute.get = function routeGet(...[identifier, params, options]) {
-    const url = createSignedUrlForRoute(identifier, params, options, 'GET')
-    const method = 'get'
+    const method = 'GET'
+    const url = createSignedUrlForRoute(identifier, params, options, method)
+
     return {
       url,
       method,
@@ -73,8 +74,9 @@ export function createSignedUrlBuilder<Routes extends LookupList>(
   }
 
   signedRoute.post = function routePost(...[identifier, params, options]) {
-    const url = createSignedUrlForRoute(identifier, params, options, 'POST')
-    const method = 'post'
+    const method = 'POST'
+    const url = createSignedUrlForRoute(identifier, params, options, method)
+
     return {
       url,
       method,
@@ -89,8 +91,9 @@ export function createSignedUrlBuilder<Routes extends LookupList>(
   }
 
   signedRoute.put = function routePut(...[identifier, params, options]) {
-    const url = createSignedUrlForRoute(identifier, params, options, 'PUT')
-    const method = 'put'
+    const method = 'PUT'
+    const url = createSignedUrlForRoute(identifier, params, options, method)
+
     return {
       url,
       method,
@@ -105,8 +108,9 @@ export function createSignedUrlBuilder<Routes extends LookupList>(
   }
 
   signedRoute.patch = function routePatch(...[identifier, params, options]) {
-    const url = createSignedUrlForRoute(identifier, params, options, 'PATCH')
-    const method = 'patch'
+    const method = 'PATCH'
+    const url = createSignedUrlForRoute(identifier, params, options, method)
+
     return {
       url,
       method,
@@ -121,8 +125,9 @@ export function createSignedUrlBuilder<Routes extends LookupList>(
   }
 
   signedRoute.delete = function routeDelete(...[identifier, params, options]) {
-    const url = createSignedUrlForRoute(identifier, params, options, 'DELETE')
-    const method = 'delete'
+    const method = 'DELETE'
+    const url = createSignedUrlForRoute(identifier, params, options, method)
+
     return {
       url,
       method,
@@ -138,6 +143,7 @@ export function createSignedUrlBuilder<Routes extends LookupList>(
 
   signedRoute.method = function routeGet(method, ...[identifier, params, options]) {
     const url = createSignedUrlForRoute(identifier, params, options, method)
+
     return {
       url,
       method,

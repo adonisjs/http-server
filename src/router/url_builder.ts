@@ -54,8 +54,9 @@ export function createUrlBuilder<Routes extends LookupList>(
   }
 
   urlFor.get = function urlForMethodGet(...[identifier, params, options]) {
-    const url = createUrlForRoute(identifier, params, options, 'GET')
-    const method = 'get'
+    const method = 'GET'
+    const url = createUrlForRoute(identifier, params, options, method)
+
     return {
       url,
       method,
@@ -70,8 +71,9 @@ export function createUrlBuilder<Routes extends LookupList>(
   }
 
   urlFor.post = function urlForMethodPost(...[identifier, params, options]) {
-    const url = createUrlForRoute(identifier, params, options, 'POST')
-    const method = 'post'
+    const method = 'POST'
+    const url = createUrlForRoute(identifier, params, options, method)
+
     return {
       url,
       method,
@@ -86,8 +88,9 @@ export function createUrlBuilder<Routes extends LookupList>(
   }
 
   urlFor.put = function urlForMethodPut(...[identifier, params, options]) {
-    const url = createUrlForRoute(identifier, params, options, 'PUT')
-    const method = 'put'
+    const method = 'PUT'
+    const url = createUrlForRoute(identifier, params, options, method)
+
     return {
       url,
       method,
@@ -102,8 +105,9 @@ export function createUrlBuilder<Routes extends LookupList>(
   }
 
   urlFor.patch = function urlForMethodPatch(...[identifier, params, options]) {
-    const url = createUrlForRoute(identifier, params, options, 'PATCH')
-    const method = 'patch'
+    const method = 'PATCH'
+    const url = createUrlForRoute(identifier, params, options, method)
+
     return {
       url,
       method,
@@ -118,8 +122,9 @@ export function createUrlBuilder<Routes extends LookupList>(
   }
 
   urlFor.delete = function urlForMethodDelete(...[identifier, params, options]) {
-    const url = createUrlForRoute(identifier, params, options, 'DELETE')
-    const method = 'delete'
+    const method = 'DELETE'
+    const url = createUrlForRoute(identifier, params, options, method)
+
     return {
       url,
       method,

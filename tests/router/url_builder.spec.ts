@@ -39,7 +39,7 @@ test.group('URLBuilder', () => {
     assert.equal(urlFor('users.show', ['1']), '/users/1')
   })
 
-  test('create url for a specific methods', ({ assert }) => {
+  test('create url for specific methods', ({ assert }) => {
     const router = new RouterFactory().create()
 
     const { urlFor } = new URLBuilderFactory<{
@@ -87,49 +87,49 @@ test.group('URLBuilder', () => {
     router.route('/users/:id', ['GET', 'PUT', 'PATCH', 'DELETE'], () => {}).as('users.show')
     router.commit()
 
-    assert.containSubset(urlFor.get('users.show', { id: '1' }), { method: 'get', url: '/users/1' })
+    assert.containSubset(urlFor.get('users.show', { id: '1' }), { method: 'GET', url: '/users/1' })
     assert.deepEqual(urlFor.get('users.show', { id: '1' }).form, {
-      method: 'get',
+      method: 'GET',
       action: '/users/1',
     })
     assert.equal(`${urlFor.get('users.show', { id: '1' })}`, '/users/1')
 
     assert.containSubset(urlFor.post('users.index'), {
-      method: 'post',
+      method: 'POST',
       url: '/users',
     })
     assert.deepEqual(urlFor.post('users.index').form, {
-      method: 'post',
+      method: 'POST',
       action: '/users',
     })
     assert.equal(`${urlFor.post('users.index')}`, '/users')
 
     assert.containSubset(urlFor.put('users.show', { id: '1' }), {
-      method: 'put',
+      method: 'PUT',
       url: '/users/1',
     })
     assert.deepEqual(urlFor.put('users.show', { id: '1' }).form, {
-      method: 'put',
+      method: 'PUT',
       action: '/users/1',
     })
     assert.equal(`${urlFor.put('users.show', { id: '1' })}`, '/users/1')
 
     assert.containSubset(urlFor.patch('users.show', { id: '1' }), {
-      method: 'patch',
+      method: 'PATCH',
       url: '/users/1',
     })
     assert.deepEqual(urlFor.patch('users.show', { id: '1' }).form, {
-      method: 'patch',
+      method: 'PATCH',
       action: '/users/1',
     })
     assert.equal(`${urlFor.patch('users.show', { id: '1' })}`, '/users/1')
 
     assert.containSubset(urlFor.delete('users.show', { id: '1' }), {
-      method: 'delete',
+      method: 'DELETE',
       url: '/users/1',
     })
     assert.deepEqual(urlFor.delete('users.show', { id: '1' }).form, {
-      method: 'delete',
+      method: 'DELETE',
       action: '/users/1',
     })
     assert.equal(`${urlFor.delete('users.show', { id: '1' })}`, '/users/1')
