@@ -24,7 +24,26 @@ import type {
 import { safeDecodeURI } from './utils.ts'
 
 /**
- * Exposes the API to construct redirect routes
+ * Provides a fluent API for constructing HTTP redirect responses.
+ *
+ * The Redirect class allows you to build redirects with custom status codes,
+ * query string forwarding, and route-based URL generation. It supports both
+ * direct URL redirects and route-based redirects using registered route names.
+ *
+ * @example
+ * ```ts
+ * // Basic redirect
+ * return response.redirect('https://example.com')
+ *
+ * // Redirect to a route
+ * return response.redirect().toRoute('users.show', { id: 1 })
+ *
+ * // Redirect with status code and query string
+ * return response.redirect()
+ *   .status(301)
+ *   .withQs({ utm_source: 'newsletter' })
+ *   .toPath('/dashboard')
+ * ```
  */
 export class Redirect {
   /**

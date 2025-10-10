@@ -7,9 +7,11 @@
  * file that was distributed with this source code.
  */
 
-import { type Router } from './main.ts'
-import { createURL } from '../helpers.ts'
-import { type UrlFor, type LookupList, type URLOptions } from '../types/url_builder.ts'
+import { createURL, findRoute } from './helpers.ts'
+import { type UrlFor, type LookupList, type URLOptions, type ClientRouteJSON } from './types.ts'
+
+export * from './types.ts'
+export { createURL, findRoute }
 
 /**
  * Creates the URLBuilder helper
@@ -18,10 +20,13 @@ import { type UrlFor, type LookupList, type URLOptions } from '../types/url_buil
  * @returns URL builder function for creating URLs
  */
 export function createUrlBuilder<Routes extends LookupList>(
-  router: Router,
+  routesLoader:
+    | { [domain: string]: ClientRouteJSON[] }
+    | (() => { [domain: string]: ClientRouteJSON[] }),
   searchParamsStringifier: (qs: Record<string, any>) => string
 ): UrlFor<Routes> {
   let domainsList: string[]
+  let domainsRoutes: { [domain: string]: ClientRouteJSON[] }
 
   function createUrlForRoute(
     identifier: string,
@@ -29,13 +34,21 @@ export function createUrlBuilder<Routes extends LookupList>(
     options?: URLOptions,
     method?: string
   ) {
+    if (!domainsRoutes) {
+      domainsRoutes = typeof routesLoader === 'function' ? routesLoader() : routesLoader
+    }
+
     if (!domainsList) {
-      domainsList = Object.keys(router.toJSON()).filter((domain) => domain !== 'root')
+      domainsList = Object.keys(domainsRoutes).filter((domain) => domain !== 'root')
     }
 
     const domain = domainsList.find((name) => identifier.startsWith(`${name}@`))
     const routeIdentifier = domain ? identifier.replace(new RegExp(`^${domain}@`), '') : identifier
-    const route = router.findOrFail(routeIdentifier, domain, method, true)
+    const route = findRoute(domainsRoutes, routeIdentifier, domain, method, true)
+    if (!route) {
+      throw new Error(`Cannot lookup route "${routeIdentifier}"`)
+    }
+
     return createURL(
       route.name ?? route.pattern,
       route.tokens,

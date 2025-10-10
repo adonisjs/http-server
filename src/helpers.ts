@@ -14,9 +14,11 @@ import string from '@poppinss/utils/string'
 import { type Encryption } from '@adonisjs/encryption'
 import { parseBindingReference } from '@adonisjs/fold'
 
+import { type Qs } from './qs.ts'
 import { safeDecodeURI } from './utils.ts'
+import { createURL } from './client/helpers.ts'
 import { type CookieOptions } from './types/response.ts'
-import { type SignedURLOptions, type URLOptions } from './types/url_builder.ts'
+import { type SignedURLOptions } from './types/url_builder.ts'
 import type { RouteMatchers, RouteJSON, MatchItRouteToken } from './types/route.ts'
 import {
   type MiddlewareFn,
@@ -25,7 +27,8 @@ import {
   type ParsedGlobalMiddleware,
   type ParsedNamedMiddleware,
 } from './types/middleware.ts'
-import { type Qs } from './qs.ts'
+
+export { createURL }
 
 /**
  * This function is similar to the intrinsic function encodeURI. However, it will not encode:
@@ -70,94 +73,6 @@ export { default as mime } from 'mime-types'
 export function parseRoute(pattern: string, matchers?: RouteMatchers): MatchItRouteToken[] {
   const tokens = matchit.parse(pattern, matchers)
   return tokens
-}
-
-/**
- * Makes URL for a given route pattern using its parsed tokens. The
- * tokens could be generated using the "parseRoute" method.
- *
- * @param pattern - The route pattern
- * @param tokens - Array of parsed route tokens
- * @param searchParamsStringifier - Function to stringify query parameters
- * @param params - Route parameters as array or object
- * @param options - URL options
- * @returns {string} The generated URL
- */
-export function createURL(
-  pattern: string,
-  tokens: Pick<MatchItRouteToken, 'val' | 'type' | 'end'>[],
-  searchParamsStringifier: (qs: Record<string, any>) => string,
-  params?: any[] | { [param: string]: any },
-  options?: URLOptions
-): string {
-  const uriSegments: string[] = []
-  const paramsArray = Array.isArray(params) ? params : null
-  const paramsObject = !Array.isArray(params) ? (params ?? {}) : {}
-
-  let paramsIndex = 0
-  for (const token of tokens) {
-    /**
-     * Static param
-     */
-    if (token.type === 0) {
-      uriSegments.push(token.val === '/' ? '' : `${token.val}${token.end}`)
-      continue
-    }
-
-    /**
-     * Wildcard param. It will always be the last param, hence we will provide
-     * it all the remaining values
-     */
-    if (token.type === 2) {
-      const values = paramsArray ? paramsArray.slice(paramsIndex) : paramsObject['*']
-      if (!Array.isArray(values) || !values.length) {
-        throw new Error(
-          `Cannot make URL for "${pattern}". Invalid value provided for the wildcard param`
-        )
-      }
-
-      uriSegments.push(`${values.join('/')}${token.end}`)
-      break
-    }
-
-    const paramName = token.val
-    const value = paramsArray ? paramsArray[paramsIndex] : paramsObject[paramName]
-    const isDefined = value !== undefined && value !== null
-
-    /**
-     * Required param
-     */
-    if (token.type === 1 && !isDefined) {
-      throw new Error(
-        `Cannot make URL for "${pattern}". Missing value for the "${paramName}" param`
-      )
-    }
-
-    if (isDefined) {
-      uriSegments.push(`${value}${token.end}`)
-    }
-
-    paramsIndex++
-  }
-
-  let URI = `/${uriSegments.join('/')}`
-
-  /**
-   * Prefix base URL
-   */
-  if (options?.prefixUrl) {
-    URI = `${options?.prefixUrl.replace(/\/$/, '')}${URI}`
-  }
-
-  /**
-   * Append query string
-   */
-  if (options?.qs) {
-    const queryString = searchParamsStringifier(options?.qs)
-    URI = queryString ? `${URI}?${queryString}` : URI
-  }
-
-  return URI
 }
 
 /**

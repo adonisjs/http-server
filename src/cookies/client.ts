@@ -14,8 +14,21 @@ import * as signedCookiesDriver from './drivers/signed.ts'
 import * as encryptedCookiesDriver from './drivers/encrypted.ts'
 
 /**
- * Cookie client exposes the API to parse/set AdonisJS cookies
- * as a client.
+ * Cookie client provides a unified API for parsing and setting AdonisJS cookies on the client side.
+ *
+ * This class handles different types of cookies including plain, signed, and encrypted cookies.
+ * It provides methods to encode/decode cookies for client-side operations and parse server responses.
+ *
+ * @example
+ * ```ts
+ * const client = new CookieClient(encryption)
+ *
+ * // Encrypt a cookie value
+ * const encrypted = client.encrypt('sessionId', 'abc123')
+ *
+ * // Parse a cookie from server response
+ * const value = client.parse('sessionId', cookieValue)
+ * ```
  */
 export class CookieClient {
   /**
@@ -108,11 +121,21 @@ export class CookieClient {
   }
 
   /**
-   * Parse response cookie
+   * Parse a cookie value by attempting to decrypt, unsign, or decode it.
+   *
+   * This method tries different unpacking strategies in order:
+   * 1. Unsign if it's a signed cookie
+   * 2. Decrypt if it's an encrypted cookie
+   * 3. Decode if it's a plain encoded cookie
    *
    * @param key - The cookie key
    * @param value - The cookie value to parse
-   * @returns The parsed value or undefined if parsing fails
+   *
+   * @example
+   * ```ts
+   * const parsed = client.parse('session', 'e30.abc123def')
+   * // Returns the original value if successfully parsed
+   * ```
    */
   parse(key: string, value: any) {
     /**

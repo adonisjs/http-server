@@ -39,8 +39,25 @@ import StringBuilder from '@poppinss/utils/string_builder'
 import string from '@poppinss/utils/string'
 
 /**
- * The route class exposes the APIs for constructing a route using the
- * fluent API.
+ * The Route class provides a fluent API for constructing and configuring HTTP routes.
+ *
+ * Routes define how HTTP requests are handled by mapping URL patterns and HTTP methods
+ * to controller actions or inline handlers. This class supports middleware application,
+ * parameter validation, naming, and various other route-specific configurations.
+ *
+ * @example
+ * ```ts
+ * const route = new Route(app, middleware, {
+ *   pattern: '/users/:id',
+ *   methods: ['GET'],
+ *   handler: 'UsersController.show'
+ * })
+ *
+ * route
+ *   .where('id', /^[0-9]+$/)
+ *   .middleware(['auth'])
+ *   .as('users.show')
+ * ```
  */
 export class Route<Controller extends Constructor<any> = any> extends Macroable {
   /**

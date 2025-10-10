@@ -19,21 +19,47 @@ import type { RouteJSON } from '../types/route.ts'
 import { asyncLocalStorage } from './local_storage.ts'
 
 /**
- * Http context encapsulates properties for a given HTTP request. The
- * context class can be extended using macros and getters.
+ * HTTP context encapsulates all properties and services for a given HTTP request.
+ *
+ * The HttpContext class serves as the central hub for request-specific data and services.
+ * It provides access to the request, response, route information, container resolver,
+ * and logger instances. The context can be extended using macros and getters for
+ * application-specific functionality.
+ *
+ * @example
+ * ```ts
+ * export default class UsersController {
+ *   async show({ request, response, params }: HttpContext) {
+ *     const user = await User.find(params.id)
+ *     return response.json(user)
+ *   }
+ * }
+ * ```
  */
 export class HttpContext extends Macroable {
   /**
-   * Find if async localstorage is enabled for HTTP requests
-   * or not
+   * Indicates whether async local storage is enabled for HTTP requests.
+   *
+   * When enabled, the HTTP context is automatically available within the
+   * scope of request processing through static methods like get() and getOrFail().
    */
   static get usingAsyncLocalStorage(): boolean {
     return asyncLocalStorage.isEnabled
   }
 
   /**
-   * Get access to the HTTP context. Available only when
-   * "usingAsyncLocalStorage" is true
+   * Get access to the current HTTP context from async local storage.
+   *
+   * This method is only available when async local storage is enabled.
+   * Returns null if called outside of an HTTP request context.
+   *
+   * @example
+   * ```ts
+   * const ctx = HttpContext.get()
+   * if (ctx) {
+   *   console.log(ctx.request.url())
+   * }
+   * ```
    */
   static get(): HttpContext | null {
     if (!this.usingAsyncLocalStorage || !asyncLocalStorage.storage) {
@@ -44,8 +70,18 @@ export class HttpContext extends Macroable {
   }
 
   /**
-   * Get the HttpContext instance or raise an exception if not
-   * available
+   * Get the HttpContext instance or raise an exception if not available.
+   *
+   * This method is useful when you need guaranteed access to the HTTP context
+   * and want to fail fast if it's not available.
+   *
+   * @throws RuntimeException when async local storage is disabled or context is unavailable
+   *
+   * @example
+   * ```ts
+   * const ctx = HttpContext.getOrFail()
+   * const userId = ctx.request.input('user_id')
+   * ```
    */
   static getOrFail(): HttpContext {
     /**
@@ -66,8 +102,22 @@ export class HttpContext extends Macroable {
   }
 
   /**
-   * Run a method that doesn't have access to HTTP context from
-   * the async local storage.
+   * Run a method outside of the HTTP context scope.
+   *
+   * This method allows you to execute code that should not have access to
+   * the current HTTP context from async local storage. Useful for background
+   * tasks or operations that should be context-independent.
+   *
+   * @param callback - Function to execute outside the context
+   * @param args - Arguments to pass to the callback
+   *
+   * @example
+   * ```ts
+   * HttpContext.runOutsideContext(() => {
+   *   // This code cannot access HttpContext.get()
+   *   performBackgroundTask()
+   * })
+   * ```
    */
   static runOutsideContext<T>(callback: (...args: any[]) => T, ...args: any[]): T {
     if (!asyncLocalStorage.storage) {

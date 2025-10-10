@@ -22,9 +22,10 @@ import { BriskRoute } from './brisk.ts'
 import { RoutesStore } from './store.ts'
 import { toRoutesJSON } from '../utils.ts'
 import { RouteResource } from './resource.ts'
-import { createUrlBuilder } from './url_builder.ts'
+import { findRoute } from '../client/helpers.ts'
 import { UrlBuilder } from './legacy/url_builder.ts'
 import { RouteMatchers as Matchers } from './matchers.ts'
+import { createUrlBuilder } from '../client/url_builder.ts'
 import { defineNamedMiddleware } from '../define_middleware.ts'
 import { createSignedUrlBuilder } from './signed_url_builder.ts'
 import { createSignedURL, createURL, parseRoute } from '../helpers.ts'
@@ -155,7 +156,7 @@ export class Router {
     this.#encryption = encryption
     this.qs = qsParser
     this.urlBuilder = {
-      urlFor: createUrlBuilder(this, this.qs.stringify),
+      urlFor: createUrlBuilder(() => this.toJSON(), this.qs.stringify),
       signedUrlFor: createSignedUrlBuilder(this, this.#encryption, this.qs.stringify),
     }
   }
@@ -508,55 +509,7 @@ export class Router {
     method?: string,
     disableLegacyLookup?: boolean
   ): RouteJSON | null {
-    /**
-     * Search for route in all the domains when no domain name is
-     * mentioned.
-     */
-    if (!domain) {
-      let route: RouteJSON | null = null
-      for (const routeDomain of Object.keys(this.routes)) {
-        route = this.find(routeIdentifier, routeDomain, method, disableLegacyLookup)
-        if (route) {
-          break
-        }
-      }
-      return route
-    }
-
-    const routes = this.routes[domain]
-    if (!routes) {
-      return null
-    }
-
-    const lookupByName = true
-
-    /**
-     * Pattern and controller are supported for legacy reasons. However
-     * the URL builder only works with names
-     */
-    const lookupByPattern = !disableLegacyLookup
-    const lookupByController = !disableLegacyLookup
-
-    return (
-      routes.find((route) => {
-        if (method && !route.methods.includes(method)) {
-          return false
-        }
-
-        if (
-          (route.name === routeIdentifier && lookupByName) ||
-          (route.pattern === routeIdentifier && lookupByPattern)
-        ) {
-          return true
-        }
-
-        if (typeof route.handler === 'function' || !lookupByController) {
-          return false
-        }
-
-        return route.handler.reference === routeIdentifier
-      }) || null
-    )
+    return findRoute(this.routes, routeIdentifier, domain, method, disableLegacyLookup)
   }
 
   /**

@@ -14,6 +14,7 @@ import type { Constructor, LazyImport } from '@poppinss/utils/types'
 import type { ServerErrorHandler } from './server.ts'
 import type { HttpContext } from '../http_context/main.ts'
 import type { MiddlewareFn, ParsedGlobalMiddleware } from './middleware.ts'
+import { type ClientRouteJSON, type ClientRouteMatchItTokens } from '../client/types.ts'
 
 /**
  * Configuration for matching and casting route parameters
@@ -28,16 +29,7 @@ export type RouteMatcher = {
 /**
  * Route token structure used internally by the matchit routing library
  */
-export type MatchItRouteToken = RouteMatcher & {
-  /** Original token string */
-  old: string
-  /** Token type identifier (0=static, 1=param, 2=wildcard, 3=optional) */
-  type: 0 | 1 | 2 | 3
-  /** Token value */
-  val: string
-  /** Token end delimiter */
-  end: string
-}
+export type MatchItRouteToken = RouteMatcher & ClientRouteMatchItTokens
 
 /**
  * Extracts method names from a controller class that accept HttpContext as first parameter
@@ -154,7 +146,7 @@ export type RouteMatchers = {
 /**
  * Complete route definition with all metadata, handlers, and execution context
  */
-export type RouteJSON = {
+export type RouteJSON = Pick<ClientRouteJSON, 'name' | 'methods' | 'domain' | 'pattern'> & {
   /**
    * The execute function to execute the route middleware
    * and the handler
@@ -165,16 +157,6 @@ export type RouteJSON = {
     ctx: HttpContext,
     errorResponder: ServerErrorHandler['handle']
   ) => any
-
-  /**
-   * A unique name for the route
-   */
-  name?: string
-
-  /**
-   * Route URI pattern
-   */
-  pattern: string
 
   /**
    * Route handler
@@ -195,16 +177,6 @@ export type RouteJSON = {
    * Tokens to be used to construct the route URL
    */
   tokens: MatchItRouteToken[]
-
-  /**
-   * HTTP methods, the route responds to.
-   */
-  methods: string[]
-
-  /**
-   * The domain for which the route is registered.
-   */
-  domain: string
 
   /**
    * Matchers for route params.

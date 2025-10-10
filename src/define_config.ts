@@ -21,7 +21,25 @@ type UserDefinedServerConfig = DeepPartial<
 >
 
 /**
- * Define configuration for the HTTP server
+ * Define configuration for the HTTP server with sensible defaults.
+ *
+ * This function merges user-provided configuration with default values,
+ * normalizes certain properties (like cookie maxAge and trustProxy settings),
+ * and returns a complete ServerConfig object.
+ *
+ * @param config - User-defined server configuration options
+ *
+ * @example
+ * ```ts
+ * const config = defineConfig({
+ *   trustProxy: true,
+ *   cookie: {
+ *     maxAge: '7d',
+ *     secure: false
+ *   },
+ *   etag: true
+ * })
+ * ```
  */
 export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
   const { trustProxy, ...rest } = config

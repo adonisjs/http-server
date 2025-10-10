@@ -19,8 +19,19 @@ import { RouteResource } from './router/resource.ts'
 const proxyCache = new Cache({ max: 200 })
 
 /**
- * Makes input string consistent by having only the starting
- * slash
+ * Makes input string consistent by having only the starting slash.
+ *
+ * Removes trailing slashes and ensures the path starts with a forward slash,
+ * except for the root path '/' which remains unchanged.
+ *
+ * @param input - The input path string to normalize
+ *
+ * @example
+ * ```ts
+ * dropSlash('/users/') // '/users'
+ * dropSlash('users') // '/users'
+ * dropSlash('/') // '/'
+ * ```
  */
 export function dropSlash(input: string): string {
   if (input === '/') {
@@ -31,7 +42,21 @@ export function dropSlash(input: string): string {
 }
 
 /**
- * Returns a flat list of routes from the route groups and resources
+ * Returns a flat list of routes from route groups, resources, and brisk routes.
+ *
+ * This function recursively processes route collections, extracting individual routes
+ * from groups and resources while filtering out any deleted routes.
+ *
+ * @param routes - Array containing route groups, individual routes, resources, and brisk routes
+ *
+ * @example
+ * ```ts
+ * const flatRoutes = toRoutesJSON([
+ *   routeGroup,
+ *   singleRoute,
+ *   resourceRoutes
+ * ])
+ * ```
  */
 export function toRoutesJSON(
   routes: (RouteGroup | Route | RouteResource | BriskRoute)[]
@@ -63,8 +88,19 @@ export function toRoutesJSON(
 }
 
 /**
- * Helper to know if the remote address should
- * be trusted.
+ * Helper to determine if a remote address should be trusted.
+ *
+ * Uses caching to avoid repeated expensive proxy function calls for the same
+ * remote address. The cache improves performance when the same addresses are
+ * checked multiple times.
+ *
+ * @param remoteAddress - The remote IP address to check
+ * @param proxyFn - Function that determines if an address should be trusted
+ *
+ * @example
+ * ```ts
+ * const isTrusted = trustProxy('192.168.1.1', proxyAddr.compile('loopback'))
+ * ```
  */
 export function trustProxy(
   remoteAddress: string,
@@ -80,7 +116,19 @@ export function trustProxy(
 }
 
 /**
- * Parses a range expression to an object filled with the range
+ * Parses a range expression (e.g., '200..299') into an object with numeric keys.
+ *
+ * Supports both single values and ranges. For ranges, all numbers between
+ * the start and end (inclusive) are mapped to the provided value.
+ *
+ * @param range - Range expression as a string (e.g., '200', '200..299')
+ * @param value - Value to assign to each number in the range
+ *
+ * @example
+ * ```ts
+ * parseRange('200', 'success') // { 200: 'success' }
+ * parseRange('200..202', 'success') // { 200: 'success', 201: 'success', 202: 'success' }
+ * ```
  */
 export function parseRange<T>(range: string, value: T): Record<number, T> {
   const parts = range.split('..')
@@ -132,6 +180,15 @@ export function parseRange<T>(range: string, value: T): Record<number, T> {
   )
 }
 
+/**
+ * Decodes specific percent-encoded characters in URI components.
+ *
+ * This function handles decoding of specific character codes that are commonly
+ * percent-encoded in URIs, such as %, #, $, &, +, etc.
+ *
+ * @param highCharCode - The high character code of the hex pair
+ * @param lowCharCode - The low character code of the hex pair
+ */
 function decodeComponentChar(highCharCode: number, lowCharCode: number) {
   if (highCharCode === 50) {
     if (lowCharCode === 53) return '%'
@@ -164,6 +221,23 @@ function decodeComponentChar(highCharCode: number, lowCharCode: number) {
   return null
 }
 
+/**
+ * Safely decodes a URI path while handling special characters and query strings.
+ *
+ * This function carefully parses and decodes URI components, handling edge cases
+ * like double-encoded characters and non-standard query string delimiters.
+ * It separates the pathname from query parameters and determines whether
+ * route parameters should be decoded.
+ *
+ * @param path - The URI path to decode
+ * @param useSemicolonDelimiter - Whether to treat semicolons as query string delimiters
+ *
+ * @example
+ * ```ts
+ * const result = safeDecodeURI('/users/123?name=john', false)
+ * // Returns: { pathname: '/users/123', query: 'name=john', shouldDecodeParam: false }
+ * ```
+ */
 export function safeDecodeURI(path: string, useSemicolonDelimiter: boolean) {
   let shouldDecode = false
   let shouldDecodeParam = false

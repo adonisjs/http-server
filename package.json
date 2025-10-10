@@ -13,6 +13,7 @@
     ".": "./build/index.js",
     "./helpers": "./build/src/helpers.js",
     "./types": "./build/src/types/main.js",
+    "./client/url_builder": "./build/src/client/url_builder.js",
     "./factories": "./build/factories/main.js"
   },
   "engines": {
@@ -181,6 +182,7 @@
       "./index.ts",
       "./src/helpers.ts",
       "./src/types/main.ts",
+      "./src/client/url_builder.ts",
       "./factories/main.ts"
     ],
     "outDir": "./build",

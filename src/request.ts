@@ -132,7 +132,10 @@ export class Request extends Macroable {
   }
 
   /**
-   * Parses the query string from the parsed URL and updates internal state
+   * Parses the query string from the parsed URL and updates internal state.
+   *
+   * This method extracts query parameters from the URL and merges them into
+   * the request data object, also creating a frozen copy for original data reference.
    */
   #parseQueryString(): void {
     if (this.parsedUrl.query) {
@@ -142,7 +145,10 @@ export class Request extends Macroable {
   }
 
   /**
-   * Initiates the cookie parser lazily when first needed
+   * Initiates the cookie parser lazily when first needed.
+   *
+   * Creates a CookieParser instance with the current request's cookie header
+   * and the configured encryption service for handling signed/encrypted cookies.
    */
   #initiateCookieParser(): void {
     if (!this.#cookieParser) {
@@ -151,18 +157,27 @@ export class Request extends Macroable {
   }
 
   /**
-   * Lazily initiates the `accepts` module to make sure to parse
-   * the request headers only when one of the content-negotiation
-   * methods are used.
+   * Lazily initiates the `accepts` module for content negotiation.
+   *
+   * Creates an accepts instance that parses the request headers only when
+   * one of the content-negotiation methods (like accepts, acceptsLanguages) are used.
+   * This improves performance by avoiding unnecessary header parsing.
    */
   #initiateAccepts(): void {
     this.#lazyAccepts = this.#lazyAccepts || accepts(this.request)
   }
 
   /**
-   * Returns the request id from the `x-request-id` header. The
-   * header is untouched, if it already exists.
-   * @returns The request ID or undefined if not found/generated
+   * Returns the request ID from the `x-request-id` header.
+   *
+   * If the header doesn't exist and request ID generation is enabled,
+   * a new UUID will be generated and added to the request headers.
+   *
+   * @example
+   * ```ts
+   * const requestId = request.id()
+   * console.log(requestId) // '550e8400-e29b-41d4-a716-446655440000'
+   * ```
    */
   id(): string | undefined {
     let requestId = this.header('x-request-id')

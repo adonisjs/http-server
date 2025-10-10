@@ -18,16 +18,29 @@ import { canWriteResponseBody } from './router/factories/use_return_value.ts'
 import type { HttpError, StatusPageRange, StatusPageRenderer } from './types/server.ts'
 
 /**
- * The base HTTP exception handler one can inherit from to handle
- * HTTP exceptions.
+ * The base HTTP exception handler that provides comprehensive error handling capabilities.
  *
- * The HTTP exception handler has support for
+ * This class can be inherited to create custom exception handlers for your application.
+ * It provides built-in support for:
  *
- * - Ability to render exceptions by calling the render method on the exception.
- * - Rendering status pages
- * - Pretty printing errors during development
- * - Transforming errors to JSON or HTML using content negotiation
- * - Reporting errors
+ * - Self-handling exceptions via their own render/handle methods
+ * - Custom status page rendering for different HTTP error codes
+ * - Debug-friendly error display during development
+ * - Content negotiation for JSON, JSON API, and HTML error responses
+ * - Configurable error reporting and logging
+ * - Validation error handling with field-specific messages
+ *
+ * @example
+ * ```ts
+ * export default class HttpExceptionHandler extends ExceptionHandler {
+ *   protected debug = app.inDev
+ *   protected renderStatusPages = app.inProduction
+ *
+ *   protected statusPages = {
+ *     '404': (error, ctx) => ctx.view.render('errors/404')
+ *   }
+ * }
+ * ```
  */
 export class ExceptionHandler extends Macroable {
   /**

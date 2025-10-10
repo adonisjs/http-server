@@ -7,6 +7,20 @@
  * file that was distributed with this source code.
  */
 
+/**
+ * Standard HTTP response status codes organized as a constant object.
+ *
+ * This object provides named constants for all standard HTTP status codes,
+ * making code more readable and less error-prone when setting response statuses.
+ * The naming follows PascalCase convention for consistency with TypeScript conventions.
+ *
+ * @example
+ * ```ts
+ * response.status(ResponseStatus.NotFound)
+ * response.status(ResponseStatus.InternalServerError)
+ * response.status(ResponseStatus.Created)
+ * ```
+ */
 export const ResponseStatus = {
   Continue: 100,
   SwitchingProtocols: 101,

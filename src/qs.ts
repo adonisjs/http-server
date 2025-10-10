@@ -11,8 +11,22 @@ import { parse, stringify } from 'qs'
 import { type QSParserConfig } from './types/qs.ts'
 
 /**
- * Query string parser used to parse and stringify query
- * strings.
+ * Query string parser that provides methods to parse and stringify query strings.
+ *
+ * This class wraps the popular 'qs' package with configurable options for parsing
+ * and stringifying query parameters. It allows customization of array handling,
+ * depth limits, and encoding behavior.
+ *
+ * @example
+ * ```ts
+ * const qs = new Qs({
+ *   parse: { depth: 5, arrayLimit: 20 },
+ *   stringify: { encode: false, skipNulls: true }
+ * })
+ *
+ * const parsed = qs.parse('users[0][name]=john&users[0][age]=25')
+ * const stringified = qs.stringify({ users: [{ name: 'john', age: 25 }] })
+ * ```
  */
 export class Qs {
   /**
