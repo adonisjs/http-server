@@ -124,7 +124,7 @@ export type UrlFor<Routes extends LookupList, Options extends any = URLOptions> 
       Routes['GET'][RouteIdentifier],
       Options
     >
-  ): { method: 'get'; url: string }
+  ): { method: 'get'; url: string; form: { action: string; method: 'get' } }
 
   /**
    * Make URL for a POST route. An error will be raised if the route doesn't
@@ -141,7 +141,7 @@ export type UrlFor<Routes extends LookupList, Options extends any = URLOptions> 
       Routes['POST'][RouteIdentifier],
       Options
     >
-  ): { method: 'post'; url: string }
+  ): { method: 'post'; url: string; form: { action: string; method: 'post' } }
 
   /**
    * Make URL for a PUT route. An error will be raised if the route doesn't
@@ -158,7 +158,7 @@ export type UrlFor<Routes extends LookupList, Options extends any = URLOptions> 
       Routes['PUT'][RouteIdentifier],
       Options
     >
-  ): { method: 'put'; url: string }
+  ): { method: 'put'; url: string; form: { action: string; method: 'put' } }
 
   /**
    * Make URL for a PATCH route. An error will be raised if the route doesn't
@@ -175,7 +175,7 @@ export type UrlFor<Routes extends LookupList, Options extends any = URLOptions> 
       Routes['PATCH'][RouteIdentifier],
       Options
     >
-  ): { method: 'patch'; url: string }
+  ): { method: 'patch'; url: string; form: { action: string; method: 'patch' } }
 
   /**
    * Make URL for a DELETE route. An error will be raised if the route doesn't
@@ -192,7 +192,7 @@ export type UrlFor<Routes extends LookupList, Options extends any = URLOptions> 
       Routes['DELETE'][RouteIdentifier],
       Options
     >
-  ): { method: 'delete'; url: string }
+  ): { method: 'delete'; url: string; form: { action: string; method: 'delete' } }
 
   /**
    * Make URL for a custom route method. An error will be raised if the route doesn't
@@ -208,7 +208,7 @@ export type UrlFor<Routes extends LookupList, Options extends any = URLOptions> 
       Routes[Method][RouteIdentifier],
       Options
     >
-  ): { method: Method; url: string }
+  ): { method: Method; url: string; form: { action: string; method: Method } }
 }
 
 /**

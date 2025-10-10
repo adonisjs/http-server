@@ -54,61 +54,96 @@ export function createUrlBuilder<Routes extends LookupList>(
   }
 
   urlFor.get = function urlForMethodGet(...[identifier, params, options]) {
+    const url = createUrlForRoute(identifier, params, options, 'GET')
+    const method = 'get'
     return {
-      url: createUrlForRoute(identifier, params, options, 'GET'),
-      method: 'get',
+      url,
+      method,
       toString() {
-        return this.url
+        return url
+      },
+      form: {
+        action: url,
+        method,
       },
     }
   }
 
   urlFor.post = function urlForMethodPost(...[identifier, params, options]) {
+    const url = createUrlForRoute(identifier, params, options, 'POST')
+    const method = 'post'
     return {
-      url: createUrlForRoute(identifier, params, options, 'POST'),
-      method: 'post',
+      url,
+      method,
       toString() {
-        return this.url
+        return url
+      },
+      form: {
+        action: url,
+        method,
       },
     }
   }
 
   urlFor.put = function urlForMethodPut(...[identifier, params, options]) {
+    const url = createUrlForRoute(identifier, params, options, 'PUT')
+    const method = 'put'
     return {
-      url: createUrlForRoute(identifier, params, options, 'PUT'),
-      method: 'put',
+      url,
+      method,
       toString() {
-        return this.url
+        return url
+      },
+      form: {
+        action: url,
+        method,
       },
     }
   }
 
   urlFor.patch = function urlForMethodPatch(...[identifier, params, options]) {
+    const url = createUrlForRoute(identifier, params, options, 'PATCH')
+    const method = 'patch'
     return {
-      url: createUrlForRoute(identifier, params, options, 'PATCH'),
-      method: 'patch',
+      url,
+      method,
       toString() {
-        return this.url
+        return url
+      },
+      form: {
+        action: url,
+        method,
       },
     }
   }
 
   urlFor.delete = function urlForMethodDelete(...[identifier, params, options]) {
+    const url = createUrlForRoute(identifier, params, options, 'DELETE')
+    const method = 'delete'
     return {
-      url: createUrlForRoute(identifier, params, options, 'DELETE'),
-      method: 'delete',
+      url,
+      method,
       toString() {
-        return this.url
+        return url
+      },
+      form: {
+        action: url,
+        method,
       },
     }
   }
 
   urlFor.method = function urlForCustomMethod(method, ...[identifier, params, options]) {
+    const url = createUrlForRoute(identifier, params, options, method)
     return {
-      url: createUrlForRoute(identifier, params, options, method),
+      url,
       method,
       toString() {
-        return this.url
+        return url
+      },
+      form: {
+        action: url,
+        method,
       },
     }
   }

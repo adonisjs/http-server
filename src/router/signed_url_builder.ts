@@ -57,61 +57,96 @@ export function createSignedUrlBuilder<Routes extends LookupList>(
   }
 
   signedRoute.get = function routeGet(...[identifier, params, options]) {
+    const url = createSignedUrlForRoute(identifier, params, options, 'GET')
+    const method = 'get'
     return {
-      url: createSignedUrlForRoute(identifier, params, options, 'GET'),
-      method: 'get',
+      url,
+      method,
       toString() {
-        return this.url
+        return url
+      },
+      form: {
+        action: url,
+        method,
       },
     }
   }
 
   signedRoute.post = function routePost(...[identifier, params, options]) {
+    const url = createSignedUrlForRoute(identifier, params, options, 'POST')
+    const method = 'post'
     return {
-      url: createSignedUrlForRoute(identifier, params, options, 'POST'),
-      method: 'post',
+      url,
+      method,
       toString() {
-        return this.url
+        return url
+      },
+      form: {
+        action: url,
+        method,
       },
     }
   }
 
   signedRoute.put = function routePut(...[identifier, params, options]) {
+    const url = createSignedUrlForRoute(identifier, params, options, 'PUT')
+    const method = 'put'
     return {
-      url: createSignedUrlForRoute(identifier, params, options, 'PUT'),
-      method: 'put',
+      url,
+      method,
       toString() {
-        return this.url
+        return url
+      },
+      form: {
+        action: url,
+        method,
       },
     }
   }
 
   signedRoute.patch = function routePatch(...[identifier, params, options]) {
+    const url = createSignedUrlForRoute(identifier, params, options, 'PATCH')
+    const method = 'patch'
     return {
-      url: createSignedUrlForRoute(identifier, params, options, 'PATCH'),
-      method: 'patch',
+      url,
+      method,
       toString() {
-        return this.url
+        return url
+      },
+      form: {
+        action: url,
+        method,
       },
     }
   }
 
   signedRoute.delete = function routeDelete(...[identifier, params, options]) {
+    const url = createSignedUrlForRoute(identifier, params, options, 'DELETE')
+    const method = 'delete'
     return {
-      url: createSignedUrlForRoute(identifier, params, options, 'DELETE'),
-      method: 'delete',
+      url,
+      method,
       toString() {
-        return this.url
+        return url
+      },
+      form: {
+        action: url,
+        method,
       },
     }
   }
 
   signedRoute.method = function routeGet(method, ...[identifier, params, options]) {
+    const url = createSignedUrlForRoute(identifier, params, options, method)
     return {
-      url: createSignedUrlForRoute(identifier, params, options, method),
+      url,
       method,
       toString() {
-        return this.url
+        return url
+      },
+      form: {
+        action: url,
+        method,
       },
     }
   }

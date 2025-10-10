@@ -88,11 +88,19 @@ test.group('URLBuilder', () => {
     router.commit()
 
     assert.containSubset(urlFor.get('users.show', { id: '1' }), { method: 'get', url: '/users/1' })
+    assert.deepEqual(urlFor.get('users.show', { id: '1' }).form, {
+      method: 'get',
+      action: '/users/1',
+    })
     assert.equal(`${urlFor.get('users.show', { id: '1' })}`, '/users/1')
 
     assert.containSubset(urlFor.post('users.index'), {
       method: 'post',
       url: '/users',
+    })
+    assert.deepEqual(urlFor.post('users.index').form, {
+      method: 'post',
+      action: '/users',
     })
     assert.equal(`${urlFor.post('users.index')}`, '/users')
 
@@ -100,11 +108,19 @@ test.group('URLBuilder', () => {
       method: 'put',
       url: '/users/1',
     })
+    assert.deepEqual(urlFor.put('users.show', { id: '1' }).form, {
+      method: 'put',
+      action: '/users/1',
+    })
     assert.equal(`${urlFor.put('users.show', { id: '1' })}`, '/users/1')
 
     assert.containSubset(urlFor.patch('users.show', { id: '1' }), {
       method: 'patch',
       url: '/users/1',
+    })
+    assert.deepEqual(urlFor.patch('users.show', { id: '1' }).form, {
+      method: 'patch',
+      action: '/users/1',
     })
     assert.equal(`${urlFor.patch('users.show', { id: '1' })}`, '/users/1')
 
@@ -112,11 +128,19 @@ test.group('URLBuilder', () => {
       method: 'delete',
       url: '/users/1',
     })
+    assert.deepEqual(urlFor.delete('users.show', { id: '1' }).form, {
+      method: 'delete',
+      action: '/users/1',
+    })
     assert.equal(`${urlFor.delete('users.show', { id: '1' })}`, '/users/1')
 
     assert.containSubset(urlFor.method('GET', 'users.show', { id: '1' }), {
       method: 'GET',
       url: '/users/1',
+    })
+    assert.containSubset(urlFor.method('GET', 'users.show', { id: '1' }).form, {
+      method: 'GET',
+      action: '/users/1',
     })
     assert.equal(`${urlFor.method('GET', 'users.show', { id: '1' })}`, '/users/1')
   })
