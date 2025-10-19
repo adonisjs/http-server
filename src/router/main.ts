@@ -609,15 +609,15 @@ export class Router {
       for (let token of route.tokens) {
         if (token.type === 1) {
           hasRequiredParams = true
-          params.push(`'${token.val}': string`)
-          paramsTuple.push('string')
+          params.push(`'${token.val}': ParamValue`)
+          paramsTuple.push('ParamValue')
         } else if (token.type === 3) {
-          params.push(`'${token.val}'?: string`)
-          paramsTuple.push('string?')
+          params.push(`'${token.val}'?: ParamValue`)
+          paramsTuple.push('ParamValue?')
         } else if (token.type === 2) {
           hasRequiredParams = true
-          params.push(`'*': string[]`)
-          paramsTuple.push('...string[]')
+          params.push(`'*': ParamValue[]`)
+          paramsTuple.push('...ParamValue[]')
           break
         }
       }
@@ -666,26 +666,29 @@ export class Router {
     )
 
     return Object.keys(routesList)
-      .reduce<string[]>((result, method) => {
-        result.push(`${' '.repeat(indentation)}${method}: {`)
+      .reduce<string[]>(
+        (result, method) => {
+          result.push(`${' '.repeat(indentation)}${method}: {`)
 
-        Object.keys(routesList[method]).forEach((identifier) => {
-          const key = `'${identifier}'`
-          const { paramsTuple, hasRequiredParams, params } = routesList[method][identifier]
+          Object.keys(routesList[method]).forEach((identifier) => {
+            const key = `'${identifier}'`
+            const { paramsTuple, hasRequiredParams, params } = routesList[method][identifier]
 
-          const dictName = hasRequiredParams ? 'params' : 'params?'
-          const tupleName = hasRequiredParams ? 'paramsTuple' : 'paramsTuple?'
-          const dictValue = `{${params.join(',')}}`
-          const tupleValue = `[${paramsTuple?.join(',')}]`
+            const dictName = hasRequiredParams ? 'params' : 'params?'
+            const tupleName = hasRequiredParams ? 'paramsTuple' : 'paramsTuple?'
+            const dictValue = `{${params.join(',')}}`
+            const tupleValue = `[${paramsTuple?.join(',')}]`
 
-          const value = `{ ${tupleName}: ${tupleValue}; ${dictName}: ${dictValue} }`
-          result.push(`${' '.repeat(indentation + 2)}${key}: ${value}`)
-        })
+            const value = `{ ${tupleName}: ${tupleValue}; ${dictName}: ${dictValue} }`
+            result.push(`${' '.repeat(indentation + 2)}${key}: ${value}`)
+          })
 
-        result.push(`${' '.repeat(indentation)}}`)
+          result.push(`${' '.repeat(indentation)}}`)
 
-        return result
-      }, [])
+          return result
+        },
+        [`type ParamValue = string | number | bigint | boolean`, '']
+      )
       .join('\n')
   }
 
