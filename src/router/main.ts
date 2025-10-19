@@ -536,6 +536,9 @@ export class Router {
   ): RouteJSON {
     const route = this.find(routeIdentifier, domain, method, disableLegacyLookup)
     if (!route) {
+      if (method) {
+        throw new Error(`Cannot lookup route "${routeIdentifier}" for method "${method}"`)
+      }
       throw new Error(`Cannot lookup route "${routeIdentifier}"`)
     }
 

@@ -297,6 +297,19 @@ test.group('URLBuilder', () => {
     assert.throws(() => urlFor('/users/:id'), 'Cannot lookup route "/users/:id"')
   })
 
+  test('raise error when unable to lookup route for a given method', ({ assert }) => {
+    const router = new RouterFactory().create()
+    router.route('/users/:id', ['GET'], () => {}).as('users.show')
+    router.commit()
+
+    const { urlFor } = new URLBuilderFactory().merge({ router }).create()
+
+    assert.throws(
+      () => urlFor.post('users.show'),
+      'Cannot lookup route "users.show" for method "POST"'
+    )
+  })
+
   test('allow missing params when param is optional', ({ assert }) => {
     const router = new RouterFactory().create()
     const { urlFor } = new URLBuilderFactory<{

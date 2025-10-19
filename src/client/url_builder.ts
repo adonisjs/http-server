@@ -46,6 +46,9 @@ export function createUrlBuilder<Routes extends LookupList>(
     const routeIdentifier = domain ? identifier.replace(new RegExp(`^${domain}@`), '') : identifier
     const route = findRoute(domainsRoutes, routeIdentifier, domain, method, true)
     if (!route) {
+      if (method) {
+        throw new Error(`Cannot lookup route "${routeIdentifier}" for method "${method}"`)
+      }
       throw new Error(`Cannot lookup route "${routeIdentifier}"`)
     }
 
