@@ -1587,10 +1587,8 @@ test.group('Router | generateTypes', () => {
     router.get('comments', 'CommentsController.index')
 
     router.commit()
-    assert.snapshot(router.generateTypes()).matchInline(`
-      "type ParamValue = string | number | bigint | boolean
-
-      ALL: {
+    assert.snapshot(router.generateTypes().routes).matchInline(`
+      "ALL: {
         'api.posts.index': { paramsTuple?: []; params?: {} }
         'api.posts.create': { paramsTuple?: []; params?: {} }
         'api.posts.store': { paramsTuple?: []; params?: {} }
@@ -1651,10 +1649,8 @@ test.group('Router | generateTypes', () => {
       .domain('admin.adonisjs.com')
 
     router.commit()
-    assert.snapshot(router.generateTypes()).matchInline(`
-      "type ParamValue = string | number | bigint | boolean
-
-      ALL: {
+    assert.snapshot(router.generateTypes().routes).matchInline(`
+      "ALL: {
         'api.posts.index': { paramsTuple?: []; params?: {} }
         'api.posts.create': { paramsTuple?: []; params?: {} }
         'api.posts.store': { paramsTuple?: []; params?: {} }
@@ -1733,10 +1729,8 @@ test.group('Router | generateTypes', () => {
       .domain('admin.adonisjs.com')
 
     router.commit()
-    assert.snapshot(router.generateTypes()).matchInline(`
-      "type ParamValue = string | number | bigint | boolean
-
-      ALL: {
+    assert.snapshot(router.generateTypes().routes).matchInline(`
+      "ALL: {
         'api.posts.index': { paramsTuple?: []; params?: {} }
         'api.posts.create': { paramsTuple?: []; params?: {} }
         'api.posts.store': { paramsTuple?: []; params?: {} }

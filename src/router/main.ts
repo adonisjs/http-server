@@ -665,9 +665,11 @@ export class Router {
       this.routes[domain].forEach((route) => trackRoute.bind(this)(route, domain))
     )
 
-    return Object.keys(routesList)
-      .reduce<string[]>(
-        (result, method) => {
+    return {
+      imports: [],
+      types: ['type ParamValue = string | number | bigint | boolean'],
+      routes: Object.keys(routesList)
+        .reduce<string[]>((result, method) => {
           result.push(`${' '.repeat(indentation)}${method}: {`)
 
           Object.keys(routesList[method]).forEach((identifier) => {
@@ -686,10 +688,9 @@ export class Router {
           result.push(`${' '.repeat(indentation)}}`)
 
           return result
-        },
-        [`type ParamValue = string | number | bigint | boolean`, '']
-      )
-      .join('\n')
+        }, [])
+        .join('\n'),
+    }
   }
 
   /**
