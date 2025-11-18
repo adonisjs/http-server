@@ -725,6 +725,12 @@ export class Request extends Macroable {
           return false
         }
 
+        if (identifier.includes('*')) {
+          const escaped = identifier.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&')
+          const regex = new RegExp('^' + escaped.replace(/\*/g, '.*') + '$')
+          return regex.test(route.name || route.pattern)
+        }
+
         return route.handler.reference === identifier
       }
     )
