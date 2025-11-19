@@ -944,6 +944,36 @@ test.group('Request', () => {
     })
   })
 
+  test('find if an wildcard identifiers matches the request route name', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      request.ctx = new HttpContextFactory().merge({ request }).create()
+      ;(request.ctx.route as any) = {
+        pattern: '/users/:id',
+        name: 'admin.users.show',
+        handler: { name: '#controllers/user', handle: () => {} },
+      }
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          wildcard_trailing_match: request.matchesRoute(['admin.users.*']),
+          wildcard_middle_match: request.matchesRoute(['admin.*.show']),
+          wildcard_array_match: request.matchesRoute(['admin.posts.*', 'admin.users.*']),
+          wildcard_no_match: request.matchesRoute(['admin.invoices.*']),
+        })
+      )
+    })
+
+    const { body } = await supertest(url).get('/users/1')
+    assert.deepEqual(body, {
+      wildcard_trailing_match: true,
+      wildcard_middle_match: true,
+      wildcard_array_match: true,
+      wildcard_no_match: false,
+    })
+  })
+
   test('get request json representation', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       const request = new RequestFactory().merge({ req, res, encryption }).create()
