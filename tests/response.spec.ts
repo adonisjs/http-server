@@ -120,6 +120,18 @@ test.group('Response', (group) => {
     await supertest(url).get('/').expect(200).expect('x-request-id', '20241127')
   })
 
+  test('set x-request-id header when the response has no body', async () => {
+    const { url } = await httpServer.create((req, res) => {
+      req.headers['x-request-id'] = '20241127'
+      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+
+      response.created()
+      response.finish()
+    })
+
+    await supertest(url).get('/').expect(201).expect('x-request-id', '20241127')
+  })
+
   test('get merged from http res object', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       res.setHeader('content-type', 'application/json')

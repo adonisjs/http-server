@@ -294,6 +294,13 @@ export class Response extends Macroable {
   protected writeBody(content: any, generateEtag: boolean, jsonpCallbackName?: string): void {
     const hasEmptyBody = content === null || content === undefined || content === ''
 
+    /*
+     * ----------------------------------------
+     * SET X-REQUEST-ID HEADER
+     * ----------------------------------------
+     */
+    this.setRequestId()
+
     /**
      * Set status to "204" when body is empty. The `safeStatus` method only
      * sets the status when no explicit status has been set already
@@ -406,13 +413,6 @@ export class Response extends Macroable {
       this.#endResponse(null, ResponseStatus.NotModified)
       return
     }
-
-    /*
-     * ----------------------------------------
-     * SET X-REQUEST-ID HEADER
-     * ----------------------------------------
-     */
-    this.setRequestId()
 
     /*
      * ----------------------------------------
