@@ -124,7 +124,7 @@ export class ExceptionHandler extends Macroable {
    * @param error - Any thrown value (Error, string, object, etc.)
    * @returns {HttpError} Normalized error object with status and message
    */
-  #toHttpError(error: unknown): HttpError {
+  protected toHttpError(error: unknown): HttpError {
     const httpError: any = is.object(error) ? error : new Error(String(error))
     if (!httpError.message) {
       httpError.message = 'Internal server error'
@@ -378,7 +378,7 @@ export class ExceptionHandler extends Macroable {
    * @param ctx - HTTP context for additional reporting context
    */
   async report(error: unknown, ctx: HttpContext) {
-    const httpError = this.#toHttpError(error)
+    const httpError = this.toHttpError(error)
     if (!this.shouldReport(httpError)) {
       return
     }
@@ -409,7 +409,7 @@ export class ExceptionHandler extends Macroable {
    * @param ctx - HTTP context for error handling
    */
   async handle(error: unknown, ctx: HttpContext) {
-    const httpError = this.#toHttpError(error)
+    const httpError = this.toHttpError(error)
 
     /**
      * Self handle exception
