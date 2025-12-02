@@ -11,7 +11,7 @@ import { test } from '@japa/runner'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { RouterFactory } from '../../factories/router.ts'
-import { RequestFactory } from '../../factories/request.ts'
+import { HttpRequestFactory } from '../../factories/request.ts'
 import { URLBuilderFactory } from '../../factories/url_builder_factory.ts'
 import {
   type UrlFor,
@@ -176,7 +176,7 @@ test.group('URLBuilder', () => {
     router.route('/users/:id', ['GET'], () => {}).as('users.show')
     router.commit()
 
-    const request = new RequestFactory()
+    const request = new HttpRequestFactory()
       .merge({
         encryption,
         url: signedUrlFor('users.show', { id: '1' }),
@@ -238,7 +238,7 @@ test.group('URLBuilder', () => {
     router.commit()
 
     function verifySignature(uri: string) {
-      const request = new RequestFactory()
+      const request = new HttpRequestFactory()
         .merge({
           encryption,
           url: uri,
@@ -271,7 +271,7 @@ test.group('URLBuilder', () => {
     router.route('/users/:id', ['GET'], () => {}).as('users.show')
     router.commit()
 
-    const request = new RequestFactory()
+    const request = new HttpRequestFactory()
       .merge({
         encryption,
         url: signedUrlFor(
@@ -393,7 +393,7 @@ test.group('URLBuilder', () => {
     router.route('/users', ['GET'], () => {}).as('users.index')
     router.commit()
 
-    const request = new RequestFactory()
+    const request = new HttpRequestFactory()
       .merge({
         encryption,
         url: signedUrlFor('users.index'),
@@ -411,7 +411,7 @@ test.group('URLBuilder', () => {
     router.route('/users', ['GET'], () => {}).as('users.index')
     router.commit()
 
-    const request = new RequestFactory()
+    const request = new HttpRequestFactory()
       .merge({
         encryption,
         url: signedUrlFor('users.index', undefined, {
@@ -499,7 +499,7 @@ test.group('URLBuilder', () => {
       .domain('blog.adonisjs.com')
     router.commit()
 
-    const request = new RequestFactory()
+    const request = new HttpRequestFactory()
       .merge({
         encryption,
         url: signedUrlFor('blog.adonisjs.com@posts.show', { id: '1' }),

@@ -66,4 +66,4 @@ export type ResponseConfig = {
 /**
  * A readable stream that can be piped to the response stream method
  */
-export type ResponseStream = Readable
+export type ResponseStream = Readable | ReadableStream<any>

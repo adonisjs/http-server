@@ -11,15 +11,15 @@ import { Container } from '@adonisjs/fold'
 import type { Logger } from '@adonisjs/logger'
 import { LoggerFactory } from '@adonisjs/logger/factories'
 
-import { RequestFactory } from './request.ts'
-import { ResponseFactory } from './response.ts'
-import type { Request } from '../src/request.ts'
-import type { Response } from '../src/response.ts'
+import { HttpRequestFactory } from './request.ts'
+import { HttpResponseFactory } from './response.ts'
+import type { HttpRequest } from '../src/request.ts'
+import type { HttpResponse } from '../src/response.ts'
 import { HttpContext } from '../src/http_context/main.ts'
 
 type FactoryParameters = {
-  request: Request
-  response: Response
+  request: HttpRequest
+  response: HttpResponse
   logger: Logger
 }
 
@@ -37,14 +37,14 @@ export class HttpContextFactory {
    * Returns the request class instance
    */
   #createRequest() {
-    return this.#parameters.request || new RequestFactory().create()
+    return this.#parameters.request || new HttpRequestFactory().create()
   }
 
   /**
    * Returns the response class instance
    */
   #createResponse() {
-    return this.#parameters.response || new ResponseFactory().create()
+    return this.#parameters.response || new HttpResponseFactory().create()
   }
 
   /**

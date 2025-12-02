@@ -13,7 +13,7 @@ import { IncomingMessage, ServerResponse } from 'node:http'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { RouterFactory } from './router.ts'
-import { Response } from '../src/response.ts'
+import { HttpResponse } from '../src/response.ts'
 import { type Router } from '../src/router/main.ts'
 import { QsParserFactory } from './qs_parser_factory.ts'
 import { type ResponseConfig } from '../src/types/response.ts'
@@ -30,7 +30,7 @@ type FactoryParameters = {
  * Response factory is used to generate response class instances for
  * testing
  */
-export class ResponseFactory {
+export class HttpResponseFactory {
   /**
    * Factory parameters for creating response instances
    */
@@ -99,7 +99,7 @@ export class ResponseFactory {
   create() {
     const req = this.#createRequest()
 
-    return new Response(
+    return new HttpResponse(
       req,
       this.#createResponse(req),
       this.#createEncryption(),

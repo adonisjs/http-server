@@ -14,7 +14,7 @@ import type { Encryption } from '@adonisjs/encryption'
 import { IncomingMessage, ServerResponse } from 'node:http'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { Request } from '../src/request.ts'
+import { HttpRequest } from '../src/request.ts'
 import { QsParserFactory } from './qs_parser_factory.ts'
 import { type RequestConfig } from '../src/types/request.ts'
 
@@ -31,7 +31,7 @@ type FactoryParameters = {
  * Request factory is used to generate request class instances for
  * testing
  */
-export class RequestFactory {
+export class HttpRequestFactory {
   /**
    * Factory parameters for creating request instances
    */
@@ -99,7 +99,7 @@ export class RequestFactory {
    */
   create() {
     const req = this.#createRequest()
-    return new Request(
+    return new HttpRequest(
       req,
       this.#createResponse(req),
       this.#createEncryption(),

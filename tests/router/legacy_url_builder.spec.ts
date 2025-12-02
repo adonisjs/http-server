@@ -12,7 +12,7 @@ import { AppFactory } from '@adonisjs/application/factories'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { Router } from '../../src/router/main.ts'
-import { RequestFactory } from '../../factories/request.ts'
+import { HttpRequestFactory } from '../../factories/request.ts'
 import { QsParserFactory } from '../../factories/qs_parser_factory.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
@@ -200,7 +200,7 @@ test.group('Legacy URL builder', () => {
 
     const signedUrl = router.builder().disableRouteLookup().makeSigned('/users')
 
-    const request = new RequestFactory()
+    const request = new HttpRequestFactory()
       .merge({
         encryption,
         url: signedUrl,
@@ -224,7 +224,7 @@ test.group('Legacy URL builder', () => {
       })
       .makeSigned('/users')
 
-    const request = new RequestFactory()
+    const request = new HttpRequestFactory()
       .merge({
         encryption,
         url: signedUrl,

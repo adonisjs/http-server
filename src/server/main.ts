@@ -28,7 +28,7 @@ import type {
 
 import { Qs } from '../qs.ts'
 import debug from '../debug.ts'
-import { Request } from '../request.ts'
+import { HttpRequest } from '../request.ts'
 import { Response } from '../response.ts'
 import { Router } from '../router/main.ts'
 import { HttpContext } from '../http_context/main.ts'
@@ -373,7 +373,7 @@ export class Server {
    * @returns New Request instance
    */
   createRequest(req: IncomingMessage, res: ServerResponse) {
-    return new Request(req, res, this.#encryption, this.#config, this.#qsParser)
+    return new HttpRequest(req, res, this.#encryption, this.#config, this.#qsParser)
   }
 
   /**
@@ -395,7 +395,7 @@ export class Server {
    * @param resolver - Container resolver for dependency injection
    * @returns New HttpContext instance
    */
-  createHttpContext(request: Request, response: Response, resolver: ContainerResolver<any>) {
+  createHttpContext(request: HttpRequest, response: Response, resolver: ContainerResolver<any>) {
     return new HttpContext(
       request,
       response,

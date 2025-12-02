@@ -8,8 +8,8 @@
  */
 
 export { RouterFactory } from './router.ts'
-export { RequestFactory } from './request.ts'
-export { ResponseFactory } from './response.ts'
+export { HttpRequestFactory as RequestFactory } from './request.ts'
+export { HttpResponseFactory as ResponseFactory } from './response.ts'
 export { ServerFactory } from './server_factory.ts'
 export { HttpContextFactory } from './http_context.ts'
 export { QsParserFactory } from './qs_parser_factory.ts'

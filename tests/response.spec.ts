@@ -20,11 +20,11 @@ import { AppFactory } from '@adonisjs/application/factories'
 import { createWriteStream, createReadStream } from 'node:fs'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
-import { type Response } from '../src/response.ts'
 import { RouterFactory } from '../factories/router.ts'
 import { CookieParser } from '../src/cookies/parser.ts'
 import { httpServer } from '../factories/http_server.ts'
-import { ResponseFactory } from '../factories/response.ts'
+import { HttpResponseFactory } from '../factories/response.ts'
+import { type Response as AdonisJSResponse } from '../src/response.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 const BASE_PATH = fileURLToPath(BASE_URL)
@@ -40,7 +40,7 @@ test.group('Response', (group) => {
 
   test('set http response headers', async () => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.header('status', 200)
       response.header('content-type', 'application/json')
@@ -66,7 +66,7 @@ test.group('Response', (group) => {
 
   test('get recently set headers', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.header('status', 200)
       response.header('content-type', 'application/json')
@@ -90,7 +90,7 @@ test.group('Response', (group) => {
   test('get header from http res object', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       res.setHeader('content-type', 'application/json')
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       const contentType = response.getHeader('Content-Type')
 
@@ -111,7 +111,7 @@ test.group('Response', (group) => {
   test('set x-request-id header', async () => {
     const { url } = await httpServer.create((req, res) => {
       req.headers['x-request-id'] = '20241127'
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.send('<p> hello </p>')
       response.finish()
@@ -123,7 +123,7 @@ test.group('Response', (group) => {
   test('set x-request-id header when the response has no body', async () => {
     const { url } = await httpServer.create((req, res) => {
       req.headers['x-request-id'] = '20241127'
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.created()
       response.finish()
@@ -135,7 +135,7 @@ test.group('Response', (group) => {
   test('get merged from http res object', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       res.setHeader('content-type', 'application/json')
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.header('x-powered-by', 'adonisjs')
 
@@ -161,7 +161,7 @@ test.group('Response', (group) => {
 
   test('append header to existing header', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.header('set-cookie', 'username=virk')
       response.append('set-cookie', 'age=22')
@@ -188,7 +188,7 @@ test.group('Response', (group) => {
 
   test("add header via append when header doesn't exists already", async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.append('set-cookie', 'age=22')
       response.relayHeaders()
@@ -201,7 +201,7 @@ test.group('Response', (group) => {
 
   test("append to the header value when it's an array", async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.append('set-cookie', ['username=virk'])
       response.append('set-cookie', ['age=22'])
@@ -215,7 +215,7 @@ test.group('Response', (group) => {
 
   test('do not set header when already exists', async () => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.header('content-type', 'application/json')
       response.safeHeader('content-type', 'text/html')
@@ -228,7 +228,7 @@ test.group('Response', (group) => {
 
   test('remove existing response header', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.header('content-type', 'application/json')
       response.removeHeader('content-type')
@@ -242,7 +242,7 @@ test.group('Response', (group) => {
 
   test('set HTTP status', async () => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.status(201)
       response.relayHeaders()
@@ -254,7 +254,7 @@ test.group('Response', (group) => {
 
   test('parse buffer and set correct response header', async () => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.send(Buffer.from('hello'))
       response.finish()
@@ -265,7 +265,7 @@ test.group('Response', (group) => {
 
   test('parse Uint8Array and set correct response header', async () => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.send(new Uint8Array(Buffer.from('hello')))
       response.finish()
@@ -276,7 +276,7 @@ test.group('Response', (group) => {
 
   test('parse string and set correct response header', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.send('hello')
       response.finish()
     })
@@ -289,7 +289,7 @@ test.group('Response', (group) => {
 
   test('parse HTML string and return correct response header', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.send('<p> hello </p>')
       response.finish()
@@ -303,7 +303,7 @@ test.group('Response', (group) => {
 
   test('get regex in response', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.send(/foo/)
       response.finish()
@@ -317,7 +317,7 @@ test.group('Response', (group) => {
 
   test('parse array and set correct response type', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.send([1, 2])
       response.finish()
     })
@@ -330,7 +330,7 @@ test.group('Response', (group) => {
 
   test('parse object and set correct response type', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.send({ username: 'virk' })
       response.finish()
     })
@@ -343,7 +343,7 @@ test.group('Response', (group) => {
 
   test('do not set content type for empty strings', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.send('')
       response.finish()
     })
@@ -354,7 +354,7 @@ test.group('Response', (group) => {
 
   test('do not set content-type for null', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.send(null)
       response.finish()
     })
@@ -367,7 +367,7 @@ test.group('Response', (group) => {
     assert,
   }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.send({ username: 'virk' })
       res.write('hello')
@@ -380,7 +380,7 @@ test.group('Response', (group) => {
 
   test('write send body and headers when finish is called explicitly', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.send({ username: 'virk' })
       response.finish()
     })
@@ -395,7 +395,7 @@ test.group('Response', (group) => {
 
   test('do not write response twice if finish is called twice', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.json({ username: 'virk' })
       response.finish()
@@ -412,7 +412,7 @@ test.group('Response', (group) => {
 
   test('hasContent must return true after send has been called', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.json({ username: 'virk' })
       res.end(String(response.hasContent))
@@ -424,7 +424,7 @@ test.group('Response', (group) => {
 
   test('hasLazyBody must return true after send has been called', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.json({ username: 'virk' })
       res.end(String(response.hasLazyBody))
@@ -438,7 +438,7 @@ test.group('Response', (group) => {
     assert,
   }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.download('./foo.html')
       res.setHeader('content-type', 'application/json')
@@ -459,7 +459,7 @@ test.group('Response', (group) => {
 
   test('hasContent must return false after download has been called', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.download('./foo.html')
       res.end(String(response.hasContent))
@@ -473,7 +473,7 @@ test.group('Response', (group) => {
     assert,
   }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.stream(new Readable())
       res.setHeader('content-type', 'application/json')
@@ -494,7 +494,7 @@ test.group('Response', (group) => {
 
   test('hasContent must return false after stream has been called', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.stream(new Readable())
       res.end(String(response.hasContent))
@@ -506,7 +506,7 @@ test.group('Response', (group) => {
 
   test('write jsonp response', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.jsonp({ username: 'virk' })
       response.finish()
     })
@@ -519,7 +519,7 @@ test.group('Response', (group) => {
 
   test('use explicit value for callback name', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.jsonp({ username: 'virk' }, 'fn')
       response.finish()
     })
@@ -534,7 +534,7 @@ test.group('Response', (group) => {
     assert,
   }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory()
+      const response = new HttpResponseFactory()
         .merge({
           req,
           res,
@@ -560,7 +560,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.txt'), 'hello world')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       const readableStream = createReadStream(join(BASE_PATH, 'hello.txt'))
       response.stream(readableStream)
 
@@ -576,7 +576,7 @@ test.group('Response', (group) => {
 
   test('raise error when we try to stream a non-existing file', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.stream(createReadStream(join(BASE_PATH, 'i-dont-exist.txt')))
       response.finish()
     })
@@ -590,7 +590,7 @@ test.group('Response', (group) => {
     assert.plan(1)
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       const stream = response.stream as any
       const fn = () => stream('hello')
@@ -606,7 +606,7 @@ test.group('Response', (group) => {
     await fsExtra.ensureDir(BASE_PATH)
 
     const { url } = await httpServer.create(async (req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       const writeStream = createWriteStream(join(BASE_PATH, 'hello.txt'))
 
       const stream = response.stream as any
@@ -623,7 +623,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.txt'), 'hello world')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.stream(createReadStream(join(BASE_PATH, 'hello.txt')))
       response.finish()
     })
@@ -638,7 +638,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.txt'), 'hello world')
 
     const { url } = await httpServer.create(async (req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       const readStream = createReadStream(join(BASE_PATH, 'hello.txt'))
 
@@ -661,7 +661,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.txt'), 'hello world')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       const readStream = createReadStream(join(BASE_PATH, 'hello.txt'))
 
@@ -684,7 +684,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.download(join(BASE_PATH, 'hello.html'))
 
       assert.isFalse(response.hasStream)
@@ -710,7 +710,7 @@ test.group('Response', (group) => {
     await fsExtra.ensureDir(BASE_PATH)
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.download(join(BASE_PATH))
       response.finish()
     })
@@ -721,7 +721,7 @@ test.group('Response', (group) => {
 
   test('write errors as response when file is missing', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.download(join(BASE_PATH, 'hello.html'))
       response.finish()
     })
@@ -733,7 +733,7 @@ test.group('Response', (group) => {
 
   test('return custom message and status when file is missing', async ({ assert }) => {
     const { url } = await httpServer.create(async (req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.download(join(BASE_PATH, 'hello.html'), false, () => {
         return ['Missing file', 400]
@@ -749,7 +749,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.download(join(BASE_PATH, 'hello.html'))
       response.finish()
     })
@@ -762,7 +762,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.download(join(BASE_PATH, 'hello.html'), true)
       response.finish()
     })
@@ -781,7 +781,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.download(join(BASE_PATH, 'hello.html'), true)
       response.finish()
     })
@@ -800,7 +800,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.download(join(BASE_PATH, 'hello.html'), true)
       response.finish()
     })
@@ -821,7 +821,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.download(join(BASE_PATH, 'hello.html'), true)
       response.finish()
     })
@@ -842,7 +842,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.status(301)
       response.download(join(BASE_PATH, 'hello.html'), true)
       response.finish()
@@ -862,7 +862,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.attachment(join(BASE_PATH, 'hello.html'))
       response.finish()
     })
@@ -880,7 +880,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.attachment(join(BASE_PATH, 'hello.html'), 'ooo.html')
       response.finish()
     })
@@ -898,7 +898,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.attachment(join(BASE_PATH, 'hello.html'), 'ooo.html', 'inline')
       response.finish()
     })
@@ -914,7 +914,7 @@ test.group('Response', (group) => {
 
   test('add multiple vary fields', async () => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.vary('Origin')
       response.vary('Set-Cookie')
       response.finish()
@@ -925,7 +925,7 @@ test.group('Response', (group) => {
 
   test('add multiple vary fields as an array', async () => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.vary(['Origin', 'Set-Cookie'])
       response.finish()
     })
@@ -935,7 +935,7 @@ test.group('Response', (group) => {
 
   test('set status code to 204 when body is empty', async () => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.send('')
       response.finish()
     })
@@ -945,7 +945,7 @@ test.group('Response', (group) => {
 
   test('do not override explicit status even when body is empty', async () => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.status(200).send('')
       response.finish()
     })
@@ -955,7 +955,7 @@ test.group('Response', (group) => {
 
   test('remove previously set content headers when status code is 304', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.header('Content-type', 'application/json')
       response.status(204)
       response.send({ username: 'virk' })
@@ -968,7 +968,7 @@ test.group('Response', (group) => {
 
   test('generate etag when set to true', async () => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory()
+      const response = new HttpResponseFactory()
         .merge({
           req,
           res,
@@ -990,7 +990,7 @@ test.group('Response', (group) => {
 
   test('set HTTP status to 304 when cache is fresh and request is GET', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.send({ username: 'virk' }, true)
       response.finish()
     })
@@ -1005,7 +1005,7 @@ test.group('Response', (group) => {
 
   test('convert number to string when sending as response', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.send(22)
       response.finish()
     })
@@ -1016,7 +1016,7 @@ test.group('Response', (group) => {
 
   test('convert boolean to string when sending as response', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.send(false)
       response.finish()
     })
@@ -1028,7 +1028,7 @@ test.group('Response', (group) => {
   test('convert date to string when sending as response', async ({ assert }) => {
     const date = new Date()
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.send(date)
       response.finish()
     })
@@ -1039,7 +1039,7 @@ test.group('Response', (group) => {
 
   test('raise error when response data type is not valid', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       try {
         response.send(function foo() {})
@@ -1064,7 +1064,7 @@ test.group('Response', (group) => {
     }
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.send(new User())
       response.finish()
     })
@@ -1079,7 +1079,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.download(join(BASE_PATH, 'hello.html'), true)
       response.finish()
     })
@@ -1093,7 +1093,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.download(join(BASE_PATH, 'hello.html'), true)
       response.finish()
     })
@@ -1105,7 +1105,7 @@ test.group('Response', (group) => {
 
   test('set response type with custom charset', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.type('plain/text', 'ascii').send('done')
       response.finish()
     })
@@ -1120,7 +1120,7 @@ test.group('Response', (group) => {
 
   test('set signed cookie', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.cookie('name', 'virk').send('done')
       response.finish()
     })
@@ -1145,7 +1145,7 @@ test.group('Response', (group) => {
 
   test('set plain cookie', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.plainCookie('name', 'virk').send('done')
       response.finish()
     })
@@ -1170,7 +1170,7 @@ test.group('Response', (group) => {
 
   test('set encrypted cookie', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.encryptedCookie('name', 'virk').send('done')
       response.finish()
     })
@@ -1196,7 +1196,7 @@ test.group('Response', (group) => {
 
   test('do not send cookies with null or undefined values', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.encryptedCookie('encrypted', null)
       response.cookie('signed', null)
       response.plainCookie('plain', null)
@@ -1213,7 +1213,7 @@ test.group('Response', (group) => {
 
   test('set cookie with custom domain', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.cookie('name', 'virk', { domain: 'foo.com' }).send('done')
       response.finish()
     })
@@ -1239,7 +1239,7 @@ test.group('Response', (group) => {
 
   test('clear cookie by setting expiry and maxAge in past', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.clearCookie('name').send('done')
       response.finish()
     })
@@ -1264,7 +1264,7 @@ test.group('Response', (group) => {
 
   test('abort request by raising exception', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       try {
         response.abort('Bad request')
       } catch (error) {
@@ -1280,7 +1280,7 @@ test.group('Response', (group) => {
 
   test('abort request with json body', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       try {
         response.abort({ message: 'Bad request' })
       } catch (error) {
@@ -1296,7 +1296,7 @@ test.group('Response', (group) => {
 
   test('abort request with custom status code', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       try {
         response.abort({ message: 'Not allowed' }, 401)
       } catch (error) {
@@ -1312,7 +1312,7 @@ test.group('Response', (group) => {
 
   test('abortIf: abort request when condition is truthy', async ({ assert, expectTypeOf }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response: Response = new ResponseFactory()
+      const response: AdonisJSResponse = new HttpResponseFactory()
         .merge({ req, res, encryption, router })
         .create()
 
@@ -1337,7 +1337,7 @@ test.group('Response', (group) => {
 
   test('abortIf: do not abort request when condition is falsy', async ({ expectTypeOf }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response: Response = new ResponseFactory()
+      const response: AdonisJSResponse = new HttpResponseFactory()
         .merge({ req, res, encryption, router })
         .create()
 
@@ -1361,7 +1361,7 @@ test.group('Response', (group) => {
 
   test('abortUnless: abort request when condition is falsy', async ({ assert, expectTypeOf }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response: Response = new ResponseFactory()
+      const response: AdonisJSResponse = new HttpResponseFactory()
         .merge({ req, res, encryption, router })
         .create()
 
@@ -1386,7 +1386,7 @@ test.group('Response', (group) => {
 
   test('abortUnless: do not abort request when condition is truthy', async ({ expectTypeOf }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response: Response = new ResponseFactory()
+      const response: AdonisJSResponse = new HttpResponseFactory()
         .merge({ req, res, encryption, router })
         .create()
 
@@ -1414,7 +1414,7 @@ test.group('Response', (group) => {
       statusCode: null,
     }
 
-    const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+    const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
     const methods: string[] = [
       'continue',
@@ -1471,7 +1471,7 @@ test.group('Response', (group) => {
 
   test('send null in body with an explicit http status code', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.status(202).send(undefined)
       response.finish()
     })
@@ -1482,7 +1482,7 @@ test.group('Response', (group) => {
 
   test('do not send body or calculate content-length for a 304 response', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.notModified({ hello: 'world' })
       response.finish()
     })
@@ -1495,7 +1495,7 @@ test.group('Response', (group) => {
     assert.plan(1)
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.send('hello world')
       assert.equal(response.getBody(), 'hello world')
@@ -1510,7 +1510,7 @@ test.group('Response', (group) => {
     await fsExtra.outputFile(join(BASE_PATH, 'hello.txt'), 'hello world')
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.stream(createReadStream(join(BASE_PATH, 'hello.txt')))
       assert.isNull(response.getBody())
@@ -1524,7 +1524,7 @@ test.group('Response', (group) => {
     assert.plan(1)
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       assert.equal(response.getStatus(), 200)
       response.finish()
@@ -1537,7 +1537,7 @@ test.group('Response', (group) => {
     assert.plan(1)
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.status(301)
       assert.equal(response.getStatus(), 301)
@@ -1551,7 +1551,7 @@ test.group('Response', (group) => {
     assert.plan(1)
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.onFinish(() => {
         assert.isTrue(true)
       })
@@ -1559,5 +1559,53 @@ test.group('Response', (group) => {
     })
 
     await supertest(url).get('/').expect(200)
+  })
+
+  test('send JSON using web-native Response', async ({ assert }) => {
+    const { url } = await httpServer.create(async (req, res) => {
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
+      response.send(Response.json({ username: 'virk' }))
+      response.finish()
+    })
+
+    const { body } = await supertest(url).get('/').expect('content-type', 'application/json')
+    assert.deepEqual(body, { username: 'virk' })
+  })
+
+  test('redirect using web-native Response', async ({ assert }) => {
+    const { url } = await httpServer.create(async (req, res) => {
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
+      response.send(Response.redirect(new URL('/', 'http://localhost:3000'), 301))
+      response.finish()
+    })
+
+    const { headers, status: statusCode } = await supertest(url).get('/')
+    assert.equal(statusCode, 301)
+    assert.property(headers, 'location')
+    assert.equal(headers.location, 'http://localhost:3000/')
+  })
+
+  test('set headers set by the web-native Response', async ({ assert }) => {
+    const { url } = await httpServer.create(async (req, res) => {
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
+      response.send(
+        Response.json(
+          { username: 'virk' },
+          {
+            headers: {
+              'X-Powered-By': 'adonisjs',
+            },
+          }
+        )
+      )
+      response.finish()
+    })
+
+    const { body, headers } = await supertest(url)
+      .get('/')
+      .expect('content-type', 'application/json')
+    assert.deepEqual(body, { username: 'virk' })
+    assert.property(headers, 'x-powered-by')
+    assert.equal(headers['x-powered-by'], 'adonisjs')
   })
 })

@@ -38,6 +38,7 @@ import type {
   ResponseConfig,
   ResponseStream,
 } from './types/response.ts'
+import { Readable } from 'node:stream'
 
 const CACHEABLE_HTTP_METHODS = ['GET', 'HEAD']
 
@@ -54,7 +55,7 @@ const CACHEABLE_HTTP_METHODS = ['GET', 'HEAD']
  * response.download('/path/to/file.pdf')
  * ```
  */
-export class Response extends Macroable {
+export class HttpResponse extends Macroable {
   /**
    * Query string parser instance used for URL manipulation
    */
@@ -294,13 +295,6 @@ export class Response extends Macroable {
   protected writeBody(content: any, generateEtag: boolean, jsonpCallbackName?: string): void {
     const hasEmptyBody = content === null || content === undefined || content === ''
 
-    /*
-     * ----------------------------------------
-     * SET X-REQUEST-ID HEADER
-     * ----------------------------------------
-     */
-    this.setRequestId()
-
     /**
      * Set status to "204" when body is empty. The `safeStatus` method only
      * sets the status when no explicit status has been set already
@@ -464,6 +458,8 @@ export class Response extends Macroable {
     body: ResponseStream,
     errorCallback?: (error: NodeJS.ErrnoException) => [string, number?]
   ): Promise<void> {
+    const readable = body instanceof ReadableStream ? Readable.fromWeb(body) : body
+
     return new Promise((resolve) => {
       let finished = false
 
@@ -471,14 +467,14 @@ export class Response extends Macroable {
        * Listen for errors on the stream and properly destroy
        * stream
        */
-      body.on('error', (error: NodeJS.ErrnoException) => {
+      readable.on('error', (error: NodeJS.ErrnoException) => {
         /* c8 ignore next 3 */
         if (finished) {
           return
         }
 
         finished = true
-        destroy(body)
+        destroy(readable)
 
         this.type('text')
 
@@ -501,7 +497,7 @@ export class Response extends Macroable {
       /*
        * Listen for end and resolve the promise
        */
-      body.on('end', () => {
+      readable.on('end', () => {
         if (!this.headersSent) {
           this.#endResponse()
         }
@@ -513,14 +509,14 @@ export class Response extends Macroable {
        */
       onFinished(this.response, () => {
         finished = true
-        destroy(body)
+        destroy(readable)
       })
 
       /*
        * Pipe stream
        */
       this.relayHeaders()
-      body.pipe(this.response)
+      readable.pipe(this.response)
     })
   }
 
@@ -799,7 +795,7 @@ export class Response extends Macroable {
       return this
     }
 
-    this.response.statusCode = code
+    this.status(code)
     return this
   }
 
@@ -913,6 +909,16 @@ export class Response extends Macroable {
    * @param generateEtag - Whether to generate ETag header (defaults to config)
    */
   send(body: any, generateEtag: boolean = this.#config.etag): void {
+    if (body instanceof Response) {
+      body.headers.forEach((value, key) => this.header(key, value))
+      this.safeStatus(body.status)
+
+      if (body.body) {
+        this.stream(body.body)
+      }
+      return
+    }
+
     this.lazyBody.content = [body, generateEtag]
   }
 
@@ -968,7 +974,10 @@ export class Response extends Macroable {
     body: ResponseStream,
     errorCallback?: (error: NodeJS.ErrnoException) => [string, number?]
   ): void {
-    if (typeof body.pipe !== 'function' || !body.readable || typeof body.read !== 'function') {
+    if (
+      body instanceof ReadableStream === false &&
+      (typeof body.pipe !== 'function' || !body.readable || typeof body.read !== 'function')
+    ) {
       throw new TypeError('response.stream accepts a readable stream only')
     }
 
@@ -1232,16 +1241,32 @@ export class Response extends Macroable {
       return
     }
 
+    /*
+     * ----------------------------------------
+     * SET X-REQUEST-ID HEADER
+     * ----------------------------------------
+     */
+    this.setRequestId()
+
+    /**
+     * Handle text based response
+     */
     if (this.content) {
       httpResponseSerializer.traceSync(this.writeBody, undefined, this, ...this.content)
       return
     }
 
+    /**
+     * Handle stream based response
+     */
     if (this.lazyBody.stream) {
       this.streamBody(...this.lazyBody.stream)
       return
     }
 
+    /**
+     * Handle file streaming response
+     */
     if (this.lazyBody.fileToStream) {
       this.streamFileForDownload(...this.lazyBody.fileToStream)
       return

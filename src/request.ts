@@ -34,7 +34,7 @@ import type { HttpContext } from './http_context/main.ts'
  * You can access the original [IncomingMessage](https://nodejs.org/api/http.html#http_class_http_incomingmessage)
  * using `request.request` property.
  */
-export class Request extends Macroable {
+export class HttpRequest extends Macroable {
   /**
    * Query string parser
    */

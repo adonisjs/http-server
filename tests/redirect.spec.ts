@@ -14,7 +14,7 @@ import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { RouterFactory } from '../factories/router.ts'
 import { httpServer } from '../factories/http_server.ts'
-import { ResponseFactory } from '../factories/response.ts'
+import { HttpResponseFactory } from '../factories/response.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 
@@ -25,7 +25,7 @@ const router = new RouterFactory().merge({ app, encryption }).create()
 test.group('Redirect', () => {
   test('redirect to given url', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.redirect('/foo')
       response.finish()
     })
@@ -36,7 +36,7 @@ test.group('Redirect', () => {
 
   test('redirect to given url with query string', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.redirect('/foo', true)
       response.finish()
     })
@@ -47,7 +47,7 @@ test.group('Redirect', () => {
 
   test('redirect to given url and forward current query string', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.redirect().withQs().toPath('/foo')
       response.finish()
     })
@@ -58,7 +58,7 @@ test.group('Redirect', () => {
 
   test('redirect to given url with custom query string', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.redirect().withQs('username', 'romain').toPath('/foo')
       response.finish()
     })
@@ -71,7 +71,7 @@ test.group('Redirect', () => {
     assert,
   }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.redirect().withQs().withQs('username', 'romain').toPath('/foo')
       response.finish()
     })
@@ -82,7 +82,7 @@ test.group('Redirect', () => {
 
   test('redirect to given url with custom query given as object', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response
         .redirect()
@@ -100,7 +100,7 @@ test.group('Redirect', () => {
 
   test('do not set query string when originally there was no query string', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.redirect('/foo', true)
       response.finish()
@@ -112,7 +112,7 @@ test.group('Redirect', () => {
 
   test('redirect to given url and set custom statusCode', async () => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.redirect('/foo', false, 301)
       response.finish()
@@ -123,7 +123,7 @@ test.group('Redirect', () => {
 
   test('redirect to given url and set custom statusCode using fluent API', async () => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.redirect().status(301).toPath('/foo')
       response.finish()
@@ -134,7 +134,7 @@ test.group('Redirect', () => {
 
   test('redirect back to referrer', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.redirect('back')
       response.finish()
@@ -146,7 +146,7 @@ test.group('Redirect', () => {
 
   test('redirect back to referrer with existing query string', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.redirect().withQs().back()
       response.finish()
@@ -159,7 +159,7 @@ test.group('Redirect', () => {
 
   test('redirect back to referrer with query string', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.redirect().withQs({ name: 'virk' }).back()
       response.finish()
@@ -172,7 +172,7 @@ test.group('Redirect', () => {
 
   test('redirect back to root (/) when referrer header is not set', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.redirect('back')
       response.finish()
@@ -184,7 +184,7 @@ test.group('Redirect', () => {
 
   test('redirect back to root (/) when referrer header is empty', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       response.redirect('back')
       response.finish()
@@ -201,7 +201,9 @@ test.group('Redirect', () => {
     route.commit()
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router: route }).create()
+      const response = new HttpResponseFactory()
+        .merge({ req, res, encryption, router: route })
+        .create()
       // @ts-expect-error "Because RoutesList is empty"
       response.redirect().toRoute('posts.index')
       response.finish()
@@ -217,7 +219,9 @@ test.group('Redirect', () => {
     route.commit()
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router: route }).create()
+      const response = new HttpResponseFactory()
+        .merge({ req, res, encryption, router: route })
+        .create()
       // @ts-expect-error "Because RoutesList is empty"
       response.redirect().toRoute('post.show', { id: 1 })
       response.finish()
@@ -236,7 +240,7 @@ test.group('Redirect', () => {
 
     route.commit()
 
-    const response = new ResponseFactory().merge({ encryption, router: route }).create()
+    const response = new HttpResponseFactory().merge({ encryption, router: route }).create()
 
     // @ts-expect-error "Because RoutesList is empty"
     response.redirect().toRoute('post.create', {}, { domain: 'domain.example.com' })
@@ -255,7 +259,9 @@ test.group('Redirect', () => {
     route.commit()
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router: route }).create()
+      const response = new HttpResponseFactory()
+        .merge({ req, res, encryption, router: route })
+        .create()
       // @ts-expect-error "Because RoutesList is empty"
       response.redirect().withQs().toRoute('post.show', { id: 1 })
       response.finish()
@@ -272,7 +278,9 @@ test.group('Redirect', () => {
     route.commit()
 
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router: route }).create()
+      const response = new HttpResponseFactory()
+        .merge({ req, res, encryption, router: route })
+        .create()
 
       response
         .redirect()
@@ -289,7 +297,7 @@ test.group('Redirect', () => {
 
   test('throw when given route is not found', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
 
       assert.throws(() => {
         // @ts-expect-error "Because RoutesList is empty"
@@ -304,7 +312,7 @@ test.group('Redirect', () => {
 
   test('merge query string values when withQs is called multiple times', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.redirect().withQs('username', 'romain').withQs('age', 28).toPath('/foo')
       response.finish()
     })
@@ -315,7 +323,7 @@ test.group('Redirect', () => {
 
   test('merge query string with current url qs values', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.redirect().withQs().withQs('age', 28).toPath('/foo')
       response.finish()
     })
@@ -326,7 +334,7 @@ test.group('Redirect', () => {
 
   test('do not set query string original url has no qs', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.redirect().withQs().toPath('/foo')
       response.finish()
     })
@@ -337,7 +345,7 @@ test.group('Redirect', () => {
 
   test('clear existing qs', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       response.redirect().withQs('name', 'virk').clearQs().toPath('/foo')
       response.finish()
     })

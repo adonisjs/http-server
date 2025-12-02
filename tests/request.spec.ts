@@ -16,7 +16,7 @@ import { createServer as httpsServer } from 'node:https'
 import { EncryptionFactory } from '@adonisjs/encryption/factories'
 
 import { RouterFactory } from '../factories/router.ts'
-import { RequestFactory } from '../factories/request.ts'
+import { HttpRequestFactory } from '../factories/request.ts'
 import { httpServer } from '../factories/http_server.ts'
 import { CookieSerializer } from '../src/cookies/serializer.ts'
 import { HttpContextFactory } from '../factories/http_context.ts'
@@ -27,7 +27,7 @@ const serializer = new CookieSerializer(encryption)
 test.group('Request', () => {
   test('get http request query string', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.qs()))
     })
@@ -38,7 +38,7 @@ test.group('Request', () => {
 
   test('update request initial body', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({ username: 'virk' })
 
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -61,7 +61,7 @@ test.group('Request', () => {
 
   test('updating request body later must not impact the original body', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({ username: 'virk' })
       request.updateBody({ username: 'nikk' })
 
@@ -87,7 +87,7 @@ test.group('Request', () => {
     assert,
   }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({ user: { username: 'virk' } })
       const body = request.body()
       body.user.username = 'romain'
@@ -112,7 +112,7 @@ test.group('Request', () => {
 
   test('merge query string with all and original', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({ username: 'virk' })
       request.updateBody({ username: 'nikk' })
 
@@ -136,7 +136,7 @@ test.group('Request', () => {
 
   test('raise error when setInitialBody is called twice', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({})
 
       try {
@@ -155,7 +155,7 @@ test.group('Request', () => {
 
   test('compute original and all even if body was never set', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
         JSON.stringify({
@@ -176,7 +176,7 @@ test.group('Request', () => {
 
   test('compute all when query string is updated', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       request.updateQs({ age: '24' })
 
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -199,7 +199,7 @@ test.group('Request', () => {
 
   test('read input value from request', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ input: request.input('age') }))
@@ -213,7 +213,7 @@ test.group('Request', () => {
 
   test('read nested input value from request', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ input: request.input('users.1') }))
@@ -227,7 +227,7 @@ test.group('Request', () => {
 
   test('read array input value from request', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ input: request.input('users[1]') }))
@@ -241,7 +241,7 @@ test.group('Request', () => {
 
   test('get all except few keys', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.except(['age'])))
@@ -255,7 +255,7 @@ test.group('Request', () => {
 
   test('get all except few keys from nested object', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({ user: { username: 'virk', age: 22 } })
 
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -272,7 +272,7 @@ test.group('Request', () => {
 
   test('get only few keys', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.only(['age'])))
@@ -286,7 +286,7 @@ test.group('Request', () => {
 
   test('get request params', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       const ctx = new HttpContextFactory().merge({ request }).create()
       ctx.params = { id: 1 }
@@ -308,7 +308,7 @@ test.group('Request', () => {
 
   test('get value for a given param', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       const ctx = new HttpContextFactory().merge({ request }).create()
       ctx.params = { id: 1 }
@@ -330,7 +330,7 @@ test.group('Request', () => {
 
   test('get only few keys from nested object', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       request.setInitialBody({ user: { username: 'virk', age: 22 } })
 
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -347,7 +347,7 @@ test.group('Request', () => {
 
   test('get request headers', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.headers()))
@@ -359,7 +359,7 @@ test.group('Request', () => {
 
   test('get value for a given request header', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ header: request.header('accept-encoding') }))
@@ -373,7 +373,7 @@ test.group('Request', () => {
 
   test('get ip address', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ip: request.ip() }))
@@ -385,7 +385,7 @@ test.group('Request', () => {
 
   test('get ip addresses as an array', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ip: request.ips() }))
@@ -397,7 +397,7 @@ test.group('Request', () => {
 
   test('get request protocol', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ protocol: request.protocol() }))
@@ -418,7 +418,7 @@ test.group('Request', () => {
       }
 
       const server = httpsServer({ key: keys.serviceKey, cert: keys.certificate }, (req, res) => {
-        const request = new RequestFactory().merge({ req, res, encryption }).create()
+        const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
         res.writeHead(200, { 'content-type': 'application/json' })
         res.end(JSON.stringify({ secure: request.secure() }))
       })
@@ -435,7 +435,7 @@ test.group('Request', () => {
 
   test('get request hostname', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hostname: request.hostname() }))
@@ -451,7 +451,7 @@ test.group('Request', () => {
     const { url } = await httpServer.create((req, res) => {
       req.headers.host = 'beta.adonisjs.com'
 
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ subdomains: request.subdomains() }))
     })
@@ -466,7 +466,7 @@ test.group('Request', () => {
     const { url } = await httpServer.create((req, res) => {
       req.headers.host = 'www.adonisjs.com'
 
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ subdomains: request.subdomains() }))
     })
@@ -479,7 +479,7 @@ test.group('Request', () => {
 
   test('return true for ajax when X-Requested-With is xmlhttprequest', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ajax: request.ajax() }))
@@ -493,7 +493,7 @@ test.group('Request', () => {
 
   test('return false for ajax when X-Requested-With header is missing', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ajax: request.ajax() }))
     })
@@ -506,7 +506,7 @@ test.group('Request', () => {
 
   test('return true for ajax when X-Pjax header is set', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ pjax: request.pjax() }))
     })
@@ -520,7 +520,7 @@ test.group('Request', () => {
   test('do not trust proxy when trustProxy does not allow it', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       req.headers['x-forwarded-for'] = '10.10.10.10'
-      const request = new RequestFactory()
+      const request = new HttpRequestFactory()
         .merge({
           req,
           res,
@@ -541,7 +541,7 @@ test.group('Request', () => {
   test('trust proxy when trustProxy allows it', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       req.headers['x-forwarded-for'] = '10.10.10.10'
-      const request = new RequestFactory()
+      const request = new HttpRequestFactory()
         .merge({
           req,
           res,
@@ -562,7 +562,7 @@ test.group('Request', () => {
   test('trust all proxies when trustProxy is true', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       req.headers['x-forwarded-for'] = '10.10.10.10'
-      const request = new RequestFactory()
+      const request = new HttpRequestFactory()
         .merge({
           req,
           res,
@@ -583,7 +583,7 @@ test.group('Request', () => {
   test('trust no proxy when trustProxy is false', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       req.headers['x-forwarded-for'] = '10.10.10.10'
-      const request = new RequestFactory()
+      const request = new HttpRequestFactory()
         .merge({
           req,
           res,
@@ -603,7 +603,7 @@ test.group('Request', () => {
 
   test('return request url without query string', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.url() }))
     })
@@ -616,7 +616,7 @@ test.group('Request', () => {
 
   test('return request url with query string', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.url(true) }))
     })
@@ -629,7 +629,7 @@ test.group('Request', () => {
 
   test('return complete request url without query string', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.completeUrl() }))
     })
@@ -644,7 +644,7 @@ test.group('Request', () => {
 
   test('return complete request url with query string', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.completeUrl(true) }))
     })
@@ -659,7 +659,7 @@ test.group('Request', () => {
 
   test('call getIp method to return ip address when defined inside config', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory()
+      const request = new HttpRequestFactory()
         .merge({
           req,
           res,
@@ -684,7 +684,7 @@ test.group('Request', () => {
 
   test('return default value when referer header does not exists', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ referrer: request.header('referrer', 'foo.com') }))
@@ -698,7 +698,7 @@ test.group('Request', () => {
 
   test('handle referer header spelling inconsistencies', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
@@ -715,7 +715,7 @@ test.group('Request', () => {
 
   test('return raw body as null when does not exists', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'text/plain' })
       res.end(request.raw())
     })
@@ -726,7 +726,7 @@ test.group('Request', () => {
 
   test('update request raw body', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       request.updateRawBody(JSON.stringify({ username: 'virk' }))
       res.writeHead(200, { 'content-type': 'text/plain' })
       res.end(request.raw())
@@ -738,7 +738,7 @@ test.group('Request', () => {
 
   test('get null when request hostname is missing', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       delete req.headers['host']
 
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -753,7 +753,7 @@ test.group('Request', () => {
 
   test('get empty array when for subdomains request hostname is missing', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       delete req.headers['host']
 
       res.writeHead(200, { 'content-type': 'application/json' })
@@ -768,7 +768,7 @@ test.group('Request', () => {
 
   test('set x-request-id header when id method is called', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory()
+      const request = new HttpRequestFactory()
         .merge({ req, res, encryption, config: { generateRequestId: true } })
         .create()
 
@@ -793,7 +793,7 @@ test.group('Request', () => {
 
   test('do not generate request id when generateRequestId is false', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory()
+      const request = new HttpRequestFactory()
         .merge({
           req,
           res,
@@ -818,7 +818,7 @@ test.group('Request', () => {
 
   test('do not append ? when query string is empty', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ url: request.url(true) }))
     })
@@ -831,7 +831,7 @@ test.group('Request', () => {
 
   test('find if an identifier matches the request route pattern', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       request.ctx = new HttpContextFactory().merge({ request }).create()
       ;(request.ctx.route as any) = {
         pattern: '/users/:id',
@@ -856,7 +856,7 @@ test.group('Request', () => {
 
   test('find if an identifier matches the request route handler name', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       request.ctx = new HttpContextFactory().merge({ request }).create()
       request.ctx.route = {
         middleware: new Middleware(),
@@ -894,7 +894,7 @@ test.group('Request', () => {
 
   test('find if an identifier matches the request route name', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       request.ctx = new HttpContextFactory().merge({ request }).create()
       ;(request.ctx.route as any) = {
         pattern: '/users/:id',
@@ -920,7 +920,7 @@ test.group('Request', () => {
 
   test('find if an one or more identifiers matches the request route name', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       request.ctx = new HttpContextFactory().merge({ request }).create()
       ;(request.ctx.route as any) = {
         pattern: '/users/:id',
@@ -946,7 +946,7 @@ test.group('Request', () => {
 
   test('get request json representation', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.toJSON()))
     })
@@ -970,7 +970,7 @@ test.group('Request', () => {
 test.group('Request | Content negotiation', () => {
   test('content negotiate the request content-type', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ type: request.is(['json', 'html']) }))
     })
@@ -987,7 +987,7 @@ test.group('Request | Content negotiation', () => {
 
   test('return null when request body is empty', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ type: request.is(['json', 'html']) }))
     })
@@ -1000,7 +1000,7 @@ test.group('Request | Content negotiation', () => {
 
   test('return all types from most to least preferred', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ types: request.types() }))
     })
@@ -1013,7 +1013,7 @@ test.group('Request | Content negotiation', () => {
 
   test('return the most relavant accept type', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ accepts: request.accepts(['jsonp', 'json']) }))
     })
@@ -1026,7 +1026,7 @@ test.group('Request | Content negotiation', () => {
 
   test('return all accept languages', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ languages: request.languages() }))
     })
@@ -1039,7 +1039,7 @@ test.group('Request | Content negotiation', () => {
 
   test('return the most relavant language', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ language: request.language(['en', 'en-us', 'de']) }))
     })
@@ -1052,7 +1052,7 @@ test.group('Request | Content negotiation', () => {
 
   test('return all accept charsets', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ charsets: request.charsets() }))
     })
@@ -1065,7 +1065,7 @@ test.group('Request | Content negotiation', () => {
 
   test('return most relevant charset', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ charset: request.charset(['utf-8', 'base64']) }))
     })
@@ -1078,7 +1078,7 @@ test.group('Request | Content negotiation', () => {
 
   test('return all encodings', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ encodings: request.encodings() }))
     })
@@ -1091,7 +1091,7 @@ test.group('Request | Content negotiation', () => {
 
   test('return matching encoding', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ encoding: request.encoding(['utf-8', 'gzip']) }))
     })
@@ -1106,7 +1106,7 @@ test.group('Request | Content negotiation', () => {
     assert,
   }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.setHeader('etag', 'foo')
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ stale: request.stale() }))
@@ -1122,7 +1122,7 @@ test.group('Request | Content negotiation', () => {
 test.group('Request | cache', () => {
   test('return false from hasBody when request has no body', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasBody: request.hasBody() }))
     })
@@ -1135,7 +1135,7 @@ test.group('Request | cache', () => {
 
   test('return true from hasBody when request has no body', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasBody: request.hasBody() }))
     })
@@ -1150,7 +1150,7 @@ test.group('Request | cache', () => {
     assert,
   }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.setHeader('etag', 'foo')
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ fresh: request.fresh() }))
@@ -1166,7 +1166,7 @@ test.group('Request | cache', () => {
     assert,
   }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.setHeader('etag', 'foo')
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ fresh: request.fresh() }))
@@ -1182,7 +1182,7 @@ test.group('Request | cache', () => {
     assert,
   }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.setHeader('etag', 'foo')
       res.writeHead(301, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ fresh: request.fresh() }))
@@ -1198,7 +1198,7 @@ test.group('Request | cache', () => {
 test.group('Request | Method spoofing', () => {
   test('return request http method', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ method: request.method() }))
     })
@@ -1211,7 +1211,7 @@ test.group('Request | Method spoofing', () => {
 
   test('return request spoofed http method when spoofing is enabled', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory()
+      const request = new HttpRequestFactory()
         .merge({
           req,
           res,
@@ -1234,7 +1234,7 @@ test.group('Request | Method spoofing', () => {
     assert,
   }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory()
+      const request = new HttpRequestFactory()
         .merge({
           req,
           res,
@@ -1257,7 +1257,7 @@ test.group('Request | Method spoofing', () => {
 test.group('Request | Cookies', () => {
   test('get all unparsed cookies', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify(request.cookiesList()))
     })
@@ -1271,7 +1271,7 @@ test.group('Request | Cookies', () => {
 
   test('get all unsigned cookies via plainCookies', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(
         JSON.stringify({
@@ -1294,7 +1294,7 @@ test.group('Request | Cookies', () => {
   test('get all signed cookies', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       try {
-        const request = new RequestFactory().merge({ req, res, encryption }).create()
+        const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
         res.writeHead(200, { 'content-type': 'application/json' })
         res.end(
           JSON.stringify({
@@ -1319,7 +1319,7 @@ test.group('Request | Cookies', () => {
 
   test('get value for a single cookie', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.cookie('name') }))
     })
@@ -1333,7 +1333,7 @@ test.group('Request | Cookies', () => {
 
   test('use default value when actual value is missing', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.cookie('name', 'nikk') }))
     })
@@ -1346,7 +1346,7 @@ test.group('Request | Cookies', () => {
 
   test('get value for a single plain cookie', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.plainCookie('name') }))
     })
@@ -1360,7 +1360,7 @@ test.group('Request | Cookies', () => {
 
   test('use default value when actual plain cookie value is missing', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.plainCookie('name', 'nikk') }))
     })
@@ -1373,7 +1373,7 @@ test.group('Request | Cookies', () => {
 
   test('get value for a single not encoded cookie', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory()
+      const request = new HttpRequestFactory()
         .merge({
           req,
           res,
@@ -1394,7 +1394,7 @@ test.group('Request | Cookies', () => {
 
   test('get value for a single not encoded cookie using options object', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory()
+      const request = new HttpRequestFactory()
         .merge({
           req,
           res,
@@ -1415,7 +1415,7 @@ test.group('Request | Cookies', () => {
 
   test('specify plain cookie default value via options object', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory()
+      const request = new HttpRequestFactory()
         .merge({
           req,
           res,
@@ -1435,7 +1435,7 @@ test.group('Request | Cookies', () => {
 
   test('get value for a single encrypted', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.encryptedCookie('name') }))
     })
@@ -1449,7 +1449,7 @@ test.group('Request | Cookies', () => {
 
   test('use default value when actual value is missing', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ name: request.encryptedCookie('name', 'nikk') }))
     })
@@ -1464,7 +1464,7 @@ test.group('Request | Cookies', () => {
 test.group('Verify signed url', () => {
   test('return false when signature is not defined', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
@@ -1477,7 +1477,7 @@ test.group('Verify signed url', () => {
 
   test('return false when signature cannot be decrypted', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
@@ -1490,7 +1490,7 @@ test.group('Verify signed url', () => {
 
   test('return true when signature is valid', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
@@ -1510,7 +1510,7 @@ test.group('Verify signed url', () => {
 
   test('return true when signature is valid without any querystring', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
@@ -1525,7 +1525,7 @@ test.group('Verify signed url', () => {
 
   test('return false when signature is valid but expired', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
@@ -1542,7 +1542,7 @@ test.group('Verify signed url', () => {
 
   test('return true when expiry is in future', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature() }))
     })
@@ -1559,7 +1559,7 @@ test.group('Verify signed url', () => {
 
   test('return false when purpose is different', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
-      const request = new RequestFactory().merge({ req, res, encryption }).create()
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ hasValidSignature: request.hasValidSignature('login') }))
     })
