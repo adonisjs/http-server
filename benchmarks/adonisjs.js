@@ -28,7 +28,11 @@ const server = new Server(
   encryption,
   new Emitter(app),
   new Logger({ enabled: false }),
-  defineConfig({})
+  defineConfig({
+    serializeJSON(v) {
+      return JSON.stringify(v)
+    },
+  })
 )
 server.getRouter().get('/', async (ctx) => {
   return ctx.response.send({ hello: 'world' })

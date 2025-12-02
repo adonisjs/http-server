@@ -18,7 +18,6 @@ import { stat } from 'node:fs/promises'
 import Macroable from '@poppinss/macroable'
 import { createReadStream } from 'node:fs'
 import contentDisposition from 'content-disposition'
-// import { safeStringify } from '@poppinss/utils/json'
 import type { Encryption } from '@adonisjs/encryption'
 import { RuntimeException } from '@poppinss/utils/exception'
 import { type ServerResponse, type IncomingMessage, type OutgoingHttpHeaders } from 'node:http'
@@ -41,6 +40,22 @@ import type {
 import { Readable } from 'node:stream'
 
 const CACHEABLE_HTTP_METHODS = ['GET', 'HEAD']
+const DATA_TYPES = {
+  buffer: 'buffer',
+  regexp: 'regexp',
+  date: 'date',
+  object: 'object',
+  number: 'number',
+  boolean: 'boolean',
+  string: 'string',
+  bigint: 'bigint',
+}
+const CONTENT_TYPES = {
+  text: 'text/plain; charset=utf-8',
+  html: 'text/html; charset=utf-8',
+  script: 'application/octet-stream; charset=utf-8',
+  json: 'application/json; charset=utf-8',
+}
 
 /**
  * The Response class provides a fluent API for constructing HTTP responses.
@@ -227,59 +242,6 @@ export class HttpResponse extends Macroable {
   }
 
   /**
-   * Determines the data type of the content for serialization
-   *
-   * Supported types:
-   * - Dates
-   * - Arrays
-   * - Booleans
-   * - Objects
-   * - Strings
-   * - Buffer
-   *
-   * @param content - The content to analyze
-   * @returns The determined data type as string
-   */
-  #getDataType(content: any) {
-    const dataType = typeof content
-    if (
-      dataType === 'number' ||
-      dataType === 'boolean' ||
-      dataType === 'string' ||
-      dataType === 'bigint'
-    ) {
-      return dataType
-    }
-
-    /**
-     * Object
-     */
-    if (dataType === 'object') {
-      if (content instanceof Uint8Array) {
-        return 'buffer'
-      }
-
-      /**
-       * Regular expression
-       */
-      if (content instanceof RegExp) {
-        return 'regexp'
-      }
-
-      /**
-       * Date instance
-       */
-      if (content instanceof Date) {
-        return 'date'
-      }
-
-      return 'object'
-    }
-
-    throw new RuntimeException(`Cannot serialize "${dataType}" to HTTP response`)
-  }
-
-  /**
    * Writes the response body with appropriate headers and content type detection
    *
    * Automatically sets:
@@ -333,44 +295,33 @@ export class HttpResponse extends Macroable {
 
     /**
      * Javascript data type for the content. We only handle a subset
-     * of data types. Check [[this.getDataType]] method for more
-     * info
+     * of data types.
      */
-    const dataType = this.#getDataType(content)
     let contentType: string
+    const dataType = typeof content
 
-    /**
-     * ----------------------------------------
-     * SERIALIZE CONTENT TO A STRING
-     * ----------------------------------------
-     *
-     * Transforming date, number, boolean and object to a string and
-     * finding their content-type
-     */
-    switch (dataType) {
-      case 'string':
-        contentType = (content as string).trimStart().startsWith('<')
-          ? 'text/html; charset=utf-8'
-          : 'text/plain; charset=utf-8'
-        break
-      case 'number':
-      case 'boolean':
-      case 'bigint':
-      case 'regexp':
-        content = String(content)
-        contentType = 'text/plain; charset=utf-8'
-        break
-      case 'date':
-        content = content.toISOString()
-        contentType = 'text/plain; charset=utf-8'
-        break
-      case 'buffer':
-        contentType = 'application/octet-stream; charset=utf-8'
-        break
-      case 'object':
-        content = this.#config.serializeJSON(content)
-        contentType = 'application/json; charset=utf-8'
-        break
+    if (dataType === DATA_TYPES.string) {
+      contentType = content.trimStart().startsWith('<') ? CONTENT_TYPES.html : CONTENT_TYPES.text
+    } else if (content instanceof Uint8Array) {
+      contentType = CONTENT_TYPES.script
+    } else if (content instanceof RegExp) {
+      content = String(content)
+      contentType = CONTENT_TYPES.text
+    } else if (content instanceof Date) {
+      content = content.toISOString()
+      contentType = CONTENT_TYPES.text
+    } else if (dataType === 'object') {
+      content = this.#config.serializeJSON(content)
+      contentType = CONTENT_TYPES.json
+    } else if (
+      dataType === DATA_TYPES.number ||
+      dataType === DATA_TYPES.boolean ||
+      dataType === DATA_TYPES.bigint
+    ) {
+      content = String(content)
+      contentType = CONTENT_TYPES.text
+    } else {
+      throw new RuntimeException(`Cannot serialize "${dataType}" to HTTP response`)
     }
 
     /*
@@ -436,7 +387,7 @@ export class HttpResponse extends Macroable {
       this.header('X-Content-Type-Options', 'nosniff')
       this.safeHeader('Content-Type', 'text/javascript; charset=utf-8')
     } else {
-      this.safeHeader('Content-type', contentType)
+      this.safeHeader('Content-type', contentType!)
     }
 
     this.#endResponse(content)
