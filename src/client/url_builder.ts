@@ -36,10 +36,14 @@ export function createUrlBuilder<Routes extends LookupList>(
   ) {
     if (!domainsRoutes) {
       domainsRoutes = typeof routesLoader === 'function' ? routesLoader() : routesLoader
-    }
-
-    if (!domainsList) {
-      domainsList = Object.keys(domainsRoutes).filter((domain) => domain !== 'root')
+      if (!domainsRoutes || typeof domainsRoutes !== 'object') {
+        throw new Error(
+          `Cannot construct routes. Expected the value to be an object, instead received ${typeof domainsRoutes}`
+        )
+      }
+      if (!domainsList) {
+        domainsList = Object.keys(domainsRoutes).filter((domain) => domain !== 'root')
+      }
     }
 
     const domain = domainsList.find((name) => identifier.startsWith(`${name}@`))
