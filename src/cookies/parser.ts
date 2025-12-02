@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import cookie from 'cookie'
+import { parse } from 'cookie-es'
 import type { Encryption } from '@adonisjs/encryption'
 
 import { CookieClient } from './client.ts'
@@ -76,7 +76,7 @@ export class CookieParser {
     /*
      * Parse and store reference
      */
-    return cookie.parse(cookieHeader)
+    return parse(cookieHeader)
   }
 
   /**

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import cookie from 'cookie'
+import { serialize } from 'cookie-es'
 // @ts-expect-error
 import matchit from '@poppinss/matchit'
 import string from '@poppinss/utils/string'
@@ -158,7 +158,7 @@ export function serializeCookie(
     maxAge = options.maxAge ? string.seconds.parse(options.maxAge) : undefined
   }
 
-  return cookie.serialize(key, value, { ...options, maxAge, expires })
+  return serialize(key, value, { ...options, maxAge, expires })
 }
 
 /**
