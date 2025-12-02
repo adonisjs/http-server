@@ -10,6 +10,7 @@
 import proxyAddr from 'proxy-addr'
 import string from '@poppinss/utils/string'
 import lodash from '@poppinss/utils/lodash'
+import { safeStringify } from '@poppinss/utils/json'
 import { type DeepPartial } from '@poppinss/utils/types'
 
 import type { ServerConfig } from './types/server.ts'
@@ -52,6 +53,7 @@ export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
     createRequestId() {
       return crypto.randomUUID()
     },
+    serializeJSON: safeStringify,
     useAsyncLocalStorage: false,
     etag: false,
     jsonpCallbackName: 'callback',

@@ -43,6 +43,12 @@ export type CastableHeader = string | number | boolean | string[] | number[] | b
  */
 export type ResponseConfig = {
   /**
+   * Define a custom serializer to serialize the response body
+   * to a JSON string
+   */
+  serializeJSON(payload: unknown): string | undefined
+
+  /**
    * Whether or not to generate etags for responses. Etags can be
    * enabled/disabled when sending response as well.
    *

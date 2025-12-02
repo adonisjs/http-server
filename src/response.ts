@@ -18,7 +18,7 @@ import { stat } from 'node:fs/promises'
 import Macroable from '@poppinss/macroable'
 import { createReadStream } from 'node:fs'
 import contentDisposition from 'content-disposition'
-import { safeStringify } from '@poppinss/utils/json'
+// import { safeStringify } from '@poppinss/utils/json'
 import type { Encryption } from '@adonisjs/encryption'
 import { RuntimeException } from '@poppinss/utils/exception'
 import { type ServerResponse, type IncomingMessage, type OutgoingHttpHeaders } from 'node:http'
@@ -368,7 +368,7 @@ export class HttpResponse extends Macroable {
         contentType = 'application/octet-stream; charset=utf-8'
         break
       case 'object':
-        content = safeStringify(content)
+        content = this.#config.serializeJSON(content)
         contentType = 'application/json; charset=utf-8'
         break
     }

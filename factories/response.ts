@@ -17,6 +17,7 @@ import { HttpResponse } from '../src/response.ts'
 import { type Router } from '../src/router/main.ts'
 import { QsParserFactory } from './qs_parser_factory.ts'
 import { type ResponseConfig } from '../src/types/response.ts'
+import { safeStringify } from '@poppinss/utils/json'
 
 type FactoryParameters = {
   req: IncomingMessage
@@ -42,6 +43,7 @@ export class HttpResponseFactory {
   #getConfig() {
     return {
       etag: false,
+      serializeJSON: safeStringify,
       jsonpCallbackName: 'callback',
       cookie: {
         maxAge: 90,
@@ -51,7 +53,7 @@ export class HttpResponseFactory {
         secure: false,
       },
       ...this.#parameters.config,
-    }
+    } satisfies ResponseConfig
   }
 
   /**
