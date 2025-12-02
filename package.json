@@ -24,7 +24,7 @@
     "test": "cross-env NODE_DEBUG=adonisjs:http c8 npm run quick:test",
     "typecheck": "tsc --noEmit",
     "precompile": "npm run lint",
-    "compile": "tsup-node && tsc --emitDeclarationOnly --declaration",
+    "compile": "tsdown && tsc --emitDeclarationOnly --declaration",
     "build": "npm run compile",
     "prebenchmark": "npm run build",
     "benchmark": "node benchmarks/index.js",
@@ -89,7 +89,7 @@
     "reflect-metadata": "^0.2.2",
     "release-it": "^19.0.6",
     "supertest": "^7.1.4",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.17.0-beta.5",
     "typedoc": "^0.28.15",
     "typescript": "^5.9.3",
     "youch": "^4.1.0-beta.11"
@@ -177,7 +177,7 @@
     ]
   },
   "prettier": "@adonisjs/prettier-config",
-  "tsup": {
+  "tsdown": {
     "entry": [
       "./index.ts",
       "./src/helpers.ts",
@@ -188,7 +188,10 @@
     "outDir": "./build",
     "clean": true,
     "format": "esm",
+    "minify": "dce-only",
+    "fixedExtension": false,
     "dts": false,
+    "treeshake": false,
     "sourcemap": false,
     "target": "esnext"
   }
