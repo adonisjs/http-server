@@ -23,8 +23,8 @@ import { EncryptionFactory } from '@adonisjs/encryption/factories'
 import { RouterFactory } from '../factories/router.ts'
 import { CookieParser } from '../src/cookies/parser.ts'
 import { httpServer } from '../factories/http_server.ts'
+import { type HttpResponse } from '../src/response.ts'
 import { HttpResponseFactory } from '../factories/response.ts'
-import { type Response as AdonisJSResponse } from '../src/response.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 const BASE_PATH = fileURLToPath(BASE_URL)
@@ -1312,7 +1312,7 @@ test.group('Response', (group) => {
 
   test('abortIf: abort request when condition is truthy', async ({ assert, expectTypeOf }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response: AdonisJSResponse = new HttpResponseFactory()
+      const response: HttpResponse = new HttpResponseFactory()
         .merge({ req, res, encryption, router })
         .create()
 
@@ -1337,7 +1337,7 @@ test.group('Response', (group) => {
 
   test('abortIf: do not abort request when condition is falsy', async ({ expectTypeOf }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response: AdonisJSResponse = new HttpResponseFactory()
+      const response: HttpResponse = new HttpResponseFactory()
         .merge({ req, res, encryption, router })
         .create()
 
@@ -1361,7 +1361,7 @@ test.group('Response', (group) => {
 
   test('abortUnless: abort request when condition is falsy', async ({ assert, expectTypeOf }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response: AdonisJSResponse = new HttpResponseFactory()
+      const response: HttpResponse = new HttpResponseFactory()
         .merge({ req, res, encryption, router })
         .create()
 
@@ -1386,7 +1386,7 @@ test.group('Response', (group) => {
 
   test('abortUnless: do not abort request when condition is truthy', async ({ expectTypeOf }) => {
     const { url } = await httpServer.create((req, res) => {
-      const response: AdonisJSResponse = new HttpResponseFactory()
+      const response: HttpResponse = new HttpResponseFactory()
         .merge({ req, res, encryption, router })
         .create()
 

@@ -14,7 +14,7 @@ import { type ContainerResolver } from '@adonisjs/fold'
 import { RuntimeException } from '@poppinss/utils/exception'
 
 import type { HttpRequest } from '../request.ts'
-import type { Response } from '../response.ts'
+import type { HttpResponse } from '../response.ts'
 import type { RouteJSON } from '../types/route.ts'
 import { asyncLocalStorage } from './local_storage.ts'
 
@@ -152,13 +152,13 @@ export class HttpContext extends Macroable {
    * Creates a new HttpContext instance
    *
    * @param {HttpRequest} request - The HTTP request instance
-   * @param {Response} response - The HTTP response instance
+   * @param {HttpResponse} response - The HTTP response instance
    * @param {Logger} logger - The logger instance
    * @param {ContainerResolver<any>} containerResolver - The IoC container resolver
    */
   constructor(
     public request: HttpRequest,
-    public response: Response,
+    public response: HttpResponse,
     public logger: Logger,
     public containerResolver: ContainerResolver<any>
   ) {

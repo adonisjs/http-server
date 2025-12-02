@@ -12,8 +12,8 @@ import type { IncomingMessage } from 'node:http'
 import debug from './debug.ts'
 import type { Qs } from './qs.ts'
 import { encodeUrl } from './helpers.ts'
-import type { Response } from './response.ts'
 import type { Router } from './router/main.ts'
+import type { HttpResponse } from './response.ts'
 import type {
   RoutesList,
   LookupList,
@@ -69,7 +69,7 @@ export class Redirect {
   /**
    * Reference to the AdonisJS response instance
    */
-  #response: Response
+  #response: HttpResponse
 
   /**
    * Reference to the AdonisJS router instance for URL building
@@ -88,7 +88,7 @@ export class Redirect {
    * @param router - AdonisJS router instance
    * @param qs - Query string parser instance
    */
-  constructor(request: IncomingMessage, response: Response, router: Router, qs: Qs) {
+  constructor(request: IncomingMessage, response: HttpResponse, router: Router, qs: Qs) {
     this.#request = request
     this.#response = response
     this.#router = router
