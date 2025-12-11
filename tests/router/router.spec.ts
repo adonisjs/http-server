@@ -75,7 +75,7 @@ test.group('Router | add', () => {
       meta: {},
       matchers: {},
       domain: 'root',
-      name: 'home.handle',
+      name: 'home',
     })
   })
 
@@ -1433,7 +1433,7 @@ test.group('Router | find', () => {
       methods: ['GET'],
       matchers: {},
       domain: 'root',
-      name: 'users.handle',
+      name: 'users',
     })
   })
 
@@ -1548,7 +1548,7 @@ test.group('Lookup store | findByOrFail', () => {
       methods: ['GET'],
       matchers: {},
       domain: 'root',
-      name: 'users.handle',
+      name: 'users',
     })
   })
 

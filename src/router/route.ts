@@ -175,6 +175,9 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
       const parts = handler.split('.')
       const method = parts.length === 1 ? 'handle' : parts.pop()!
       const moduleRefId = parts.join('.')
+      const controllerName = new StringBuilder(moduleRefId.split('/').pop()!)
+        .removeSuffix('controller')
+        .snakeCase()
 
       return {
         handler: {
@@ -184,9 +187,10 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
           ...moduleImporter(() => this.#app.import(moduleRefId), method).toHandleMethod(),
           name: handler,
         } satisfies StoreRouteHandler,
-        routeName: `${new StringBuilder(moduleRefId.split('/').pop()!)
-          .removeSuffix('controller')
-          .snakeCase()}.${string.snakeCase(method)}`,
+        routeName:
+          method === 'handle'
+            ? controllerName.toString()
+            : `${controllerName}.${string.snakeCase(method)}`,
       }
     }
 
@@ -201,6 +205,10 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
        * The first item of the tuple is a class constructor
        */
       if (is.class(controller)) {
+        const controllerName = new StringBuilder(controller.name)
+          .removeSuffix('controller')
+          .snakeCase()
+
         return {
           handler: {
             method,
@@ -208,11 +216,16 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
             importExpression: null,
             ...moduleCaller(controller, method).toHandleMethod(),
           } satisfies StoreRouteHandler,
-          routeName: `${new StringBuilder(controller.name)
-            .removeSuffix('controller')
-            .snakeCase()}.${string.snakeCase(method)}`,
+          routeName:
+            method === 'handle'
+              ? controllerName.toString()
+              : `${controllerName}.${string.snakeCase(method)}`,
         }
       }
+
+      const controllerName = controller.name
+        ? new StringBuilder(controller.name).removeSuffix('controller').snakeCase()
+        : undefined
 
       /**
        * The first item of the tuple is a function that lazily
@@ -225,10 +238,10 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
           importExpression: String(controller),
           ...moduleImporter(controller, method).toHandleMethod(),
         } satisfies StoreRouteHandler,
-        routeName: controller.name
-          ? `${new StringBuilder(controller.name)
-              .removeSuffix('controller')
-              .snakeCase()}.${string.snakeCase(method)}`
+        routeName: controllerName
+          ? method === 'handle'
+            ? controllerName.toString()
+            : `${controllerName}.${string.snakeCase(method)}`
           : undefined,
       }
     }
