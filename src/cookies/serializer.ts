@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import type { Encryption } from '@adonisjs/encryption'
+import type { Encryption } from '@boringnode/encryption'
 
 import { CookieClient } from './client.ts'
 import { serializeCookie } from '../helpers.ts'

@@ -9,7 +9,7 @@
 
 import { parse } from 'qs'
 import { test } from '@japa/runner'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { RouterFactory } from '../../factories/router.ts'
 
@@ -885,7 +885,7 @@ test.group('Make signed url', () => {
 
     const url = router.makeSignedUrl('/posts/:id', { id: 1 })!
     const qs = parse(url.split('?')[1])
-    assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
+    assert.equal(encryption.getMessageVerifier().unsign(qs.signature as string), '/posts/1')
   })
 
   test("make signed url to a given route by it's name", ({ assert }) => {
@@ -897,7 +897,7 @@ test.group('Make signed url', () => {
 
     const url = router.makeSignedUrl('showPost', { id: 1 })!
     const qs = parse(url.split('?')[1])
-    assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
+    assert.equal(encryption.getMessageVerifier().unsign(qs.signature as string), '/posts/1')
   })
 
   test("make signed url to a given route by it's controller method", ({ assert }) => {
@@ -909,7 +909,7 @@ test.group('Make signed url', () => {
 
     const url = router.makeSignedUrl('#controllers/posts.index', { id: 1 })!
     const qs = parse(url.split('?')[1])
-    assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
+    assert.equal(encryption.getMessageVerifier().unsign(qs.signature as string), '/posts/1')
   })
 
   test('make url for a specific domain', ({ assert }) => {
@@ -932,7 +932,7 @@ test.group('Make signed url', () => {
       }
     )!
     const qs = parse(url.split('?')[1])
-    assert.equal(encryption.verifier.unsign(qs.signature as string), '/articles/1')
+    assert.equal(encryption.getMessageVerifier().unsign(qs.signature as string), '/articles/1')
   })
 
   test('make signed url with expiry', ({ assert }) => {
@@ -945,7 +945,7 @@ test.group('Make signed url', () => {
     const url = router.makeSignedUrl('PostsController.index', { id: 1, expiresIn: '1m' })!
     const qs = parse(url.split('?')[1])
 
-    assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1')
+    assert.equal(encryption.getMessageVerifier().unsign(qs.signature as string), '/posts/1')
   })
 
   test('make signed url with custom query string', ({ assert }) => {
@@ -960,7 +960,7 @@ test.group('Make signed url', () => {
     })!
     const qs = parse(url.split('?')[1])
 
-    assert.equal(encryption.verifier.unsign(qs.signature as string), '/posts/1?page=1')
+    assert.equal(encryption.getMessageVerifier().unsign(qs.signature as string), '/posts/1?page=1')
     assert.equal(Number(qs.page), 1)
   })
 

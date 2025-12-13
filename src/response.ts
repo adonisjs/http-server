@@ -18,7 +18,7 @@ import { stat } from 'node:fs/promises'
 import Macroable from '@poppinss/macroable'
 import { createReadStream } from 'node:fs'
 import contentDisposition from 'content-disposition'
-import type { Encryption } from '@adonisjs/encryption'
+import type { Encryption } from '@boringnode/encryption'
 import { RuntimeException } from '@poppinss/utils/exception'
 import { type ServerResponse, type IncomingMessage, type OutgoingHttpHeaders } from 'node:http'
 

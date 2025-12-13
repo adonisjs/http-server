@@ -10,9 +10,9 @@
 import { Socket } from 'node:net'
 import proxyAddr from 'proxy-addr'
 import { randomUUID } from 'node:crypto'
-import type { Encryption } from '@adonisjs/encryption'
+import type { Encryption } from '@boringnode/encryption'
 import { IncomingMessage, ServerResponse } from 'node:http'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { HttpRequest } from '../src/request.ts'
 import { QsParserFactory } from './qs_parser_factory.ts'

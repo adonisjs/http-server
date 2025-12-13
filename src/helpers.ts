@@ -11,7 +11,7 @@ import { serialize } from 'cookie-es'
 // @ts-expect-error
 import matchit from '@poppinss/matchit'
 import string from '@poppinss/utils/string'
-import { type Encryption } from '@adonisjs/encryption'
+import { type Encryption } from '@boringnode/encryption'
 import { parseBindingReference } from '@adonisjs/fold'
 
 import { type Qs } from './qs.ts'
@@ -103,7 +103,7 @@ export function createSignedURL(
    * on their 2 different domains, but we ignore that case for now and can consider
    * it later (when someone asks for it)
    */
-  const signature = encryption.verifier.sign(
+  const signature = encryption.getMessageVerifier().sign(
     createURL(identifier, tokens, searchParamsStringifier, params, {
       ...options,
       prefixUrl: undefined,

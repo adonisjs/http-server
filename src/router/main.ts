@@ -9,7 +9,7 @@
 
 import is from '@sindresorhus/is'
 import { moduleImporter } from '@adonisjs/fold'
-import type { Encryption } from '@adonisjs/encryption'
+import type { Encryption } from '@boringnode/encryption'
 import type { Application } from '@adonisjs/application'
 import { RuntimeException } from '@poppinss/utils/exception'
 import type { Constructor, LazyImport } from '@poppinss/utils/types'

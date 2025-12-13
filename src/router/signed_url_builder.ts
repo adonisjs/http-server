@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import type { Encryption } from '@adonisjs/encryption'
+import type { Encryption } from '@boringnode/encryption'
 
 import { type Router } from './main.ts'
 import { createSignedURL } from '../helpers.ts'

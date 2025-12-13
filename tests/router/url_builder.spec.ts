@@ -8,7 +8,7 @@
  */
 
 import { test } from '@japa/runner'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { RouterFactory } from '../../factories/router.ts'
 import { HttpRequestFactory } from '../../factories/request.ts'

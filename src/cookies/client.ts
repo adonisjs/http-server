@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import type { Encryption } from '@adonisjs/encryption'
+import type { Encryption } from '@boringnode/encryption'
 
 import * as plainCookiesDriver from './drivers/plain.ts'
 import * as signedCookiesDriver from './drivers/signed.ts'

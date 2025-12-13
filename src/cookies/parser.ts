@@ -8,7 +8,7 @@
  */
 
 import { parse } from 'cookie-es'
-import type { Encryption } from '@adonisjs/encryption'
+import type { Encryption } from '@boringnode/encryption'
 
 import { CookieClient } from './client.ts'
 

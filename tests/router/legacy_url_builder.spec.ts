@@ -9,7 +9,7 @@
 
 import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/application/factories'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { Router } from '../../src/router/main.ts'
 import { HttpRequestFactory } from '../../factories/request.ts'

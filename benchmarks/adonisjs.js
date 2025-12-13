@@ -10,7 +10,7 @@
 import { createServer } from 'node:http'
 import { Logger } from '@adonisjs/logger'
 import { Emitter } from '@adonisjs/events'
-import { Encryption } from '@adonisjs/encryption'
+import { Encryption } from '@boringnode/encryption'
 import { Application } from '@adonisjs/application'
 
 import { defineConfig, Server } from '../build/index.js'
