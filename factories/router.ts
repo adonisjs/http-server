@@ -7,10 +7,10 @@
  * file that was distributed with this source code.
  */
 
-import type { Encryption } from '@adonisjs/encryption'
+import type { Encryption } from '@boringnode/encryption'
 import type { Application } from '@adonisjs/application'
 import { AppFactory } from '@adonisjs/application/factories'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { Router } from '../src/router/main.ts'
 import { QsParserFactory } from './qs_parser_factory.ts'

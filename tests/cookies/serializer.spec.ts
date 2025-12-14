@@ -10,7 +10,7 @@
 import { test } from '@japa/runner'
 import { setTimeout } from 'node:timers/promises'
 import { MessageBuilder } from '@poppinss/utils'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { CookieSerializer } from '../../src/cookies/serializer.ts'
 import base64 from '@poppinss/utils/base64'

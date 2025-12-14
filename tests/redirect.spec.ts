@@ -10,7 +10,7 @@
 import supertest from 'supertest'
 import { test } from '@japa/runner'
 import { AppFactory } from '@adonisjs/application/factories'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { RouterFactory } from '../factories/router.ts'
 import { httpServer } from '../factories/http_server.ts'

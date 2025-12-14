@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import type { Encryption } from '@adonisjs/encryption'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import type { Encryption } from '@boringnode/encryption'
+import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { RouterFactory } from './router.ts'
 import type { Router } from '../src/router/main.ts'

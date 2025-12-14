@@ -13,7 +13,7 @@ import proxyAddr from 'proxy-addr'
 import { test } from '@japa/runner'
 import Middleware from '@poppinss/middleware'
 import { createServer as httpsServer } from 'node:https'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { RouterFactory } from '../factories/router.ts'
 import { HttpRequestFactory } from '../factories/request.ts'

@@ -9,10 +9,10 @@
 
 import { Logger } from '@adonisjs/logger'
 import { Emitter } from '@adonisjs/events'
-import type { Encryption } from '@adonisjs/encryption'
+import type { Encryption } from '@boringnode/encryption'
 import type { Application } from '@adonisjs/application'
 import { AppFactory } from '@adonisjs/application/factories'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { Server } from '../src/server/main.ts'
 import { defineConfig } from '../src/define_config.ts'

@@ -44,13 +44,13 @@
   "license": "MIT",
   "devDependencies": {
     "@adonisjs/application": "^9.0.0-next.4",
-    "@adonisjs/encryption": "^7.0.0-next.1",
     "@adonisjs/eslint-config": "^3.0.0-next.1",
     "@adonisjs/events": "^10.1.0-next.2",
     "@adonisjs/fold": "^11.0.0-next.2",
     "@adonisjs/logger": "^7.1.0-next.0",
     "@adonisjs/prettier-config": "^1.4.5",
     "@adonisjs/tsconfig": "^2.0.0-next.0",
+    "@boringnode/encryption": "^0.2.2",
     "@fastify/middie": "^9.0.3",
     "@japa/assert": "^4.1.1",
     "@japa/expect-type": "^2.0.3",
@@ -116,7 +116,6 @@
   },
   "peerDependencies": {
     "@adonisjs/application": "^9.0.0-next.4",
-    "@adonisjs/encryption": "^7.0.0-next.1",
     "@adonisjs/events": "^10.1.0-next.2",
     "@adonisjs/fold": "^11.0.0-next.2",
     "@adonisjs/logger": "^7.1.0-next.0",

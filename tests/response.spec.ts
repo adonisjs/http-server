@@ -18,7 +18,7 @@ import { Readable } from 'node:stream'
 import { fileURLToPath } from 'node:url'
 import { AppFactory } from '@adonisjs/application/factories'
 import { createWriteStream, createReadStream } from 'node:fs'
-import { EncryptionFactory } from '@adonisjs/encryption/factories'
+import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { RouterFactory } from '../factories/router.ts'
 import { CookieParser } from '../src/cookies/parser.ts'

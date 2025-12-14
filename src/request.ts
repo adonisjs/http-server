@@ -16,7 +16,7 @@ import proxyaddr from 'proxy-addr'
 import { safeEqual } from '@poppinss/utils'
 import Macroable from '@poppinss/macroable'
 import lodash from '@poppinss/utils/lodash'
-import type { Encryption } from '@adonisjs/encryption'
+import type { Encryption } from '@boringnode/encryption'
 import { type ServerResponse, type IncomingMessage, type IncomingHttpHeaders } from 'node:http'
 
 import type { Qs } from './qs.ts'
@@ -1043,7 +1043,7 @@ export class HttpRequest extends Macroable {
     /*
      * Return false when signature fails
      */
-    const signedUrl = this.#encryption.verifier.unsign(signature, purpose)
+    const signedUrl = this.#encryption.getMessageVerifier().unsign(signature, purpose)
     if (!signedUrl) {
       return false
     }
