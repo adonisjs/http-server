@@ -98,7 +98,7 @@
     "@poppinss/matchit": "^3.2.0",
     "@poppinss/middleware": "^3.2.6",
     "@poppinss/qs": "^6.15.0",
-    "@poppinss/utils": "^7.0.0-next.3",
+    "@poppinss/utils": "^7.0.0-next.4",
     "@sindresorhus/is": "^7.1.1",
     "accepts": "^1.3.8",
     "content-disposition": "^1.0.1",
