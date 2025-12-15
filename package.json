@@ -43,11 +43,11 @@
   "author": "virk,adonisjs",
   "license": "MIT",
   "devDependencies": {
-    "@adonisjs/application": "^9.0.0-next.4",
+    "@adonisjs/application": "^9.0.0-next.12",
     "@adonisjs/eslint-config": "^3.0.0-next.1",
-    "@adonisjs/events": "^10.1.0-next.2",
-    "@adonisjs/fold": "^11.0.0-next.2",
-    "@adonisjs/logger": "^7.1.0-next.0",
+    "@adonisjs/events": "^10.1.0-next.3",
+    "@adonisjs/fold": "^11.0.0-next.3",
+    "@adonisjs/logger": "^7.1.0-next.3",
     "@adonisjs/prettier-config": "^1.4.5",
     "@adonisjs/tsconfig": "^2.0.0-next.0",
     "@boringnode/encryption": "^0.2.2",
@@ -92,7 +92,7 @@
     "tsdown": "^0.17.2",
     "typedoc": "^0.28.15",
     "typescript": "^5.9.3",
-    "youch": "^4.1.0-beta.11"
+    "youch": "^4.1.0-beta.13"
   },
   "dependencies": {
     "@poppinss/macroable": "^1.1.0",
@@ -115,12 +115,12 @@
     "vary": "^1.1.2"
   },
   "peerDependencies": {
-    "@adonisjs/application": "^9.0.0-next.4",
-    "@adonisjs/events": "^10.1.0-next.2",
-    "@adonisjs/fold": "^11.0.0-next.2",
-    "@adonisjs/logger": "^7.1.0-next.0",
+    "@adonisjs/application": "^9.0.0-next.12",
+    "@adonisjs/events": "^10.1.0-next.3",
+    "@adonisjs/fold": "^11.0.0-next.3",
+    "@adonisjs/logger": "^7.1.0-next.3",
     "@boringnode/encryption": "^0.2.2",
-    "youch": "^4.1.0-beta.11"
+    "youch": "^4.1.0-beta.13"
   },
   "peerDependenciesMeta": {
     "youch": {
