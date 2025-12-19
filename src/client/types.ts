@@ -11,8 +11,6 @@
  * Types shared with the client. These should never import other types
  */
 
-import { type Prettify } from '@poppinss/utils/types'
-
 export type ClientRouteMatchItTokens = {
   /** Original token string */
   old: string
@@ -107,21 +105,11 @@ export type RouteBuilderArguments<
   Route,
   Options extends any = URLOptions,
 > = Route extends LookupListRoute
-  ? Prettify<
-      Route['params'] extends undefined
-        ? [identifier: Identifier, params?: undefined, options?: Options]
-        : [undefined] extends [Route['params']]
-          ? [
-              identifier: Identifier,
-              params?: Route['params'] | Route['paramsTuple'],
-              options?: Options,
-            ]
-          : [
-              identifier: Identifier,
-              params: Route['params'] | Route['paramsTuple'],
-              options?: Options,
-            ]
-    >
+  ? Route['params'] extends undefined
+    ? [identifier: Identifier, params?: undefined, options?: Options]
+    : [undefined] extends [Route['params']]
+      ? [identifier: Identifier, params?: Route['params'] | Route['paramsTuple'], options?: Options]
+      : [identifier: Identifier, params: Route['params'] | Route['paramsTuple'], options?: Options]
   : never
 
 /**
