@@ -948,7 +948,7 @@ export class HttpRequest extends Macroable {
    * @returns {boolean} True if client cache is fresh (should return 304)
    */
   fresh(): boolean {
-    if (['GET', 'HEAD'].indexOf(this.intended()) === -1) {
+    if (!['GET', 'HEAD'].includes(this.intended())) {
       return false
     }
 
