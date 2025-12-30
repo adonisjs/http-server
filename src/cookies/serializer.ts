@@ -55,7 +55,7 @@ export class CookieSerializer {
     options?: Partial<
       CookieOptions & {
         /**
-         * @depreacted Instead use stringify option
+         * @deprecated Instead use stringify option
          */
         encode: boolean
         stringify: boolean
