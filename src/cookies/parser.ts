@@ -80,6 +80,39 @@ export class CookieParser {
   }
 
   /**
+   * Generic method to get a cookie value from cache or parse it.
+   * This method handles the common pattern of checking the cache,
+   * parsing the value if not cached, and caching the result.
+   *
+   * @param key - The cookie key to lookup
+   * @param cacheKey - The cache bucket to use
+   * @param parser - Function to parse the raw cookie value
+   * @returns The parsed cookie value or null if parsing fails
+   */
+  #getCachedOrParse(
+    key: string,
+    cacheKey: 'plainCookies' | 'signedCookies' | 'encryptedCookies',
+    parser: (value: string) => any | null
+  ): any | null {
+    const value = this.#cookies[key]
+    if (value === null || value === undefined) {
+      return null
+    }
+
+    const cache = this.#cachedCookies[cacheKey]
+    if (cache[key] !== undefined) {
+      return cache[key]
+    }
+
+    const parsed = parser(value)
+    if (parsed !== null) {
+      cache[key] = parsed
+    }
+
+    return parsed
+  }
+
+  /**
    * Attempts to decode a cookie by the name. When calling this method,
    * you are assuming that the cookie was just stringified in the first
    * place and not signed or encrypted.
@@ -89,38 +122,9 @@ export class CookieParser {
    * @returns The decoded cookie value or null if decoding fails
    */
   decode(key: string, stringified = true): any | null {
-    /*
-     * Ignore when initial value is not defined or null
-     */
-    const value = this.#cookies[key]
-    if (value === null || value === undefined) {
-      return null
-    }
-
-    /*
-     * Reference to the cache object. Mainly done to avoid typos,
-     * since this object is referenced a handful of times inside
-     * this method.
-     */
-    const cache = this.#cachedCookies.plainCookies
-
-    /*
-     * Return from cache, when already parsed
-     */
-    if (cache[key] !== undefined) {
-      return cache[key]
-    }
-
-    /*
-     * Attempt to unpack and cache it for future. The value is only
-     * when value it is not null.
-     */
-    const parsed = this.#client.decode(key, value, stringified)
-    if (parsed !== null) {
-      cache[key] = parsed
-    }
-
-    return parsed
+    return this.#getCachedOrParse(key, 'plainCookies', (value) =>
+      this.#client.decode(key, value, stringified)
+    )
   }
 
   /**
@@ -131,38 +135,7 @@ export class CookieParser {
    * @returns The original cookie value or null if unsigning fails
    */
   unsign(key: string): null | any {
-    /*
-     * Ignore when initial value is not defined or null
-     */
-    const value = this.#cookies[key]
-    if (value === null || value === undefined) {
-      return null
-    }
-
-    /*
-     * Reference to the cache object. Mainly done to avoid typos,
-     * since this object is referenced a handful of times inside
-     * this method.
-     */
-    const cache = this.#cachedCookies.signedCookies
-
-    /*
-     * Return from cache, when already parsed
-     */
-    if (cache[key] !== undefined) {
-      return cache[key]
-    }
-
-    /*
-     * Attempt to unpack and cache it for future. The value is only
-     * when value it is not null.
-     */
-    const parsed = this.#client.unsign(key, value)
-    if (parsed !== null) {
-      cache[key] = parsed
-    }
-
-    return parsed
+    return this.#getCachedOrParse(key, 'signedCookies', (value) => this.#client.unsign(key, value))
   }
 
   /**
@@ -173,38 +146,9 @@ export class CookieParser {
    * @returns The decrypted cookie value or null if decryption fails
    */
   decrypt(key: string): null | any {
-    /*
-     * Ignore when initial value is not defined or null
-     */
-    const value = this.#cookies[key]
-    if (value === null || value === undefined) {
-      return null
-    }
-
-    /*
-     * Reference to the cache object. Mainly done to avoid typos,
-     * since this object is referenced a handful of times inside
-     * this method.
-     */
-    const cache = this.#cachedCookies.encryptedCookies
-
-    /*
-     * Return from cache, when already parsed
-     */
-    if (cache[key] !== undefined) {
-      return cache[key]
-    }
-
-    /*
-     * Attempt to unpack and cache it for future. The value is only
-     * when value it is not null.
-     */
-    const parsed = this.#client.decrypt(key, value)
-    if (parsed !== null) {
-      cache[key] = parsed
-    }
-
-    return parsed
+    return this.#getCachedOrParse(key, 'encryptedCookies', (value) =>
+      this.#client.decrypt(key, value)
+    )
   }
 
   /**
