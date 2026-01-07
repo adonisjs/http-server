@@ -1573,4 +1573,24 @@ test.group('Verify signed url', () => {
       hasValidSignature: false,
     })
   })
+
+  test('return request url set during factory creation', async ({ assert }) => {
+    const request = new HttpRequestFactory().merge({ url: '/packages' }).create()
+    assert.equal(request.url(), '/packages')
+    assert.equal(request.request.url, '/packages')
+  })
+
+  test('define request url from route', async ({ assert }) => {
+    const ctx = new HttpContextFactory()
+      .merge({
+        route: {
+          pattern: '/packages/:category',
+          params: { category: 'auth' },
+        },
+      })
+      .create()
+
+    assert.equal(ctx.request.url(), '/packages/auth')
+    assert.equal(ctx.request.request.url, '/packages/auth')
+  })
 })

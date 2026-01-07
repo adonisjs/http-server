@@ -16,11 +16,19 @@ import { HttpResponseFactory } from './response.ts'
 import type { HttpRequest } from '../src/request.ts'
 import type { HttpResponse } from '../src/response.ts'
 import { HttpContext } from '../src/http_context/main.ts'
+import { createURL, parseRoute } from '../src/helpers.ts'
+import { QsParserFactory } from './qs_parser_factory.ts'
 
 type FactoryParameters = {
   request: HttpRequest
   response: HttpResponse
   logger: Logger
+  url?: string
+  method?: string
+  route?: {
+    pattern: string
+    params: Record<string, any>
+  }
 }
 
 /**
@@ -37,7 +45,21 @@ export class HttpContextFactory {
    * Returns the request class instance
    */
   #createRequest() {
-    return this.#parameters.request || new HttpRequestFactory().create()
+    if (this.#parameters.request) {
+      return this.#parameters.request
+    }
+
+    let { url, method, route } = this.#parameters
+    if (route) {
+      url = createURL(
+        route.pattern,
+        parseRoute(route.pattern),
+        new QsParserFactory().create().stringify,
+        route.params
+      )
+    }
+
+    return new HttpRequestFactory().merge({ url, method }).create()
   }
 
   /**
