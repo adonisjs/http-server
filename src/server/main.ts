@@ -136,8 +136,8 @@ export class Server {
    * Error responder function that handles exceptions in middleware and routes.
    * Reports errors and delegates handling to the configured error handler.
    */
-  #requestErrorResponder: ServerErrorHandler['handle'] = (error, ctx) => {
-    this.#resolvedErrorHandler.report(error, ctx)
+  #requestErrorResponder: ServerErrorHandler['handle'] = async (error, ctx) => {
+    await this.#resolvedErrorHandler.report(error, ctx)
 
     return httpExceptionHandler.tracePromise(
       this.#resolvedErrorHandler.handle,

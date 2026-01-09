@@ -1048,6 +1048,44 @@ test.group('Server | error handler', () => {
     assert.equal(text, 'Error handler also failed')
   })
 
+  test('await async report before handling error', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+    await app.init()
+
+    const events: string[] = []
+
+    class ErrorHandler {
+      async report() {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        events.push('report')
+      }
+      handle(_error: any, { response }: HttpContext) {
+        events.push('handle')
+        response.status(200).send('handled')
+      }
+    }
+
+    server.use([])
+    server.getRouter().get('/', async () => {
+      throw new Error('Route failed')
+    })
+
+    server.errorHandler(async () => {
+      return {
+        default: ErrorHandler,
+      }
+    })
+
+    await server.boot()
+
+    await supertest(httpServer).get('/').expect(200)
+    assert.deepEqual(events, ['report', 'handle'])
+  })
+})
+
+test.group('Server', () => {
   test('raise 404 when route is missing', async ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
     const server = new ServerFactory().merge({ app }).create()
