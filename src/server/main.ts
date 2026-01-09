@@ -14,7 +14,7 @@ import type { Encryption } from '@adonisjs/encryption'
 import type { Server as HttpsServer } from 'node:https'
 import type { Application } from '@adonisjs/application'
 import type { EmitterLike } from '@adonisjs/events/types'
-import { ContainerResolver, moduleCaller, moduleImporter } from '@adonisjs/fold'
+import { type ContainerResolver, moduleCaller, moduleImporter } from '@adonisjs/fold'
 import type { ServerResponse, IncomingMessage, Server as HttpServer } from 'node:http'
 
 import type { LazyImport } from '../types/base.js'
@@ -126,8 +126,8 @@ export class Server {
    * We share this with the route middleware pipeline as well,
    * so that it does not throw any exceptions
    */
-  #requestErrorResponder: ServerErrorHandler['handle'] = (error, ctx) => {
-    this.#resolvedErrorHandler.report(error, ctx)
+  #requestErrorResponder: ServerErrorHandler['handle'] = async (error, ctx) => {
+    await this.#resolvedErrorHandler.report(error, ctx)
     return this.#resolvedErrorHandler.handle(error, ctx)
   }
 

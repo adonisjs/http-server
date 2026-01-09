@@ -20,7 +20,7 @@ import { Router } from '../src/router/main.js'
 import { HttpContext } from '../src/http_context/main.js'
 import { ServerFactory } from '../factories/server_factory.js'
 import { defineNamedMiddleware } from '../src/define_middleware.js'
-import { HttpRequestFinishedPayload, HttpServerEvents } from '../src/types/server.js'
+import { type HttpRequestFinishedPayload, type HttpServerEvents } from '../src/types/server.js'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 
@@ -960,6 +960,42 @@ test.group('Server | error handler', () => {
 
     const { text } = await supertest(httpServer).get('/').expect(500)
     assert.equal(text, 'Error handler also failed')
+  })
+
+  test('await async report before handling error', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+    await app.init()
+
+    const events: string[] = []
+
+    class ErrorHandler {
+      async report() {
+        await new Promise((resolve) => setTimeout(resolve, 10))
+        events.push('report')
+      }
+      handle(_error: any, { response }: HttpContext) {
+        events.push('handle')
+        response.status(200).send('handled')
+      }
+    }
+
+    server.use([])
+    server.getRouter().get('/', async () => {
+      throw new Error('Route failed')
+    })
+
+    server.errorHandler(async () => {
+      return {
+        default: ErrorHandler,
+      }
+    })
+
+    await server.boot()
+
+    await supertest(httpServer).get('/').expect(200)
+    assert.deepEqual(events, ['report', 'handle'])
   })
 
   test('raise 404 when route is missing', async ({ assert }) => {
