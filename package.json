@@ -50,7 +50,7 @@
     "@adonisjs/logger": "^7.1.0-next.3",
     "@adonisjs/prettier-config": "^1.4.5",
     "@adonisjs/tsconfig": "^2.0.0-next.3",
-    "@boringnode/encryption": "^0.2.4",
+    "@boringnode/encryption": "^1.0.0",
     "@fastify/middie": "^9.1.0",
     "@japa/assert": "^4.2.0",
     "@japa/expect-type": "^2.0.4",
@@ -119,7 +119,7 @@
     "@adonisjs/events": "^10.1.0-next.4",
     "@adonisjs/fold": "^11.0.0-next.4",
     "@adonisjs/logger": "^7.1.0-next.3",
-    "@boringnode/encryption": "^0.2.2",
+    "@boringnode/encryption": "^0.2.0 || ^1.0.0",
     "youch": "^4.1.0-beta.13"
   },
   "peerDependenciesMeta": {
