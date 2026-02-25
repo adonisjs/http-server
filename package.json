@@ -1,6 +1,6 @@
 {
   "name": "@adonisjs/http-server",
-  "version": "8.0.0-next.19",
+  "version": "8.0.0",
   "description": "AdonisJS HTTP server with support packed with Routing and Cookies",
   "main": "build/index.js",
   "type": "module",
@@ -184,7 +184,10 @@
       "./src/client/url_builder.ts",
       "./factories/main.ts"
     ],
-    "noExternal": ["accepts", "negotiator"],
+    "noExternal": [
+      "accepts",
+      "negotiator"
+    ],
     "inlineOnly": false,
     "outDir": "./build",
     "clean": true,
