@@ -184,6 +184,8 @@
       "./src/client/url_builder.ts",
       "./factories/main.ts"
     ],
+    "noExternal": ["accepts", "negotiator"],
+    "inlineOnly": false,
     "outDir": "./build",
     "clean": true,
     "format": "esm",
