@@ -23,7 +23,8 @@ export function createUrlBuilder<Routes extends LookupList>(
   routesLoader:
     | { [domain: string]: ClientRouteJSON[] }
     | (() => { [domain: string]: ClientRouteJSON[] }),
-  searchParamsStringifier: (qs: Record<string, any>) => string
+  searchParamsStringifier: (qs: Record<string, any>) => string,
+  defaultOptions?: URLOptions
 ): UrlFor<Routes> {
   let domainsList: string[]
   let domainsRoutes: { [domain: string]: ClientRouteJSON[] }
@@ -56,12 +57,14 @@ export function createUrlBuilder<Routes extends LookupList>(
       throw new Error(`Cannot lookup route "${routeIdentifier}"`)
     }
 
+    const mergedOptions = defaultOptions || options ? { ...defaultOptions, ...options } : undefined
+
     return createURL(
       route.name ?? route.pattern,
       route.tokens,
       searchParamsStringifier,
       params,
-      options
+      mergedOptions
     )
   }
 
