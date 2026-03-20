@@ -463,7 +463,7 @@ export class HttpRequest extends Macroable {
   ip(): string {
     const ipFn = this.#config.getIp
     if (typeof ipFn === 'function') {
-      return ipFn(this)
+      return ipFn(this, () => proxyaddr(this.request, this.#config.trustProxy))
     }
 
     return proxyaddr(this.request, this.#config.trustProxy)

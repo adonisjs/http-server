@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 
+import { type HttpRequest } from '../request.ts'
+
 /**
  * Configuration options for HTTP request handling and processing
  */
@@ -45,7 +47,7 @@ export type RequestConfig = {
   /**
    * A custom implementation to get the request ip address
    */
-  getIp?: (request: any) => string
+  getIp?: (request: HttpRequest, originalFn: () => string) => string
 
   /**
    * A callback function to trust proxy ip addresses. You must use
