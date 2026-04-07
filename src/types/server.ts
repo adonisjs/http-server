@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Constructor } from '@poppinss/utils/types'
 import type { ErrorHandler, FinalHandler } from '@poppinss/middleware/types'
 
@@ -140,4 +141,14 @@ export type ServerConfig = RequestConfig &
      * @default 0 (as per Node.js defaults)
      */
     timeout?: number
+
+    /**
+     * A callback invoked when the request URI contains malformed
+     * percent-encoded sequences (e.g. `%C0%80`). The callback
+     * receives the raw Node.js request and response objects and
+     * is responsible for sending a response.
+     *
+     * Defaults to a plain-text `400 Bad Request` response.
+     */
+    onBadUrl: (req: IncomingMessage, res: ServerResponse) => void
   }

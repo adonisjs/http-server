@@ -428,6 +428,22 @@ export class Server {
    */
   handle(req: IncomingMessage, res: ServerResponse) {
     /**
+     * Reject requests with malformed URIs (e.g. invalid UTF-8
+     * percent-encoded sequences like %C0%80) before they
+     * enter the middleware pipeline.
+     */
+    let request: HttpRequest
+    try {
+      request = this.createRequest(req, res)
+    } catch (error) {
+      if (error instanceof URIError) {
+        this.#config.onBadUrl(req, res)
+        return
+      }
+      throw error
+    }
+
+    /**
      * Setup for the "http:request_finished" event
      */
     const hasRequestListener = this.#emitter.hasListeners('http:request_completed')
@@ -437,11 +453,7 @@ export class Server {
      * Creating essential instances
      */
     const resolver = this.#app.container.createResolver()
-    const ctx = this.createHttpContext(
-      this.createRequest(req, res),
-      this.createResponse(req, res),
-      resolver
-    )
+    const ctx = this.createHttpContext(request, this.createResponse(req, res), resolver)
 
     /**
      * Emit event when listening for the request_finished event

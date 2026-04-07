@@ -64,6 +64,10 @@ export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
       secure: true,
       sameSite: 'lax' as const,
     },
+    onBadUrl(_req, res) {
+      res.writeHead(400, { 'Content-Type': 'text/plain' })
+      res.end('Bad Request')
+    },
     qs: {
       parse: {
         depth: 5,

@@ -44,6 +44,10 @@ test.group('Safe decode URI', () => {
     })
   })
 
+  test('throw URIError on malformed UTF-8 sequences', ({ assert }) => {
+    assert.throws(() => safeDecodeURI('/%C0%80', false), 'URI malformed')
+  })
+
   test('decode URI and parse query string params', ({ assert }) => {
     const { pathname, query } = safeDecodeURI(
       '/a/b/fran%C3%A7ais?a=b&c[0]=1&foo=fran%C3%A7ais',

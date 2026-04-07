@@ -408,6 +408,48 @@ test.group('Server | Response handling', () => {
       slug: 'he/llo',
     })
   })
+
+  test('respond with 400 when request URI contains malformed UTF-8 sequences', async ({
+    assert,
+  }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([])
+    server.getRouter().get('/*', async () => 'handled')
+    await server.boot()
+
+    const { text } = await supertest(httpServer).get('/%C0%80').expect(400)
+    assert.equal(text, 'Bad Request')
+  })
+
+  test('invoke onBadUrl callback when defined and request URI is malformed', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory()
+      .merge({
+        app,
+        config: {
+          onBadUrl(_req, res) {
+            res.writeHead(400, { 'Content-Type': 'application/json' })
+            res.end(JSON.stringify({ error: 'Invalid URL' }))
+          },
+        },
+      })
+      .create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([])
+    server.getRouter().get('/*', async () => 'handled')
+    await server.boot()
+
+    const { body } = await supertest(httpServer).get('/%C0%80').expect(400)
+    assert.deepEqual(body, { error: 'Invalid URL' })
+  })
 })
 
 test.group('Server | middleware', () => {
