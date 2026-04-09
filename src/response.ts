@@ -1039,6 +1039,7 @@ export class HttpResponse extends Macroable {
     statusCode: number = ResponseStatus.Found
   ): Redirect | void {
     const handler = new Redirect(this.request, this, this.#router, this.#qs, this.#config.redirect)
+    handler.ctx = this.ctx
 
     if (forwardQueryString) {
       handler.withQs()

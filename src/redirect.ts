@@ -24,6 +24,7 @@ import type {
 } from './types/url_builder.ts'
 import { safeDecodeURI } from './utils.ts'
 import Macroable from '@poppinss/macroable'
+import type { HttpContext } from './http_context/main.ts'
 
 /**
  * Provides a fluent API for constructing HTTP redirect responses.
@@ -48,6 +49,12 @@ import Macroable from '@poppinss/macroable'
  * ```
  */
 export class Redirect extends Macroable {
+  /**
+   * HTTP context reference, set by the response when creating
+   * the redirect instance during request handling.
+   */
+  ctx?: HttpContext
+
   /**
    * Array of allowed hosts for referrer-based redirects.
    * When empty, only the request's own host is allowed.

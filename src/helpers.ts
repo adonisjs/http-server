@@ -32,13 +32,70 @@ import {
 export { createURL }
 
 /**
+ * Validates that a URL is safe to use as a redirect destination.
+ *
+ * - Relative URLs must start with `/` and not be protocol-relative (`//`)
+ * - Absolute URLs must parse successfully and their host must match
+ *   `currentHost` or be listed in `allowedHosts`
+ *
+ * When `currentHost` and `allowedHosts` are omitted, absolute URLs
+ * are accepted as long as they parse successfully.
+ *
+ * @param url - The URL to validate
+ * @param currentHost - The current request's Host header value
+ * @param allowedHosts - Array of additionally allowed hosts
+ */
+export function isValidRedirectUrl(
+  url: string,
+  currentHost?: string,
+  allowedHosts?: string[]
+): boolean {
+  if (typeof url !== 'string' || url.trim() === '') {
+    return false
+  }
+
+  if (url.startsWith('//')) {
+    return false
+  }
+
+  if (url.startsWith('/')) {
+    try {
+      const parsed = new URL(url, 'http://localhost')
+      return parsed.host === 'localhost'
+    } catch {
+      return false
+    }
+  }
+
+  try {
+    const parsed = new URL(url)
+
+    /**
+     * When no host constraints are provided, accept any
+     * parseable absolute URL
+     */
+    if (!currentHost && (!allowedHosts || allowedHosts.length === 0)) {
+      return true
+    }
+
+    if (currentHost && parsed.host === currentHost) {
+      return true
+    }
+
+    if (allowedHosts && allowedHosts.length > 0 && allowedHosts.includes(parsed.host)) {
+      return true
+    }
+
+    return false
+  } catch {
+    return false
+  }
+}
+
+/**
  * Returns the previous URL from the request's `Referer` header,
  * validated against the request's `Host` header and an optional
- * list of allowed hosts.
- *
- * The referrer is accepted when its host matches the request's
- * `Host` header or is listed in `allowedHosts`. Otherwise the
- * `fallback` value is returned.
+ * list of allowed hosts using `isValidRedirectUrl`.
  *
  * @param headers - The incoming request headers
  * @param allowedHosts - Array of allowed referrer hosts
@@ -58,17 +115,8 @@ export function getPreviousUrl(
     referrer = referrer[0]
   }
 
-  try {
-    const parsed = new URL(referrer)
-    const host = headers['host']
-    if (host && parsed.host === host) {
-      return referrer
-    }
-    if (allowedHosts.length > 0 && allowedHosts.includes(parsed.host)) {
-      return referrer
-    }
-  } catch {
-    // malformed URL
+  if (isValidRedirectUrl(referrer, headers['host'], allowedHosts)) {
+    return referrer
   }
 
   return fallback
