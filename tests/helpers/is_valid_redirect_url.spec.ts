@@ -60,16 +60,12 @@ test.group('isValidRedirectUrl', () => {
   test('accept absolute URLs in allowedHosts', ({ assert }) => {
     assert.isTrue(isValidRedirectUrl('https://app.example.com/foo', undefined, ['app.example.com']))
     assert.isTrue(
-      isValidRedirectUrl('https://admin.example.com/foo', 'app.example.com', [
-        'admin.example.com',
-      ])
+      isValidRedirectUrl('https://admin.example.com/foo', 'app.example.com', ['admin.example.com'])
     )
   })
 
   test('reject absolute URLs not in allowedHosts or currentHost', ({ assert }) => {
-    assert.isFalse(
-      isValidRedirectUrl('https://evil.com/foo', 'example.com', ['app.example.com'])
-    )
+    assert.isFalse(isValidRedirectUrl('https://evil.com/foo', 'example.com', ['app.example.com']))
   })
 
   test('relative URLs ignore host constraints', ({ assert }) => {
