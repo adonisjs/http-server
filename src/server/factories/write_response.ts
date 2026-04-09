@@ -27,7 +27,7 @@ export function writeResponse(ctx: HttpContext) {
   return function () {
     try {
       ctx.response.finish()
-    } catch (error) {
+    } catch (error: any) {
       ctx.logger.fatal({ err: error }, 'Response serialization failed')
       ctx.response.internalServerError(error.message)
       ctx.response.finish()

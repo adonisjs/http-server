@@ -547,7 +547,7 @@ export class HttpResponse extends Macroable {
        * Finally stream the file
        */
       return this.streamBody(createReadStream(filePath), errorCallback)
-    } catch (error) {
+    } catch (error: any) {
       this.type('text')
       this.removeHeader('Etag')
 

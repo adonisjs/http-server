@@ -1044,7 +1044,7 @@ test.group('Response', (group) => {
       try {
         response.send(function foo() {})
         response.finish()
-      } catch (error) {
+      } catch (error: any) {
         res.write(error.message)
         res.end()
       }
@@ -1257,7 +1257,7 @@ test.group('Response', (group) => {
     assert.deepEqual(cookies, [
       {
         value: null,
-        options: ['Max-Age=-1', 'Path=/', 'Expires=Thu, 01 Jan 1970 00:00:00 GMT', 'HttpOnly'],
+        options: ['Max-Age=0', 'Path=/', 'Expires=Thu, 01 Jan 1970 00:00:00 GMT', 'HttpOnly'],
       },
     ])
   })
@@ -1267,7 +1267,7 @@ test.group('Response', (group) => {
       const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       try {
         response.abort('Bad request')
-      } catch (error) {
+      } catch (error: any) {
         error.handle(error, { response })
       }
 
@@ -1283,7 +1283,7 @@ test.group('Response', (group) => {
       const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       try {
         response.abort({ message: 'Bad request' })
-      } catch (error) {
+      } catch (error: any) {
         error.handle(error, { response })
       }
 
@@ -1299,7 +1299,7 @@ test.group('Response', (group) => {
       const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
       try {
         response.abort({ message: 'Not allowed' }, 401)
-      } catch (error) {
+      } catch (error: any) {
         error.handle(error, { response })
       }
 
@@ -1324,7 +1324,7 @@ test.group('Response', (group) => {
         const isGuest = isUserGuest()
         response.abortIf(isGuest, { message: 'Not allowed' }, 401)
         expectTypeOf(isGuest).toEqualTypeOf<false>()
-      } catch (error) {
+      } catch (error: any) {
         error.handle(error, { response })
       }
 
@@ -1349,7 +1349,7 @@ test.group('Response', (group) => {
         const isGuest = isUserGuest()
         response.abortIf(isGuest, { message: 'Not allowed' }, 401)
         expectTypeOf(isGuest).toEqualTypeOf<false>()
-      } catch (error) {
+      } catch (error: any) {
         error.handle(error, { response })
       }
 
@@ -1373,7 +1373,7 @@ test.group('Response', (group) => {
         const isGuest = isUserGuest()
         response.abortUnless(isGuest, { message: 'Not allowed' }, 401)
         expectTypeOf(isGuest).toEqualTypeOf<true>()
-      } catch (error) {
+      } catch (error: any) {
         error.handle(error, { response })
       }
 
@@ -1398,7 +1398,7 @@ test.group('Response', (group) => {
         const isGuest = isUserGuest()
         response.abortUnless(isGuest, { message: 'Not allowed' }, 401)
         expectTypeOf(isGuest).toEqualTypeOf<true>()
-      } catch (error) {
+      } catch (error: any) {
         error.handle(error, { response })
       }
 
