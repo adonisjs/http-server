@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import type { IncomingHttpHeaders } from 'node:http'
 import { serialize } from 'cookie-es'
 // @ts-expect-error
 import matchit from '@poppinss/matchit'
@@ -29,6 +30,49 @@ import {
 } from './types/middleware.ts'
 
 export { createURL }
+
+/**
+ * Returns the previous URL from the request's `Referer` header,
+ * validated against the request's `Host` header and an optional
+ * list of allowed hosts.
+ *
+ * The referrer is accepted when its host matches the request's
+ * `Host` header or is listed in `allowedHosts`. Otherwise the
+ * `fallback` value is returned.
+ *
+ * @param headers - The incoming request headers
+ * @param allowedHosts - Array of allowed referrer hosts
+ * @param fallback - URL to return when referrer is missing or invalid
+ */
+export function getPreviousUrl(
+  headers: IncomingHttpHeaders,
+  allowedHosts: string[],
+  fallback: string
+): string {
+  let referrer = headers['referer'] || headers['referrer']
+  if (!referrer) {
+    return fallback
+  }
+
+  if (Array.isArray(referrer)) {
+    referrer = referrer[0]
+  }
+
+  try {
+    const parsed = new URL(referrer)
+    const host = headers['host']
+    if (host && parsed.host === host) {
+      return referrer
+    }
+    if (allowedHosts.length > 0 && allowedHosts.includes(parsed.host)) {
+      return referrer
+    }
+  } catch {
+    // malformed URL
+  }
+
+  return fallback
+}
 
 /**
  * This function is similar to the intrinsic function encodeURI. However, it will not encode:

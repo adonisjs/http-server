@@ -45,6 +45,10 @@ export class HttpResponseFactory {
       etag: false,
       serializeJSON: safeStringify,
       jsonpCallbackName: 'callback',
+      redirect: {
+        allowedHosts: [] as string[],
+        forwardQueryString: false,
+      },
       cookie: {
         maxAge: 90,
         path: '/',

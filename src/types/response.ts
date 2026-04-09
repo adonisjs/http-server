@@ -67,6 +67,27 @@ export type ResponseConfig = {
    * Default options to apply when setting cookies
    */
   cookie: Partial<CookieOptions>
+
+  /**
+   * Configuration for HTTP redirects
+   */
+  redirect: {
+    /**
+     * Array of allowed hosts for referrer-based redirects.
+     * When empty, only the request's own host is allowed.
+     *
+     * Defaults to []
+     */
+    allowedHosts: string[]
+
+    /**
+     * Whether to forward the query string from the current request
+     * by default on redirects.
+     *
+     * Defaults to false
+     */
+    forwardQueryString: boolean
+  }
 }
 
 /**

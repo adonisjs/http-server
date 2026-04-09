@@ -140,8 +140,8 @@ test.group('Redirect', () => {
       response.finish()
     })
 
-    const { header } = await supertest(url).get('/').set('referrer', '/foo').redirects(1)
-    assert.equal(header.location, '/foo')
+    const { header } = await supertest(url).get('/').set('referrer', `${url}/foo`).redirects(1)
+    assert.equal(header.location, `${url}/foo`)
   })
 
   test('redirect back to referrer with existing query string', async ({ assert }) => {
@@ -152,9 +152,12 @@ test.group('Redirect', () => {
       response.finish()
     })
 
-    const { header } = await supertest(url).get('/').set('referrer', '/foo?name=virk').redirects(1)
+    const { header } = await supertest(url)
+      .get('/')
+      .set('referrer', `${url}/foo?name=virk`)
+      .redirects(1)
 
-    assert.equal(header.location, '/foo?name=virk')
+    assert.equal(header.location, `${url}/foo?name=virk`)
   })
 
   test('redirect back to referrer with query string', async ({ assert }) => {
@@ -165,9 +168,12 @@ test.group('Redirect', () => {
       response.finish()
     })
 
-    const { header } = await supertest(url).get('/').set('referer', '/foo?name=virk').redirects(1)
+    const { header } = await supertest(url)
+      .get('/')
+      .set('referer', `${url}/foo?name=virk`)
+      .redirects(1)
 
-    assert.equal(header.location, '/foo?name=virk')
+    assert.equal(header.location, `${url}/foo?name=virk`)
   })
 
   test('redirect back to root (/) when referrer header is not set', async ({ assert }) => {

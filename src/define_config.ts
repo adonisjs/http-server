@@ -57,6 +57,10 @@ export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
     useAsyncLocalStorage: false,
     etag: false,
     jsonpCallbackName: 'callback',
+    redirect: {
+      allowedHosts: [] as string[],
+      forwardQueryString: false,
+    },
     cookie: {
       maxAge: '2h',
       path: '/',

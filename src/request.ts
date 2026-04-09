@@ -21,6 +21,7 @@ import { type ServerResponse, type IncomingMessage, type IncomingHttpHeaders } f
 
 import type { Qs } from './qs.ts'
 import { CookieParser } from './cookies/parser.ts'
+import { getPreviousUrl } from './helpers.ts'
 import { safeDecodeURI, trustProxy } from './utils.ts'
 import { type RequestConfig } from './types/request.ts'
 import type { HttpContext } from './http_context/main.ts'
@@ -695,6 +696,21 @@ export class HttpRequest extends Macroable {
     const protocol = this.protocol()
     const hostname = this.host()
     return `${protocol}://${hostname}${this.url(includeQueryString)}`
+  }
+
+  /**
+   * Returns the previous URL from the `Referer` header, validated against
+   * the request's `Host` header and an optional list of allowed hosts.
+   *
+   * The referrer is accepted when its host matches the request's `Host`
+   * header or is listed in `allowedHosts`. Otherwise the `fallback`
+   * value is returned.
+   *
+   * @param allowedHosts - Array of allowed referrer hosts
+   * @param fallback - URL to return when referrer is missing or invalid
+   */
+  getPreviousUrl(allowedHosts: string[], fallback: string = '/'): string {
+    return getPreviousUrl(this.request.headers, allowedHosts, fallback)
   }
 
   /**
