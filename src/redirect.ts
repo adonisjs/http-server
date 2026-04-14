@@ -13,14 +13,22 @@ import type { IncomingMessage } from 'node:http'
 
 import debug from './debug.js'
 import type { Qs } from './qs.js'
+import { getPreviousUrl } from './helpers.js'
 import type { Response } from './response.js'
 import type { Router } from './router/main.js'
 import type { MakeUrlOptions } from './types/route.js'
+import type { ResponseConfig } from './types/response.js'
 
 /**
  * Exposes the API to construct redirect routes
  */
 export class Redirect {
+  /**
+   * Array of allowed hosts for referrer-based redirects.
+   * When empty, only the request's own host is allowed.
+   */
+  allowedHosts: string[]
+
   /**
    * A boolean to forward the existing query string
    */
@@ -41,11 +49,19 @@ export class Redirect {
   #router: Router
   #qs: Qs
 
-  constructor(request: IncomingMessage, response: Response, router: Router, qs: Qs) {
+  constructor(
+    request: IncomingMessage,
+    response: Response,
+    router: Router,
+    qs: Qs,
+    config: ResponseConfig['redirect']
+  ) {
     this.#request = request
     this.#response = response
     this.#router = router
     this.#qs = qs
+    this.allowedHosts = config.allowedHosts
+    this.#forwardQueryString = config.forwardQueryString
   }
 
   /**
@@ -64,11 +80,13 @@ export class Redirect {
   }
 
   /**
-   * Returns the referrer url
+   * Returns the previous URL for redirect back. By default reads
+   * the `Referer` header and validates the host.
+   *
+   * @param fallback - URL to return when no valid previous URL is found
    */
-  #getReferrerUrl(): string {
-    let url = this.#request.headers['referer'] || this.#request.headers['referrer'] || '/'
-    return Array.isArray(url) ? url[0] : url
+  getPreviousUrl(fallback: string): string {
+    return getPreviousUrl(this.#request.headers, this.allowedHosts, fallback)
   }
 
   /**
@@ -95,11 +113,17 @@ export class Redirect {
    * string.
    */
   withQs(): this
+  withQs(forward: boolean): this
   withQs(values: Record<string, any>): this
   withQs(name: string, value: any): this
-  withQs(name?: Record<string, any> | string, value?: any): this {
+  withQs(name?: Record<string, any> | string | boolean, value?: any): this {
     if (typeof name === 'undefined') {
       this.#forwardQueryString = true
+      return this
+    }
+
+    if (typeof name === 'boolean') {
+      this.#forwardQueryString = name
       return this
     }
 
@@ -113,19 +137,21 @@ export class Redirect {
   }
 
   /**
-   * Redirect to the previous path.
+   * Redirects to the previous URL resolved via `getPreviousUrl`.
+   *
+   * @param fallback - URL to redirect to when no valid previous URL is found
    */
-  back() {
+  back(fallback: string = '/') {
     let query: Record<string, any> = {}
 
-    const referrerUrl = this.#getReferrerUrl()
-    const url = parse(referrerUrl)
+    const previousUrl = this.getPreviousUrl(fallback)
+    const url = parse(previousUrl)
 
-    debug('referrer url "%s"', referrerUrl)
-    debug('referrer base url "%s"', url.pathname)
+    debug('previous url "%s"', previousUrl)
+    debug('previous base url "%s"', url.pathname)
 
     /**
-     * Parse query string from the referrer url
+     * Parse query string from the previous url
      */
     if (this.#forwardQueryString) {
       query = this.#qs.parse(url.query || '')

@@ -22,7 +22,7 @@ import type { Encryption } from '@adonisjs/encryption'
 import { ServerResponse, IncomingMessage, IncomingHttpHeaders } from 'node:http'
 
 import type { Qs } from './qs.js'
-import { trustProxy } from './helpers.js'
+import { getPreviousUrl, trustProxy } from './helpers.js'
 import { CookieParser } from './cookies/parser.js'
 import { RequestConfig } from './types/request.js'
 import type { HttpContext } from './http_context/main.js'
@@ -631,6 +631,21 @@ export class Request extends Macroable {
     const protocol = this.protocol()
     const hostname = this.host()
     return `${protocol}://${hostname}${this.url(includeQueryString)}`
+  }
+
+  /**
+   * Returns the previous URL from the `Referer` header, validated against
+   * the request's `Host` header and an optional list of allowed hosts.
+   *
+   * The referrer is accepted when its host matches the request's `Host`
+   * header or is listed in `allowedHosts`. Otherwise the `fallback`
+   * value is returned.
+   *
+   * @param allowedHosts - Array of allowed referrer hosts
+   * @param fallback - URL to return when referrer is missing or invalid
+   */
+  getPreviousUrl(allowedHosts: string[], fallback: string = '/'): string {
+    return getPreviousUrl(this.request.headers, allowedHosts, fallback)
   }
 
   /**

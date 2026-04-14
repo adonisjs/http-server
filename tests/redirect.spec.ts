@@ -195,6 +195,104 @@ test.group('Redirect', () => {
     assert.equal(header.location, '/')
   })
 
+  test('redirect back to fallback when referrer host does not match', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+
+      response.redirect('back')
+      response.finish()
+    })
+
+    const { header } = await supertest(url)
+      .get('/')
+      .set('referer', 'https://evil.com/phish')
+      .redirects(1)
+
+    assert.equal(header.location, '/')
+  })
+
+  test('redirect back to fallback when referrer is protocol-relative', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+
+      response.redirect('back')
+      response.finish()
+    })
+
+    const { header } = await supertest(url).get('/').set('referer', '//evil.com').redirects(1)
+
+    assert.equal(header.location, '/')
+  })
+
+  test('redirect back with custom fallback', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const response = new ResponseFactory().merge({ req, res, encryption, router }).create()
+
+      response.redirect().back('/login')
+      response.finish()
+    })
+
+    const { header } = await supertest(url)
+      .get('/')
+      .set('referer', 'https://evil.com/phish')
+      .redirects(1)
+
+    assert.equal(header.location, '/login')
+  })
+
+  test('redirect back to referrer from allowed host', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const response = new ResponseFactory()
+        .merge({
+          req,
+          res,
+          encryption,
+          router,
+          config: {
+            redirect: {
+              allowedHosts: ['admin.example.com'],
+              forwardQueryString: false,
+            },
+          },
+        })
+        .create()
+
+      response.redirect('back')
+      response.finish()
+    })
+
+    const { header } = await supertest(url)
+      .get('/')
+      .set('referer', 'https://admin.example.com/foo')
+      .redirects(1)
+
+    assert.equal(header.location, '/foo')
+  })
+
+  test('withQs(false) disables default query string forwarding', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const response = new ResponseFactory()
+        .merge({
+          req,
+          res,
+          encryption,
+          router,
+          config: {
+            redirect: {
+              allowedHosts: [] as string[],
+              forwardQueryString: true,
+            },
+          },
+        })
+        .create()
+      response.redirect().withQs(false).toPath('/foo')
+      response.finish()
+    })
+
+    const { header } = await supertest(url).get('/?username=virk').redirects(1)
+    assert.equal(header.location, '/foo')
+  })
+
   test('redirect to given route', async ({ assert }) => {
     const route = new RouterFactory().merge({ app, encryption }).create()
     route.get('posts', 'PostsController.index').as('posts.index')

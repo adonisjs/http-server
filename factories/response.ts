@@ -40,6 +40,10 @@ export class ResponseFactory {
     return {
       etag: false,
       jsonpCallbackName: 'callback',
+      redirect: {
+        allowedHosts: [] as string[],
+        forwardQueryString: false,
+      },
       cookie: {
         maxAge: 90,
         path: '/',

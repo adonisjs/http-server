@@ -1005,7 +1005,7 @@ export class Response extends Macroable {
     forwardQueryString: boolean = false,
     statusCode: number = ResponseStatus.Found
   ): Redirect | void {
-    const handler = new Redirect(this.request, this, this.#router, this.#qs)
+    const handler = new Redirect(this.request, this, this.#router, this.#qs, this.#config.redirect)
 
     if (forwardQueryString) {
       handler.withQs()
