@@ -7,7 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import type { IncomingHttpHeaders } from 'node:http'
 import { serialize } from 'cookie-es'
 // @ts-expect-error
 import matchit from '@poppinss/matchit'
@@ -17,6 +16,7 @@ import { parseBindingReference } from '@adonisjs/fold'
 
 import { type Qs } from './qs.ts'
 import { safeDecodeURI } from './utils.ts'
+import type { HttpRequest } from './request.ts'
 import { createURL } from './client/helpers.ts'
 import { type CookieOptions } from './types/response.ts'
 import { type SignedURLOptions } from './types/url_builder.ts'
@@ -94,28 +94,24 @@ export function isValidRedirectUrl(
 
 /**
  * Returns the previous URL from the request's `Referer` header,
- * validated against the request's `Host` header and an optional
- * list of allowed hosts using `isValidRedirectUrl`.
+ * validated against the request's authority (`:authority` or `Host`)
+ * and an optional list of allowed hosts using `isValidRedirectUrl`.
  *
- * @param headers - The incoming request headers
+ * @param request - The AdonisJS HTTP request instance
  * @param allowedHosts - Array of allowed referrer hosts
  * @param fallback - URL to return when referrer is missing or invalid
  */
 export function getPreviousUrl(
-  headers: IncomingHttpHeaders,
+  request: HttpRequest,
   allowedHosts: string[],
   fallback: string
 ): string {
-  let referrer = headers['referer'] || headers['referrer']
+  const referrer = request.header('referer')
   if (!referrer) {
     return fallback
   }
 
-  if (Array.isArray(referrer)) {
-    referrer = referrer[0]
-  }
-
-  if (isValidRedirectUrl(referrer, headers['host'], allowedHosts)) {
+  if (isValidRedirectUrl(referrer, request.authority() ?? undefined, allowedHosts)) {
     return referrer
   }
 

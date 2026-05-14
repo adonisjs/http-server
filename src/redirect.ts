@@ -148,7 +148,7 @@ export class Redirect extends Macroable {
    * @param fallback - URL to return when no valid previous URL is found
    */
   getPreviousUrl(fallback: string): string {
-    return getPreviousUrl(this.#request.headers, this.allowedHosts, fallback)
+    return getPreviousUrl(this.ctx!.request, this.allowedHosts, fallback)
   }
 
   /**

@@ -574,6 +574,24 @@ export class HttpRequest extends Macroable {
   }
 
   /**
+   * Returns the HTTP/2 `:authority` pseudo-header, falling back to the
+   * `Host` header when `:authority` is not present.
+   *
+   * Use this when you need a protocol-agnostic value for the request's
+   * authority (host[:port]) — for example, when validating redirect
+   * targets against the current request's origin.
+   *
+   * Unlike [[host]], this method does not consult `X-Forwarded-Host`
+   * and is not affected by the `trustProxy` config, because no proxy
+   * convention exists for forwarding the original `:authority`.
+   *
+   * @returns {string | null} The authority value or null if neither header is present
+   */
+  authority(): string | null {
+    return this.header(':authority') || this.header('host') || null
+  }
+
+  /**
    * Returns the request hostname. If proxy headers are trusted, then
    * `X-Forwarded-Host` is given priority over the `Host` header.
    *
@@ -710,7 +728,7 @@ export class HttpRequest extends Macroable {
    * @param fallback - URL to return when referrer is missing or invalid
    */
   getPreviousUrl(allowedHosts: string[], fallback: string = '/'): string {
-    return getPreviousUrl(this.request.headers, allowedHosts, fallback)
+    return getPreviousUrl(this, allowedHosts, fallback)
   }
 
   /**
