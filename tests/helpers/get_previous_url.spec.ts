@@ -69,7 +69,7 @@ test.group('getPreviousUrl', () => {
 
   test('accept referer matching the :authority pseudo header on HTTP/2', ({ assert }) => {
     const req = new IncomingMessage(new Socket())
-    req.headers = { referer: 'https://example.com/foo', ':authority': 'example.com' }
+    req.headers = { 'referer': 'https://example.com/foo', ':authority': 'example.com' }
     const request = new HttpRequestFactory().merge({ req }).create()
     assert.equal(getPreviousUrl(request, [], '/'), 'https://example.com/foo')
   })
@@ -77,9 +77,9 @@ test.group('getPreviousUrl', () => {
   test('prefer :authority over host when both are present', ({ assert }) => {
     const req = new IncomingMessage(new Socket())
     req.headers = {
-      referer: 'https://example.com/foo',
+      'referer': 'https://example.com/foo',
       ':authority': 'example.com',
-      host: 'other.com',
+      'host': 'other.com',
     }
     const request = new HttpRequestFactory().merge({ req }).create()
     assert.equal(getPreviousUrl(request, [], '/'), 'https://example.com/foo')
