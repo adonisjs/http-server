@@ -24,6 +24,7 @@ import type {
 } from './types/url_builder.ts'
 import { safeDecodeURI } from './utils.ts'
 import Macroable from '@poppinss/macroable'
+import { RuntimeException } from '@poppinss/utils/exception'
 import type { HttpContext } from './http_context/main.ts'
 
 /**
@@ -148,7 +149,13 @@ export class Redirect extends Macroable {
    * @param fallback - URL to return when no valid previous URL is found
    */
   getPreviousUrl(fallback: string): string {
-    return getPreviousUrl(this.ctx!.request, this.allowedHosts, fallback)
+    if (!this.ctx) {
+      throw new RuntimeException(
+        'Cannot resolve the previous URL. The "Redirect" class has no reference to the HTTP context'
+      )
+    }
+
+    return getPreviousUrl(this.ctx.request, this.allowedHosts, fallback)
   }
 
   /**

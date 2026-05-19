@@ -1409,7 +1409,7 @@ test.group('Response', (group) => {
   })
 
   test('set appropriate status from the description methods', async ({ assert }) => {
-    const req: any = {}
+    const req: any = { url: '/' }
     const res: any = {
       statusCode: null,
     }

@@ -15,6 +15,7 @@ import { IncomingMessage, ServerResponse } from 'node:http'
 import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { HttpRequest } from '../src/request.ts'
+import { HttpResponseFactory } from './response.ts'
 import { QsParserFactory } from './qs_parser_factory.ts'
 import { type RequestConfig } from '../src/types/request.ts'
 
@@ -99,12 +100,25 @@ export class HttpRequestFactory {
    */
   create() {
     const req = this.#createRequest()
-    return new HttpRequest(
+    const res = this.#createResponse(req)
+    const encryption = this.#createEncryption()
+
+    const request = new HttpRequest(
       req,
-      this.#createResponse(req),
-      this.#createEncryption(),
+      res,
+      encryption,
       this.#getConfig(),
       new QsParserFactory().create()
     )
+
+    /**
+     * Wire up the HTTP context so that `request.ctx` is available, mirroring
+     * the runtime where every request belongs to a context. The request is
+     * handed to `HttpResponseFactory` so it reuses this instance instead of
+     * creating a new one, which also prevents a recursive factory loop.
+     */
+    new HttpResponseFactory().merge({ req, res, encryption, request }).create()
+
+    return request
   }
 }

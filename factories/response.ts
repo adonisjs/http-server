@@ -8,16 +8,22 @@
  */
 
 import { Socket } from 'node:net'
+import { Container } from '@adonisjs/fold'
+import type { Logger } from '@adonisjs/logger'
 import type { Encryption } from '@boringnode/encryption'
+import { safeStringify } from '@poppinss/utils/json'
+import { LoggerFactory } from '@adonisjs/logger/factories'
 import { IncomingMessage, ServerResponse } from 'node:http'
 import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { RouterFactory } from './router.ts'
 import { HttpResponse } from '../src/response.ts'
+import { HttpRequestFactory } from './request.ts'
 import { type Router } from '../src/router/main.ts'
+import type { HttpRequest } from '../src/request.ts'
 import { QsParserFactory } from './qs_parser_factory.ts'
+import { HttpContext } from '../src/http_context/main.ts'
 import { type ResponseConfig } from '../src/types/response.ts'
-import { safeStringify } from '@poppinss/utils/json'
 
 type FactoryParameters = {
   req: IncomingMessage
@@ -25,6 +31,8 @@ type FactoryParameters = {
   encryption: Encryption
   config: Partial<ResponseConfig>
   router: Router
+  logger: Logger
+  request: HttpRequest
 }
 
 /**
@@ -91,6 +99,13 @@ export class HttpResponseFactory {
   }
 
   /**
+   * Returns the logger instance
+   */
+  #createLogger() {
+    return this.#parameters.logger || new LoggerFactory().create()
+  }
+
+  /**
    * Merge factory params
    * @param params - Partial factory parameters to merge
    */
@@ -104,14 +119,28 @@ export class HttpResponseFactory {
    */
   create() {
     const req = this.#createRequest()
+    const res = this.#createResponse(req)
+    const encryption = this.#createEncryption()
 
-    return new HttpResponse(
+    const response = new HttpResponse(
       req,
-      this.#createResponse(req),
-      this.#createEncryption(),
+      res,
+      encryption,
       this.#getConfig(),
       this.#createRouter(),
       new QsParserFactory().create()
     )
+
+    /**
+     * Wire up the HTTP context so that `response.ctx` is available, mirroring
+     * the runtime where every response belongs to a context. The request is
+     * reused when provided, so callers like `HttpRequestFactory` can share a
+     * single request/response pair without creating a recursive factory loop.
+     */
+    const request =
+      this.#parameters.request || new HttpRequestFactory().merge({ req, res, encryption }).create()
+    new HttpContext(request, response, this.#createLogger(), new Container().createResolver())
+
+    return response
   }
 }
