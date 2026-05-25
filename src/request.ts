@@ -588,7 +588,7 @@ export class HttpRequest extends Macroable {
    * @returns {string | null} The authority value or null if neither header is present
    */
   authority(): string | null {
-    return this.header(':authority') || this.header('host') || null
+    return this.header(':authority') || this.host() || null
   }
 
   /**
