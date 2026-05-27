@@ -11,6 +11,7 @@ import { parse } from '@poppinss/qs'
 import { test } from '@japa/runner'
 import { EncryptionFactory } from '@boringnode/encryption/factories'
 
+import { Router } from '../../src/router/main.ts'
 import { RouterFactory } from '../../factories/router.ts'
 
 test.group('Router | add', () => {
@@ -1783,5 +1784,33 @@ test.group('Router | generateTypes', () => {
         'api.comments.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
       }"
     `)
+  })
+})
+
+test.group('Router | macroable', () => {
+  test('add macro to router', ({ assert }) => {
+    Router.macro('getRouteCount' as any, function (this: Router) {
+      return Object.values(this.toJSON()).flat().length
+    })
+
+    const router = new RouterFactory().create()
+    router.get('/', '#controllers/home.index')
+    router.commit()
+
+    // @ts-expect-error - macro is not typed
+    assert.equal(router.getRouteCount(), 1)
+  })
+
+  test('add getter to router', ({ assert }) => {
+    Router.getter('routeCount' as any, function (this: Router) {
+      return Object.values(this.toJSON()).flat().length
+    })
+
+    const router = new RouterFactory().create()
+    router.get('/', '#controllers/home.index')
+    router.commit()
+
+    // @ts-expect-error - getter is not typed
+    assert.equal(router.routeCount, 1)
   })
 })
