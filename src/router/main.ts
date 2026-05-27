@@ -13,6 +13,7 @@ import type { Encryption } from '@boringnode/encryption'
 import type { Application } from '@adonisjs/application'
 import { RuntimeException } from '@poppinss/utils/exception'
 import type { Constructor, LazyImport } from '@poppinss/utils/types'
+import Macroable from '@poppinss/macroable'
 
 import debug from '../debug.ts'
 import type { Qs } from '../qs.ts'
@@ -60,7 +61,7 @@ import {
  * })
  * ```
  */
-export class Router {
+export class Router extends Macroable {
   /**
    * Flag to avoid re-comitting routes to the store
    */
@@ -152,6 +153,7 @@ export class Router {
    * @param qsParser - Query string parser for URL generation
    */
   constructor(app: Application<any>, encryption: Encryption, qsParser: Qs) {
+    super()
     this.#app = app
     this.#encryption = encryption
     this.qs = qsParser
