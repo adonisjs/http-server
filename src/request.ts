@@ -677,6 +677,28 @@ export class HttpRequest extends Macroable {
   }
 
   /**
+   * Returns a boolean telling, if the request is a speculative prefetch
+   * (or prerender) request rather than a real navigation.
+   *
+   * Browsers advertise speculative intent via the Speculation Rules
+   * `Sec-Purpose` header (e.g. `prefetch` or `prefetch;prerender`). Older
+   * clients use the legacy `X-Moz` header, and libraries like Inertia.js
+   * set the `Purpose` header. All three are checked.
+   *
+   * Use this to skip one-shot side effects (analytics, view counters,
+   * single-use token rotation, etc.) that should only run on a real visit.
+   *
+   * @returns {boolean} True if the request is a speculative prefetch request
+   */
+  prefetch(): boolean {
+    return (
+      this.header('Sec-Purpose', '')!.toLowerCase().includes('prefetch') ||
+      this.header('Purpose', '')!.toLowerCase() === 'prefetch' ||
+      this.header('X-Moz', '')!.toLowerCase() === 'prefetch'
+    )
+  }
+
+  /**
    * Returns the request relative URL.
    *
    * @example

@@ -518,6 +518,58 @@ test.group('Request', () => {
     })
   })
 
+  test('return true for prefetch when Purpose header is prefetch', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ prefetch: request.prefetch() }))
+    })
+
+    const { body } = await supertest(url).get('/').set('Purpose', 'prefetch')
+    assert.deepEqual(body, {
+      prefetch: true,
+    })
+  })
+
+  test('return true for prefetch when Sec-Purpose header includes prefetch', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ prefetch: request.prefetch() }))
+    })
+
+    const { body } = await supertest(url).get('/').set('Sec-Purpose', 'prefetch;prerender')
+    assert.deepEqual(body, {
+      prefetch: true,
+    })
+  })
+
+  test('return true for prefetch when legacy X-Moz header is prefetch', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ prefetch: request.prefetch() }))
+    })
+
+    const { body } = await supertest(url).get('/').set('X-Moz', 'prefetch')
+    assert.deepEqual(body, {
+      prefetch: true,
+    })
+  })
+
+  test('return false for prefetch when no speculative headers are set', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ prefetch: request.prefetch() }))
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.deepEqual(body, {
+      prefetch: false,
+    })
+  })
+
   test('do not trust proxy when trustProxy does not allow it', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       req.headers['x-forwarded-for'] = '10.10.10.10'
