@@ -17,6 +17,18 @@ import type { HttpContext } from './http_context/main.ts'
 import { canWriteResponseBody } from './router/factories/use_return_value.ts'
 import type { HttpError, StatusPageRange, StatusPageRenderer } from './types/server.ts'
 
+const HTML_ENTITIES: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+}
+
+function escapeHTML(value: string) {
+  return value.replace(/[&<>"']/g, (char) => HTML_ENTITIES[char])
+}
+
 /**
  * The base HTTP exception handler that provides comprehensive error handling capabilities.
  *
@@ -280,7 +292,7 @@ export class ExceptionHandler extends Macroable {
       return
     }
 
-    ctx.response.status(error.status).send(`<p> ${error.message} </p>`)
+    ctx.response.status(error.status).send(`<p> ${escapeHTML(error.message)} </p>`)
   }
 
   /**
@@ -329,7 +341,7 @@ export class ExceptionHandler extends Macroable {
       .send(
         error.messages
           .map((message: any) => {
-            return `${message.field} - ${message.message}`
+            return `${escapeHTML(message.field)} - ${escapeHTML(message.message)}`
           })
           .join('<br />')
       )

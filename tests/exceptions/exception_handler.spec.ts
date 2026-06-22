@@ -73,6 +73,29 @@ test.group('Exception handler | handle', () => {
     assert.equal(ctx.response.getBody(), '<p> Something went wrong </p>')
   })
 
+  test('escape error message when rendering HTML without debug stack trace', async ({ assert }) => {
+    class AppExceptionHandler extends ExceptionHandler {
+      protected debug: boolean = false
+    }
+
+    const exceptionHandler = new AppExceptionHandler()
+    const ctx = new HttpContextFactory().create()
+
+    await exceptionHandler.handle(
+      new errors.E_ROUTE_NOT_FOUND([
+        'GET',
+        `/not-found<img src=x onerror="fetch('/dashboard',{credentials:'include'})">`,
+      ]),
+      ctx
+    )
+
+    assert.equal(ctx.response.getStatus(), 404)
+    assert.equal(
+      ctx.response.getBody(),
+      '<p> Cannot GET:/not-found&lt;img src=x onerror=&quot;fetch(&#39;/dashboard&#39;,{credentials:&#39;include&#39;})&quot;&gt; </p>'
+    )
+  })
+
   test('do not render stack trace in JSON response when debugging is disabled', async ({
     assert,
   }) => {
@@ -243,6 +266,23 @@ test.group('Exception handler | handle', () => {
     await exceptionHandler.handle(reporter.createError(), ctx)
     assert.equal(ctx.response.getStatus(), 422)
     assert.equal(ctx.response.getBody(), 'username - Username is not unique')
+  })
+
+  test('escape validation error messages when rendering HTML', async ({ assert }) => {
+    const exceptionHandler = new ExceptionHandler()
+    const ctx = new HttpContextFactory().create()
+
+    const reporter = new SimpleErrorReporter()
+    reporter.report(
+      '<img src=x>',
+      'required',
+      fieldContext.create('username<img src=x>', ''),
+      {}
+    )
+
+    await exceptionHandler.handle(reporter.createError(), ctx)
+    assert.equal(ctx.response.getStatus(), 422)
+    assert.equal(ctx.response.getBody(), 'username&lt;img src=x&gt; - &lt;img src=x&gt;')
   })
 
   test('overwrite public methods using macros', async ({ assert, cleanup }) => {
