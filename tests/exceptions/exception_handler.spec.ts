@@ -273,12 +273,7 @@ test.group('Exception handler | handle', () => {
     const ctx = new HttpContextFactory().create()
 
     const reporter = new SimpleErrorReporter()
-    reporter.report(
-      '<img src=x>',
-      'required',
-      fieldContext.create('username<img src=x>', ''),
-      {}
-    )
+    reporter.report('<img src=x>', 'required', fieldContext.create('username<img src=x>', ''), {})
 
     await exceptionHandler.handle(reporter.createError(), ctx)
     assert.equal(ctx.response.getStatus(), 422)
