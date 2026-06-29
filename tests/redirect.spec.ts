@@ -359,4 +359,34 @@ test.group('Redirect', () => {
     const { header } = await supertest(url).get('/').redirects(1)
     assert.equal(header.location, '/foo')
   })
+
+  test('redirect(url, false) must not forward query string even when config.redirect.forwardQueryString is true', async ({
+    assert,
+  }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const response = new HttpResponseFactory()
+        .merge({
+          req,
+          res,
+          encryption,
+          router,
+          config: {
+            redirect: {
+              allowedHosts: [],
+              forwardQueryString: true, // global default is ON
+            },
+          },
+        })
+        .create()
+
+      // Explicitly opting out of QS forwarding for this one redirect.
+      // Expected Location: /foo
+      // Actual   Location: /foo?username=romain  ← bug
+      response.redirect('/foo', false)
+      response.finish()
+    })
+
+    const { header } = await supertest(url).get('/?username=romain').redirects(1)
+    assert.equal(header.location, '/foo')
+  })
 })
