@@ -240,6 +240,191 @@ test.group('Request', () => {
     })
   })
 
+  test('convert truthy query string values to boolean', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          one: request.boolean('one'),
+          trueValue: request.boolean('trueValue'),
+          on: request.boolean('on'),
+          yes: request.boolean('yes'),
+          upper: request.boolean('upper'),
+        })
+      )
+    })
+
+    const { body } = await supertest(url).get('/?one=1&trueValue=true&on=on&yes=yes&upper=TRUE')
+    assert.deepEqual(body, {
+      one: true,
+      trueValue: true,
+      on: true,
+      yes: true,
+      upper: true,
+    })
+  })
+
+  test('convert falsy query string values to boolean', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          zero: request.boolean('zero'),
+          falseValue: request.boolean('falseValue'),
+          off: request.boolean('off'),
+          no: request.boolean('no'),
+          empty: request.boolean('empty'),
+          upper: request.boolean('upper'),
+        })
+      )
+    })
+
+    const { body } = await supertest(url).get(
+      '/?zero=0&falseValue=false&off=off&no=no&empty=&upper=FALSE'
+    )
+    assert.deepEqual(body, {
+      zero: false,
+      falseValue: false,
+      off: false,
+      no: false,
+      empty: false,
+      upper: false,
+    })
+  })
+
+  test('read boolean from request body', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
+      request.setInitialBody({ isAdmin: 'true', darkMode: '0' })
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          isAdmin: request.boolean('isAdmin'),
+          darkMode: request.boolean('darkMode'),
+        })
+      )
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.deepEqual(body, {
+      isAdmin: true,
+      darkMode: false,
+    })
+  })
+
+  test('read nested boolean from request data', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
+      request.setInitialBody({ user: { verified: 'yes', blocked: 'no' } })
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          verified: request.boolean('user.verified'),
+          blocked: request.boolean('user.blocked'),
+        })
+      )
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.deepEqual(body, {
+      verified: true,
+      blocked: false,
+    })
+  })
+
+  test('return default value when boolean key is missing', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          defaultFalse: request.boolean('missing'),
+          defaultTrue: request.boolean('missing', true),
+        })
+      )
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.deepEqual(body, {
+      defaultFalse: false,
+      defaultTrue: true,
+    })
+  })
+
+  test('return default value for unrecognized boolean values', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
+      request.setInitialBody({ weird: 'maybe', obj: { foo: 'bar' } })
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          weird: request.boolean('weird', true),
+          obj: request.boolean('obj', true),
+          nullValue: request.boolean('nullValue', true),
+        })
+      )
+    })
+
+    const { body } = await supertest(url).get('/?nullValue=')
+    assert.deepEqual(body, {
+      weird: true,
+      obj: true,
+      nullValue: false,
+    })
+  })
+
+  test('convert numeric values to boolean', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
+      request.setInitialBody({ count: 5, zero: 0, nothing: null })
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          count: request.boolean('count'),
+          zero: request.boolean('zero'),
+          nothing: request.boolean('nothing'),
+        })
+      )
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.deepEqual(body, {
+      count: true,
+      zero: false,
+      nothing: false,
+    })
+  })
+
+  test('convert array values to boolean', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory().merge({ req, res, encryption }).create()
+      request.setInitialBody({ tags: ['a'], empty: [] })
+
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          tags: request.boolean('tags'),
+          empty: request.boolean('empty'),
+        })
+      )
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.deepEqual(body, {
+      tags: true,
+      empty: false,
+    })
+  })
+
   test('get all except few keys', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       const request = new HttpRequestFactory().merge({ req, res, encryption }).create()

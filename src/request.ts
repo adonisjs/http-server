@@ -319,6 +319,87 @@ export class HttpRequest extends Macroable {
   }
 
   /**
+   * Returns the boolean value of a key from the request body or query
+   * string. Useful when working with HTML form submissions (checkboxes
+   * send `"on"`, hidden fields send `"1"`, etc.) or JSON clients that
+   * might send booleans as strings.
+   *
+   * Recognized truthy values:
+   * - booleans: `true`
+   * - strings: `"1"`, `"true"`, `"on"`, `"yes"` (case-insensitive, trimmed)
+   * - numbers: any non-zero, non-`NaN` number
+   * - arrays: a non-empty array
+   *
+   * Recognized falsy values:
+   * - booleans: `false`
+   * - strings: `"0"`, `"false"`, `"off"`, `"no"`, `""` (case-insensitive, trimmed)
+   * - numbers: `0`, `NaN`
+   * - arrays: an empty array
+   * - `null`, `undefined`
+   *
+   * If the value cannot be interpreted as a boolean (for example an
+   * object or a string like `"maybe"`), the `defaultValue` you pass as
+   * the second argument is returned. The same fallback is used when the
+   * key is missing from the request. If you don't pass a `defaultValue`,
+   * `false` is returned in those cases.
+   *
+   * @example
+   * ```js
+   * // form checkbox sent "on"
+   * request.boolean('subscribe')              // true
+   *
+   * // hidden field sent "0"
+   * request.boolean('dark_mode')              // false
+   *
+   * // missing key, you decide the default
+   * request.boolean('agreed', false)          // false
+   * request.boolean('agreed', true)           // true
+   * ```
+   * @param key - Key to lookup in request data
+   * @param defaultValue - Value to return when the key is missing or the value is not a recognized boolean
+   * @returns Boolean interpretation of the request data value
+   */
+  boolean(key: string, defaultValue?: boolean): boolean {
+    const value = lodash.get(this.#requestData, key)
+
+    if (value === undefined) {
+      return defaultValue ?? false
+    }
+
+    if (typeof value === 'boolean') {
+      return value
+    }
+
+    if (typeof value === 'string') {
+      const normalized = value.trim().toLowerCase()
+      if (['', '0', 'false', 'off', 'no'].includes(normalized)) {
+        return false
+      }
+      if (['1', 'true', 'on', 'yes'].includes(normalized)) {
+        return true
+      }
+      return defaultValue ?? false
+    }
+
+    if (typeof value === 'number') {
+      if (Number.isNaN(value)) {
+        return defaultValue ?? false
+      }
+      return value !== 0
+    }
+
+    if (value === null) {
+      return defaultValue ?? false
+    }
+
+    if (Array.isArray(value)) {
+      return value.length > 0
+    }
+
+    return defaultValue ?? false
+  }
+
+  /**
    * Returns value for a given key from route params
    *
    * @example
