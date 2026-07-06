@@ -16,6 +16,7 @@ import { URLBuilderFactory } from '../../factories/url_builder_factory.ts'
 import {
   type UrlFor,
   type URLOptions,
+  type SignedUrlFor,
   type GetRoutesForMethod,
   type RouteBuilderArguments,
 } from '../../src/types/url_builder.ts'
@@ -287,6 +288,36 @@ test.group('URLBuilder', () => {
       })
       .create()
 
+    assert.isTrue(request.hasValidSignature())
+  })
+
+  test('create and verify signed URLs with route lookup disabled', async ({ assert }) => {
+    const encryption = new EncryptionFactory().create()
+    const { signedUrlFor } = new URLBuilderFactory().merge({ encryption }).create()
+
+    const signedUrl = signedUrlFor(
+      '/files/:key',
+      { key: 'invoice.pdf' },
+      {
+        disableRouteLookup: true,
+        prefixUrl: 'http://localhost:4000',
+        qs: {
+          download: true,
+        },
+      }
+    )
+
+    const url = new URL(signedUrl)
+    const request = new HttpRequestFactory()
+      .merge({
+        encryption,
+        url: `${url.pathname}${url.search}`,
+      })
+      .create()
+
+    assert.equal(url.origin, 'http://localhost:4000')
+    assert.equal(url.pathname, '/files/invoice.pdf')
+    assert.equal(url.searchParams.get('download'), 'true')
     assert.isTrue(request.hasValidSignature())
   })
 
@@ -683,5 +714,38 @@ test.group('URLBuilder | types', () => {
         options?: URLOptions | undefined,
       ]
     >()
+  })
+
+  test('accept route patterns when signed URL route lookup is disabled', ({ expectTypeOf }) => {
+    type Routes = {
+      ALL: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+      }
+      GET: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+      }
+    }
+
+    type RouteBuilder = SignedUrlFor<Routes>
+    const assertSignedUrlForTypes = (signedUrlFor: RouteBuilder) => {
+      expectTypeOf(
+        signedUrlFor(
+          '/files/:key',
+          { key: 'invoice.pdf' },
+          {
+            disableRouteLookup: true,
+            prefixUrl: 'http://localhost:4000',
+          }
+        )
+      ).toEqualTypeOf<string>()
+    }
+
+    expectTypeOf(assertSignedUrlForTypes).returns.toEqualTypeOf<void>()
   })
 })
