@@ -744,8 +744,61 @@ test.group('URLBuilder | types', () => {
           }
         )
       ).toEqualTypeOf<string>()
+
+      expectTypeOf(
+        signedUrlFor(
+          '/files/:key?',
+          {},
+          {
+            disableRouteLookup: true,
+          }
+        )
+      ).toEqualTypeOf<string>()
+
+      expectTypeOf(
+        signedUrlFor(
+          '/files/*',
+          { '*': ['invoices', 'invoice.pdf'] },
+          {
+            disableRouteLookup: true,
+          }
+        )
+      ).toEqualTypeOf<string>()
+
+      expectTypeOf(
+        signedUrlFor('/health', undefined, {
+          disableRouteLookup: true,
+        })
+      ).toEqualTypeOf<string>()
+
+      const pattern: string = '/files/:key'
+
+      expectTypeOf(
+        signedUrlFor(
+          pattern,
+          { key: 'invoice.pdf' },
+          {
+            disableRouteLookup: true,
+          }
+        )
+      ).toEqualTypeOf<string>()
+    }
+
+    const assertInvalidSignedUrlForTypes = (signedUrlFor: RouteBuilder) => {
+      // @ts-expect-error Missing "key" param inferred from the route pattern
+      signedUrlFor('/files/:key', {}, { disableRouteLookup: true })
+
+      // @ts-expect-error Unknown "slug" param is not accepted for the route pattern
+      signedUrlFor('/files/:key', { slug: 'invoice.pdf' }, { disableRouteLookup: true })
+
+      // @ts-expect-error Wildcard params must be provided as an array of strings
+      signedUrlFor('/files/*', { '*': 'invoice.pdf' }, { disableRouteLookup: true })
+
+      // @ts-expect-error Patterns without params expect undefined params
+      signedUrlFor('/health', {}, { disableRouteLookup: true })
     }
 
     expectTypeOf(assertSignedUrlForTypes).returns.toEqualTypeOf<void>()
+    expectTypeOf(assertInvalidSignedUrlForTypes).returns.toEqualTypeOf<void>()
   })
 })

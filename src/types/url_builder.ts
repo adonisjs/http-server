@@ -7,6 +7,8 @@
  * file that was distributed with this source code.
  */
 
+import type { InferRouteParams } from '@poppinss/types'
+
 import {
   type UrlFor,
   type LookupList,
@@ -36,13 +38,19 @@ export type SignedURLPatternOptions = SignedURLOptions & {
   disableRouteLookup: true
 }
 
+type SignedURLPatternParams<Identifier extends string> = string extends Identifier
+  ? any[] | Record<string, any> | undefined
+  : keyof InferRouteParams<Identifier> extends never
+    ? undefined
+    : InferRouteParams<Identifier>
+
 /**
  * URL builder helper for creating signed URLs.
  */
 export type SignedUrlFor<Routes extends LookupList> = UrlFor<Routes, SignedURLOptions> &
-  ((
-    identifier: string,
-    params: any[] | Record<string, any> | undefined,
+  (<Identifier extends string>(
+    identifier: Identifier,
+    params: SignedURLPatternParams<Identifier>,
     options: SignedURLPatternOptions
   ) => string)
 

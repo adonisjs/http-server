@@ -71,7 +71,7 @@ export function createSignedUrlBuilder<Routes extends LookupList>(
 
   const signedRoute: SignedUrlFor<Routes> = function route(
     identifier: string,
-    params?: any[] | Record<string, any>,
+    params?: unknown,
     options?: SignedURLOptions
   ) {
     return createSignedUrlForRoute(identifier, params, options)

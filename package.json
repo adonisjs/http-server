@@ -99,6 +99,7 @@
     "@poppinss/matchit": "^3.2.0",
     "@poppinss/middleware": "^3.2.7",
     "@poppinss/qs": "^6.15.0",
+    "@poppinss/types": "^1.2.1",
     "@poppinss/utils": "^7.0.1",
     "@sindresorhus/is": "^8.1.0",
     "content-disposition": "^1.1.0",
