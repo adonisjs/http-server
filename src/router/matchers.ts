@@ -38,6 +38,6 @@ export class RouteMatchers extends Macroable {
    * @returns Route matcher configuration for slug values
    */
   slug() {
-    return { match: /^[^\s-_](?!.*?[-_]{2,})([a-z0-9-\\]{1,})[^\s]*[^-_\s]$/ }
+    return { match: /^[^\s_-](?=[a-z0-9\\-])(?=.{2})(?:[^\s_-]|[-_][^\s_-])+$/ }
   }
 }

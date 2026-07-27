@@ -9,6 +9,7 @@
 
 import { test } from '@japa/runner'
 import { randomUUID } from 'node:crypto'
+import { performance } from 'node:perf_hooks'
 import { RouteMatchers } from '../../src/router/matchers.ts'
 
 test.group('Matchers', () => {
@@ -41,5 +42,14 @@ test.group('Matchers', () => {
     assert.isTrue(slug.match.test('hello-world'))
     assert.isFalse(slug.match.test('hello world'))
     assert.isFalse(slug.match.test('1'))
+  })
+
+  test('slug matcher does not backtrack excessively on invalid input', ({ assert }) => {
+    const slug = new RouteMatchers().slug()
+    const maliciousSlug = `${'a'.repeat(50_000)}_`
+    const start = performance.now()
+
+    assert.isFalse(slug.match.test(maliciousSlug))
+    assert.isBelow(performance.now() - start, 250)
   })
 })
