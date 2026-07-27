@@ -21,8 +21,7 @@ export { createURL, findRoute }
  */
 export function createUrlBuilder<Routes extends LookupList>(
   routesLoader:
-    | { [domain: string]: ClientRouteJSON[] }
-    | (() => { [domain: string]: ClientRouteJSON[] }),
+    { [domain: string]: ClientRouteJSON[] } | (() => { [domain: string]: ClientRouteJSON[] }),
   searchParamsStringifier: (qs: Record<string, any>) => string,
   defaultOptions?: URLOptions
 ): UrlFor<Routes> {
