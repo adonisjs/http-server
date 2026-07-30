@@ -10,8 +10,8 @@
 import type { Encryption } from '@boringnode/encryption'
 
 import { type Router } from './main.ts'
-import { createSignedURL } from '../helpers.ts'
-import { type UrlFor, type LookupList, type SignedURLOptions } from '../types/url_builder.ts'
+import { createSignedURL, parseRoute } from '../helpers.ts'
+import { type LookupList, type SignedURLOptions, type SignedUrlFor } from '../types/url_builder.ts'
 
 /**
  * Creates the URLBuilder helper for making signed URLs
@@ -24,8 +24,23 @@ export function createSignedUrlBuilder<Routes extends LookupList>(
   router: Router,
   encryption: Encryption,
   searchParamsStringifier: (qs: Record<string, any>) => string
-): UrlFor<Routes, SignedURLOptions> {
+): SignedUrlFor<Routes> {
   let domainsList: string[]
+
+  function createSignedUrlForRoutePattern(
+    identifier: string,
+    params: any,
+    options?: SignedURLOptions
+  ) {
+    return createSignedURL(
+      identifier,
+      parseRoute(identifier),
+      searchParamsStringifier,
+      encryption,
+      params,
+      options
+    )
+  }
 
   function createSignedUrlForRoute(
     identifier: string,
@@ -33,6 +48,10 @@ export function createSignedUrlBuilder<Routes extends LookupList>(
     options?: SignedURLOptions,
     method?: string
   ) {
+    if (options?.disableRouteLookup) {
+      return createSignedUrlForRoutePattern(identifier, params, options)
+    }
+
     if (!domainsList) {
       domainsList = Object.keys(router.toJSON()).filter((domain) => domain !== 'root')
     }
@@ -50,8 +69,10 @@ export function createSignedUrlBuilder<Routes extends LookupList>(
     )
   }
 
-  const signedRoute: UrlFor<Routes, SignedURLOptions> = function route(
-    ...[identifier, params, options]
+  const signedRoute: SignedUrlFor<Routes> = function route(
+    identifier: string,
+    params?: unknown,
+    options?: SignedURLOptions
   ) {
     return createSignedUrlForRoute(identifier, params, options)
   }
