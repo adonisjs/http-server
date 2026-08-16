@@ -323,6 +323,30 @@ test.group('Server | Response handling', () => {
     assert.equal(headers.location, '/dashboard')
   })
 
+  test('redirect to a route and forward the incoming query string', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([])
+
+    server
+      .getRouter()
+      .get('/dashboard', () => 'dashboard')
+      .as('dashboard')
+
+    // @ts-expect-error "Because RoutesList" does not have this route
+    server.getRouter().on('/').redirect('dashboard', {}, { forwardQueryString: true })
+
+    await server.boot()
+
+    const { status, headers } = await supertest(httpServer).get('/?tab=profile')
+    assert.equal(status, 302)
+    assert.equal(headers.location, '/dashboard?tab=profile')
+  })
+
   test('redirect to a path using route.redirectToPath method', async ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
     const server = new ServerFactory().merge({ app }).create()
@@ -339,6 +363,23 @@ test.group('Server | Response handling', () => {
     const { status, headers } = await supertest(httpServer).get('/')
     assert.equal(status, 302)
     assert.equal(headers.location, '/dashboard')
+  })
+
+  test('redirect to a path and forward the incoming query string', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([])
+    server.getRouter().on('/').redirectToPath('/dashboard', { forwardQueryString: true })
+
+    await server.boot()
+
+    const { status, headers } = await supertest(httpServer).get('/?tab=profile')
+    assert.equal(status, 302)
+    assert.equal(headers.location, '/dashboard?tab=profile')
   })
 
   test('redirect to a route with custom status code', async ({ assert }) => {

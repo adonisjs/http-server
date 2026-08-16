@@ -23,6 +23,18 @@ import type {
 } from '../types/url_builder.ts'
 
 /**
+ * Options for declarative route redirects
+ */
+type RedirectResponseOptions = {
+  /** HTTP status code for the redirect response */
+  status?: number
+  /** Whether to forward the incoming request query string */
+  forwardQueryString?: boolean
+}
+
+type RedirectOptions = URLOptions & RedirectResponseOptions
+
+/**
  * Brisk routes exposes the API to configure the route handler by chaining
  * one of the pre-defined methods.
  *
@@ -102,7 +114,7 @@ export class BriskRoute extends Macroable {
    */
   redirect<Identifier extends keyof GetRoutesForMethod<RoutesList, 'GET'> & string>(
     ...args: RoutesList extends LookupList
-      ? RouteBuilderArguments<Identifier, RoutesList['GET'][Identifier], URLOptions>
+      ? RouteBuilderArguments<Identifier, RoutesList['GET'][Identifier], RedirectOptions>
       : []
   ): Route {
     const [identifier, params, options] = args as any[]
@@ -111,6 +123,9 @@ export class BriskRoute extends Macroable {
       const redirector = ctx.response.redirect()
       if (options?.status) {
         redirector.status(options.status)
+      }
+      if (options?.forwardQueryString !== undefined) {
+        redirector.withQs(options.forwardQueryString)
       }
       return (redirector.toRoute as any)(identifier, params || ctx.params, options)
     }
@@ -122,14 +137,17 @@ export class BriskRoute extends Macroable {
   /**
    * Redirect request to a fixed URL
    * @param url - The URL to redirect to
-   * @param options - Optional redirect options including HTTP status code
+   * @param options - Optional redirect options including HTTP status code and query string forwarding
    * @returns The created route instance
    */
-  redirectToPath(url: string, options?: { status: number }): Route {
+  redirectToPath(url: string, options?: RedirectResponseOptions): Route {
     function redirectsToPath(ctx: HttpContext) {
       const redirector = ctx.response.redirect()
       if (options?.status) {
         redirector.status(options.status)
+      }
+      if (options?.forwardQueryString !== undefined) {
+        redirector.withQs(options.forwardQueryString)
       }
       return redirector.toPath(url)
     }
