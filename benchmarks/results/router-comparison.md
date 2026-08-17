@@ -96,3 +96,35 @@ At this table size a plain scan over every route is already cheap, which is why 
 - [`router-app-prefix-index-only.json`](./router-app-prefix-index-only.json)
 - [`router-app-after-1.json`](./router-app-after-1.json)
 - [`router-app-after-2.json`](./router-app-after-2.json)
+
+## Tracing fast path
+
+Every request handler, middleware, response serialization and error handler ran inside a `diagnostics_channel` tracing wrapper, whether or not anything was subscribed to those channels. The wrapper allocates a context object, publishes to the start channel, attaches promise continuations and publishes again on settle. With no subscriber that work is thrown away.
+
+The fast path calls the target directly when the channel reports no subscribers, and leaves the traced path untouched otherwise. `hasSubscribers` was already read on every one of those calls to decide the context argument, so the check itself is not new.
+
+### Method
+
+Measured with `BENCH_MIDDLEWARE_KIND=realistic`, which registers middleware that awaits, reads a header and allocates. The default benchmark middleware only returns `next()`, and against it the wrapper is close to the entire cost of a middleware, which overstates the result. Both servers register the same middleware, and Fastify is reported as a control.
+
+Averages across all nine scenarios, 8 seconds each.
+
+| Middleware | before | after | Raw | Fastify control | Control-adjusted |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 20 | 55,626 | 56,508 | +1.59% | −0.00% | **+1.59%** |
+| 6, run 1 | 96,517 | 97,090 | +0.59% | +1.50% | −0.91% |
+| 6, run 2 | 95,886 | 97,806 | +2.00% | +0.79% | +1.21% |
+
+### Reading
+
+What is removed is a fixed cost per instrumented call site, not a share of the work a middleware performs, so the saving grows with the number of middleware rather than with how heavy they are. At 20 middleware it is about 0.3 µs per request across the roughly two dozen traced call sites a request passes through.
+
+At 20 middleware the improvement is consistent and larger than the control drift. At 6 middleware, closer to what a default AdonisJS kernel registers, the two runs land on opposite sides of zero, so the effect is at or below the noise floor of this setup and should not be quoted as a number. With no middleware there is nothing measurable, which is expected: only four call sites remain.
+
+Anyone reproducing this should run both revisions more than once and report the control, because the run-to-run drift here is comparable to the effect being measured.
+
+### Raw results
+
+- [`router-tracing-mw20-before.json`](./router-tracing-mw20-before.json) / [`router-tracing-mw20-after.json`](./router-tracing-mw20-after.json)
+- [`router-tracing-mw6-before.json`](./router-tracing-mw6-before.json) / [`router-tracing-mw6-after.json`](./router-tracing-mw6-after.json)
+- [`router-tracing-mw6-before-2.json`](./router-tracing-mw6-before-2.json) / [`router-tracing-mw6-after-2.json`](./router-tracing-mw6-after-2.json)

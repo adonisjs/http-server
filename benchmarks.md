@@ -36,6 +36,12 @@ BENCH_SHAPE=app BENCH_STATIC_ROUTES=60 BENCH_DYNAMIC_ROUTES=20 npm run benchmark
 
 Scenarios built from a single path measure a repeated URL, which per-URL memoisation answers without running the matcher. The `varied-*` scenarios spread requests across the table and are the ones that reflect mixed traffic.
 
+`BENCH_MIDDLEWARE_COUNT` registers that many middleware in both servers, and `BENCH_MIDDLEWARE_KIND` chooses what they do. The default middleware returns `next()` and nothing else, which measures the machinery around it rather than a realistic request. `realistic` awaits, reads a header and allocates, which is still less work than session, auth or CSRF middleware perform. Anything measuring per-middleware overhead should be reported against `realistic`.
+
+```sh
+BENCH_MIDDLEWARE_COUNT=6 BENCH_MIDDLEWARE_KIND=realistic npm run benchmark:router
+```
+
 See the [recorded before-and-after results](benchmarks/results/router-comparison.md) for both table shapes.
 
 Since the program correctness and reliability is more important over micro optimizations. We pay penalty on following fronts in comparison to Fastify.
