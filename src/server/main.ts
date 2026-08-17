@@ -139,13 +139,15 @@ export class Server {
   #requestErrorResponder: ServerErrorHandler['handle'] = async (error, ctx) => {
     await this.#resolvedErrorHandler.report(error, ctx)
 
-    return httpExceptionHandler.tracePromise(
-      this.#resolvedErrorHandler.handle,
-      undefined,
-      this.#resolvedErrorHandler,
-      error,
-      ctx
-    )
+    return httpExceptionHandler.hasSubscribers
+      ? httpExceptionHandler.tracePromise(
+          this.#resolvedErrorHandler.handle,
+          undefined,
+          this.#resolvedErrorHandler,
+          error,
+          ctx
+        )
+      : this.#resolvedErrorHandler.handle(error, ctx)
   }
 
   /**
@@ -472,22 +474,14 @@ export class Server {
      */
     if (this.usingAsyncLocalStorage) {
       return asyncLocalStorage.storage!.run(ctx, () =>
-        httpRequest.tracePromise(
-          this.#handleRequest,
-          httpRequest.hasSubscribers ? { ctx } : undefined,
-          this,
-          ctx,
-          resolver
-        )
+        httpRequest.hasSubscribers
+          ? httpRequest.tracePromise(this.#handleRequest, { ctx }, this, ctx, resolver)
+          : this.#handleRequest(ctx, resolver)
       )
     }
 
-    return httpRequest.tracePromise(
-      this.#handleRequest,
-      httpRequest.hasSubscribers ? { ctx } : undefined,
-      this,
-      ctx,
-      resolver
-    )
+    return httpRequest.hasSubscribers
+      ? httpRequest.tracePromise(this.#handleRequest, { ctx }, this, ctx, resolver)
+      : this.#handleRequest(ctx, resolver)
   }
 }

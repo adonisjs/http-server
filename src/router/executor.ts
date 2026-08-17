@@ -35,44 +35,46 @@ export function execute(
     .finalHandler(() => {
       if (typeof route.handler === 'function') {
         return (
-          httpRouteHandler.tracePromise(
-            ($ctx: HttpContext) => Promise.resolve((route.handler as Function)($ctx)),
-            httpRouteHandler.hasSubscribers ? { route } : undefined,
-            undefined,
-            ctx
-          ) as unknown as Promise<any>
+          httpRouteHandler.hasSubscribers
+            ? httpRouteHandler.tracePromise(
+                ($ctx: HttpContext) => Promise.resolve((route.handler as Function)($ctx)),
+                { route },
+                undefined,
+                ctx
+              )
+            : Promise.resolve(route.handler(ctx))
         ).then(useReturnValue(ctx))
       }
 
       return (
-        httpRouteHandler.tracePromise(
-          route.handler.handle,
-          httpRouteHandler.hasSubscribers ? { route } : undefined,
-          undefined,
-          resolver,
-          ctx
-        ) as unknown as Promise<any>
+        httpRouteHandler.hasSubscribers
+          ? httpRouteHandler.tracePromise(route.handler.handle, { route }, undefined, resolver, ctx)
+          : Promise.resolve(route.handler.handle(resolver, ctx))
       ).then(useReturnValue(ctx))
     })
     .run(async (middleware, next) => {
       if (typeof middleware === 'function') {
-        return httpMiddleware.tracePromise(
-          middleware,
-          httpMiddleware.hasSubscribers ? { middleware } : undefined,
-          undefined,
-          ctx,
-          next
-        ) as unknown as Promise<any>
+        return httpMiddleware.hasSubscribers
+          ? (httpMiddleware.tracePromise(
+              middleware,
+              { middleware },
+              undefined,
+              ctx,
+              next
+            ) as unknown as Promise<any>)
+          : middleware(ctx, next)
       }
 
-      return httpMiddleware.tracePromise(
-        middleware.handle,
-        httpMiddleware.hasSubscribers ? { middleware } : undefined,
-        undefined,
-        resolver,
-        ctx,
-        next,
-        middleware.args
-      ) as unknown as Promise<any>
+      return httpMiddleware.hasSubscribers
+        ? (httpMiddleware.tracePromise(
+            middleware.handle,
+            { middleware },
+            undefined,
+            resolver,
+            ctx,
+            next,
+            middleware.args
+          ) as unknown as Promise<any>)
+        : middleware.handle(resolver, ctx, next, middleware.args)
     })
 }

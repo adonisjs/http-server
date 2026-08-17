@@ -20,6 +20,7 @@ const connections = Number(process.env.BENCH_CONNECTIONS ?? 100)
 const pipelining = Number(process.env.BENCH_PIPELINING ?? 10)
 const staticRoutes = Number(process.env.BENCH_STATIC_ROUTES ?? 1000)
 const dynamicRoutes = Number(process.env.BENCH_DYNAMIC_ROUTES ?? 100)
+const middlewareCount = Number(process.env.BENCH_MIDDLEWARE_COUNT ?? 0)
 const outputFile = process.env.BENCH_OUTPUT
 const label = process.env.BENCH_LABEL ?? 'unlabeled'
 
@@ -143,7 +144,7 @@ async function runFramework(framework) {
 }
 
 console.log(
-  `${staticRoutes} static routes + ${dynamicRoutes} dynamic routes | ${connections} connections | ${pipelining} pipelining | ${duration}s per scenario`
+  `${staticRoutes} static routes + ${dynamicRoutes} dynamic routes | ${middlewareCount} middleware | ${connections} connections | ${pipelining} pipelining | ${duration}s per scenario`
 )
 
 const results = []
@@ -189,6 +190,7 @@ if (outputFile) {
         configuration: {
           staticRoutes,
           dynamicRoutes,
+          middlewareCount,
           connections,
           pipelining,
           duration,

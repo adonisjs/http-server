@@ -37,13 +37,8 @@ export function middlewareHandler(resolver: ContainerResolver<any>, ctx: HttpCon
    */
   return function (fn: ParsedGlobalMiddleware, next: NextFn) {
     debug('executing middleware %s', fn.name)
-    return httpMiddleware.tracePromise(
-      fn.handle,
-      httpMiddleware.hasSubscribers ? { middleware: fn } : undefined,
-      undefined,
-      resolver,
-      ctx,
-      next
-    ) as unknown as Promise<any>
+    return (httpMiddleware.hasSubscribers
+      ? httpMiddleware.tracePromise(fn.handle, { middleware: fn }, undefined, resolver, ctx, next)
+      : fn.handle(resolver, ctx, next)) as unknown as Promise<any>
   }
 }

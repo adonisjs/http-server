@@ -18,6 +18,7 @@ import { defineConfig, Server } from '../build/index.js'
 const staticRoutes = Number(process.env.BENCH_STATIC_ROUTES ?? 1000)
 const dynamicRoutes = Number(process.env.BENCH_DYNAMIC_ROUTES ?? 100)
 const shape = process.env.BENCH_SHAPE ?? 'uniform'
+const middlewareCount = Number(process.env.BENCH_MIDDLEWARE_COUNT ?? 0)
 
 const app = new Application(new URL('./', import.meta.url), {
   environment: 'web',
@@ -38,6 +39,35 @@ const server = new Server(
 )
 const router = server.getRouter()
 const handler = (ctx) => ctx.response.send({ hello: 'world' })
+/**
+ * A middleware that does nothing measures the instrumentation around it and
+ * little else, which overstates what removing that instrumentation is worth.
+ * `BENCH_MIDDLEWARE_KIND=realistic` swaps in one that awaits, reads a header
+ * and allocates, which is still less work than session, auth or CSRF
+ * middleware perform.
+ */
+class NoopMiddleware {
+  handle(_, next) {
+    return next()
+  }
+}
+
+class RealisticMiddleware {
+  async handle(ctx, next) {
+    const userAgent = ctx.request.request.headers['user-agent'] || ''
+    const meta = { length: userAgent.length, secure: ctx.request.request.socket.encrypted === true }
+    if (meta.length < 0) {
+      throw new Error('unreachable')
+    }
+    return next()
+  }
+}
+
+const MiddlewareClass =
+  process.env.BENCH_MIDDLEWARE_KIND === 'realistic' ? RealisticMiddleware : NoopMiddleware
+const loadMiddleware = async () => ({ default: MiddlewareClass })
+
+server.use(Array.from({ length: middlewareCount }, () => loadMiddleware))
 
 /**
  * The `uniform` shape declares every static route before any dynamic one and
