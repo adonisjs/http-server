@@ -14,6 +14,20 @@ import { parseRoute } from '../../src/helpers.ts'
 import { execute } from '../../src/router/executor.ts'
 import { RoutesStore } from '../../src/router/store.ts'
 
+function addRoute(store: RoutesStore, pattern: string) {
+  store.add({
+    pattern,
+    tokens: parseRoute(pattern),
+    handler() {},
+    matchers: {},
+    meta: {},
+    execute,
+    middleware: new Middleware<any>(),
+    methods: ['GET'],
+    domain: 'root',
+  })
+}
+
 test.group('Store | add', () => {
   test('add route without explicit domain', ({ assert }) => {
     async function handler() {}
@@ -556,6 +570,21 @@ test.group('Store | add', () => {
 })
 
 test.group('Store | match', () => {
+  test('invalidate the last match when adding a route', ({ assert }) => {
+    const store = new RoutesStore()
+    addRoute(store, '/health')
+    assert.isNull(store.match('/users/1', 'GET', false))
+    addRoute(store, '/users/:id')
+    assert.equal(store.match('/users/1', 'GET', false)?.params.id, '1')
+  })
+
+  test('decode params when reusing the last route match', ({ assert }) => {
+    const store = new RoutesStore()
+    addRoute(store, '/users/:id')
+    assert.equal(store.match('/users/hello%20world', 'GET', false)?.params.id, 'hello%20world')
+    assert.equal(store.match('/users/hello%20world', 'GET', true)?.params.id, 'hello world')
+  })
+
   test('find route for a given url', ({ assert }) => {
     async function handler() {}
 
@@ -710,6 +739,114 @@ test.group('Store | match', () => {
       subdomains: {},
       routeKey: 'GET-/:username',
     })
+  })
+
+  test('do not let the static index shadow an earlier dynamic route', ({ assert }) => {
+    const store = new RoutesStore()
+    addRoute(store, '/:username')
+    addRoute(store, '/virk')
+    assert.equal(store.match('/virk', 'GET', false)?.route.pattern, '/:username')
+    assert.equal(store.match('/virk', 'GET', false)?.params.username, 'virk')
+  })
+
+  test('preserve registration order across static prefix groups', ({ assert }) => {
+    const store = new RoutesStore()
+    addRoute(store, '/users/:id')
+    addRoute(store, '/users/admin')
+    assert.equal(store.match('/users/admin', 'GET', false)?.route.pattern, '/users/:id')
+  })
+
+  test('preserve registration order for routes without a static prefix', ({ assert }) => {
+    const store = new RoutesStore()
+    addRoute(store, '/:section/admin')
+    addRoute(store, '/users/:id')
+    assert.equal(store.match('/users/admin', 'GET', false)?.route.pattern, '/:section/admin')
+  })
+
+  test('match optional and wildcard routes through the static prefix index', ({ assert }) => {
+    const store = new RoutesStore()
+    addRoute(store, '/users/:id?')
+    addRoute(store, '/files/*')
+    assert.equal(store.match('/users', 'GET', false)?.route.pattern, '/users/:id?')
+    assert.equal(store.match('/files/a/b', 'GET', false)?.route.pattern, '/files/*')
+  })
+
+  test('index static routes registered after a dynamic route', ({ assert }) => {
+    const store = new RoutesStore()
+    addRoute(store, '/users/:id')
+    addRoute(store, '/health')
+    addRoute(store, '/metrics')
+
+    /**
+     * A dynamic route registered first must not keep later static routes out of
+     * the exact lookup table. Only routes that actually shadow them may.
+     */
+    assert.deepEqual(Object.keys(store.tree.domains.root.GET.staticRoutes ?? {}), [
+      '/health',
+      '/metrics',
+    ])
+
+    assert.equal(store.match('/health', 'GET', false)?.route.pattern, '/health')
+    assert.equal(store.match('/metrics', 'GET', false)?.route.pattern, '/metrics')
+    assert.equal(store.match('/users/1', 'GET', false)?.params.id, '1')
+  })
+
+  test('keep matching static routes that an earlier route shadows', ({ assert }) => {
+    const store = new RoutesStore()
+    addRoute(store, '/*')
+    addRoute(store, '/health')
+
+    assert.deepEqual(Object.keys(store.tree.domains.root.GET.staticRoutes ?? {}), [])
+    assert.equal(store.match('/health', 'GET', false)?.route.pattern, '/*')
+    assert.deepEqual(store.match('/health', 'GET', false)?.params, { '*': ['health'] })
+  })
+
+  test('do not let a trailing slash pattern shadow the static index', ({ assert }) => {
+    const store = new RoutesStore()
+    addRoute(store, '/health/')
+    addRoute(store, '/health')
+
+    assert.deepEqual(Object.keys(store.tree.domains.root.GET.staticRoutes ?? {}), [])
+    assert.equal(store.match('/health', 'GET', false)?.route.pattern, '/health/')
+  })
+
+  test('return null for a repeated non matching url', ({ assert }) => {
+    const store = new RoutesStore()
+    addRoute(store, '/users/:id')
+
+    assert.isNull(store.match('/nope', 'GET', false))
+    assert.isNull(store.match('/nope', 'GET', false))
+  })
+
+  test('do not resurrect the last route after adding a route', ({ assert }) => {
+    const store = new RoutesStore()
+    addRoute(store, '/users/:id')
+    assert.equal(store.match('/users/7', 'GET', false)?.route.pattern, '/users/:id')
+
+    addRoute(store, '/health')
+
+    /**
+     * Registration clears the memo of the last match. No url may resolve to the
+     * previously matched route just because the memo was invalidated.
+     */
+    assert.isNull(store.match('\0', 'GET', false))
+    assert.isNull(store.match('', 'GET', false))
+    assert.equal(store.match('/users/7', 'GET', false)?.route.pattern, '/users/:id')
+  })
+
+  test('match routes past the small table threshold', ({ assert }) => {
+    const store = new RoutesStore()
+    for (let index = 0; index < 120; index++) {
+      addRoute(store, `/static/${index}`)
+    }
+    for (let index = 0; index < 120; index++) {
+      addRoute(store, `/dynamic/${index}/:id`)
+    }
+
+    assert.equal(store.match('/static/0', 'GET', false)?.route.pattern, '/static/0')
+    assert.equal(store.match('/static/119', 'GET', false)?.route.pattern, '/static/119')
+    assert.equal(store.match('/dynamic/119/7', 'GET', false)?.params.id, '7')
+    assert.isNull(store.match('/static/120', 'GET', false))
   })
 
   test('test params against matchers before matching', ({ assert }) => {
