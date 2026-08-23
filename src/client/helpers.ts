@@ -130,7 +130,9 @@ export function createURL(
         )
       }
 
-      uriSegments.push(`${values.join('/')}${token.end}`)
+      uriSegments.push(
+        `${values.map((value) => encodeURIComponent(String(value))).join('/')}${token.end}`
+      )
       break
     }
 
@@ -148,7 +150,7 @@ export function createURL(
     }
 
     if (isDefined) {
-      uriSegments.push(`${value}${token.end}`)
+      uriSegments.push(`${encodeURIComponent(String(value))}${token.end}`)
     }
 
     paramsIndex++

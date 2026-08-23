@@ -39,6 +39,29 @@ test.group('URLBuilder', () => {
     assert.equal(urlFor('users.show', ['1']), '/users/1')
   })
 
+  test('encode route params as path segments', ({ assert }) => {
+    const router = new RouterFactory().create()
+    const { urlFor } = new URLBuilderFactory<{
+      ALL: {
+        'pages.show': {
+          params: { page: string }
+          paramsTuple: [string]
+        }
+      }
+    }>()
+      .merge({ router })
+      .create()
+
+    router.route('/:page', ['GET'], () => {}).as('pages.show')
+    router.commit()
+
+    assert.equal(
+      urlFor('pages.show', { page: '/evil.example.com?query#fragment' }),
+      '/%2Fevil.example.com%3Fquery%23fragment'
+    )
+    assert.equal(urlFor('pages.show', { page: '\\evil.example.com' }), '/%5Cevil.example.com')
+  })
+
   test('create url for specific methods', ({ assert }) => {
     const router = new RouterFactory().create()
 
@@ -339,6 +362,25 @@ test.group('URLBuilder', () => {
     router.route('/users/*', ['GET'], () => {}).as('users.list')
     router.commit()
     assert.equal(urlFor('users.list', { '*': ['1', '2', '3'] }), '/users/1/2/3')
+  })
+
+  test('encode each wildcard param as a path segment', ({ assert }) => {
+    const router = new RouterFactory().create()
+    const { urlFor } = new URLBuilderFactory<{
+      ALL: {
+        'files.show': { paramsTuple: [string[]]; params: { '*': string[] } }
+      }
+    }>()
+      .merge({ router })
+      .create()
+
+    router.route('/files/*', ['GET'], () => {}).as('files.show')
+    router.commit()
+
+    assert.equal(
+      urlFor('files.show', { '*': ['folder/name', '?query#fragment'] }),
+      '/files/folder%2Fname/%3Fquery%23fragment'
+    )
   })
 
   test('raise error when wildcard params are missing', ({ assert }) => {
