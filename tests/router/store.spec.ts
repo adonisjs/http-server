@@ -785,7 +785,7 @@ test.group('Store | match', () => {
       }
     }
 
-    for (let iteration = 0; iteration < 250; iteration++) {
+    for (let iteration = 0; iteration < 1_000; iteration++) {
       const shuffled = routeDefinitions.slice()
       for (let index = shuffled.length - 1; index > 0; index--) {
         const swapIndex = Math.floor(random() * (index + 1))

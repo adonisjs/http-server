@@ -27,7 +27,7 @@ export type RouteMatcher = {
 }
 
 /**
- * Route token structure used internally by the matchit routing library
+ * Route token structure used internally by the router
  */
 export type MatchItRouteToken = RouteMatcher & ClientRouteMatchItTokens
 

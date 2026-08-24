@@ -7,8 +7,6 @@
  * file that was distributed with this source code.
  */
 
-// @ts-expect-error
-import matchit from '@poppinss/matchit'
 import { RuntimeException } from '@poppinss/utils/exception'
 
 import type {
@@ -21,20 +19,7 @@ import type {
 } from '../types/route.ts'
 import debug from '../debug.ts'
 import { parseRoute } from '../helpers.ts'
-
-type IndexedStaticRoute = {
-  route: RouteJSON
-  precedingDynamicRoutesCount: number
-}
-
-type MethodNodeIndex = {
-  staticRoutes: Map<string, IndexedStaticRoute>
-  dynamicRoutes: MatchItRouteToken[][]
-}
-
-type ParsedRouteToken = MatchItRouteToken & {
-  matcher?: RegExp
-}
+import { RouteTable, extractRouteParams } from './route_table.ts'
 
 /**
  * Store class is used to store a list of routes, along side with their tokens
@@ -62,7 +47,8 @@ export class RoutesStore {
    * Lookup indexes are kept outside the public routes tree to avoid changing
    * its observable shape.
    */
-  #methodNodeIndexes = new WeakMap<StoreMethodNode, MethodNodeIndex>()
+  #methodRouteTables = new WeakMap<StoreMethodNode, RouteTable<RouteJSON>>()
+  #domainRouteTable = new RouteTable<MatchItRouteToken[]>()
 
   /**
    * A flag to know if routes for explicit domains
@@ -71,7 +57,7 @@ export class RoutesStore {
   usingDomains: boolean = false
 
   /**
-   * Tree of registered routes and their matchit tokens
+   * Tree of registered routes and their parsed tokens
    */
   tree: StoreRoutesTree = { tokens: [], domains: {} }
 
@@ -80,7 +66,9 @@ export class RoutesStore {
    */
   #getDomainNode(domain: string): StoreDomainNode {
     if (!this.tree.domains[domain]) {
-      this.tree.tokens.push(parseRoute(domain))
+      const tokens = parseRoute(domain)
+      this.tree.tokens.push(tokens)
+      this.#domainRouteTable.add(tokens, tokens)
       this.tree.domains[domain] = {}
     }
 
@@ -94,115 +82,10 @@ export class RoutesStore {
     const domainNode = this.#getDomainNode(domain)
     if (!domainNode[method]) {
       domainNode[method] = { tokens: [], routes: {}, routeKeys: {} }
+      this.#methodRouteTables.set(domainNode[method], new RouteTable())
     }
 
     return domainNode[method]
-  }
-
-  /**
-   * Returns an index key for a static route. Empty token lists are excluded,
-   * since matchit does not treat them as static routes.
-   */
-  #getStaticRouteKey(tokens: MatchItRouteToken[]): string | null {
-    if (!tokens.length || tokens.some((token) => token.type !== 0)) {
-      return null
-    }
-
-    return tokens.length === 1 && tokens[0].val === '/'
-      ? 'root'
-      : `segments:${tokens.map((token) => token.val).join('/')}`
-  }
-
-  /**
-   * Removes a single leading and trailing slash, just like matchit.
-   */
-  #stripRoutePath(pathname: string): string {
-    if (pathname === '/') {
-      return pathname
-    }
-
-    if (pathname.charCodeAt(0) === 47) {
-      pathname = pathname.substring(1)
-    }
-
-    const lastIndex = pathname.length - 1
-    if (pathname.charCodeAt(lastIndex) === 47) {
-      pathname = pathname.substring(0, lastIndex)
-    }
-
-    return pathname
-  }
-
-  /**
-   * Returns the static index key for a request path.
-   */
-  #getStaticRequestKey(pathname: string): string {
-    pathname = this.#stripRoutePath(pathname)
-    return pathname === '/' ? 'root' : `segments:${pathname}`
-  }
-
-  /**
-   * Matches a prefix of routes using matchit's matching semantics. Limiting the
-   * scan prevents routes registered after a static candidate from producing
-   * observable matcher side effects or errors.
-   */
-  #matchRoutesBefore(
-    pathname: string,
-    routes: MatchItRouteToken[][],
-    routesCount: number
-  ): MatchItRouteToken[] {
-    if (!routesCount) {
-      return []
-    }
-
-    pathname = this.#stripRoutePath(pathname)
-    const segments = pathname === '/' ? ['/'] : pathname.split('/')
-    const segmentsCount = segments.length
-
-    for (let routeIndex = 0; routeIndex < routesCount; routeIndex++) {
-      const tokens = routes[routeIndex]
-      const tokensCount = tokens.length
-
-      if (
-        tokensCount !== segmentsCount &&
-        !(tokensCount < segmentsCount && tokens[tokensCount - 1].type === 2) &&
-        !(tokensCount > segmentsCount && tokens[tokensCount - 1].type === 3)
-      ) {
-        continue
-      }
-
-      let matches = true
-      for (let tokenIndex = 0; tokenIndex < tokensCount; tokenIndex++) {
-        const token = tokens[tokenIndex] as ParsedRouteToken
-        const segment = segments[tokenIndex]
-
-        if (token.val === segment && token.type === 0) {
-          continue
-        }
-        if (segment === '/') {
-          matches = token.type > 1
-        } else if (token.type === 0) {
-          matches = false
-        } else if (segment === '') {
-          matches = token.end === '' && (token.matcher ? token.matcher.test(segment) : true)
-        } else if (!segment) {
-          matches = token.end === ''
-        } else {
-          matches =
-            segment.endsWith(token.end) && (token.matcher ? token.matcher.test(segment) : true)
-        }
-
-        if (!matches) {
-          break
-        }
-      }
-
-      if (matches) {
-        return tokens
-      }
-    }
-
-    return []
   }
 
   /**
@@ -218,21 +101,8 @@ export class RoutesStore {
       route,
       routeKey: methodNode.routeKeys[route.pattern],
       params,
-      subdomains: domain?.hostname ? matchit.exec(domain.hostname, domain.tokens) : {},
+      subdomains: domain?.hostname ? extractRouteParams(domain.tokens, domain.hostname, false) : {},
     }
-  }
-
-  /**
-   * Creates the static index lazily. Routes registered before the first static
-   * route are copied to the dynamic fallback in their original order.
-   */
-  #createMethodNodeIndex(methodNode: StoreMethodNode): MethodNodeIndex {
-    const index: MethodNodeIndex = {
-      staticRoutes: new Map(),
-      dynamicRoutes: methodNode.tokens.slice(),
-    }
-    this.#methodNodeIndexes.set(methodNode, index)
-    return index
   }
 
   /**
@@ -277,20 +147,7 @@ export class RoutesStore {
       debug('route middleware %O', route.middleware.all().entries())
     }
 
-    const staticRouteKey = this.#getStaticRouteKey(tokens)
-    let methodNodeIndex = this.#methodNodeIndexes.get(methodRoutes)
-
-    if (staticRouteKey !== null) {
-      methodNodeIndex ||= this.#createMethodNodeIndex(methodRoutes)
-      if (!methodNodeIndex.staticRoutes.has(staticRouteKey)) {
-        methodNodeIndex.staticRoutes.set(staticRouteKey, {
-          route,
-          precedingDynamicRoutesCount: methodNodeIndex.dynamicRoutes.length,
-        })
-      }
-    } else if (methodNodeIndex) {
-      methodNodeIndex.dynamicRoutes.push(tokens)
-    }
+    this.#methodRouteTables.get(methodRoutes)!.add(tokens, route)
 
     methodRoutes.tokens.push(tokens)
     methodRoutes.routes[route.pattern] = route
@@ -379,50 +236,12 @@ export class RoutesStore {
       return null
     }
 
-    const methodNodeIndex = this.#methodNodeIndexes.get(matchedMethod)
-    if (methodNodeIndex) {
-      const staticRoute = methodNodeIndex.staticRoutes.get(this.#getStaticRequestKey(url))
-
-      const dynamicRoute = staticRoute
-        ? this.#matchRoutesBefore(
-            url,
-            methodNodeIndex.dynamicRoutes,
-            staticRoute.precedingDynamicRoutesCount
-          )
-        : matchit.match(url, methodNodeIndex.dynamicRoutes)
-      if (!dynamicRoute.length) {
-        if (!staticRoute) {
-          return null
-        }
-
-        return this.#createMatchedRoute(staticRoute.route, matchedMethod, {}, domain)
-      }
-
-      const route = matchedMethod.routes[dynamicRoute[0].old]
-      return this.#createMatchedRoute(
-        route,
-        matchedMethod,
-        matchit.exec(url, dynamicRoute, shouldDecodeParam),
-        domain
-      )
-    }
-
-    /*
-     * Next, match route for the given url inside the tokens list for the
-     * matchedMethod
-     */
-    const matchedRoute = matchit.match(url, matchedMethod.tokens)
-    if (!matchedRoute.length) {
+    const matchedRoute = this.#methodRouteTables.get(matchedMethod)!.match(url, shouldDecodeParam)
+    if (!matchedRoute) {
       return null
     }
 
-    const route = matchedMethod.routes[matchedRoute[0].old]
-    return this.#createMatchedRoute(
-      route,
-      matchedMethod,
-      matchit.exec(url, matchedRoute, shouldDecodeParam),
-      domain
-    )
+    return this.#createMatchedRoute(matchedRoute.value, matchedMethod, matchedRoute.params, domain)
   }
 
   /**
@@ -435,6 +254,6 @@ export class RoutesStore {
       return []
     }
 
-    return matchit.match(hostname, this.tree.tokens)
+    return this.#domainRouteTable.match(hostname, false)?.value ?? []
   }
 }
