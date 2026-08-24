@@ -28,6 +28,8 @@
     "build": "npm run compile",
     "prebenchmark": "npm run build",
     "benchmark": "node benchmarks/index.js",
+    "prebenchmark:router": "npm run build",
+    "benchmark:router": "node benchmarks/router.js",
     "release": "release-it",
     "version": "npm run build",
     "format": "prettier --write .",

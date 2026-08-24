@@ -1,0 +1,128 @@
+{
+  "label": "fixed2",
+  "timestamp": "2026-08-17T20:04:29.136Z",
+  "environment": {
+    "cpu": "Apple M4",
+    "memory": 34359738368,
+    "node": "v24.19.0",
+    "platform": "darwin 24.6.0 arm64"
+  },
+  "configuration": {
+    "staticRoutes": 60,
+    "dynamicRoutes": 20,
+    "connections": 100,
+    "pipelining": 10,
+    "duration": 10,
+    "warmupDuration": 3
+  },
+  "results": [
+    {
+      "framework": "AdonisJS HTTP Server",
+      "scenario": "static-first",
+      "requests": 152279.28,
+      "latency": 6.08
+    },
+    {
+      "framework": "AdonisJS HTTP Server",
+      "scenario": "static-last",
+      "requests": 153070.55,
+      "latency": 6.05
+    },
+    {
+      "framework": "AdonisJS HTTP Server",
+      "scenario": "dynamic-first",
+      "requests": 148043.64,
+      "latency": 6.21
+    },
+    {
+      "framework": "AdonisJS HTTP Server",
+      "scenario": "dynamic-last",
+      "requests": 148672,
+      "latency": 6.19
+    },
+    {
+      "framework": "AdonisJS HTTP Server",
+      "scenario": "alternating-static",
+      "requests": 151965.1,
+      "latency": 6.08
+    },
+    {
+      "framework": "AdonisJS HTTP Server",
+      "scenario": "alternating-dynamic",
+      "requests": 140549.82,
+      "latency": 6.51
+    },
+    {
+      "framework": "AdonisJS HTTP Server",
+      "scenario": "varied-static",
+      "requests": 151732.37,
+      "latency": 6.08
+    },
+    {
+      "framework": "AdonisJS HTTP Server",
+      "scenario": "varied-dynamic",
+      "requests": 138234.19,
+      "latency": 6.89
+    },
+    {
+      "framework": "AdonisJS HTTP Server",
+      "scenario": "varied-mixed",
+      "requests": 143458.91,
+      "latency": 6.31
+    },
+    {
+      "framework": "Fastify",
+      "scenario": "static-first",
+      "requests": 115488,
+      "latency": 8.02
+    },
+    {
+      "framework": "Fastify",
+      "scenario": "static-last",
+      "requests": 115109.82,
+      "latency": 8.01
+    },
+    {
+      "framework": "Fastify",
+      "scenario": "dynamic-first",
+      "requests": 115330.91,
+      "latency": 8.02
+    },
+    {
+      "framework": "Fastify",
+      "scenario": "dynamic-last",
+      "requests": 115371.64,
+      "latency": 8.02
+    },
+    {
+      "framework": "Fastify",
+      "scenario": "alternating-static",
+      "requests": 115592.73,
+      "latency": 7.98
+    },
+    {
+      "framework": "Fastify",
+      "scenario": "alternating-dynamic",
+      "requests": 114818.91,
+      "latency": 8.03
+    },
+    {
+      "framework": "Fastify",
+      "scenario": "varied-static",
+      "requests": 114725.82,
+      "latency": 8.07
+    },
+    {
+      "framework": "Fastify",
+      "scenario": "varied-dynamic",
+      "requests": 114638.55,
+      "latency": 8.09
+    },
+    {
+      "framework": "Fastify",
+      "scenario": "varied-mixed",
+      "requests": 113911.28,
+      "latency": 8.17
+    }
+  ]
+}

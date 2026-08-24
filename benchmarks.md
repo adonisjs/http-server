@@ -16,6 +16,28 @@ You can run the same benchmarks by cloning the repo and then running the followi
 npm run benchmark
 ```
 
+This workload measures the complete HTTP request pipeline with one static `GET /` route. It does not measure how routing performance changes with route count or alternating URLs.
+
+## Router benchmark
+
+The router benchmark registers 1,000 static routes and 100 dynamic routes in both AdonisJS HTTP Server and Fastify. It measures the first and last static and dynamic routes, alternating static and dynamic URLs, and URLs spread over the whole table.
+
+```sh
+npm run benchmark:router
+```
+
+Each scenario runs for 10 seconds after a shared warmup. The workload can be adjusted with `BENCH_DURATION`, `BENCH_WARMUP_DURATION`, `BENCH_CONNECTIONS`, `BENCH_PIPELINING`, `BENCH_STATIC_ROUTES`, and `BENCH_DYNAMIC_ROUTES`. Set `BENCH_OUTPUT` to save the raw results as JSON and `BENCH_LABEL` to identify the run.
+
+`BENCH_SHAPE` selects how the route table is built. `uniform` (the default) declares every static route before any dynamic one and has no catch-all. `app` mirrors how routes accumulate in a real application: a dynamic route appears early among the static ones, and a top level param route plus a catch-all close the file. Route matching is sensitive to both, so a router change should be measured against each.
+
+```sh
+BENCH_SHAPE=app BENCH_STATIC_ROUTES=60 BENCH_DYNAMIC_ROUTES=20 npm run benchmark:router
+```
+
+Scenarios built from a single path measure a repeated URL, which per-URL memoisation answers without running the matcher. The `varied-*` scenarios spread requests across the table and are the ones that reflect mixed traffic.
+
+See the [recorded before-and-after results](benchmarks/results/router-comparison.md) for both table shapes.
+
 Since the program correctness and reliability is more important over micro optimizations. We pay penalty on following fronts in comparison to Fastify.
 
 - **The AdonisJS query string parser can parse arrays inside the query string** `(/api?foo[]=bar&foo[]=fuzz&foo[]=buzz
