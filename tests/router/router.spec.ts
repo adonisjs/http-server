@@ -558,6 +558,31 @@ test.group('Router | commit', () => {
 })
 
 test.group('Router | match', () => {
+  test('do not let a malformed repeated-separator route shadow the root route', ({ assert }) => {
+    async function repeatedSeparatorHandler() {}
+    async function rootHandler() {}
+
+    const router = new RouterFactory().create()
+    router.get('////', repeatedSeparatorHandler)
+    router.get('/', rootHandler)
+    router.commit()
+
+    assert.strictEqual(router.match('/', 'GET', false)?.route.handler, rootHandler)
+  })
+
+  test('normalize an empty route pattern to root without matching an empty request path', ({
+    assert,
+  }) => {
+    async function handler() {}
+
+    const router = new RouterFactory().create()
+    router.get('', handler)
+    router.commit()
+
+    assert.strictEqual(router.match('/', 'GET', false)?.route.handler, handler)
+    assert.isNull(router.match('', 'GET', false))
+  })
+
   test('match route using URL', ({ assert }) => {
     const router = new RouterFactory().create()
 
