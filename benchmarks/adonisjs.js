@@ -10,7 +10,7 @@
 import { createServer } from 'node:http'
 import { Logger } from '@adonisjs/logger'
 import { Emitter } from '@adonisjs/events'
-import { Encryption } from '@boringnode/encryption'
+import { EncryptionFactory } from '@boringnode/encryption/factories'
 import { Application } from '@adonisjs/application'
 
 import { defineConfig, Server } from '../build/index.js'
@@ -21,7 +21,7 @@ const app = new Application(new URL('./', import.meta.url), {
 })
 await app.init()
 
-const encryption = new Encryption({ secret: 'averylongrandom32charslongsecret' })
+const encryption = new EncryptionFactory().create()
 
 const server = new Server(
   app,
