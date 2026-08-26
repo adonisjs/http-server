@@ -739,6 +739,7 @@ test.group('Store | match', () => {
       { pattern: '/teams/:id', matchers: { id: { match: /^\d+$/, cast: Number } } },
       { pattern: '/teams/:id?' },
       { pattern: '/teams/*' },
+      { pattern: '/posts/:slug?.json' },
     ]
     const pathnames = [
       '',
@@ -753,9 +754,12 @@ test.group('Store | match', () => {
       '//users',
       '/teams/users',
       '/teams//users',
+      '/teams',
       '/teams/42',
       '/teams/Romain%20Lanz',
       '/teams/42/members',
+      '/posts',
+      '/posts/article.json',
       '/missing',
     ]
 

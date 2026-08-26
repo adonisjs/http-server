@@ -351,7 +351,8 @@ export class RouteTable<T> {
     segments: string[],
     segmentIndex: number,
     cutoff: number,
-    candidateLists: IndexedRoute<T>[][]
+    candidateLists: IndexedRoute<T>[][],
+    canMatchTerminal: boolean = true
   ) {
     if (node.minimumOrder >= cutoff) {
       return
@@ -364,15 +365,24 @@ export class RouteTable<T> {
 
     if (segmentIndex === segments.length) {
       const terminals = node.terminals
-      if (terminals?.length && terminals[0].order < cutoff) {
+      if (canMatchTerminal && terminals?.length && terminals[0].order < cutoff) {
         candidateLists.push(terminals)
       }
-      for (const optionalChild of node.optionals?.values() ?? []) {
-        this.#collectCandidates(optionalChild, segments, segmentIndex, cutoff, candidateLists)
+      for (const [suffix, optionalChild] of node.optionals ?? []) {
+        if (suffix === '') {
+          this.#collectCandidates(optionalChild, segments, segmentIndex, cutoff, candidateLists)
+        }
       }
       for (const [suffix, parameterChild] of node.parameters ?? []) {
         if (suffix === '') {
-          this.#collectCandidates(parameterChild, segments, segmentIndex, cutoff, candidateLists)
+          this.#collectCandidates(
+            parameterChild,
+            segments,
+            segmentIndex,
+            cutoff,
+            candidateLists,
+            false
+          )
         }
       }
       return
