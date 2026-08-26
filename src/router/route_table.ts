@@ -359,7 +359,7 @@ export class RouteTable<T> {
     }
 
     const wildcards = node.wildcards
-    if (wildcards?.length && wildcards[0].order < cutoff && segmentIndex < segments.length) {
+    if (wildcards?.length && wildcards[0].order < cutoff) {
       candidateLists.push(wildcards)
     }
 

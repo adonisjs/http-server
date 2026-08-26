@@ -97,6 +97,18 @@ test.group('Route table', () => {
     })
   })
 
+  test('preserve empty path matches with a wildcard before a trailing optional', ({ assert }) => {
+    const table = new RouteTable<{ pattern: string }>()
+    const route = { pattern: '/:value/*:optional?' }
+
+    table.add(parseRoute(route.pattern), route)
+
+    assert.deepEqual(table.match('', false), {
+      value: route,
+      params: { value: '' },
+    })
+  })
+
   test('preserve custom regular expression evaluation order', ({ assert }) => {
     const table = new RouteTable<{ pattern: string }>()
     const matcher = /^[a-z]+$/
