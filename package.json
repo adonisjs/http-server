@@ -95,8 +95,8 @@
     "youch": "^4.1.1"
   },
   "dependencies": {
+    "@boringnode/route-matcher": "^0.1.1",
     "@poppinss/macroable": "^1.1.2",
-    "@poppinss/matchit": "^3.2.0",
     "@poppinss/middleware": "^3.2.7",
     "@poppinss/qs": "^6.15.0",
     "@poppinss/types": "^1.2.1",

@@ -10,9 +10,29 @@
 import { test } from '@japa/runner'
 import Middleware from '@poppinss/middleware'
 
+import type { RouteJSON } from '../../src/types/route.ts'
 import { parseRoute } from '../../src/helpers.ts'
 import { execute } from '../../src/router/executor.ts'
 import { RoutesStore } from '../../src/router/store.ts'
+
+function addRoute(
+  store: RoutesStore,
+  pattern: string,
+  options: Partial<Pick<RouteJSON, 'tokens' | 'handler' | 'matchers' | 'methods' | 'domain'>> = {}
+) {
+  const matchers = options.matchers ?? {}
+  store.add({
+    pattern,
+    tokens: options.tokens ?? parseRoute(pattern, matchers),
+    handler: options.handler ?? async function handler() {},
+    matchers,
+    meta: {},
+    execute,
+    middleware: new Middleware<any>(),
+    methods: options.methods ?? ['GET'],
+    domain: options.domain ?? 'root',
+  })
+}
 
 test.group('Store | add', () => {
   test('add route without explicit domain', ({ assert }) => {
@@ -556,6 +576,146 @@ test.group('Store | add', () => {
 })
 
 test.group('Store | match', () => {
+  test('preserve registration order for equivalent static routes with repeated trailing separators', ({
+    assert,
+  }) => {
+    async function repeatedSeparatorHandler() {}
+    async function canonicalHandler() {}
+
+    const store = new RoutesStore()
+    for (const [pattern, handler] of [
+      ['/users//', repeatedSeparatorHandler],
+      ['/users', canonicalHandler],
+    ] as const) {
+      addRoute(store, pattern, { handler })
+    }
+
+    assert.strictEqual(store.match('/users', 'GET', false)?.route.handler, repeatedSeparatorHandler)
+  })
+
+  test('preserve registration order across static, parameter, optional, and wildcard routes', ({
+    assert,
+  }) => {
+    const cases = [
+      { patterns: ['/:value', '/users'], pathname: '/users', expected: '/:value' },
+      { patterns: ['/users', '/:value'], pathname: '/users', expected: '/users' },
+      { patterns: ['/:value?', '/'], pathname: '/', expected: '/:value?' },
+      { patterns: ['/', '/:value?'], pathname: '/', expected: '/' },
+      { patterns: ['/*', '/users'], pathname: '/users', expected: '/*' },
+      { patterns: ['/users', '/*'], pathname: '/users', expected: '/users' },
+    ]
+
+    for (const { patterns, pathname, expected } of cases) {
+      const store = new RoutesStore()
+      for (const pattern of patterns) {
+        addRoute(store, pattern)
+      }
+
+      assert.equal(store.match(pathname, 'GET', false)?.route.pattern, expected)
+    }
+  })
+
+  test('preserve separator semantics for static routes', ({ assert }) => {
+    const cases = [
+      {
+        patterns: ['/users', 'users/'],
+        pathnames: ['/users', '/users/', 'users', 'users/'],
+        expected: '/users',
+      },
+      { patterns: ['//users', '/users'], pathnames: ['/users'], expected: '/users' },
+      {
+        patterns: ['/teams//users', '/teams/users'],
+        pathnames: ['/teams//users'],
+        expected: '/teams//users',
+      },
+      {
+        patterns: ['/teams//users', '/teams/users'],
+        pathnames: ['/teams/users'],
+        expected: '/teams/users',
+      },
+    ]
+
+    for (const { patterns, pathnames, expected } of cases) {
+      const store = new RoutesStore()
+      for (const pattern of patterns) {
+        addRoute(store, pattern)
+      }
+
+      for (const pathname of pathnames) {
+        assert.equal(store.match(pathname, 'GET', false)?.route.pattern, expected)
+      }
+    }
+  })
+
+  test('return the same route object for repeated matches and routes with multiple methods', ({
+    assert,
+  }) => {
+    const store = new RoutesStore()
+    addRoute(store, '/users', { methods: ['GET', 'POST'] })
+
+    const firstGetMatch = store.match('/users', 'GET', false)!
+    const secondGetMatch = store.match('/users/', 'GET', false)!
+    const postMatch = store.match('/users', 'POST', false)!
+
+    assert.strictEqual(firstGetMatch.route, secondGetMatch.route)
+    assert.strictEqual(firstGetMatch.route, postMatch.route)
+    assert.equal(firstGetMatch.routeKey, 'GET-/users')
+    assert.equal(postMatch.routeKey, 'POST-/users')
+  })
+
+  test('decode parameter and wildcard values only when requested', ({ assert }) => {
+    const store = new RoutesStore()
+    for (const pattern of ['/users/:name', '/files/*']) {
+      addRoute(store, pattern)
+    }
+
+    assert.deepEqual(store.match('/users/Romain%20Lanz', 'GET', false)?.params, {
+      name: 'Romain%20Lanz',
+    })
+    assert.deepEqual(store.match('/users/Romain%20Lanz', 'GET', true)?.params, {
+      name: 'Romain Lanz',
+    })
+    assert.deepEqual(store.match('/files/folder%20one/file%20two', 'GET', false)?.params, {
+      '*': ['folder%20one', 'file%20two'],
+    })
+    assert.deepEqual(store.match('/files/folder%20one/file%20two', 'GET', true)?.params, {
+      '*': ['folder one', 'file two'],
+    })
+  })
+
+  test('extract subdomains when matching an indexed static route on an explicit domain', ({
+    assert,
+  }) => {
+    const store = new RoutesStore()
+    addRoute(store, '/dashboard', { domain: ':tenant.adonisjs.com' })
+
+    const domainTokens = store.matchDomain('news.adonisjs.com')
+    assert.containSubset(
+      store.match('/dashboard', 'GET', false, {
+        tokens: domainTokens,
+        hostname: 'news.adonisjs.com',
+      }),
+      {
+        route: { pattern: '/dashboard' },
+        routeKey: ':tenant.adonisjs.com-GET-/dashboard',
+        params: {},
+        subdomains: { tenant: 'news' },
+      }
+    )
+  })
+
+  test('apply matchers and casts on a dynamic route before an indexed static route', ({
+    assert,
+  }) => {
+    const store = new RoutesStore()
+    const matchers = { id: { match: /^\d+$/, cast: Number } }
+    addRoute(store, '/:id', { matchers })
+    addRoute(store, '/users')
+
+    assert.deepEqual(store.match('/42', 'GET', false)?.params, { id: 42 })
+    assert.equal(store.match('/users', 'GET', false)?.route.pattern, '/users')
+  })
+
   test('find route for a given url', ({ assert }) => {
     async function handler() {}
 
