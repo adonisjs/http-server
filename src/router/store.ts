@@ -8,6 +8,7 @@
  */
 
 import { RuntimeException } from '@poppinss/utils/exception'
+import { RouteTable, extractRouteParams, type RouteToken } from '@boringnode/route-matcher'
 
 import type {
   RouteJSON,
@@ -15,11 +16,9 @@ import type {
   StoreDomainNode,
   StoreMethodNode,
   StoreRoutesTree,
-  MatchItRouteToken,
 } from '../types/route.ts'
 import debug from '../debug.ts'
 import { parseRoute } from '../helpers.ts'
-import { RouteTable, extractRouteParams } from './route_table.ts'
 
 /**
  * Store class is used to store a list of routes, along side with their tokens
@@ -48,7 +47,7 @@ export class RoutesStore {
    * its observable shape.
    */
   #methodRouteTables = new WeakMap<StoreMethodNode, RouteTable<RouteJSON>>()
-  #domainRouteTable = new RouteTable<MatchItRouteToken[]>()
+  #domainRouteTable = new RouteTable<RouteToken[]>()
 
   /**
    * A flag to know if routes for explicit domains
@@ -95,7 +94,7 @@ export class RoutesStore {
     route: RouteJSON,
     methodNode: StoreMethodNode,
     params: Record<string, any>,
-    domain?: { tokens: MatchItRouteToken[]; hostname: string }
+    domain?: { tokens: RouteToken[]; hostname: string }
   ): MatchedRoute {
     return {
       route,
@@ -108,7 +107,7 @@ export class RoutesStore {
   /**
    * Collects route params
    */
-  #collectRouteParams(route: RouteJSON, tokens: MatchItRouteToken[]) {
+  #collectRouteParams(route: RouteJSON, tokens: RouteToken[]) {
     const collectedParams: Set<string> = new Set()
 
     for (let token of tokens) {
@@ -130,7 +129,7 @@ export class RoutesStore {
   /**
    * Register route for a given domain and method
    */
-  #registerRoute(domain: string, method: string, tokens: MatchItRouteToken[], route: RouteJSON) {
+  #registerRoute(domain: string, method: string, tokens: RouteToken[], route: RouteJSON) {
     const methodRoutes = this.#getMethodNode(domain, method)
 
     /*
@@ -217,7 +216,7 @@ export class RoutesStore {
     url: string,
     method: string,
     shouldDecodeParam: boolean,
-    domain?: { tokens: MatchItRouteToken[]; hostname: string }
+    domain?: { tokens: RouteToken[]; hostname: string }
   ): null | MatchedRoute {
     const domainName = domain?.tokens[0]?.old || 'root'
 
@@ -249,7 +248,7 @@ export class RoutesStore {
    * @param hostname - The hostname to match
    * @returns Array of matched domain tokens
    */
-  matchDomain(hostname?: string | null): MatchItRouteToken[] {
+  matchDomain(hostname?: string | null): RouteToken[] {
     if (!hostname || !this.usingDomains) {
       return []
     }

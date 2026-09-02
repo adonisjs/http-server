@@ -10,26 +10,19 @@
 import type Middleware from '@poppinss/middleware'
 import type { ContainerResolver } from '@adonisjs/fold'
 import type { Constructor, LazyImport } from '@poppinss/utils/types'
+import type { RouteMatchers, RouteToken } from '@boringnode/route-matcher'
 
 import type { ServerErrorHandler } from './server.ts'
 import type { HttpContext } from '../http_context/main.ts'
 import type { MiddlewareFn, ParsedGlobalMiddleware } from './middleware.ts'
-import { type ClientRouteJSON, type ClientRouteMatchItTokens } from '../client/types.ts'
+import { type ClientRouteJSON } from '../client/types.ts'
+
+export type { RouteMatcher, RouteMatchers, RouteToken } from '@boringnode/route-matcher'
 
 /**
- * Configuration for matching and casting route parameters
+ * @deprecated Use `RouteToken` instead.
  */
-export type RouteMatcher = {
-  /** Regular expression to match parameter values */
-  match?: RegExp
-  /** Function to cast string parameter values to specific types */
-  cast?: (value: string) => any
-}
-
-/**
- * Route token structure used internally by the router
- */
-export type MatchItRouteToken = RouteMatcher & ClientRouteMatchItTokens
+export type MatchItRouteToken = RouteToken
 
 /**
  * Extracts method names from a controller class that accept HttpContext as first parameter
@@ -73,14 +66,15 @@ export type StoreRouteHandler =
  * Middleware representation stored with route information
  */
 export type StoreRouteMiddleware =
-  MiddlewareFn | ({ name?: string; args?: any[] } & ParsedGlobalMiddleware)
+  | MiddlewareFn
+  | ({ name?: string; args?: any[] } & ParsedGlobalMiddleware)
 
 /**
  * Route storage structure for a specific HTTP method containing tokens and route mappings
  */
 export type StoreMethodNode = {
   /** Array of route tokens for pattern matching */
-  tokens: MatchItRouteToken[][]
+  tokens: RouteToken[][]
   /** Mapping from route patterns to unique route keys */
   routeKeys: {
     [pattern: string]: string
@@ -104,7 +98,7 @@ export type StoreDomainNode = {
  */
 export type StoreRoutesTree = {
   /** Global route tokens for pattern matching */
-  tokens: MatchItRouteToken[][]
+  tokens: RouteToken[][]
   /** Domain-based route organization */
   domains: {
     [domain: string]: StoreDomainNode
@@ -132,14 +126,6 @@ export type MatchedRoute = {
    * Route subdomains (if part of a subdomain)
    */
   subdomains: Record<string, any>
-}
-
-/**
- * Collection of parameter matchers indexed by parameter name
- */
-export type RouteMatchers = {
-  /** Parameter name to matcher mapping */
-  [param: string]: RouteMatcher
 }
 
 /**
@@ -175,7 +161,7 @@ export type RouteJSON = Pick<ClientRouteJSON, 'name' | 'methods' | 'domain' | 'p
   /**
    * Tokens to be used to construct the route URL
    */
-  tokens: MatchItRouteToken[]
+  tokens: RouteToken[]
 
   /**
    * Matchers for route params.
@@ -187,7 +173,13 @@ export type RouteJSON = Pick<ClientRouteJSON, 'name' | 'methods' | 'domain' | 'p
  * Standard RESTful resource action names for CRUD operations
  */
 export type ResourceActionNames =
-  'create' | 'index' | 'store' | 'show' | 'edit' | 'update' | 'destroy'
+  | 'create'
+  | 'index'
+  | 'store'
+  | 'show'
+  | 'edit'
+  | 'update'
+  | 'destroy'
 
 /**
  * @deprecated Options for URL generation (use URLBuilder instead)

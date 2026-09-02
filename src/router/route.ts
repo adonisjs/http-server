@@ -144,7 +144,9 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
       pattern: string
       methods: string[]
       handler:
-        RouteFn | string | [LazyImport<Controller> | Controller, GetControllerHandlers<Controller>?]
+        | RouteFn
+        | string
+        | [LazyImport<Controller> | Controller, GetControllerHandlers<Controller>?]
       globalMatchers: RouteMatchers
     }
   ) {
@@ -172,7 +174,9 @@ export class Route<Controller extends Constructor<any> = any> extends Macroable 
    */
   #resolveRouteHandle(
     handler:
-      RouteFn | string | [LazyImport<Controller> | Controller, GetControllerHandlers<Controller>?]
+      | RouteFn
+      | string
+      | [LazyImport<Controller> | Controller, GetControllerHandlers<Controller>?]
   ) {
     /**
      * Convert magic string to handle method call

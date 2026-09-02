@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { type ClientRouteMatchItTokens, type ClientRouteJSON, type URLOptions } from './types.ts'
+import { type ClientRouteToken, type ClientRouteJSON, type URLOptions } from './types.ts'
 
 /**
  * Finds a route by its identifier across domains.
@@ -99,7 +99,7 @@ export function findRoute<Route extends ClientRouteJSON>(
  */
 export function createURL(
   pattern: string,
-  tokens: Pick<ClientRouteMatchItTokens, 'val' | 'type' | 'end'>[],
+  tokens: Pick<ClientRouteToken, 'val' | 'type' | 'end'>[],
   searchParamsStringifier: (qs: Record<string, any>) => string,
   params?: any[] | { [param: string]: any },
   options?: URLOptions

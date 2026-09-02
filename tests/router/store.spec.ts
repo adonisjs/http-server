@@ -9,10 +9,8 @@
 
 import { test } from '@japa/runner'
 import Middleware from '@poppinss/middleware'
-// @ts-expect-error
-import matchit from '@poppinss/matchit'
 
-import type { MatchedRoute, RouteJSON } from '../../src/types/route.ts'
+import type { RouteJSON } from '../../src/types/route.ts'
 import { parseRoute } from '../../src/helpers.ts'
 import { execute } from '../../src/router/executor.ts'
 import { RoutesStore } from '../../src/router/store.ts'
@@ -617,7 +615,7 @@ test.group('Store | match', () => {
     }
   })
 
-  test('preserve matchit separator semantics for static routes', ({ assert }) => {
+  test('preserve separator semantics for static routes', ({ assert }) => {
     const cases = [
       {
         patterns: ['/users', 'users/'],
@@ -716,117 +714,6 @@ test.group('Store | match', () => {
 
     assert.deepEqual(store.match('/42', 'GET', false)?.params, { id: 42 })
     assert.equal(store.match('/users', 'GET', false)?.route.pattern, '/users')
-  })
-
-  test('match the same route as matchit across generated route orders and path spellings', ({
-    assert,
-  }) => {
-    const routeDefinitions = [
-      { pattern: '/' },
-      { pattern: '' },
-      { pattern: '//' },
-      { pattern: '///' },
-      { pattern: '////' },
-      { pattern: '/users' },
-      { pattern: 'users/' },
-      { pattern: '/users//' },
-      { pattern: '/users///' },
-      { pattern: '//users' },
-      { pattern: '/teams//users' },
-      { pattern: '/:value' },
-      { pattern: '/:value?' },
-      { pattern: '/*' },
-      { pattern: '/teams/:id', matchers: { id: { match: /^\d+$/, cast: Number } } },
-      { pattern: '/teams/:id?' },
-      { pattern: '/teams/*' },
-      { pattern: '/posts/:slug?.json' },
-    ]
-    const pathnames = [
-      '',
-      '/',
-      '//',
-      '///',
-      '////',
-      'users',
-      '/users',
-      '/users/',
-      '/users//',
-      '//users',
-      '/teams/users',
-      '/teams//users',
-      '/teams',
-      '/teams/42',
-      '/teams/Romain%20Lanz',
-      '/teams/42/members',
-      '/posts',
-      '/posts/article.json',
-      '/missing',
-    ]
-
-    let seed = 42
-    function random() {
-      seed = (seed * 1_664_525 + 1_013_904_223) >>> 0
-      return seed / 2 ** 32
-    }
-
-    function captureMatch(callback: () => null | MatchedRoute) {
-      try {
-        const match = callback()
-        return match
-          ? {
-              status: 'matched',
-              routePattern: match.route.pattern,
-              routeKey: match.routeKey,
-              params: match.params,
-            }
-          : { status: 'missing' }
-      } catch (error) {
-        return {
-          status: 'threw',
-          errorName: (error as Error).constructor.name,
-          errorMessage: (error as Error).message,
-        }
-      }
-    }
-
-    for (let iteration = 0; iteration < 1_000; iteration++) {
-      const shuffled = routeDefinitions.slice()
-      for (let index = shuffled.length - 1; index > 0; index--) {
-        const swapIndex = Math.floor(random() * (index + 1))
-        ;[shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]]
-      }
-
-      const definitions = shuffled.slice(0, 1 + Math.floor(random() * 12))
-      const tokenLists = definitions.map(({ pattern, matchers }) => parseRoute(pattern, matchers))
-      const store = new RoutesStore()
-      definitions.forEach(({ pattern, matchers = {} }, index) => {
-        addRoute(store, pattern, { tokens: tokenLists[index], matchers })
-      })
-
-      for (const [pathnameIndex, pathname] of pathnames.entries()) {
-        const shouldDecodeParam = pathnameIndex % 2 === 0
-        const expected = captureMatch(() => {
-          const matchedTokens = matchit.match(pathname, tokenLists)
-          if (!matchedTokens.length) {
-            return null
-          }
-
-          const pattern = matchedTokens[0].old
-          return {
-            route: { pattern },
-            routeKey: `GET-${pattern}`,
-            params: matchit.exec(pathname, matchedTokens, shouldDecodeParam),
-          } as MatchedRoute
-        })
-        const actual = captureMatch(() => store.match(pathname, 'GET', shouldDecodeParam))
-
-        assert.deepEqual(
-          actual,
-          expected,
-          JSON.stringify({ definitions: definitions.map(({ pattern }) => pattern), pathname })
-        )
-      }
-    }
   })
 
   test('find route for a given url', ({ assert }) => {

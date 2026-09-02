@@ -11,6 +11,12 @@ import { serialize } from 'cookie-es'
 import string from '@poppinss/utils/string'
 import { type Encryption } from '@boringnode/encryption'
 import { parseBindingReference } from '@adonisjs/fold'
+import {
+  parseRoute as parseRoutePattern,
+  matchRouteTokens,
+  type RouteToken,
+  type RouteMatchers,
+} from '@boringnode/route-matcher'
 
 import { type Qs } from './qs.ts'
 import { safeDecodeURI } from './utils.ts'
@@ -18,9 +24,7 @@ import type { HttpRequest } from './request.ts'
 import { createURL } from './client/helpers.ts'
 import { type CookieOptions } from './types/response.ts'
 import { type SignedURLOptions } from './types/url_builder.ts'
-import type { RouteMatchers, RouteJSON, MatchItRouteToken } from './types/route.ts'
-import { matchRouteTokens } from './router/route_table.ts'
-import { parseRoutePattern } from './router/route_parser.ts'
+import type { RouteJSON } from './types/route.ts'
 import {
   type MiddlewareFn,
   type RouteHandlerInfo,
@@ -156,9 +160,9 @@ export { default as mime } from 'mime-types'
  *
  * @param pattern - The route pattern to parse
  * @param matchers - Optional route matchers
- * @returns {MatchItRouteToken[]} Array of parsed route tokens
+ * @returns {RouteToken[]} Array of parsed route tokens
  */
-export function parseRoute(pattern: string, matchers?: RouteMatchers): MatchItRouteToken[] {
+export function parseRoute(pattern: string, matchers?: RouteMatchers): RouteToken[] {
   return parseRoutePattern(pattern, matchers)
 }
 
@@ -176,7 +180,7 @@ export function parseRoute(pattern: string, matchers?: RouteMatchers): MatchItRo
  */
 export function createSignedURL(
   identifier: string,
-  tokens: MatchItRouteToken[],
+  tokens: RouteToken[],
   searchParamsStringifier: (qs: Record<string, any>) => string,
   encryption: Encryption,
   params?: any[] | { [param: string]: any },
