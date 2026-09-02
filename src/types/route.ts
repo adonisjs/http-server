@@ -66,8 +66,7 @@ export type StoreRouteHandler =
  * Middleware representation stored with route information
  */
 export type StoreRouteMiddleware =
-  | MiddlewareFn
-  | ({ name?: string; args?: any[] } & ParsedGlobalMiddleware)
+  MiddlewareFn | ({ name?: string; args?: any[] } & ParsedGlobalMiddleware)
 
 /**
  * Route storage structure for a specific HTTP method containing tokens and route mappings
@@ -173,13 +172,7 @@ export type RouteJSON = Pick<ClientRouteJSON, 'name' | 'methods' | 'domain' | 'p
  * Standard RESTful resource action names for CRUD operations
  */
 export type ResourceActionNames =
-  | 'create'
-  | 'index'
-  | 'store'
-  | 'show'
-  | 'edit'
-  | 'update'
-  | 'destroy'
+  'create' | 'index' | 'store' | 'show' | 'edit' | 'update' | 'destroy'
 
 /**
  * @deprecated Options for URL generation (use URLBuilder instead)
