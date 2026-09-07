@@ -331,6 +331,19 @@ export class Router extends Macroable {
   }
 
   /**
+   * Define `QUERY` route
+   * @param pattern - The route pattern
+   * @param handler - Route handler (function, string, or controller tuple)
+   * @returns The created route instance
+   */
+  query<T extends Constructor<any>>(
+    pattern: string,
+    handler: string | RouteFn | [LazyImport<T> | T, GetControllerHandlers<T>?]
+  ) {
+    return this.route(pattern, ['QUERY'], handler)
+  }
+
+  /**
    * Creates a group of routes. A route group can apply transforms
    * to routes in bulk
    * @param callback - Function that defines routes within the group

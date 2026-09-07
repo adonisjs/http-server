@@ -17,6 +17,7 @@ import { AppFactory } from '@adonisjs/application/factories'
 import { createServer, IncomingMessage, ServerResponse } from 'node:http'
 
 import { Router } from '../src/router/main.ts'
+import { httpServer as httpServerFactory } from '../factories/http_server.ts'
 import { HttpContext } from '../src/http_context/main.ts'
 import { ServerFactory } from '../factories/server_factory.ts'
 import { defineNamedMiddleware } from '../src/define_middleware.ts'
@@ -99,6 +100,26 @@ test.group('Server | Response handling', () => {
 
     const { text } = await supertest(httpServer).get('/').expect(200)
     assert.equal(text, 'handled')
+  })
+
+  test('invoke router handler for QUERY method requests', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+
+    await app.init()
+
+    server.use([])
+    server.getRouter().query('/users/search', async ({ request }) => request.method())
+    await server.boot()
+
+    const { url } = await httpServerFactory.create(server.handle.bind(server))
+    const response = await fetch(`${url}/users/search`, {
+      method: 'QUERY',
+      body: 'name = "virk"',
+    })
+
+    assert.equal(response.status, 200)
+    assert.equal(await response.text(), 'QUERY')
   })
 
   test('use route handler return value when response.send is not called', async ({ assert }) => {

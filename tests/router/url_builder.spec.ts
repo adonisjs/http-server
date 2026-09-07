@@ -103,12 +103,20 @@ test.group('URLBuilder', () => {
           paramsTuple: [string]
         }
       }
+      QUERY: {
+        'users.show': {
+          params: { id: string }
+          paramsTuple: [string]
+        }
+      }
     }>()
       .merge({ router })
       .create()
 
     router.route('/users', ['POST'], () => {}).as('users.index')
-    router.route('/users/:id', ['GET', 'PUT', 'PATCH', 'DELETE'], () => {}).as('users.show')
+    router
+      .route('/users/:id', ['GET', 'PUT', 'PATCH', 'DELETE', 'QUERY'], () => {})
+      .as('users.show')
     router.commit()
 
     assert.containSubset(urlFor.get('users.show', { id: '1' }), { method: 'GET', url: '/users/1' })
@@ -157,6 +165,16 @@ test.group('URLBuilder', () => {
       action: '/users/1',
     })
     assert.equal(`${urlFor.delete('users.show', { id: '1' })}`, '/users/1')
+
+    assert.containSubset(urlFor.query('users.show', { id: '1' }), {
+      method: 'QUERY',
+      url: '/users/1',
+    })
+    assert.deepEqual(urlFor.query('users.show', { id: '1' }).form, {
+      method: 'QUERY',
+      action: '/users/1',
+    })
+    assert.equal(`${urlFor.query('users.show', { id: '1' })}`, '/users/1')
 
     assert.containSubset(urlFor.method('GET', 'users.show', { id: '1' }), {
       method: 'GET',
@@ -251,6 +269,12 @@ test.group('URLBuilder', () => {
           paramsTuple: [string]
         }
       }
+      QUERY: {
+        'users.search': {
+          params?: {}
+          paramsTuple: [string]
+        }
+      }
     }>()
       .merge({ router, encryption })
       .create()
@@ -259,6 +283,7 @@ test.group('URLBuilder', () => {
     router.route('/users/:id', ['GET'], () => {}).as('users.show')
     router.route('/users/:id', ['PUT', 'PATCH'], () => {}).as('users.update')
     router.route('/users/:id', ['DELETE'], () => {}).as('users.delete')
+    router.route('/users/search', ['QUERY'], () => {}).as('users.search')
     router.commit()
 
     function verifySignature(uri: string) {
@@ -276,6 +301,7 @@ test.group('URLBuilder', () => {
     verifySignature(`${signedUrlFor.put('users.update', { id: '1' })}`)
     verifySignature(`${signedUrlFor.patch('users.update', { id: '1' })}`)
     verifySignature(`${signedUrlFor.delete('users.delete', { id: '1' })}`)
+    verifySignature(`${signedUrlFor.query('users.search')}`)
     verifySignature(`${signedUrlFor.method('GET', 'users.show', { id: '1' })}`)
   })
 
