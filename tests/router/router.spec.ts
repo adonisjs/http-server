@@ -23,6 +23,7 @@ test.group('Router | add', () => {
     const putRoute = router.put('/', '#controllers/home.update')
     const patchRoute = router.patch('/', '#controllers/home.updatePatch')
     const deleteRoute = router.delete('/', '#controllers/home.destroy')
+    const queryRoute = router.query('/', '#controllers/home.search')
     const anyRoute = router.any('/', '#controllers/home.handle')
 
     assert.containSubset(getRoute.toJSON(), {
@@ -68,6 +69,15 @@ test.group('Router | add', () => {
       matchers: {},
       domain: 'root',
       name: 'home.destroy',
+    })
+
+    assert.containSubset(queryRoute.toJSON(), {
+      pattern: '/',
+      methods: ['QUERY'],
+      meta: {},
+      matchers: {},
+      domain: 'root',
+      name: 'home.search',
     })
 
     assert.containSubset(anyRoute.toJSON(), {
@@ -1192,6 +1202,7 @@ test.group('Router | handler', () => {
       async update() {}
       async updatePatch() {}
       async destroy() {}
+      async search() {}
       async handle() {}
     }
 
@@ -1221,6 +1232,10 @@ test.group('Router | handler', () => {
     assert.isObject(deleteRoute.toJSON().handler)
     assert.property(deleteRoute.toJSON().handler, 'handle')
 
+    const queryRoute = router.query('/', [HomeController, 'search'])
+    assert.isObject(queryRoute.toJSON().handler)
+    assert.property(queryRoute.toJSON().handler, 'handle')
+
     const anyRoute = router.any('/', [HomeController, 'handle'])
     assert.isObject(anyRoute.toJSON().handler)
     assert.property(anyRoute.toJSON().handler, 'handle')
@@ -1234,6 +1249,7 @@ test.group('Router | handler', () => {
       async update() {}
       async updatePatch() {}
       async destroy() {}
+      async search() {}
       async handle() {}
     }
 
@@ -1256,6 +1272,10 @@ test.group('Router | handler', () => {
     const deleteRoute = router.delete('/', [HomeController, 'destroy'])
     assert.isObject(deleteRoute.toJSON().handler)
     assert.property(deleteRoute.toJSON().handler, 'handle')
+
+    const queryRoute = router.query('/', [HomeController, 'search'])
+    assert.isObject(queryRoute.toJSON().handler)
+    assert.property(queryRoute.toJSON().handler, 'handle')
 
     const anyRoute = router.any('/', [HomeController, 'handle'])
     assert.isObject(anyRoute.toJSON().handler)
