@@ -10,14 +10,37 @@
 import type Middleware from '@poppinss/middleware'
 import type { ContainerResolver } from '@adonisjs/fold'
 import type { Constructor, LazyImport } from '@poppinss/utils/types'
-import type { RouteMatchers, RouteToken } from '@boringnode/route-matcher'
+import type {
+  RouteMatchers,
+  RoutePrecedence,
+  RouteToken as RouteMatcherToken,
+} from '@boringnode/route-matcher'
 
 import type { ServerErrorHandler } from './server.ts'
 import type { HttpContext } from '../http_context/main.ts'
 import type { MiddlewareFn, ParsedGlobalMiddleware } from './middleware.ts'
 import { type ClientRouteJSON } from '../client/types.ts'
 
-export type { RouteMatcher, RouteMatchers, RouteToken } from '@boringnode/route-matcher'
+export type { RouteMatcher, RouteMatchers } from '@boringnode/route-matcher'
+
+export type RouteToken = RouteMatcherToken & {
+  /**
+   * @deprecated Use `matcher` instead.
+   */
+  match?: RegExp
+}
+
+/**
+ * Configuration for the router implementation.
+ */
+export type RouterConfig =
+  | {
+      matcher: 'linear'
+    }
+  | {
+      matcher: 'tree'
+      precedence?: RoutePrecedence
+    }
 
 /**
  * @deprecated Use `RouteToken` instead.
@@ -66,7 +89,8 @@ export type StoreRouteHandler =
  * Middleware representation stored with route information
  */
 export type StoreRouteMiddleware =
-  MiddlewareFn | ({ name?: string; args?: any[] } & ParsedGlobalMiddleware)
+  | MiddlewareFn
+  | ({ name?: string; args?: any[] } & ParsedGlobalMiddleware)
 
 /**
  * Route storage structure for a specific HTTP method containing tokens and route mappings
@@ -172,7 +196,13 @@ export type RouteJSON = Pick<ClientRouteJSON, 'name' | 'methods' | 'domain' | 'p
  * Standard RESTful resource action names for CRUD operations
  */
 export type ResourceActionNames =
-  'create' | 'index' | 'store' | 'show' | 'edit' | 'update' | 'destroy'
+  | 'create'
+  | 'index'
+  | 'store'
+  | 'show'
+  | 'edit'
+  | 'update'
+  | 'destroy'
 
 /**
  * @deprecated Options for URL generation (use URLBuilder instead)

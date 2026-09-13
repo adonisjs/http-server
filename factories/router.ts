@@ -13,11 +13,13 @@ import { AppFactory } from '@adonisjs/application/factories'
 import { EncryptionFactory } from '@boringnode/encryption/factories'
 
 import { Router } from '../src/router/main.ts'
+import type { RouterConfig } from '../src/types/route.ts'
 import { QsParserFactory } from './qs_parser_factory.ts'
 
 type FactoryParameters = {
   app: Application<any>
   encryption: Encryption
+  config: RouterConfig
 }
 
 /**
@@ -58,6 +60,11 @@ export class RouterFactory {
    * Create router instance
    */
   create() {
-    return new Router(this.#getApp(), this.#createEncryption(), new QsParserFactory().create())
+    return new Router(
+      this.#getApp(),
+      this.#createEncryption(),
+      new QsParserFactory().create(),
+      this.#parameters.config
+    )
   }
 }

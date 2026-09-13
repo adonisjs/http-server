@@ -8,15 +8,11 @@
  */
 
 import { serialize } from 'cookie-es'
+// @ts-expect-error
+import matchit from '@poppinss/matchit'
 import string from '@poppinss/utils/string'
 import { type Encryption } from '@boringnode/encryption'
 import { parseBindingReference } from '@adonisjs/fold'
-import {
-  parseRoute as parseRoutePattern,
-  matchRouteTokens,
-  type RouteToken,
-  type RouteMatchers,
-} from '@boringnode/route-matcher'
 
 import { type Qs } from './qs.ts'
 import { safeDecodeURI } from './utils.ts'
@@ -24,7 +20,7 @@ import type { HttpRequest } from './request.ts'
 import { createURL } from './client/helpers.ts'
 import { type CookieOptions } from './types/response.ts'
 import { type SignedURLOptions } from './types/url_builder.ts'
-import type { RouteJSON } from './types/route.ts'
+import type { RouteJSON, RouteMatchers, RouteToken } from './types/route.ts'
 import {
   type MiddlewareFn,
   type RouteHandlerInfo,
@@ -163,7 +159,7 @@ export { default as mime } from 'mime-types'
  * @returns {RouteToken[]} Array of parsed route tokens
  */
 export function parseRoute(pattern: string, matchers?: RouteMatchers): RouteToken[] {
-  return parseRoutePattern(pattern, matchers)
+  return matchit.parse(pattern, matchers)
 }
 
 /**
@@ -218,11 +214,13 @@ export function createSignedURL(
  * @returns {null | Record<string, string>} Extracted parameters or null if no match
  */
 export function matchRoute(url: string, patterns: string[]): null | Record<string, string> {
-  return matchRouteTokens(
-    url,
-    patterns.map((pattern) => parseRoute(pattern)),
-    false
-  )
+  const tokensBucket = patterns.map((pattern) => parseRoute(pattern))
+  const match = matchit.match(url, tokensBucket)
+  if (!match.length) {
+    return null
+  }
+
+  return matchit.exec(url, match)
 }
 
 /**

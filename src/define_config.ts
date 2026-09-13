@@ -72,6 +72,9 @@ export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
       res.writeHead(400, { 'Content-Type': 'text/plain' })
       res.end('Bad Request')
     },
+    router: {
+      matcher: 'linear' as const,
+    },
     qs: {
       parse: {
         depth: 5,

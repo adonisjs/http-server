@@ -559,7 +559,7 @@ test.group('Router | commit', () => {
 
 test.group('Router | match', () => {
   test('do not match "/users" against "/users/:id"', ({ assert }) => {
-    const router = new RouterFactory().create()
+    const router = new RouterFactory().merge({ config: { matcher: 'tree' } }).create()
     router.get('/users/:id', async () => {})
     router.commit()
 
@@ -569,7 +569,7 @@ test.group('Router | match', () => {
   test('match "/users" route registered after "/users/:id"', ({ assert }) => {
     async function indexHandler() {}
 
-    const router = new RouterFactory().create()
+    const router = new RouterFactory().merge({ config: { matcher: 'tree' } }).create()
     router.get('/users/:id', async () => {})
     router.get('/users', indexHandler)
     router.commit()
@@ -578,7 +578,7 @@ test.group('Router | match', () => {
   })
 
   test('do not match "/posts" against "/posts/:slug?.json"', ({ assert }) => {
-    const router = new RouterFactory().create()
+    const router = new RouterFactory().merge({ config: { matcher: 'tree' } }).create()
     router.get('/posts/:slug?.json', async () => {})
     router.commit()
 
@@ -589,7 +589,7 @@ test.group('Router | match', () => {
     async function repeatedSeparatorHandler() {}
     async function rootHandler() {}
 
-    const router = new RouterFactory().create()
+    const router = new RouterFactory().merge({ config: { matcher: 'tree' } }).create()
     router.get('////', repeatedSeparatorHandler)
     router.get('/', rootHandler)
     router.commit()
@@ -602,12 +602,26 @@ test.group('Router | match', () => {
   }) => {
     async function handler() {}
 
-    const router = new RouterFactory().create()
+    const router = new RouterFactory().merge({ config: { matcher: 'tree' } }).create()
     router.get('', handler)
     router.commit()
 
     assert.strictEqual(router.match('/', 'GET', false)?.route.handler, handler)
     assert.isNull(router.match('', 'GET', false))
+  })
+
+  test('match routes using specificity precedence', ({ assert }) => {
+    async function paramHandler() {}
+    async function staticHandler() {}
+
+    const router = new RouterFactory()
+      .merge({ config: { matcher: 'tree', precedence: 'specificity' } })
+      .create()
+    router.get('/:value', paramHandler)
+    router.get('/users', staticHandler)
+    router.commit()
+
+    assert.strictEqual(router.match('/users', 'GET', false)?.route.handler, staticHandler)
   })
 
   test('match route using URL', ({ assert }) => {

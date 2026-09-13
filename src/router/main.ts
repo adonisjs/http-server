@@ -36,6 +36,7 @@ import type {
   RouteFn,
   RouteJSON,
   MatchedRoute,
+  RouterConfig,
   RouteMatcher,
   RouteMatchers,
   MakeUrlOptions,
@@ -75,7 +76,7 @@ export class Router extends Macroable {
   /**
    * Store with tokenized routes
    */
-  #store: RoutesStore = new RoutesStore()
+  #store: RoutesStore
 
   /**
    * Encryption for making signed URLs
@@ -151,11 +152,13 @@ export class Router extends Macroable {
    * @param app - The AdonisJS application instance
    * @param encryption - Encryption service for signed URLs
    * @param qsParser - Query string parser for URL generation
+   * @param config - Router configuration
    */
-  constructor(app: Application<any>, encryption: Encryption, qsParser: Qs) {
+  constructor(app: Application<any>, encryption: Encryption, qsParser: Qs, config?: RouterConfig) {
     super()
     this.#app = app
     this.#encryption = encryption
+    this.#store = new RoutesStore(config)
     this.qs = qsParser
     this.urlBuilder = {
       urlFor: createUrlBuilder(() => this.toJSON(), this.qs.stringify),

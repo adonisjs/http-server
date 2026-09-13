@@ -7,12 +7,16 @@
  * file that was distributed with this source code.
  */
 
+// @ts-expect-error
+import matchit from '@poppinss/matchit'
 import { RuntimeException } from '@poppinss/utils/exception'
-import { RouteTable, extractRouteParams, type RouteToken } from '@boringnode/route-matcher'
+import { RouteTable, extractRouteParams, type RouteTableOptions } from '@boringnode/route-matcher'
 
 import type {
   RouteJSON,
   MatchedRoute,
+  RouterConfig,
+  RouteToken,
   StoreDomainNode,
   StoreMethodNode,
   StoreRoutesTree,
@@ -46,8 +50,9 @@ export class RoutesStore {
    * Lookup indexes are kept outside the public routes tree to avoid changing
    * its observable shape.
    */
-  #methodRouteTables = new WeakMap<StoreMethodNode, RouteTable<RouteJSON>>()
-  #domainRouteTable = new RouteTable<RouteToken[]>()
+  #methodRouteTables?: WeakMap<StoreMethodNode, RouteTable<RouteJSON>>
+  #domainRouteTable?: RouteTable<RouteToken[]>
+  #routeTableOptions?: RouteTableOptions
 
   /**
    * A flag to know if routes for explicit domains
@@ -60,6 +65,14 @@ export class RoutesStore {
    */
   tree: StoreRoutesTree = { tokens: [], domains: {} }
 
+  constructor(config?: RouterConfig) {
+    if (config?.matcher === 'tree') {
+      this.#routeTableOptions = { precedence: config.precedence }
+      this.#methodRouteTables = new WeakMap()
+      this.#domainRouteTable = new RouteTable(this.#routeTableOptions)
+    }
+  }
+
   /**
    * Returns the domain node for a given domain.
    */
@@ -67,7 +80,7 @@ export class RoutesStore {
     if (!this.tree.domains[domain]) {
       const tokens = parseRoute(domain)
       this.tree.tokens.push(tokens)
-      this.#domainRouteTable.add(tokens, tokens)
+      this.#domainRouteTable?.add(tokens, tokens)
       this.tree.domains[domain] = {}
     }
 
@@ -81,7 +94,7 @@ export class RoutesStore {
     const domainNode = this.#getDomainNode(domain)
     if (!domainNode[method]) {
       domainNode[method] = { tokens: [], routes: {}, routeKeys: {} }
-      this.#methodRouteTables.set(domainNode[method], new RouteTable())
+      this.#methodRouteTables?.set(domainNode[method], new RouteTable(this.#routeTableOptions))
     }
 
     return domainNode[method]
@@ -146,7 +159,9 @@ export class RoutesStore {
       debug('route middleware %O', route.middleware.all().entries())
     }
 
-    this.#methodRouteTables.get(methodRoutes)!.add(tokens, route)
+    if (this.#methodRouteTables) {
+      this.#methodRouteTables.get(methodRoutes)!.add(tokens, route)
+    }
 
     methodRoutes.tokens.push(tokens)
     methodRoutes.routes[route.pattern] = route
@@ -235,12 +250,32 @@ export class RoutesStore {
       return null
     }
 
-    const matchedRoute = this.#methodRouteTables.get(matchedMethod)!.match(url, shouldDecodeParam)
-    if (!matchedRoute) {
+    if (this.#methodRouteTables) {
+      const matchedRoute = this.#methodRouteTables.get(matchedMethod)!.match(url, shouldDecodeParam)
+      if (!matchedRoute) {
+        return null
+      }
+
+      return this.#createMatchedRoute(
+        matchedRoute.value,
+        matchedMethod,
+        matchedRoute.params,
+        domain
+      )
+    }
+
+    const matchedRoute = matchit.match(url, matchedMethod.tokens)
+    if (!matchedRoute.length) {
       return null
     }
 
-    return this.#createMatchedRoute(matchedRoute.value, matchedMethod, matchedRoute.params, domain)
+    const route = matchedMethod.routes[matchedRoute[0].old]
+    return {
+      route,
+      routeKey: matchedMethod.routeKeys[route.pattern],
+      params: matchit.exec(url, matchedRoute, shouldDecodeParam),
+      subdomains: domain?.hostname ? matchit.exec(domain.hostname, domain.tokens) : {},
+    }
   }
 
   /**
@@ -253,6 +288,8 @@ export class RoutesStore {
       return []
     }
 
-    return this.#domainRouteTable.match(hostname, false)?.value ?? []
+    return this.#domainRouteTable
+      ? (this.#domainRouteTable.match(hostname, false)?.value ?? [])
+      : matchit.match(hostname, this.tree.tokens)
   }
 }

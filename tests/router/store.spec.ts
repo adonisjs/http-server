@@ -582,7 +582,7 @@ test.group('Store | match', () => {
     async function repeatedSeparatorHandler() {}
     async function canonicalHandler() {}
 
-    const store = new RoutesStore()
+    const store = new RoutesStore({ matcher: 'tree' })
     for (const [pattern, handler] of [
       ['/users//', repeatedSeparatorHandler],
       ['/users', canonicalHandler],
@@ -606,7 +606,7 @@ test.group('Store | match', () => {
     ]
 
     for (const { patterns, pathname, expected } of cases) {
-      const store = new RoutesStore()
+      const store = new RoutesStore({ matcher: 'tree' })
       for (const pattern of patterns) {
         addRoute(store, pattern)
       }
@@ -636,7 +636,7 @@ test.group('Store | match', () => {
     ]
 
     for (const { patterns, pathnames, expected } of cases) {
-      const store = new RoutesStore()
+      const store = new RoutesStore({ matcher: 'tree' })
       for (const pattern of patterns) {
         addRoute(store, pattern)
       }
@@ -650,7 +650,7 @@ test.group('Store | match', () => {
   test('return the same route object for repeated matches and routes with multiple methods', ({
     assert,
   }) => {
-    const store = new RoutesStore()
+    const store = new RoutesStore({ matcher: 'tree' })
     addRoute(store, '/users', { methods: ['GET', 'POST'] })
 
     const firstGetMatch = store.match('/users', 'GET', false)!
@@ -664,7 +664,7 @@ test.group('Store | match', () => {
   })
 
   test('decode parameter and wildcard values only when requested', ({ assert }) => {
-    const store = new RoutesStore()
+    const store = new RoutesStore({ matcher: 'tree' })
     for (const pattern of ['/users/:name', '/files/*']) {
       addRoute(store, pattern)
     }
@@ -686,7 +686,7 @@ test.group('Store | match', () => {
   test('extract subdomains when matching an indexed static route on an explicit domain', ({
     assert,
   }) => {
-    const store = new RoutesStore()
+    const store = new RoutesStore({ matcher: 'tree' })
     addRoute(store, '/dashboard', { domain: ':tenant.adonisjs.com' })
 
     const domainTokens = store.matchDomain('news.adonisjs.com')
@@ -707,7 +707,7 @@ test.group('Store | match', () => {
   test('apply matchers and casts on a dynamic route before an indexed static route', ({
     assert,
   }) => {
-    const store = new RoutesStore()
+    const store = new RoutesStore({ matcher: 'tree' })
     const matchers = { id: { match: /^\d+$/, cast: Number } }
     addRoute(store, '/:id', { matchers })
     addRoute(store, '/users')
