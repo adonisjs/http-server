@@ -89,7 +89,65 @@ export type StoreMethodNode = {
   routes: {
     [pattern: string]: RouteJSON
   }
+
+  /*
+   * The following properties are matching indexes maintained by the store. They
+   * are optional so that the published shape of this type stays compatible for
+   * code constructing a method node by hand.
+   */
+
+  /** Routes grouped by their leading static path segments */
+  routesByStaticPrefix?: null | Record<string, MatchItRouteToken[][]>
+  /** Routes whose first path segment is dynamic */
+  routesWithoutStaticPrefix?: MatchItRouteToken[][]
+  /** Registration position for each token array */
+  tokenIndexes?: Map<MatchItRouteToken[], number>
+  /**
+   * Tokens of earlier routes that are able to shadow a static route. Used to
+   * decide whether a static route may join the exact lookup table.
+   */
+  shadowTokens?: MatchItRouteToken[][]
+  /** Last URL matched by this method node. `null` when the memo is empty */
+  lastUrl?: string | null
+  /** Tokens selected for the last matched URL */
+  lastTokens?: MatchItRouteToken[]
+  /** Route selected for the last matched URL */
+  lastRoute?: RouteJSON | null
+  /** Unique key for the last matched route */
+  lastRouteKey?: string
+  /** Whether the last matched route contains dynamic parameters */
+  lastHasParams?: boolean
+  /** Exact lookup table for static routes that cannot be shadowed by earlier routes */
+  staticRoutes?: null | Record<
+    string,
+    {
+      tokens: MatchItRouteToken[]
+      route: RouteJSON
+      routeKey: string
+    }
+  >
 }
+
+/**
+ * Method node with the store maintained matching indexes always present. Used
+ * internally by the store, which is the only writer of these properties.
+ */
+export type IndexedStoreMethodNode = StoreMethodNode &
+  Required<
+    Pick<
+      StoreMethodNode,
+      | 'routesByStaticPrefix'
+      | 'routesWithoutStaticPrefix'
+      | 'tokenIndexes'
+      | 'shadowTokens'
+      | 'lastUrl'
+      | 'lastTokens'
+      | 'lastRoute'
+      | 'lastRouteKey'
+      | 'lastHasParams'
+      | 'staticRoutes'
+    >
+  >
 
 /**
  * Domain-specific route storage containing method-based route organization

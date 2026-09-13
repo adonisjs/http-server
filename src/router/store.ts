@@ -15,12 +15,19 @@ import type {
   RouteJSON,
   MatchedRoute,
   StoreDomainNode,
-  StoreMethodNode,
   StoreRoutesTree,
   MatchItRouteToken,
+  IndexedStoreMethodNode,
 } from '../types/route.ts'
 import debug from '../debug.ts'
 import { parseRoute } from '../helpers.ts'
+
+/**
+ * Number of routes registered for a single domain and method below which route
+ * matching scans every token array instead of consulting the static prefix
+ * index. See `#matchRoute`.
+ */
+const SMALL_TABLE_ROUTES = 64
 
 /**
  * Store class is used to store a list of routes, along side with their tokens
@@ -70,13 +77,118 @@ export class RoutesStore {
   /**
    * Returns the method node for a given domain and method.
    */
-  #getMethodNode(domain: string, method: string): StoreMethodNode {
+  #getMethodNode(domain: string, method: string): IndexedStoreMethodNode {
     const domainNode = this.#getDomainNode(domain)
     if (!domainNode[method]) {
-      domainNode[method] = { tokens: [], routes: {}, routeKeys: {} }
+      domainNode[method] = {
+        tokens: [],
+        routesByStaticPrefix: null,
+        routesWithoutStaticPrefix: [],
+        tokenIndexes: new Map(),
+        shadowTokens: [],
+        routes: {},
+        routeKeys: {},
+        lastUrl: null,
+        lastTokens: [],
+        lastRoute: null,
+        lastRouteKey: '',
+        lastHasParams: false,
+        staticRoutes: null,
+      } satisfies IndexedStoreMethodNode
     }
 
-    return domainNode[method]
+    return domainNode[method] as IndexedStoreMethodNode
+  }
+
+  /**
+   * Narrows route matching to patterns sharing the URL's leading static segments.
+   *
+   * Every group is kept in registration order, and `matchit.match` returns the
+   * first entry of a group that matches. Therefore matching each group on its
+   * own and keeping the winner with the lowest registration index selects the
+   * same route as matching the merged groups in registration order, without
+   * having to build and sort a merged array on every request.
+   */
+  #matchRoute(url: string, methodRoutes: IndexedStoreMethodNode): MatchItRouteToken[] {
+    /**
+     * Narrowing has a fixed cost per request: slicing the path at every segment
+     * boundary and looking each slice up. Below a small number of routes a plain
+     * scan over every token array is cheaper than that bookkeeping, so the index
+     * is only consulted once the table is large enough to pay for it.
+     */
+    if (methodRoutes.tokens.length <= SMALL_TABLE_ROUTES) {
+      return matchit.match(url, methodRoutes.tokens)
+    }
+
+    let path = url
+    if (path !== '/') {
+      if (path.charCodeAt(0) === 47) {
+        path = path.substring(1)
+      }
+      if (path.charCodeAt(path.length - 1) === 47) {
+        path = path.substring(0, path.length - 1)
+      }
+    }
+
+    const routesByStaticPrefix = methodRoutes.routesByStaticPrefix
+    let matched: MatchItRouteToken[] | undefined
+    let matchedIndex = 0
+    let matchedIndexResolved = false
+    let consultedGroup = false
+
+    if (routesByStaticPrefix) {
+      for (let index = 1; index <= path.length; index++) {
+        if (index !== path.length && path.charCodeAt(index) !== 47) {
+          continue
+        }
+
+        const prefixCandidates = routesByStaticPrefix[path.substring(0, index)]
+        if (!prefixCandidates) {
+          continue
+        }
+
+        consultedGroup = true
+        const prefixMatch = matchit.match(url, prefixCandidates)
+        if (!prefixMatch.length) {
+          continue
+        }
+
+        /**
+         * The first match wins until a second group also matches, at which
+         * point registration indexes decide. Resolving them lazily keeps the
+         * common single-group case free of map lookups.
+         */
+        if (!matched) {
+          matched = prefixMatch
+          continue
+        }
+
+        if (!matchedIndexResolved) {
+          matchedIndex = methodRoutes.tokenIndexes.get(matched)!
+          matchedIndexResolved = true
+        }
+
+        const prefixMatchIndex = methodRoutes.tokenIndexes.get(prefixMatch)!
+        if (prefixMatchIndex < matchedIndex) {
+          matched = prefixMatch
+          matchedIndex = prefixMatchIndex
+        }
+      }
+    }
+
+    /**
+     * Every prefix group already carries the routes without a static prefix, so
+     * consulting a single group covers them too. They are only matched on their
+     * own when the url shares no leading static segment with any group.
+     */
+    if (!consultedGroup) {
+      const routesWithoutStaticPrefix = methodRoutes.routesWithoutStaticPrefix
+      if (routesWithoutStaticPrefix.length) {
+        return matchit.match(url, routesWithoutStaticPrefix)
+      }
+    }
+
+    return matched ?? []
   }
 
   /**
@@ -121,10 +233,84 @@ export class RoutesStore {
       debug('route middleware %O', route.middleware.all().entries())
     }
 
+    const routeKey =
+      domain !== 'root' ? `${domain}-${method}-${route.pattern}` : `${method}-${route.pattern}`
+    const tokenIndex = methodRoutes.tokens.length
+    methodRoutes.tokenIndexes.set(tokens, tokenIndex)
     methodRoutes.tokens.push(tokens)
     methodRoutes.routes[route.pattern] = route
-    methodRoutes.routeKeys[route.pattern] =
-      domain !== 'root' ? `${domain}-${method}-${route.pattern}` : `${method}-${route.pattern}`
+    methodRoutes.routeKeys[route.pattern] = routeKey
+    this.#resetLastMatch(methodRoutes)
+
+    let staticPrefix = ''
+    if (tokens[0]?.type === 0 && tokens[0].val) {
+      for (const token of tokens) {
+        if (token.type !== 0) {
+          break
+        }
+        staticPrefix = staticPrefix ? `${staticPrefix}/${token.val}` : token.val
+      }
+    }
+
+    /**
+     * Routes without a static prefix can match any url, so every prefix group
+     * has to consider them. They are merged into the groups here rather than
+     * matched separately on every request. Routes are always appended with the
+     * highest registration index so far, so both branches keep every group in
+     * registration order, which is the order `matchit` resolves by.
+     */
+    if (staticPrefix) {
+      const routesByStaticPrefix = (methodRoutes.routesByStaticPrefix ??= Object.create(null))
+      const prefixRoutes = (routesByStaticPrefix[staticPrefix] ??= [
+        ...methodRoutes.routesWithoutStaticPrefix,
+      ])
+      prefixRoutes.push(tokens)
+    } else {
+      methodRoutes.routesWithoutStaticPrefix.push(tokens)
+      const routesByStaticPrefix = methodRoutes.routesByStaticPrefix
+      if (routesByStaticPrefix) {
+        for (const prefix of Object.keys(routesByStaticPrefix)) {
+          routesByStaticPrefix[prefix].push(tokens)
+        }
+      }
+    }
+
+    /**
+     * A route can join the exact lookup table when its pattern is spelled the
+     * same way a matching URL is, it has no dynamic segments, and no earlier
+     * route matches it. `matchit` returns the first registered match, so a
+     * later route can never take precedence over this one.
+     *
+     * Only routes tracked in `shadowTokens` can shadow a static pattern: two
+     * canonical static patterns match the same URL only when the patterns are
+     * identical, which the duplicate check above already rejects.
+     */
+    const isCanonical =
+      route.pattern === '/' ||
+      (route.pattern.charCodeAt(0) === 47 &&
+        route.pattern.charCodeAt(route.pattern.length - 1) !== 47)
+    const isStatic = tokens.length > 0 && tokens.every((token) => token.type === 0)
+
+    if (isCanonical && isStatic) {
+      if (!matchit.match(route.pattern, methodRoutes.shadowTokens).length) {
+        const staticRoutes = (methodRoutes.staticRoutes ??= Object.create(null))
+        staticRoutes[route.pattern] = { tokens, route, routeKey }
+      }
+    } else {
+      methodRoutes.shadowTokens.push(tokens)
+    }
+  }
+
+  /**
+   * Clears the memo of the last matched URL. Called whenever a registration
+   * invalidates what the node previously resolved.
+   */
+  #resetLastMatch(methodRoutes: IndexedStoreMethodNode) {
+    methodRoutes.lastUrl = null
+    methodRoutes.lastTokens = []
+    methodRoutes.lastRoute = null
+    methodRoutes.lastRouteKey = ''
+    methodRoutes.lastHasParams = false
   }
 
   /**
@@ -203,7 +389,7 @@ export class RoutesStore {
      * method node is missing, means no routes ever got registered for that
      * method
      */
-    const matchedMethod = this.tree.domains[domainName][method]
+    const matchedMethod = this.tree.domains[domainName][method] as IndexedStoreMethodNode
     if (!matchedMethod) {
       return null
     }
@@ -212,16 +398,37 @@ export class RoutesStore {
      * Next, match route for the given url inside the tokens list for the
      * matchedMethod
      */
-    const matchedRoute = matchit.match(url, matchedMethod.tokens)
-    if (!matchedRoute.length) {
+    let matchedRoute = matchedMethod.lastTokens
+    let route = matchedMethod.lastRoute
+    let routeKey = matchedMethod.lastRouteKey
+    let hasParams = matchedMethod.lastHasParams
+
+    if (matchedMethod.lastUrl !== url) {
+      const staticRoute = matchedMethod.staticRoutes?.[url]
+      matchedRoute = staticRoute?.tokens ?? this.#matchRoute(url, matchedMethod)
+
+      if (!matchedRoute.length) {
+        this.#resetLastMatch(matchedMethod)
+        matchedMethod.lastUrl = url
+        return null
+      }
+
+      route = staticRoute?.route ?? matchedMethod.routes[matchedRoute[0].old]
+      routeKey = staticRoute?.routeKey ?? matchedMethod.routeKeys[route.pattern]
+      hasParams = staticRoute ? false : matchedRoute.some((token) => token.type !== 0)
+      matchedMethod.lastUrl = url
+      matchedMethod.lastTokens = matchedRoute
+      matchedMethod.lastRoute = route
+      matchedMethod.lastRouteKey = routeKey
+      matchedMethod.lastHasParams = hasParams
+    } else if (!route) {
       return null
     }
 
-    const route = matchedMethod.routes[matchedRoute[0].old]
     return {
-      route: route,
-      routeKey: matchedMethod.routeKeys[route.pattern],
-      params: matchit.exec(url, matchedRoute, shouldDecodeParam),
+      route,
+      routeKey,
+      params: hasParams ? matchit.exec(url, matchedRoute, shouldDecodeParam) : {},
       subdomains: domain?.hostname ? matchit.exec(domain.hostname, domain.tokens) : {},
     }
   }
