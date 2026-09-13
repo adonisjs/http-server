@@ -563,7 +563,8 @@ export class HttpRequest extends Macroable {
      * exists
      */
     if (trustProxy(this.request.socket.remoteAddress!, this.#config.trustProxy)) {
-      host = this.header('X-Forwarded-Host') || host
+      const forwardedHost = this.header('X-Forwarded-Host')
+      host = forwardedHost ? forwardedHost.split(/\s*,\s*/)[0] : host
     }
 
     if (!host) {
