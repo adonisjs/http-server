@@ -529,16 +529,27 @@ test.group('Http context | waitUntil', () => {
     const app = new AppFactory().create(BASE_URL, () => {})
     const emitter = new Emitter<HttpServerEvents>(app)
     const server = new ServerFactory().merge({ app, emitter }).create()
-    const httpServer = createServer(server.handle.bind(server))
+
+    let handlePromise: Promise<void> | undefined
+    const httpServer = createServer((req, res) => {
+      handlePromise = server.handle(req, res)
+    })
     await app.init()
 
     const events: string[] = []
     emitter.on('http:request_completed', () => events.push('request_completed'))
 
+    /**
+     * The scheduled work is held open by hand instead of on a timer, so
+     * the ordering claims below are structural and never sleep-based
+     */
+    let resolveDrain: () => void
     server.use([])
     server.getRouter().get('/', (ctx) => {
       ctx.waitUntil(
-        setTimeout(40).then(() => {
+        new Promise<void>((resolve) => {
+          resolveDrain = resolve
+        }).then(() => {
           events.push('wait-until')
         })
       )
@@ -547,7 +558,10 @@ test.group('Http context | waitUntil', () => {
     await server.boot()
 
     await supertest(httpServer).get('/').expect(200)
-    await setTimeout(150)
+    assert.deepEqual(events, ['request_completed'])
+
+    resolveDrain!()
+    await handlePromise
     assert.deepEqual(events, ['request_completed', 'wait-until'])
   })
 
@@ -581,6 +595,17 @@ test.group('Http context | waitUntil', () => {
       throw new Error('Expected a TCP address')
     }
 
+    const waitFor = async (predicate: () => boolean): Promise<boolean> => {
+      const deadline = Date.now() + 2000
+      while (Date.now() < deadline) {
+        if (predicate()) {
+          return true
+        }
+        await setTimeout(10)
+      }
+      return predicate()
+    }
+
     try {
       const clientRequest = http.get({ port: address.port, path: '/' }, () => {})
       clientRequest.on('error', () => {})
@@ -591,19 +616,14 @@ test.group('Http context | waitUntil', () => {
        * never sees the request. So we wait for the handler to have started
        * before aborting
        */
-      let deadline = Date.now() + 2000
-      while (!handlerStarted && Date.now() < deadline) {
-        await setTimeout(10)
-      }
-      assert.isTrue(handlerStarted, 'route handler should have received the request')
+      assert.isTrue(
+        await waitFor(() => handlerStarted),
+        'route handler should have received the request'
+      )
 
       clientRequest.destroy()
 
-      deadline = Date.now() + 2000
-      while (!ran && Date.now() < deadline) {
-        await setTimeout(10)
-      }
-      assert.isTrue(ran)
+      assert.isTrue(await waitFor(() => ran))
     } finally {
       await new Promise<void>((resolve) => httpServer.close(() => resolve()))
     }
