@@ -19,6 +19,13 @@ import type { RouteJSON } from '../types/route.ts'
 import { asyncLocalStorage } from './local_storage.ts'
 
 /**
+ * A no-op function used to attach inert handlers around the waitUntil
+ * machinery, so a rejected scheduled promise or a throwing logger never
+ * surfaces as an unhandled rejection
+ */
+const noop = () => {}
+
+/**
  * HTTP context encapsulates all properties and services for a given HTTP request.
  *
  * The HttpContext class serves as the central hub for request-specific data and services.
@@ -169,7 +176,7 @@ export class HttpContext extends Macroable {
   /**
    * Whether the waitUntil queue has already been drained for this request
    */
-  #waitUntilSettled: boolean = false
+  #waitUntilSettled = false
 
   /**
    * Creates a new HttpContext instance
@@ -210,6 +217,8 @@ export class HttpContext extends Macroable {
    * lifecycle has completed join the next drain wave. Scheduling after the
    * lifecycle has completed raises an exception.
    *
+   * @throws RuntimeException when the request lifecycle has completed
+   *
    * @example
    * ```ts
    * ctx.waitUntil(fetch('https://analytics.example.com/collect', {
@@ -229,6 +238,14 @@ export class HttpContext extends Macroable {
     this.#waitUntilQueue.push(promise)
 
     /**
+     * Attach an inert handler to the scheduled promise, so it cannot raise
+     * an unhandled rejection in the window between being scheduled and
+     * the response being finished. The original promise still flows to
+     * "Promise.allSettled" unchanged
+     */
+    void Promise.resolve(promise).then(noop, noop)
+
+    /**
      * Listen for the response finish event only when someone has actually
      * scheduled work. This keeps the request lifecycle cost-free when
      * the feature is not used
@@ -245,9 +262,9 @@ export class HttpContext extends Macroable {
          * draining callbacks
          */
         if (asyncLocalStorage.storage) {
-          asyncLocalStorage.storage.run(this, () => this.#drainWaitUntil())
+          asyncLocalStorage.storage.run(this, () => this.#drainWaitUntil().catch(noop))
         } else {
-          void this.#drainWaitUntil()
+          void this.#drainWaitUntil().catch(noop)
         }
       })
     }
@@ -274,7 +291,7 @@ export class HttpContext extends Macroable {
 
         for (const result of results) {
           if (result.status === 'rejected') {
-            this.logger.fatal({ err: result.reason }, 'waitUntil callback rejected')
+            this.logger.error({ err: result.reason }, 'waitUntil callback rejected')
           }
         }
       }

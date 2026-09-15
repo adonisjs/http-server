@@ -19,7 +19,7 @@ import { ServerFactory } from '../../factories/server_factory.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 
-test.group('HTTP Context | waitUntil', () => {
+test.group('Http context | waitUntil', () => {
   test('run waitUntil callbacks after the response has been sent', async ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
     const server = new ServerFactory().merge({ app }).create()
@@ -52,7 +52,7 @@ test.group('HTTP Context | waitUntil', () => {
     const logs: any[] = []
     const logger: any = {
       child: () => logger,
-      fatal: (message: any) => logs.push(message),
+      error: (message: any) => logs.push(message),
     }
     const server = new ServerFactory().merge({ app, logger }).create()
     const httpServer = createServer(server.handle.bind(server))
@@ -77,6 +77,34 @@ test.group('HTTP Context | waitUntil', () => {
     assert.isTrue(secondRan)
     assert.equal(logs.length, 1)
     assert.equal(logs[0].err.message, 'e1')
+  })
+
+  test('never raise an unhandled rejection for promises rejecting before the response is flushed', async ({
+    assert,
+  }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const logs: any[] = []
+    const logger: any = {
+      child: () => logger,
+      error: (message: any) => logs.push(message),
+    }
+    const server = new ServerFactory().merge({ app, logger }).create()
+    const httpServer = createServer(server.handle.bind(server))
+    await app.init()
+
+    server.use([])
+    server.getRouter().get('/', async (ctx) => {
+      ctx.waitUntil(Promise.reject(new Error('early')))
+      await setTimeout(0)
+      return 'handled'
+    })
+    await server.boot()
+
+    await supertest(httpServer).get('/').expect(200)
+    await setTimeout(100)
+
+    assert.equal(logs.length, 1)
+    assert.equal(logs[0].err.message, 'early')
   })
 
   test('disallow scheduling after the request lifecycle has completed', async ({ assert }) => {
