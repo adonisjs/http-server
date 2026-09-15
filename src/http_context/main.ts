@@ -257,15 +257,10 @@ export class HttpContext extends Macroable {
 
       this.response.onFinish(() => {
         /**
-         * Re-enter the async local storage (when enabled), so the global
-         * "waitUntil" and other context-aware APIs keep working inside
-         * draining callbacks
+         * The drain never rejects (rejections are logged and swallowed), but
+         * keep the fire-and-forget call safe if the logger itself throws
          */
-        if (asyncLocalStorage.storage) {
-          asyncLocalStorage.storage.run(this, () => this.#drainWaitUntil().catch(noop))
-        } else {
-          void this.#drainWaitUntil().catch(noop)
-        }
+        void this.#drainWaitUntil().catch(noop)
       })
     }
   }

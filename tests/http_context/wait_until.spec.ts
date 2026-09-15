@@ -414,9 +414,13 @@ test.group('Http context | waitUntil', () => {
     })
     await server.boot()
 
-    await supertest(httpServer).get('/').expect(200)
-    await handlePromise
-    assert.isTrue(ranInSameContext)
+    try {
+      await supertest(httpServer).get('/').expect(200)
+      await handlePromise
+      assert.isTrue(ranInSameContext)
+    } finally {
+      asyncLocalStorage.destroy()
+    }
   })
 
   test('global waitUntil throws when ALS is disabled', async ({ assert }) => {
