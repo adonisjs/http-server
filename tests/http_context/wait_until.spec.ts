@@ -236,7 +236,7 @@ test.group('Http context | waitUntil', () => {
     }
   })
 
-  test('draining callbacks re-enter the async local storage and can schedule more work', async ({
+  test('callbacks draining after the response see the request context and can schedule more work', async ({
     assert,
   }) => {
     assert.plan(3)
