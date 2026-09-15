@@ -470,7 +470,7 @@ export class Server {
     /**
      * Handle request
      */
-    const requestPipeline = () =>
+    const runRequestPipeline = () =>
       httpRequest.tracePromise(
         this.#handleRequest,
         httpRequest.hasSubscribers ? { ctx } : undefined,
@@ -480,14 +480,15 @@ export class Server {
       )
 
     const requestPromise = this.usingAsyncLocalStorage
-      ? asyncLocalStorage.storage!.run(ctx, requestPipeline)
-      : requestPipeline()
+      ? asyncLocalStorage.storage!.run(ctx, runRequestPipeline)
+      : runRequestPipeline()
 
     /**
      * Resolve the returned promise only after the work scheduled using
      * "ctx.waitUntil()" has settled. This gives tests and future serverless
      * adapters a single integration point for post-response work
      */
+    // The gate is read lazily: it may not exist until the handler schedules work
     return requestPromise.finally(() => ctx.waitUntilGate)
   }
 }
