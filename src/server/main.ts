@@ -424,7 +424,8 @@ export class Server {
    *
    * @param req - Node.js IncomingMessage
    * @param res - Node.js ServerResponse
-   * @returns Promise that resolves when request processing is complete
+   * @returns Promise that resolves when request processing is complete and
+   * all the work scheduled using "ctx.waitUntil()" has settled
    */
   handle(req: IncomingMessage, res: ServerResponse) {
     /**

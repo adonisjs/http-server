@@ -211,7 +211,9 @@ export class HttpContext extends Macroable {
    * The promise is expected to be already started; it does not block the
    * response. Multiple promises may be scheduled for the same request; they
    * are settled in parallel and a rejected promise will not cancel the
-   * others. Rejections are logged using the request-scoped logger.
+   * others. Rejections are logged using the request-scoped logger. The
+   * promise returned by "server.handle()" resolves only after all the
+   * scheduled promises have settled.
    *
    * Promises scheduled after the response has been sent but before the
    * lifecycle has completed join the next drain wave. Scheduling after the
