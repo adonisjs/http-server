@@ -350,4 +350,39 @@ test.group('Http context | waitUntil', () => {
      */
     assert.deepEqual(events, ['wave-1', 'wave-2'])
   })
+
+  test('waits for work scheduled after an await in the handler', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+
+    let handlePromise: Promise<void> | undefined
+    const httpServer = createServer((req, res) => {
+      handlePromise = server.handle(req, res)
+    })
+    await app.init()
+
+    /**
+     * The handler awaits before scheduling the work, so the gate does not
+     * exist at the time "server.handle()" starts the pipeline. The returned
+     * promise must still wait for the scheduled work
+     */
+    let settled = false
+    server.use([])
+    server.getRouter().get('/', async (ctx) => {
+      await setTimeout(20)
+      ctx.waitUntil(
+        setTimeout(150).then(() => {
+          settled = true
+        })
+      )
+      return 'handled'
+    })
+    await server.boot()
+
+    await supertest(httpServer).get('/').expect(200)
+    assert.isFalse(settled)
+
+    await handlePromise
+    assert.isTrue(settled)
+  })
 })
