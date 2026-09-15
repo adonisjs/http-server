@@ -149,6 +149,29 @@ export class HttpContext extends Macroable {
   subdomains: Record<string, any> = {}
 
   /**
+   * Promises scheduled via "waitUntil()" for the current request. The queue
+   * is created lazily when the first promise is scheduled
+   */
+  #waitUntilQueue?: PromiseLike<unknown>[]
+
+  /**
+   * Resolved when all the scheduled promises have settled. It is created
+   * lazily along with the queue and awaited by the server inside
+   * "server.handle()"
+   */
+  #waitUntilGate?: Promise<void>
+
+  /**
+   * Reference to the waitUntil gate resolver
+   */
+  #waitUntilGateResolve?: () => void
+
+  /**
+   * Whether the waitUntil queue has already been drained for this request
+   */
+  #waitUntilSettled: boolean = false
+
+  /**
    * Creates a new HttpContext instance
    *
    * @param {HttpRequest} request - The HTTP request instance
@@ -172,6 +195,93 @@ export class HttpContext extends Macroable {
      */
     this.request.ctx = this
     this.response.ctx = this
+  }
+
+  /**
+   * Schedule a promise to be settled after the response for the current
+   * request has been sent to the client.
+   *
+   * The promise is expected to be already started; it does not block the
+   * response. Multiple promises may be scheduled for the same request; they
+   * are settled in parallel and a rejected promise will not cancel the
+   * others. Rejections are logged using the request-scoped logger.
+   *
+   * Promises scheduled after the response has been sent but before the
+   * lifecycle has completed join the next drain wave. Scheduling after the
+   * lifecycle has completed raises an exception.
+   *
+   * @example
+   * ```ts
+   * ctx.waitUntil(fetch('https://analytics.example.com/collect', {
+   *   method: 'POST',
+   *   body: JSON.stringify({ url: ctx.request.url() }),
+   * }))
+   * ```
+   */
+  waitUntil(promise: PromiseLike<unknown>): void {
+    if (this.#waitUntilSettled) {
+      throw new RuntimeException(
+        'Cannot schedule work using "waitUntil()" after the request lifecycle has completed'
+      )
+    }
+
+    this.#waitUntilQueue ??= []
+    this.#waitUntilQueue.push(promise)
+
+    /**
+     * Listen for the response finish event only when someone has actually
+     * scheduled work. This keeps the request lifecycle cost-free when
+     * the feature is not used
+     */
+    if (!this.#waitUntilGate) {
+      this.#waitUntilGate = new Promise((resolve) => {
+        this.#waitUntilGateResolve = resolve
+      })
+
+      this.response.onFinish(() => {
+        /**
+         * Re-enter the async local storage (when enabled), so the global
+         * "waitUntil" and other context-aware APIs keep working inside
+         * draining callbacks
+         */
+        if (asyncLocalStorage.storage) {
+          asyncLocalStorage.storage.run(this, () => this.#drainWaitUntil())
+        } else {
+          void this.#drainWaitUntil()
+        }
+      })
+    }
+  }
+
+  /**
+   * Returns the promise resolved once all the scheduled promises have
+   * settled. It is used internally by the server to await post-response
+   * work inside "server.handle()"
+   */
+  get waitUntilGate(): Promise<void> | undefined {
+    return this.#waitUntilGate
+  }
+
+  /**
+   * Settles all the scheduled promises. Promises scheduled while the queue
+   * is being drained join the next wave
+   */
+  async #drainWaitUntil(): Promise<void> {
+    try {
+      while (this.#waitUntilQueue!.length) {
+        const wave = this.#waitUntilQueue!.splice(0)
+        const results = await Promise.allSettled(wave)
+
+        for (const result of results) {
+          if (result.status === 'rejected') {
+            this.logger.fatal({ err: result.reason }, 'waitUntil callback rejected')
+          }
+        }
+      }
+    } finally {
+      this.#waitUntilSettled = true
+      this.#waitUntilGateResolve!()
+    }
   }
 
   /**
