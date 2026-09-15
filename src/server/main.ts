@@ -470,24 +470,24 @@ export class Server {
     /**
      * Handle request
      */
-    if (this.usingAsyncLocalStorage) {
-      return asyncLocalStorage.storage!.run(ctx, () =>
-        httpRequest.tracePromise(
-          this.#handleRequest,
-          httpRequest.hasSubscribers ? { ctx } : undefined,
-          this,
-          ctx,
-          resolver
-        )
+    const requestPipeline = () =>
+      httpRequest.tracePromise(
+        this.#handleRequest,
+        httpRequest.hasSubscribers ? { ctx } : undefined,
+        this,
+        ctx,
+        resolver
       )
-    }
 
-    return httpRequest.tracePromise(
-      this.#handleRequest,
-      httpRequest.hasSubscribers ? { ctx } : undefined,
-      this,
-      ctx,
-      resolver
-    )
+    const requestPromise = this.usingAsyncLocalStorage
+      ? asyncLocalStorage.storage!.run(ctx, requestPipeline)
+      : requestPipeline()
+
+    /**
+     * Resolve the returned promise only after the work scheduled using
+     * "ctx.waitUntil()" has settled. This gives tests and future serverless
+     * adapters a single integration point for post-response work
+     */
+    return requestPromise.finally(() => ctx.waitUntilGate)
   }
 }

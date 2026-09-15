@@ -131,4 +131,64 @@ test.group('Http context | waitUntil', () => {
       'Cannot schedule work using "waitUntil()" after the request lifecycle has completed'
     )
   })
+
+  test('handle promise resolves only after the scheduled work has settled', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+
+    let handlePromise: Promise<void> | undefined
+    const httpServer = createServer((req, res) => {
+      handlePromise = server.handle(req, res)
+    })
+    await app.init()
+
+    let settled = false
+    server.use([])
+    server.getRouter().get('/', (ctx) => {
+      ctx.waitUntil(
+        setTimeout(30).then(() => {
+          settled = true
+        })
+      )
+      return 'handled'
+    })
+    await server.boot()
+
+    await supertest(httpServer).get('/').expect(200)
+    assert.isFalse(settled)
+
+    await handlePromise
+    assert.isTrue(settled)
+  })
+
+  test('promises scheduled from a running promise join the next drain wave', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+
+    let handlePromise: Promise<void> | undefined
+    const httpServer = createServer((req, res) => {
+      handlePromise = server.handle(req, res)
+    })
+    await app.init()
+
+    const events: string[] = []
+    server.use([])
+    server.getRouter().get('/', (ctx) => {
+      ctx.waitUntil(
+        setTimeout(10).then(() => {
+          events.push('wave-1')
+          ctx.waitUntil(setTimeout(10).then(() => events.push('wave-2')))
+        })
+      )
+      events.push('handler')
+      return 'handled'
+    })
+    await server.boot()
+
+    await supertest(httpServer).get('/').expect(200)
+    assert.deepEqual(events, ['handler'])
+
+    await handlePromise
+    assert.deepEqual(events, ['handler', 'wave-1', 'wave-2'])
+  })
 })
