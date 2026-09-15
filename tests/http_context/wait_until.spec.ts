@@ -17,6 +17,7 @@ import { AppFactory } from '@adonisjs/application/factories'
 import { HttpContext } from '../../src/http_context/main.ts'
 import { asyncLocalStorage } from '../../src/http_context/local_storage.ts'
 import { ServerFactory } from '../../factories/server_factory.ts'
+import { waitUntil } from '../../src/wait_until.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
 
@@ -384,5 +385,66 @@ test.group('Http context | waitUntil', () => {
 
     await handlePromise
     assert.isTrue(settled)
+  })
+
+  test('schedule work from the global waitUntil when ALS is enabled', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory()
+      .merge({
+        app,
+        config: { useAsyncLocalStorage: true },
+      })
+      .create()
+
+    let handlePromise: Promise<void> | undefined
+    const httpServer = createServer((req, res) => {
+      handlePromise = server.handle(req, res)
+    })
+    await app.init()
+
+    let ranInSameContext = false
+    server.use([])
+    server.getRouter().get('/', (ctx) => {
+      waitUntil(
+        setTimeout(10).then(() => {
+          ranInSameContext = HttpContext.get() === ctx
+        })
+      )
+      return 'handled'
+    })
+    await server.boot()
+
+    await supertest(httpServer).get('/').expect(200)
+    await handlePromise
+    assert.isTrue(ranInSameContext)
+  })
+
+  test('global waitUntil throws when ALS is disabled', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory()
+      .merge({
+        app,
+        config: { useAsyncLocalStorage: false },
+      })
+      .create()
+    const httpServer = createServer(server.handle.bind(server))
+    await app.init()
+
+    server.use([])
+    server.getRouter().get('/', () => {
+      try {
+        waitUntil(Promise.resolve())
+        return 'scheduled'
+      } catch (error) {
+        return { error: (error as Error).message }
+      }
+    })
+    await server.boot()
+
+    const { body } = await supertest(httpServer).get('/').expect(200)
+    assert.equal(
+      body.error,
+      'HTTP context is not available. Enable "useAsyncLocalStorage" inside "config/app.ts" file'
+    )
   })
 })
