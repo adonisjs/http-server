@@ -10,13 +10,15 @@
 import 'reflect-metadata'
 import supertest from 'supertest'
 import { test } from '@japa/runner'
+import { Emitter } from '@adonisjs/events'
 import { setTimeout } from 'node:timers/promises'
-import { createServer } from 'node:http'
+import http, { createServer } from 'node:http'
 import { AppFactory } from '@adonisjs/application/factories'
 
 import { HttpContext } from '../../src/http_context/main.ts'
 import { asyncLocalStorage } from '../../src/http_context/local_storage.ts'
 import { ServerFactory } from '../../factories/server_factory.ts'
+import { type HttpServerEvents } from '../../src/types/server.ts'
 import { waitUntil } from '../../src/wait_until.ts'
 
 const BASE_URL = new URL('./app/', import.meta.url)
@@ -490,5 +492,120 @@ test.group('Http context | waitUntil', () => {
       body.error,
       'HTTP context is not available. Enable "useAsyncLocalStorage" inside "config/app.ts" file'
     )
+  })
+
+  test('run scheduled work even when the route handler throws', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+
+    let handlePromise: Promise<void> | undefined
+    const httpServer = createServer((req, res) => {
+      handlePromise = server.handle(req, res)
+    })
+    await app.init()
+
+    let ran = false
+    server.use([])
+    server.getRouter().get('/', (ctx) => {
+      ctx.waitUntil(
+        setTimeout(10).then(() => {
+          ran = true
+        })
+      )
+      throw new Error('Something went wrong')
+    })
+    await server.boot()
+
+    await supertest(httpServer).get('/').expect(500)
+    assert.isFalse(ran)
+
+    await handlePromise
+    assert.isTrue(ran)
+  })
+
+  test('fire http:request_completed at flush time, independent of waitUntil', async ({
+    assert,
+  }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const emitter = new Emitter<HttpServerEvents>(app)
+    const server = new ServerFactory().merge({ app, emitter }).create()
+    const httpServer = createServer(server.handle.bind(server))
+    await app.init()
+
+    const events: string[] = []
+    emitter.on('http:request_completed', () => events.push('request_completed'))
+
+    server.use([])
+    server.getRouter().get('/', (ctx) => {
+      ctx.waitUntil(
+        setTimeout(40).then(() => {
+          events.push('wait-until')
+        })
+      )
+      return 'handled'
+    })
+    await server.boot()
+
+    await supertest(httpServer).get('/').expect(200)
+    await setTimeout(150)
+    assert.deepEqual(events, ['request_completed', 'wait-until'])
+  })
+
+  test('drain scheduled work when the client aborts the request', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+    await app.init()
+
+    let ran = false
+    let handlerStarted = false
+    server.use([])
+    server.getRouter().get('/', (ctx) => {
+      handlerStarted = true
+      ctx.waitUntil(
+        setTimeout(20).then(() => {
+          ran = true
+        })
+      )
+      /**
+       * Never respond: the response cycle ends only because the client
+       * aborted ("close" triggers on-finished)
+       */
+      return new Promise(() => {})
+    })
+    await server.boot()
+
+    const httpServer = createServer(server.handle.bind(server))
+    await new Promise<void>((resolve) => httpServer.listen(0, () => resolve()))
+    const address = httpServer.address()
+    if (!address || typeof address === 'string') {
+      throw new Error('Expected a TCP address')
+    }
+
+    try {
+      const clientRequest = http.get({ port: address.port, path: '/' }, () => {})
+      clientRequest.on('error', () => {})
+
+      /**
+       * Destroying the request before the socket is connected (e.g. on the
+       * same tick as "http.get") races the connection setup and the server
+       * never sees the request. So we wait for the handler to have started
+       * before aborting
+       */
+      let deadline = Date.now() + 2000
+      while (!handlerStarted && Date.now() < deadline) {
+        await setTimeout(10)
+      }
+      assert.isTrue(handlerStarted, 'route handler should have received the request')
+
+      clientRequest.destroy()
+
+      deadline = Date.now() + 2000
+      while (!ran && Date.now() < deadline) {
+        await setTimeout(10)
+      }
+      assert.isTrue(ran)
+    } finally {
+      await new Promise<void>((resolve) => httpServer.close(() => resolve()))
+    }
   })
 })
