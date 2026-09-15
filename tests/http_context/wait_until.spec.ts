@@ -628,4 +628,48 @@ test.group('Http context | waitUntil', () => {
       await new Promise<void>((resolve) => httpServer.close(() => resolve()))
     }
   })
+
+  test('registers no response listeners when waitUntil is not used', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+    await app.init()
+
+    /**
+     * on-finished attaches "end" and "finish" listeners on the response.
+     * Measured inside the handler (before the response is written), so the
+     * counts reflect only registrations made up to that point
+     */
+    const countFinishListeners = (res: http.ServerResponse) =>
+      res.listenerCount('end') + res.listenerCount('finish') + res.listenerCount('socket')
+
+    let unusedCount: number | undefined
+    let usedCount: number | undefined
+
+    server.use([])
+    server.getRouter().get('/without', (ctx) => {
+      unusedCount = countFinishListeners(ctx.response.response)
+      return 'handled'
+    })
+    server.getRouter().get('/with', (ctx) => {
+      ctx.waitUntil(Promise.resolve())
+      usedCount = countFinishListeners(ctx.response.response)
+      return 'handled'
+    })
+    await server.boot()
+
+    await supertest(httpServer).get('/without').expect(200)
+    await supertest(httpServer).get('/with').expect(200)
+    await setTimeout(50)
+
+    assert.isDefined(unusedCount)
+    assert.isDefined(usedCount)
+
+    /**
+     * Strictly greater pins the lazy registration: if the finish listener
+     * were attached eagerly at context construction, both routes would
+     * measure the same count
+     */
+    assert.isBelow(unusedCount!, usedCount!)
+  })
 })

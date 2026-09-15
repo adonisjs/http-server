@@ -425,7 +425,8 @@ export class Server {
    * @param req - Node.js IncomingMessage
    * @param res - Node.js ServerResponse
    * @returns Promise that resolves when request processing is complete and
-   * all the work scheduled using "ctx.waitUntil()" has settled
+   * all the work scheduled using "ctx.waitUntil()" during the request
+   * lifecycle has settled
    */
   handle(req: IncomingMessage, res: ServerResponse) {
     /**
@@ -487,9 +488,9 @@ export class Server {
     /**
      * Resolve the returned promise only after the work scheduled using
      * "ctx.waitUntil()" has settled. This gives tests and future serverless
-     * adapters a single integration point for post-response work
+     * adapters a single integration point for post-response work. The gate is
+     * read lazily: it may not exist until the handler schedules work
      */
-    // The gate is read lazily: it may not exist until the handler schedules work
     return requestPromise.finally(() => ctx.waitUntilGate)
   }
 }

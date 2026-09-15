@@ -213,7 +213,9 @@ export class HttpContext extends Macroable {
    * are settled in parallel and a rejected promise will not cancel the
    * others. Rejections are logged using the request-scoped logger. The
    * promise returned by "server.handle()" resolves only after all the
-   * scheduled promises have settled.
+   * promises scheduled while the request lifecycle is in flight have
+   * settled. Work scheduled from a "response.onFinish()" listener after
+   * that point is still drained, but not awaited by "server.handle()"
    *
    * Promises scheduled after the response has been sent but before the
    * lifecycle has completed join the next drain wave. Scheduling after the
@@ -288,7 +290,7 @@ export class HttpContext extends Macroable {
 
         for (const result of results) {
           if (result.status === 'rejected') {
-            this.logger.error({ err: result.reason }, 'waitUntil callback rejected')
+            this.logger.error({ err: result.reason }, 'waitUntil() promise rejected')
           }
         }
       }
