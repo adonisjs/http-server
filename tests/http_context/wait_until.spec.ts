@@ -25,7 +25,11 @@ test.group('Http context | waitUntil', () => {
   test('run waitUntil callbacks after the response has been sent', async ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
     const server = new ServerFactory().merge({ app }).create()
-    const httpServer = createServer(server.handle.bind(server))
+
+    let handlePromise: Promise<void> | undefined
+    const httpServer = createServer((req, res) => {
+      handlePromise = server.handle(req, res)
+    })
     await app.init()
 
     const events: string[] = []
@@ -45,7 +49,7 @@ test.group('Http context | waitUntil', () => {
     assert.equal(text, 'handled')
     assert.deepEqual(events, ['handler'])
 
-    await setTimeout(100)
+    await handlePromise
     assert.deepEqual(events, ['handler', 'wait-until'])
   })
 
@@ -79,6 +83,42 @@ test.group('Http context | waitUntil', () => {
     assert.isTrue(secondRan)
     assert.equal(logs.length, 1)
     assert.equal(logs[0].err.message, 'e1')
+  })
+
+  test('resolves the gate even when the logger itself throws during drain', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const logger: any = {
+      child: () => logger,
+      error: () => {
+        throw new Error('logger exploded')
+      },
+    }
+    const server = new ServerFactory().merge({ app, logger }).create()
+
+    let handlePromise: Promise<void> | undefined
+    const httpServer = createServer((req, res) => {
+      handlePromise = server.handle(req, res)
+    })
+    await app.init()
+
+    server.use([])
+    server.getRouter().get('/', (ctx) => {
+      ctx.waitUntil(Promise.reject(new Error('boom')))
+      return 'handled'
+    })
+    await server.boot()
+
+    /**
+     * The drain logs the rejection using "logger.error", which explodes.
+     * The rejection of the drain promise itself is swallowed by the
+     * call-site catch, so the gate resolves and the handle promise
+     * fulfills without raising an unhandled rejection
+     */
+    await supertest(httpServer).get('/').expect(200)
+    await handlePromise!.then(
+      () => {},
+      () => assert.fail('handle promise must not reject when the drain logger explodes')
+    )
   })
 
   test('never raise an unhandled rejection for promises rejecting before the response is flushed', async ({
