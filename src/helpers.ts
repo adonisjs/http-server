@@ -20,7 +20,7 @@ import type { HttpRequest } from './request.ts'
 import { createURL } from './client/helpers.ts'
 import { type CookieOptions } from './types/response.ts'
 import { type SignedURLOptions } from './types/url_builder.ts'
-import type { RouteMatchers, RouteJSON, MatchItRouteToken } from './types/route.ts'
+import type { RouteJSON, RouteMatchers, RouteToken } from './types/route.ts'
 import {
   type MiddlewareFn,
   type RouteHandlerInfo,
@@ -156,11 +156,10 @@ export { default as mime } from 'mime-types'
  *
  * @param pattern - The route pattern to parse
  * @param matchers - Optional route matchers
- * @returns {MatchItRouteToken[]} Array of parsed route tokens
+ * @returns {RouteToken[]} Array of parsed route tokens
  */
-export function parseRoute(pattern: string, matchers?: RouteMatchers): MatchItRouteToken[] {
-  const tokens = matchit.parse(pattern, matchers)
-  return tokens
+export function parseRoute(pattern: string, matchers?: RouteMatchers): RouteToken[] {
+  return matchit.parse(pattern, matchers)
 }
 
 /**
@@ -177,7 +176,7 @@ export function parseRoute(pattern: string, matchers?: RouteMatchers): MatchItRo
  */
 export function createSignedURL(
   identifier: string,
-  tokens: MatchItRouteToken[],
+  tokens: RouteToken[],
   searchParamsStringifier: (qs: Record<string, any>) => string,
   encryption: Encryption,
   params?: any[] | { [param: string]: any },

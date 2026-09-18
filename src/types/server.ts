@@ -14,6 +14,7 @@ import type { ErrorHandler, FinalHandler } from '@poppinss/middleware/types'
 import type { QSParserConfig } from './qs.ts'
 import type { RequestConfig } from './request.ts'
 import type { ResponseConfig } from './response.ts'
+import type { RouterConfig } from './route.ts'
 import type { HttpContext } from '../http_context/main.ts'
 
 /**
@@ -112,6 +113,11 @@ export type ServerConfig = RequestConfig &
      * Config for query string parser
      */
     qs: QSParserConfig
+
+    /**
+     * Config for the router
+     */
+    router?: RouterConfig
 
     /**
      * The number of milliseconds of inactivity a server needs to wait for additional incoming

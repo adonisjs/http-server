@@ -558,6 +558,72 @@ test.group('Router | commit', () => {
 })
 
 test.group('Router | match', () => {
+  test('do not match "/users" against "/users/:id"', ({ assert }) => {
+    const router = new RouterFactory().merge({ config: { matcher: 'tree' } }).create()
+    router.get('/users/:id', async () => {})
+    router.commit()
+
+    assert.isNull(router.match('/users', 'GET', false))
+  })
+
+  test('match "/users" route registered after "/users/:id"', ({ assert }) => {
+    async function indexHandler() {}
+
+    const router = new RouterFactory().merge({ config: { matcher: 'tree' } }).create()
+    router.get('/users/:id', async () => {})
+    router.get('/users', indexHandler)
+    router.commit()
+
+    assert.strictEqual(router.match('/users', 'GET', false)?.route.handler, indexHandler)
+  })
+
+  test('do not match "/posts" against "/posts/:slug?.json"', ({ assert }) => {
+    const router = new RouterFactory().merge({ config: { matcher: 'tree' } }).create()
+    router.get('/posts/:slug?.json', async () => {})
+    router.commit()
+
+    assert.isNull(router.match('/posts', 'GET', false))
+  })
+
+  test('do not let a malformed repeated-separator route shadow the root route', ({ assert }) => {
+    async function repeatedSeparatorHandler() {}
+    async function rootHandler() {}
+
+    const router = new RouterFactory().merge({ config: { matcher: 'tree' } }).create()
+    router.get('////', repeatedSeparatorHandler)
+    router.get('/', rootHandler)
+    router.commit()
+
+    assert.strictEqual(router.match('/', 'GET', false)?.route.handler, rootHandler)
+  })
+
+  test('normalize an empty route pattern to root without matching an empty request path', ({
+    assert,
+  }) => {
+    async function handler() {}
+
+    const router = new RouterFactory().merge({ config: { matcher: 'tree' } }).create()
+    router.get('', handler)
+    router.commit()
+
+    assert.strictEqual(router.match('/', 'GET', false)?.route.handler, handler)
+    assert.isNull(router.match('', 'GET', false))
+  })
+
+  test('match routes using specificity precedence', ({ assert }) => {
+    async function paramHandler() {}
+    async function staticHandler() {}
+
+    const router = new RouterFactory()
+      .merge({ config: { matcher: 'tree', precedence: 'specificity' } })
+      .create()
+    router.get('/:value', paramHandler)
+    router.get('/users', staticHandler)
+    router.commit()
+
+    assert.strictEqual(router.match('/users', 'GET', false)?.route.handler, staticHandler)
+  })
+
   test('match route using URL', ({ assert }) => {
     const router = new RouterFactory().create()
 

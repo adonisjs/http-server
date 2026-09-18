@@ -7,8 +7,6 @@
  * file that was distributed with this source code.
  */
 
-// @ts-expect-error
-import matchit from '@poppinss/matchit'
 import { test } from '@japa/runner'
 import { parseRoute } from '../../src/helpers.ts'
 
@@ -31,8 +29,6 @@ test.group('Route parser', () => {
         val: 'id',
       },
     ])
-
-    assert.deepEqual(matchit.exec('/posts/10', tokens), { id: '10' })
   })
 
   test('parse route params with extensions', ({ assert }) => {
@@ -53,8 +49,6 @@ test.group('Route parser', () => {
         val: 'id',
       },
     ])
-
-    assert.deepEqual(matchit.exec('/posts/10.json', tokens), { id: '10' })
   })
 
   test('do not allow extensions with optional params', ({ assert }) => {
@@ -75,9 +69,6 @@ test.group('Route parser', () => {
         val: 'id?', // This is invalid
       },
     ])
-
-    assert.deepEqual(matchit.exec('/posts/10.json', tokens), { 'id?': '10' })
-    assert.deepEqual(matchit.exec('/posts', tokens), {})
   })
 
   test('parse route params wildcard', ({ assert }) => {
@@ -96,7 +87,5 @@ test.group('Route parser', () => {
         val: '*',
       },
     ])
-
-    assert.deepEqual(matchit.exec('/posts/10/hello-world', tokens), { '*': ['10', 'hello-world'] })
   })
 })

@@ -8,8 +8,9 @@
  */
 
 import { test } from '@japa/runner'
+import { parseRoute } from '../../src/helpers.ts'
 import type { HttpContext } from '../../src/http_context/main.ts'
-import { type GetControllerHandlers } from '../../src/types/route.ts'
+import type { GetControllerHandlers, MatchItRouteToken } from '../../src/types/route.ts'
 
 test.group('Router types', () => {
   test('infer route handlers from controller constructor', ({ expectTypeOf }) => {
@@ -24,5 +25,10 @@ test.group('Router types', () => {
     expectTypeOf<GetControllerHandlers<typeof HomeControllerClass>>().toEqualTypeOf<
       'index' | 'store' | 'show' | 'internalHelper'
     >()
+  })
+
+  test('preserve the legacy route token type', ({ expectTypeOf }) => {
+    expectTypeOf<MatchItRouteToken['match']>().toEqualTypeOf<RegExp | undefined>()
+    expectTypeOf(parseRoute('/users/:id')[1].match).toEqualTypeOf<RegExp | undefined>()
   })
 })

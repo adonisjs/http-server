@@ -184,7 +184,7 @@ export class Server {
     this.#logger = logger
     this.#encryption = encryption
     this.#qsParser = new Qs(this.#config.qs)
-    this.#router = new Router(this.#app, this.#encryption, this.#qsParser)
+    this.#router = new Router(this.#app, this.#encryption, this.#qsParser, this.#config.router)
     this.#createAsyncLocalStore()
 
     debug('server config: %O', this.#config)

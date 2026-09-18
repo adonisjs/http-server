@@ -11,7 +11,7 @@
  * Types shared with the client. These should never import other types
  */
 
-export type ClientRouteMatchItTokens = {
+export type ClientRouteToken = {
   /** Original token string */
   old: string
   /** Token type identifier (0=static, 1=param, 2=wildcard, 3=optional) */
@@ -21,6 +21,11 @@ export type ClientRouteMatchItTokens = {
   /** Token end delimiter */
   end: string
 }
+
+/**
+ * @deprecated Use `ClientRouteToken` instead.
+ */
+export type ClientRouteMatchItTokens = ClientRouteToken
 
 /**
  * Complete route definition with all metadata, handlers, and execution context
@@ -44,7 +49,7 @@ export type ClientRouteJSON = {
   /**
    * Tokens to be used to construct the route URL
    */
-  tokens: ClientRouteMatchItTokens[]
+  tokens: ClientRouteToken[]
 
   /**
    * HTTP methods, the route responds to.

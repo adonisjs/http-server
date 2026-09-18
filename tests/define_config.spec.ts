@@ -25,6 +25,9 @@ test.group('Define config', () => {
       },
       generateRequestId: false,
       jsonpCallbackName: 'callback',
+      router: {
+        matcher: 'linear',
+      },
       subdomainOffset: 2,
       useAsyncLocalStorage: false,
     })
@@ -43,9 +46,19 @@ test.group('Define config', () => {
       },
       generateRequestId: false,
       jsonpCallbackName: 'callback',
+      router: {
+        matcher: 'linear',
+      },
       subdomainOffset: 2,
       useAsyncLocalStorage: false,
     })
+  })
+
+  test('configure the tree matcher', ({ assert }) => {
+    assert.deepEqual(
+      defineConfig({ router: { matcher: 'tree', precedence: 'specificity' } }).router,
+      { matcher: 'tree', precedence: 'specificity' }
+    )
   })
 
   test('compile trustProxy config when boolean', ({ assert }) => {
