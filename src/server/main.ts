@@ -424,7 +424,9 @@ export class Server {
    *
    * @param req - Node.js IncomingMessage
    * @param res - Node.js ServerResponse
-   * @returns Promise that resolves when request processing is complete
+   * @returns Promise that resolves when request processing is complete and
+   * all the work scheduled using "ctx.waitUntil()" during the request
+   * lifecycle has settled
    */
   handle(req: IncomingMessage, res: ServerResponse) {
     /**
@@ -470,24 +472,25 @@ export class Server {
     /**
      * Handle request
      */
-    if (this.usingAsyncLocalStorage) {
-      return asyncLocalStorage.storage!.run(ctx, () =>
-        httpRequest.tracePromise(
-          this.#handleRequest,
-          httpRequest.hasSubscribers ? { ctx } : undefined,
-          this,
-          ctx,
-          resolver
-        )
+    const runRequestPipeline = () =>
+      httpRequest.tracePromise(
+        this.#handleRequest,
+        httpRequest.hasSubscribers ? { ctx } : undefined,
+        this,
+        ctx,
+        resolver
       )
-    }
 
-    return httpRequest.tracePromise(
-      this.#handleRequest,
-      httpRequest.hasSubscribers ? { ctx } : undefined,
-      this,
-      ctx,
-      resolver
-    )
+    const requestPromise = this.usingAsyncLocalStorage
+      ? asyncLocalStorage.storage!.run(ctx, runRequestPipeline)
+      : runRequestPipeline()
+
+    /**
+     * Resolve the returned promise only after the work scheduled using
+     * "ctx.waitUntil()" has settled. This gives tests and future serverless
+     * adapters a single integration point for post-response work. The gate is
+     * read lazily: it may not exist until the handler schedules work
+     */
+    return requestPromise.finally(() => ctx.waitUntilGate)
   }
 }

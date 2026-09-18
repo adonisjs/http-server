@@ -19,6 +19,13 @@ import type { RouteJSON } from '../types/route.ts'
 import { asyncLocalStorage } from './local_storage.ts'
 
 /**
+ * A no-op function used to attach inert handlers around the waitUntil
+ * machinery, so a rejected scheduled promise or a throwing logger never
+ * surfaces as an unhandled rejection
+ */
+const noop = () => {}
+
+/**
  * HTTP context encapsulates all properties and services for a given HTTP request.
  *
  * The HttpContext class serves as the central hub for request-specific data and services.
@@ -149,6 +156,29 @@ export class HttpContext extends Macroable {
   subdomains: Record<string, any> = {}
 
   /**
+   * Promises scheduled via "waitUntil()" for the current request. The queue
+   * is created lazily when the first promise is scheduled
+   */
+  #waitUntilQueue?: PromiseLike<unknown>[]
+
+  /**
+   * Resolved when all the scheduled promises have settled. It is created
+   * lazily along with the queue and awaited by the server inside
+   * "server.handle()"
+   */
+  #waitUntilGate?: Promise<void>
+
+  /**
+   * Reference to the waitUntil gate resolver
+   */
+  #waitUntilGateResolve?: () => void
+
+  /**
+   * Whether the waitUntil queue has already been drained for this request
+   */
+  #waitUntilSettled = false
+
+  /**
    * Creates a new HttpContext instance
    *
    * @param {HttpRequest} request - The HTTP request instance
@@ -172,6 +202,102 @@ export class HttpContext extends Macroable {
      */
     this.request.ctx = this
     this.response.ctx = this
+  }
+
+  /**
+   * Schedule a promise to be settled after the response for the current
+   * request has been sent to the client.
+   *
+   * The promise is expected to be already started; it does not block the
+   * response. Multiple promises may be scheduled for the same request; they
+   * are settled in parallel and a rejected promise will not cancel the
+   * others. Rejections are logged using the request-scoped logger. The
+   * promise returned by "server.handle()" resolves only after all the
+   * promises scheduled while the request lifecycle is in flight have
+   * settled. Work scheduled from a "response.onFinish()" listener after
+   * that point is still drained, but not awaited by "server.handle()"
+   *
+   * Promises scheduled after the response has been sent but before the
+   * lifecycle has completed join the next drain wave. Scheduling after the
+   * lifecycle has completed raises an exception.
+   *
+   * @throws RuntimeException when the request lifecycle has completed
+   *
+   * @example
+   * ```ts
+   * ctx.waitUntil(fetch('https://analytics.example.com/collect', {
+   *   method: 'POST',
+   *   body: JSON.stringify({ url: ctx.request.url() }),
+   * }))
+   * ```
+   */
+  waitUntil(promise: PromiseLike<unknown>): void {
+    if (this.#waitUntilSettled) {
+      throw new RuntimeException(
+        'Cannot schedule work using "waitUntil()" after the request lifecycle has completed'
+      )
+    }
+
+    this.#waitUntilQueue ??= []
+    this.#waitUntilQueue.push(promise)
+
+    /**
+     * Attach an inert handler to the scheduled promise, so it cannot raise
+     * an unhandled rejection in the window between being scheduled and
+     * the response being finished. The original promise still flows to
+     * "Promise.allSettled" unchanged
+     */
+    void Promise.resolve(promise).then(noop, noop)
+
+    /**
+     * Listen for the response finish event only when someone has actually
+     * scheduled work. This keeps the request lifecycle cost-free when
+     * the feature is not used
+     */
+    if (!this.#waitUntilGate) {
+      this.#waitUntilGate = new Promise((resolve) => {
+        this.#waitUntilGateResolve = resolve
+      })
+
+      this.response.onFinish(() => {
+        /**
+         * The drain never rejects (rejections are logged and swallowed), but
+         * keep the fire-and-forget call safe if the logger itself throws
+         */
+        void this.#drainWaitUntil().catch(noop)
+      })
+    }
+  }
+
+  /**
+   * Returns the promise resolved once all the scheduled promises have
+   * settled. It is used internally by the server to await post-response
+   * work inside "server.handle()"
+   */
+  get waitUntilGate(): Promise<void> | undefined {
+    return this.#waitUntilGate
+  }
+
+  /**
+   * Settles all the scheduled promises. Promises scheduled while the queue
+   * is being drained join the next wave
+   */
+  async #drainWaitUntil(): Promise<void> {
+    try {
+      while (this.#waitUntilQueue!.length) {
+        const wave = this.#waitUntilQueue!.splice(0)
+        const results = await Promise.allSettled(wave)
+
+        for (const result of results) {
+          if (result.status === 'rejected') {
+            this.logger.error({ err: result.reason }, 'waitUntil() promise rejected')
+          }
+        }
+      }
+    } finally {
+      this.#waitUntilSettled = true
+      this.#waitUntilGateResolve!()
+    }
   }
 
   /**
