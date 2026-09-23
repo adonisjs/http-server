@@ -1035,14 +1035,14 @@ export class HttpResponse extends Macroable {
   redirect(path: string, forwardQueryString?: boolean, statusCode?: number): void
   redirect(
     path?: string,
-    forwardQueryString: boolean = false,
+    forwardQueryString?: boolean,
     statusCode: number = ResponseStatus.Found
   ): Redirect | void {
     const handler = new Redirect(this.request, this, this.#router, this.#qs, this.#config.redirect)
     handler.ctx = this.ctx
 
-    if (forwardQueryString) {
-      handler.withQs()
+    if (forwardQueryString !== undefined) {
+      handler.withQs(forwardQueryString)
     }
 
     if (path === 'back') {
