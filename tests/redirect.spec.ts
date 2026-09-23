@@ -45,6 +45,58 @@ test.group('Redirect', () => {
     assert.equal(header.location, '/foo?username=romain')
   })
 
+  test('redirect to given url without overriding global query string forwarding', async ({
+    assert,
+  }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const response = new HttpResponseFactory()
+        .merge({
+          req,
+          res,
+          encryption,
+          router,
+          config: {
+            redirect: {
+              allowedHosts: [],
+              forwardQueryString: true,
+            },
+          },
+        })
+        .create()
+
+      response.redirect('/foo')
+      response.finish()
+    })
+
+    const { header } = await supertest(url).get('/?username=romain').redirects(1)
+    assert.equal(header.location, '/foo?username=romain')
+  })
+
+  test('redirect to given url can disable global query string forwarding', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const response = new HttpResponseFactory()
+        .merge({
+          req,
+          res,
+          encryption,
+          router,
+          config: {
+            redirect: {
+              allowedHosts: [],
+              forwardQueryString: true,
+            },
+          },
+        })
+        .create()
+
+      response.redirect('/foo', false)
+      response.finish()
+    })
+
+    const { header } = await supertest(url).get('/?username=romain').redirects(1)
+    assert.equal(header.location, '/foo')
+  })
+
   test('redirect to given url and forward current query string', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
