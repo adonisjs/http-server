@@ -1608,4 +1608,47 @@ test.group('Response', (group) => {
     assert.property(headers, 'x-powered-by')
     assert.equal(headers['x-powered-by'], 'adonisjs')
   })
+
+  test('preserve multiple Set-Cookie headers from a web-native Response', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
+      response.send(
+        new Response('ok', {
+          headers: [
+            ['Set-Cookie', 'first=1; Path=/'],
+            ['Set-Cookie', 'second=2; Path=/'],
+          ],
+        })
+      )
+      response.finish()
+    })
+
+    const { headers } = await supertest(url).get('/').expect(200)
+    assert.deepEqual(headers['set-cookie'], ['first=1; Path=/', 'second=2; Path=/'])
+  })
+
+  test('merge Set-Cookie headers from a web-native Response with existing headers', async ({
+    assert,
+  }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
+      response.append('Set-Cookie', 'framework=1; Path=/')
+      response.send(
+        new Response('ok', {
+          headers: [
+            ['Set-Cookie', 'native-a=1; Path=/'],
+            ['Set-Cookie', 'native-b=2; Path=/'],
+          ],
+        })
+      )
+      response.finish()
+    })
+
+    const { headers } = await supertest(url).get('/').expect(200)
+    assert.deepEqual(headers['set-cookie'], [
+      'framework=1; Path=/',
+      'native-a=1; Path=/',
+      'native-b=2; Path=/',
+    ])
+  })
 })

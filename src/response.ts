@@ -861,7 +861,17 @@ export class HttpResponse extends Macroable {
    */
   send(body: any, generateEtag: boolean = this.#config.etag): void {
     if (body instanceof Response) {
-      body.headers.forEach((value, key) => this.header(key, value))
+      body.headers.forEach((value, key) => {
+        if (key !== 'set-cookie') {
+          this.header(key, value)
+        }
+      })
+
+      const cookies = body.headers.getSetCookie()
+      if (cookies.length) {
+        this.append('set-cookie', cookies)
+      }
+
       this.safeStatus(body.status)
 
       if (body.body) {
