@@ -71,6 +71,40 @@ test.group('Define config', () => {
     const config = defineConfig({ trustProxy: 'loopback' })
 
     assert.typeOf(config.trustProxy, 'function')
+    assert.isTrue(config.trustProxy('127.0.0.1', 0))
+    assert.isFalse(config.trustProxy('10.20.30.40', 0))
+  })
+
+  test('compile comma-separated trustProxy config', ({ assert }) => {
+    const config = defineConfig({
+      trustProxy: 'loopback, 10.20.0.0/16, 2001:db8::/32',
+    })
+
+    assert.isTrue(config.trustProxy('127.0.0.1', 0))
+    assert.isTrue(config.trustProxy('10.20.30.40', 0))
+    assert.isTrue(config.trustProxy('2001:db8::1', 0))
+    assert.isFalse(config.trustProxy('192.168.1.1', 0))
+  })
+
+  test('compile trustProxy config when an array', ({ assert }) => {
+    const config = defineConfig({ trustProxy: ['loopback', '2001:db8::/32'] })
+
+    assert.isTrue(config.trustProxy('127.0.0.1', 0))
+    assert.isTrue(config.trustProxy('2001:db8::1', 0))
+    assert.isFalse(config.trustProxy('10.20.30.40', 0))
+  })
+
+  test('trust no proxies when a comma-separated string has no ranges', ({ assert }) => {
+    const config = defineConfig({ trustProxy: ' , ' })
+
+    assert.isFalse(config.trustProxy('127.0.0.1', 0))
+  })
+
+  test('throw when a trustProxy range is invalid', ({ assert }) => {
+    assert.throws(
+      () => defineConfig({ trustProxy: 'loopback, invalid' }),
+      'invalid IP address: invalid'
+    )
   })
 
   test('compile trustProxy config when a function', ({ assert }) => {

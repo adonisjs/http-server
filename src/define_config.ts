@@ -17,7 +17,7 @@ import type { ServerConfig } from './types/server.ts'
 
 type UserDefinedServerConfig = DeepPartial<
   Omit<ServerConfig, 'trustProxy'> & {
-    trustProxy: ((address: string, distance: number) => boolean) | boolean | string
+    trustProxy: ((address: string, distance: number) => boolean) | boolean | string | string[]
   }
 >
 
@@ -27,6 +27,9 @@ type UserDefinedServerConfig = DeepPartial<
  * This function merges user-provided configuration with default values,
  * normalizes certain properties (like cookie maxAge and trustProxy settings),
  * and returns a complete ServerConfig object.
+ *
+ * The `trustProxy` option accepts a range string, a comma-separated list of
+ * ranges, or an array of ranges. It also accepts a boolean or a custom function.
  *
  * @param config - User-defined server configuration options
  *
@@ -103,15 +106,21 @@ export function defineConfig(config: UserDefinedServerConfig): ServerConfig {
   }
 
   /**
-   * Normalizing trust proxy setting to allow boolean and
-   * string values
+   * Normalizing trust proxy setting to allow boolean, string,
+   * and array values
    */
   if (typeof trustProxy === 'boolean') {
     const tpValue = trustProxy
     normalizedConfig.trustProxy = (_, __) => tpValue
-  } else if (typeof trustProxy === 'string') {
-    const tpValue = trustProxy
-    normalizedConfig.trustProxy = proxyAddr.compile(tpValue)
+  } else if (typeof trustProxy === 'string' || Array.isArray(trustProxy)) {
+    normalizedConfig.trustProxy = proxyAddr.compile(
+      typeof trustProxy === 'string'
+        ? trustProxy
+            .split(',')
+            .map((value) => value.trim())
+            .filter(Boolean)
+        : trustProxy
+    )
   } else if (trustProxy) {
     normalizedConfig.trustProxy = trustProxy
   }
