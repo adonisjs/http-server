@@ -28,7 +28,7 @@ export class RouteMatchers extends Macroable {
    */
   uuid() {
     return {
-      match: /^[0-9a-zA-F]{8}-[0-9a-zA-F]{4}-[0-9a-zA-F]{4}-[0-9a-zA-F]{4}-[0-9a-zA-F]{12}$/,
+      match: /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/,
       cast: (value: string) => value.toLowerCase(),
     }
   }
