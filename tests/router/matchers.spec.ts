@@ -35,6 +35,13 @@ test.group('Matchers', () => {
     assert.equal(uuid.cast(value.toUpperCase()), value)
   })
 
+  test('uuid matcher rejects non-hex characters', ({ assert }) => {
+    const uuid = new RouteMatchers().uuid()
+
+    assert.isFalse(uuid.match.test('zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz'))
+    assert.isFalse(uuid.match.test('gggggggg-gggg-gggg-gggg-gggggggggggg'))
+  })
+
   test('get matcher for a slug', ({ assert }) => {
     const slug = new RouteMatchers().slug()
 
