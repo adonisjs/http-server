@@ -18,6 +18,7 @@ import { EncryptionFactory } from '@boringnode/encryption/factories'
 import { RouterFactory } from '../factories/router.ts'
 import { HttpRequestFactory } from '../factories/request.ts'
 import { httpServer } from '../factories/http_server.ts'
+import { defineConfig } from '../index.ts'
 import { CookieSerializer } from '../src/cookies/serializer.ts'
 import { HttpContextFactory } from '../factories/http_context.ts'
 
@@ -604,6 +605,19 @@ test.group('Request', () => {
           },
         })
         .create()
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ ip: request.ip() }))
+    })
+
+    const { body } = await supertest(url).get('/')
+    assert.equal(body.ip, '10.10.10.10')
+  })
+
+  test('trust proxy from an array in the defined config', async ({ assert }) => {
+    const config = defineConfig({ trustProxy: ['loopback'] })
+    const { url } = await httpServer.create((req, res) => {
+      req.headers['x-forwarded-for'] = '10.10.10.10'
+      const request = new HttpRequestFactory().merge({ req, res, encryption, config }).create()
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end(JSON.stringify({ ip: request.ip() }))
     })
