@@ -41,19 +41,29 @@ export function routeFinder(
    * @returns Promise that resolves when route execution completes or rejects with route not found error
    */
   return function () {
-    const url = ctx.request.url()
-    const method = ctx.request.method()
-    const hostname = router.usingDomains ? ctx.request.hostname() : undefined
-    const route = router.match(url, method, ctx.request.parsedUrl.shouldDecodeParam, hostname)
+    /**
+     * Sync errors (for example, from a matcher cast) are returned as a
+     * rejected promise. The middleware runner does not catch a sync
+     * error from its final handler, so without global middleware the
+     * error would skip the app error handler.
+     */
+    try {
+      const url = ctx.request.url()
+      const method = ctx.request.method()
+      const hostname = router.usingDomains ? ctx.request.hostname() : undefined
+      const route = router.match(url, method, ctx.request.parsedUrl.shouldDecodeParam, hostname)
 
-    if (route) {
-      ctx.params = route.params
-      ctx.subdomains = route.subdomains
-      ctx.route = route.route
-      ctx.routeKey = route.routeKey
-      return route.route.execute(route.route, resolver, ctx, errorResponder)
+      if (route) {
+        ctx.params = route.params
+        ctx.subdomains = route.subdomains
+        ctx.route = route.route
+        ctx.routeKey = route.routeKey
+        return route.route.execute(route.route, resolver, ctx, errorResponder)
+      }
+
+      return Promise.reject(new errors.E_ROUTE_NOT_FOUND([method, url]))
+    } catch (error) {
+      return Promise.reject(error)
     }
-
-    return Promise.reject(new errors.E_ROUTE_NOT_FOUND([method, url]))
   }
 }
