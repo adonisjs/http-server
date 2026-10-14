@@ -242,7 +242,8 @@ export function serializeCookie(
 
   if (options) {
     expires = typeof options.expires === 'function' ? options.expires() : options.expires
-    maxAge = options.maxAge ? string.seconds.parse(options.maxAge) : undefined
+    maxAge =
+      options.maxAge || options.maxAge === 0 ? string.seconds.parse(options.maxAge) : undefined
   }
 
   return serialize(key, value, { ...options, maxAge, expires })
