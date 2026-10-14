@@ -255,11 +255,9 @@ export function safeDecodeURI(path: string, useSemicolonDelimiter: boolean) {
         shouldDecode = true
       } else {
         shouldDecodeParam = true
-        // %25 - encoded % char. We need to encode one more time to prevent double decoding
+        // %25 - encoded % char. It is encoded one more time before decoding to prevent double decoding
         if (highCharCode === 50 && lowCharCode === 53) {
           shouldDecode = true
-          path = path.slice(0, i + 1) + '25' + path.slice(i + 1)
-          i += 2
         }
         i += 2
       }
@@ -273,6 +271,6 @@ export function safeDecodeURI(path: string, useSemicolonDelimiter: boolean) {
     }
   }
 
-  const decodedPath = shouldDecode ? decodeURI(path) : path
+  const decodedPath = shouldDecode ? decodeURI(path.replaceAll('%25', '%2525')) : path
   return { pathname: decodedPath, query: querystring, shouldDecodeParam }
 }
