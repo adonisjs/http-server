@@ -1080,6 +1080,42 @@ test.group('Server | error handler', () => {
     assert.equal(text, 'handled by error handler')
   })
 
+  test('pass route matching errors to the error handler', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+    await app.init()
+
+    class ErrorHandler {
+      report() {}
+      handle(error: any, { response }: HttpContext) {
+        response.status(422).send(`handled by error handler: ${error.message}`)
+      }
+    }
+
+    server.use([])
+
+    server.errorHandler(async () => {
+      return {
+        default: ErrorHandler,
+      }
+    })
+
+    server
+      .getRouter()
+      .get('/:id', () => 'ok')
+      .where('id', {
+        match: /.*/,
+        cast: () => {
+          throw new Error('Invalid id')
+        },
+      })
+    await server.boot()
+
+    const { text } = await supertest(httpServer).get('/1').expect(422)
+    assert.equal(text, 'handled by error handler: Invalid id')
+  })
+
   test('report response serialization errors', async ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
     const server = new ServerFactory().merge({ app }).create()
