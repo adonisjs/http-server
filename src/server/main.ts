@@ -149,6 +149,18 @@ export class Server {
   }
 
   /**
+   * Handles the request inside the "adonisjs.http.request" tracing channel.
+   * The channel is skipped when nobody is listening to avoid the
+   * tracePromise overhead on every request.
+   */
+  #traceRequest(ctx: HttpContext, resolver: ContainerResolver<any>) {
+    if (!httpRequest.hasSubscribers) {
+      return this.#handleRequest(ctx, resolver)
+    }
+    return httpRequest.tracePromise(this.#handleRequest, { ctx }, this, ctx, resolver)
+  }
+
+  /**
    * Indicates whether the server has completed its boot process
    */
   get booted() {
@@ -471,23 +483,9 @@ export class Server {
      * Handle request
      */
     if (this.usingAsyncLocalStorage) {
-      return asyncLocalStorage.storage!.run(ctx, () =>
-        httpRequest.tracePromise(
-          this.#handleRequest,
-          httpRequest.hasSubscribers ? { ctx } : undefined,
-          this,
-          ctx,
-          resolver
-        )
-      )
+      return asyncLocalStorage.storage!.run(ctx, () => this.#traceRequest(ctx, resolver))
     }
 
-    return httpRequest.tracePromise(
-      this.#handleRequest,
-      httpRequest.hasSubscribers ? { ctx } : undefined,
-      this,
-      ctx,
-      resolver
-    )
+    return this.#traceRequest(ctx, resolver)
   }
 }
