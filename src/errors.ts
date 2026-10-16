@@ -45,6 +45,26 @@ export const E_CANNOT_LOOKUP_ROUTE = createError<[routeIdentifier: string]>(
 )
 
 /**
+ * Thrown when a QUERY request is received without a valid Content-Type header.
+ *
+ * RFC 10008 requires servers to fail QUERY requests when the Content-Type
+ * request header is missing, since the request content and its media type
+ * together define the query.
+ *
+ * @see https://www.rfc-editor.org/rfc/rfc10008.html#section-2
+ *
+ * @example
+ * ```ts
+ * throw new E_INVALID_QUERY_CONTENT_TYPE()
+ * ```
+ */
+export const E_INVALID_QUERY_CONTENT_TYPE = createError(
+  'QUERY requests must have a valid Content-Type header',
+  'E_INVALID_QUERY_CONTENT_TYPE',
+  400
+)
+
+/**
  * A generic HTTP exception for converting errors to HTTP responses.
  *
  * This class provides a standardized way to create HTTP exceptions with

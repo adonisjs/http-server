@@ -199,6 +199,155 @@ test.group('Server | Response handling', () => {
     assert.equal(await response.text(), 'QUERY')
   })
 
+  test('reject QUERY requests without a Content-Type header', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+
+    await app.init()
+
+    let routeHandlerInvoked = false
+    server.use([])
+    server.getRouter().query('/users/search', async () => {
+      routeHandlerInvoked = true
+      return 'handled'
+    })
+    await server.boot()
+
+    const { url } = await httpServerFactory.create(server.handle.bind(server))
+
+    /**
+     * Fetch does not set a Content-Type header for binary bodies
+     */
+    const response = await fetch(`${url}/users/search`, {
+      method: 'QUERY',
+      body: new TextEncoder().encode('name = "virk"'),
+    })
+
+    assert.equal(response.status, 400)
+    assert.equal(await response.text(), 'QUERY requests must have a valid Content-Type header')
+    assert.isFalse(routeHandlerInvoked)
+  })
+
+  test('reject QUERY requests with a malformed Content-Type header', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+
+    await app.init()
+
+    server.use([])
+    server.getRouter().query('/users/search', async () => 'handled')
+    await server.boot()
+
+    const { url } = await httpServerFactory.create(server.handle.bind(server))
+
+    for (const contentType of ['', 'json', 'application/', '/json', 'application json']) {
+      const response = await fetch(`${url}/users/search`, {
+        method: 'QUERY',
+        headers: { 'content-type': contentType },
+        body: '{"name":"virk"}',
+      })
+
+      assert.equal(response.status, 400, `expected 400 for content-type "${contentType}"`)
+    }
+  })
+
+  test('accept QUERY requests with a valid Content-Type header', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+
+    await app.init()
+
+    server.use([])
+    server.getRouter().query('/users/search', async ({ request }) => request.header('content-type'))
+    await server.boot()
+
+    const { url } = await httpServerFactory.create(server.handle.bind(server))
+
+    for (const contentType of [
+      'application/json',
+      'application/json; charset=utf-8',
+      'application/x-www-form-urlencoded',
+      'application/sql',
+    ]) {
+      const response = await fetch(`${url}/users/search`, {
+        method: 'QUERY',
+        headers: { 'content-type': contentType },
+        body: '{"name":"virk"}',
+      })
+
+      assert.equal(response.status, 200)
+      assert.equal(await response.text(), contentType)
+    }
+  })
+
+  test('pass QUERY Content-Type errors to the error handler', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+
+    await app.init()
+
+    server.use([])
+    server.getRouter().query('/users/search', async () => 'handled')
+    server.errorHandler(async () => {
+      return {
+        default: class ErrorHandler {
+          report() {}
+          handle(error: any, { response }: HttpContext) {
+            response.status(error.status).send(error.code)
+          }
+        },
+      }
+    })
+    await server.boot()
+
+    const { url } = await httpServerFactory.create(server.handle.bind(server))
+    const response = await fetch(`${url}/users/search`, {
+      method: 'QUERY',
+      body: new TextEncoder().encode('name = "virk"'),
+    })
+
+    assert.equal(response.status, 400)
+    assert.equal(await response.text(), 'E_INVALID_QUERY_CONTENT_TYPE')
+  })
+
+  test('do not enforce QUERY Content-Type rules on other methods', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+
+    await app.init()
+
+    server.use([])
+    server.getRouter().post('/users', async () => 'handled')
+    await server.boot()
+
+    const { url } = await httpServerFactory.create(server.handle.bind(server))
+    const response = await fetch(`${url}/users`, {
+      method: 'POST',
+      body: new TextEncoder().encode('name = "virk"'),
+    })
+
+    assert.equal(response.status, 200)
+    assert.equal(await response.text(), 'handled')
+  })
+
+  test('return 404 for QUERY requests to unknown routes', async ({ assert }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+
+    await app.init()
+
+    server.use([])
+    await server.boot()
+
+    const { url } = await httpServerFactory.create(server.handle.bind(server))
+    const response = await fetch(`${url}/users/search`, {
+      method: 'QUERY',
+      body: new TextEncoder().encode('name = "virk"'),
+    })
+
+    assert.equal(response.status, 404)
+  })
+
   test('use route handler return value when response.send is not called', async ({ assert }) => {
     const app = new AppFactory().create(BASE_URL, () => {})
     const server = new ServerFactory().merge({ app }).create()
