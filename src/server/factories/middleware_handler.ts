@@ -37,9 +37,18 @@ export function middlewareHandler(resolver: ContainerResolver<any>, ctx: HttpCon
    */
   return function (fn: ParsedGlobalMiddleware, next: NextFn) {
     debug('executing middleware %s', fn.name)
+
+    /**
+     * Calling the handler directly avoids the variadic tracePromise call
+     * (rest args array + Reflect.apply) when nobody is listening.
+     */
+    if (!httpMiddleware.hasSubscribers) {
+      return fn.handle(resolver, ctx, next)
+    }
+
     return httpMiddleware.tracePromise(
       fn.handle,
-      httpMiddleware.hasSubscribers ? { middleware: fn } : undefined,
+      { middleware: fn },
       undefined,
       resolver,
       ctx,

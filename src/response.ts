@@ -1214,7 +1214,11 @@ export class HttpResponse extends Macroable {
      * Handle text based response
      */
     if (this.content) {
-      httpResponseSerializer.traceSync(this.writeBody, undefined, this, ...this.content)
+      if (httpResponseSerializer.hasSubscribers) {
+        httpResponseSerializer.traceSync(this.writeBody, undefined, this, ...this.content)
+      } else {
+        this.writeBody(...this.content)
+      }
       return
     }
 

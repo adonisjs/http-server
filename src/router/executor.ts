@@ -33,46 +33,49 @@ export function execute(
     .runner()
     .errorHandler((error) => errorResponder(error, ctx))
     .finalHandler(() => {
+      /**
+       * Tracing channels are only used when someone is listening. Otherwise
+       * the handlers are called directly to skip the tracePromise overhead.
+       */
       if (typeof route.handler === 'function') {
-        return (
-          httpRouteHandler.tracePromise(
-            ($ctx: HttpContext) => Promise.resolve((route.handler as Function)($ctx)),
-            httpRouteHandler.hasSubscribers ? { route } : undefined,
-            undefined,
-            ctx
-          ) as unknown as Promise<any>
-        ).then(useReturnValue(ctx))
+        const handler = route.handler
+        const promise = httpRouteHandler.hasSubscribers
+          ? httpRouteHandler.tracePromise(
+              ($ctx: HttpContext) => Promise.resolve(handler($ctx)),
+              { route },
+              undefined,
+              ctx
+            )
+          : Promise.resolve(handler(ctx))
+
+        return promise.then(useReturnValue(ctx))
       }
 
-      return (
-        httpRouteHandler.tracePromise(
-          route.handler.handle,
-          httpRouteHandler.hasSubscribers ? { route } : undefined,
-          undefined,
-          resolver,
-          ctx
-        ) as unknown as Promise<any>
-      ).then(useReturnValue(ctx))
+      const promise = httpRouteHandler.hasSubscribers
+        ? httpRouteHandler.tracePromise(route.handler.handle, { route }, undefined, resolver, ctx)
+        : route.handler.handle(resolver, ctx)
+
+      return promise.then(useReturnValue(ctx))
     })
     .run(async (middleware, next) => {
       if (typeof middleware === 'function') {
-        return httpMiddleware.tracePromise(
-          middleware,
-          httpMiddleware.hasSubscribers ? { middleware } : undefined,
-          undefined,
-          ctx,
-          next
-        ) as unknown as Promise<any>
+        if (!httpMiddleware.hasSubscribers) {
+          return middleware(ctx, next)
+        }
+        return httpMiddleware.tracePromise(middleware, { middleware }, undefined, ctx, next)
       }
 
+      if (!httpMiddleware.hasSubscribers) {
+        return middleware.handle(resolver, ctx, next, middleware.args)
+      }
       return httpMiddleware.tracePromise(
         middleware.handle,
-        httpMiddleware.hasSubscribers ? { middleware } : undefined,
+        { middleware },
         undefined,
         resolver,
         ctx,
         next,
         middleware.args
-      ) as unknown as Promise<any>
+      )
     })
 }

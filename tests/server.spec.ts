@@ -15,6 +15,12 @@ import { Emitter } from '@adonisjs/events'
 import type { NextFn } from '@poppinss/middleware/types'
 import { AppFactory } from '@adonisjs/application/factories'
 import { createServer, IncomingMessage, ServerResponse } from 'node:http'
+import {
+  httpRequest,
+  httpMiddleware,
+  httpRouteHandler,
+  httpResponseSerializer,
+} from '../src/tracing_channels.ts'
 
 import { Router } from '../src/router/main.ts'
 import { HttpContext } from '../src/http_context/main.ts'
@@ -82,6 +88,77 @@ test.group('Server', () => {
     server.setNodeServer(httpServer)
 
     assert.strictEqual(httpServer.keepAliveTimeout, keepAliveTimeout)
+  })
+})
+
+test.group('Server | tracing', () => {
+  test('emit tracing events when subscribing after the server has booted', async ({
+    assert,
+    cleanup,
+  }) => {
+    const app = new AppFactory().create(BASE_URL, () => {})
+    const server = new ServerFactory().merge({ app }).create()
+    const httpServer = createServer(server.handle.bind(server))
+
+    await app.init()
+
+    server.use([
+      async () => {
+        return {
+          default: class GlobalMiddleware {
+            async handle(_: HttpContext, next: NextFn) {
+              await next()
+            }
+          },
+        }
+      },
+    ])
+    server
+      .getRouter()
+      .get('/', async () => 'handled')
+      .middleware(async (_, next) => {
+        await next()
+      })
+
+    await server.boot()
+
+    /**
+     * Requests made before subscribing must not prevent events
+     * from being emitted later on
+     */
+    await supertest(httpServer).get('/').expect(200)
+
+    const events: string[] = []
+    const subscribe = (name: string, channel: { subscribe: Function; unsubscribe: Function }) => {
+      const handlers = {
+        start: () => events.push(`${name}:start`),
+        end: () => {},
+        asyncStart: () => {},
+        asyncEnd: () => events.push(`${name}:asyncEnd`),
+        error: () => {},
+      }
+      channel.subscribe(handlers)
+      cleanup(() => channel.unsubscribe(handlers))
+    }
+
+    subscribe('request', httpRequest)
+    subscribe('middleware', httpMiddleware)
+    subscribe('route', httpRouteHandler)
+    subscribe('serializer', httpResponseSerializer)
+
+    const { text } = await supertest(httpServer).get('/').expect(200)
+    assert.equal(text, 'handled')
+    assert.deepEqual(events, [
+      'request:start',
+      'middleware:start',
+      'middleware:start',
+      'route:start',
+      'route:asyncEnd',
+      'middleware:asyncEnd',
+      'middleware:asyncEnd',
+      'serializer:start',
+      'request:asyncEnd',
+    ])
   })
 })
 
