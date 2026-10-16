@@ -162,6 +162,23 @@ export function createSignedUrlBuilder<Routes extends LookupList>(
     }
   }
 
+  signedRoute.query = function routeQuery(...[identifier, params, options]) {
+    const method = 'QUERY'
+    const url = createSignedUrlForRoute(identifier, params, options, method)
+
+    return {
+      url,
+      method,
+      toString() {
+        return url
+      },
+      form: {
+        action: url,
+        method,
+      },
+    }
+  }
+
   signedRoute.method = function routeGet(method, ...[identifier, params, options]) {
     const url = createSignedUrlForRoute(identifier, params, options, method)
 
