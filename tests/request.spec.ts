@@ -626,6 +626,34 @@ test.group('Request', () => {
     assert.equal(body.ip, '10.10.10.10')
   })
 
+  test('do not consult X-Forwarded-Host in authority', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory()
+        .merge({
+          req,
+          res,
+          encryption,
+          config: {
+            trustProxy: proxyAddr.compile('loopback'),
+          },
+        })
+        .create()
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(
+        JSON.stringify({
+          host: request.host(),
+          authority: request.authority(),
+          hostHeader: request.header('host'),
+        })
+      )
+    })
+
+    const { body } = await supertest(url).get('/').set('x-forwarded-host', 'evil.example.test')
+
+    assert.equal(body.host, 'evil.example.test')
+    assert.equal(body.authority, body.hostHeader)
+  })
+
   test('use the first forwarded host from a trusted proxy', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       const request = new HttpRequestFactory()
