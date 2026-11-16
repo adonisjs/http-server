@@ -94,7 +94,7 @@ export function isValidRedirectUrl(
 
 /**
  * Returns the previous URL from the request's `Referer` header,
- * validated against the request's authority (`:authority` or `Host`)
+ * validated against the request's authority (`:authority` or `request.host()`)
  * and an optional list of allowed hosts using `isValidRedirectUrl`.
  *
  * @param request - The AdonisJS HTTP request instance
