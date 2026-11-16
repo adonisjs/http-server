@@ -659,6 +659,30 @@ test.group('Request', () => {
     })
   })
 
+  test('authority falls back to the forwarded host from a trusted proxy', async ({ assert }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const request = new HttpRequestFactory()
+        .merge({
+          req,
+          res,
+          encryption,
+          config: {
+            trustProxy: proxyAddr.compile('loopback'),
+          },
+        })
+        .create()
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({ authority: request.authority() }))
+    })
+
+    const { body } = await supertest(url)
+      .get('/')
+      .set('host', 'internal.example.test')
+      .set('x-forwarded-host', 'client.example.test')
+
+    assert.equal(body.authority, 'client.example.test')
+  })
+
   test('trust all proxies when trustProxy is true', async ({ assert }) => {
     const { url } = await httpServer.create((req, res) => {
       req.headers['x-forwarded-for'] = '10.10.10.10'
