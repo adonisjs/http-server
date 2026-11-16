@@ -344,6 +344,53 @@ test.group('URLBuilder', () => {
     assert.isTrue(request.hasValidSignature())
   })
 
+  test('verify signed URLs with params that are percent-encoded', async ({ assert }) => {
+    const router = new RouterFactory().create()
+    const encryption = new EncryptionFactory().create()
+    const { signedUrlFor } = new URLBuilderFactory<{
+      ALL: {
+        'files.show': {
+          params: { name: string }
+        }
+      }
+    }>()
+      .merge({ router, encryption })
+      .create()
+
+    router.route('/files/:name', ['GET'], () => {}).as('files.show')
+    router.commit()
+
+    for (const name of ['my invoice.pdf', 'café', 'a/b', '50%']) {
+      const signedUrl = signedUrlFor('files.show', { name }, { qs: { download: true } })
+      const request = new HttpRequestFactory().merge({ encryption, url: signedUrl }).create()
+      assert.isTrue(request.hasValidSignature(), `signature of "${signedUrl}" must be valid`)
+    }
+  })
+
+  test('reject signed URL when the decoded path is different', async ({ assert }) => {
+    const router = new RouterFactory().create()
+    const encryption = new EncryptionFactory().create()
+    const { signedUrlFor } = new URLBuilderFactory<{
+      ALL: {
+        'files.show': {
+          params: { name: string }
+        }
+      }
+    }>()
+      .merge({ router, encryption })
+      .create()
+
+    router.route('/files/:name', ['GET'], () => {}).as('files.show')
+    router.commit()
+
+    const signedUrl = signedUrlFor('files.show', { name: 'my invoice.pdf' })
+    const request = new HttpRequestFactory()
+      .merge({ encryption, url: signedUrl.replace('my%20invoice', 'other%20invoice') })
+      .create()
+
+    assert.isFalse(request.hasValidSignature())
+  })
+
   test('raise error when unable to lookup route', ({ assert }) => {
     const router = new RouterFactory().create()
     const { urlFor } = new URLBuilderFactory().merge({ router }).create()

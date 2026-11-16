@@ -1101,16 +1101,29 @@ export class HttpRequest extends Macroable {
     /*
      * Return false when signature fails
      */
-    const signedUrl = this.#encryption.getMessageVerifier().unsign(signature, purpose)
-    if (!signedUrl) {
+    const signedUrl = this.#encryption.getMessageVerifier().unsign<string>(signature, purpose)
+    if (!signedUrl || typeof signedUrl !== 'string') {
+      return false
+    }
+
+    /*
+     * The signed URL has a percent-encoded pathname (for example,
+     * "/files/my%20file.pdf"), whereas "this.url()" is decoded.
+     * Therefore, we decode the signed pathname the same way
+     * before comparing them.
+     */
+    let signedPathname: string
+    let signedQueryString: string
+    try {
+      const parsed = safeDecodeURI(signedUrl, false)
+      signedPathname = parsed.pathname
+      signedQueryString = parsed.query
+    } catch {
       return false
     }
 
     const queryString = this.#qsParser.stringify(rest)
-
-    return queryString
-      ? safeEqual(signedUrl, `${this.url()}?${queryString}`)
-      : safeEqual(signedUrl, this.url())
+    return safeEqual(signedPathname, this.url()) && safeEqual(signedQueryString, queryString)
   }
 
   /**
