@@ -19,7 +19,13 @@ export type CookieOptions = {
   expires: Date | (() => Date)
   /** Whether the cookie should be accessible only through HTTP(S) */
   httpOnly: boolean
-  /** Maximum age of the cookie in seconds or as a string */
+  /**
+   * Maximum age of the cookie. A number is seconds. A string is a time
+   * expression, for example `'2h'`.
+   *
+   * - `0` gives a session cookie, which the browser removes when it closes.
+   * - A negative value expires the cookie at once. `clearCookie()` uses it.
+   */
   maxAge: number | string
   /** URL path for which the cookie is valid */
   path: string

@@ -129,4 +129,22 @@ test.group('Cookie | serialize', () => {
     const [, options] = serialized!.split('; ')
     assert.equal(options, `Max-Age=60`)
   })
+
+  test('create a session cookie when max age is 0', ({ assert }) => {
+    const config = { maxAge: 0 }
+    const serializer = new CookieSerializer(encryption)
+    const serialized = serializer.encode('username', 'virk', config)
+
+    const expectedValue = base64.urlEncode(new MessageBuilder().build('virk'))
+    assert.equal(serialized, `username=${expectedValue}`)
+  })
+
+  test('expire the cookie at once when max age is negative', ({ assert }) => {
+    const config = { maxAge: -1 }
+    const serializer = new CookieSerializer(encryption)
+    const serialized = serializer.encode('username', 'virk', config)
+
+    const [, options] = serialized!.split('; ')
+    assert.equal(options, `Max-Age=0`)
+  })
 })
