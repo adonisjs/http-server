@@ -7,6 +7,7 @@
  * file that was distributed with this source code.
  */
 
+import typeIs from 'type-is'
 import type { ContainerResolver } from '@adonisjs/fold'
 
 import * as errors from '../../errors.ts'
@@ -22,6 +23,8 @@ import type { ServerErrorHandler } from '../../types/server.ts'
  * - Extracts route parameters and subdomains
  * - Executes the matched route's handler and middleware
  * - Throws E_ROUTE_NOT_FOUND error for unmatched requests
+ * - Throws E_INVALID_QUERY_CONTENT_TYPE error for QUERY requests without
+ *   a valid Content-Type header (RFC 10008, section 2)
  *
  * @param router - Router instance containing registered routes
  * @param resolver - Container resolver for dependency injection
@@ -54,6 +57,15 @@ export function routeFinder(
       const route = router.match(url, method, ctx.request.parsedUrl.shouldDecodeParam, hostname)
 
       if (route) {
+        /**
+         * RFC 10008 requires servers to fail QUERY requests with a missing
+         * Content-Type header. The check runs before the route middleware
+         * (including the bodyparser) so the request content is never read.
+         */
+        if (method === 'QUERY' && !typeIs.is(ctx.request.header('content-type') ?? '', ['*/*'])) {
+          return Promise.reject(new errors.E_INVALID_QUERY_CONTENT_TYPE())
+        }
+
         ctx.params = route.params
         ctx.subdomains = route.subdomains
         ctx.route = route.route

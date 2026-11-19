@@ -224,6 +224,23 @@ export type UrlFor<Routes extends LookupList, Options extends any = URLOptions> 
   ): { method: 'DELETE'; url: string; form: { action: string; method: 'DELETE' } }
 
   /**
+   * Make URL for a QUERY route. An error will be raised if the route doesn't
+   * exist.
+   *
+   * ```ts
+   * urlFor.query('users.search') // { method: 'QUERY', url: '/users/search' }
+   * urlFor.query('users.show', [1]) // Error: Route not found QUERY@users.show
+   * ```
+   */
+  query<RouteIdentifier extends keyof Routes['QUERY'] & string>(
+    ...[identifier, params, options]: RouteBuilderArguments<
+      RouteIdentifier,
+      Routes['QUERY'][RouteIdentifier],
+      Options
+    >
+  ): { method: 'QUERY'; url: string; form: { action: string; method: 'QUERY' } }
+
+  /**
    * Make URL for a custom route method. An error will be raised if the route doesn't
    * exist for the same method.
    */

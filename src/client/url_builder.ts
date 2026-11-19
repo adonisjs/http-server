@@ -160,6 +160,23 @@ export function createUrlBuilder<Routes extends LookupList>(
     }
   }
 
+  urlFor.query = function urlForMethodQuery(...[identifier, params, options]) {
+    const method = 'QUERY'
+    const url = createUrlForRoute(identifier, params, options, method)
+
+    return {
+      url,
+      method,
+      toString() {
+        return url
+      },
+      form: {
+        action: url,
+        method,
+      },
+    }
+  }
+
   urlFor.method = function urlForCustomMethod(method, ...[identifier, params, options]) {
     const url = createUrlForRoute(identifier, params, options, method)
     return {
