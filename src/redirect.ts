@@ -127,24 +127,23 @@ export class Redirect extends Macroable {
    * @param query - Query string parameters to append
    */
   #sendResponse(url: string, query: Record<string, any>) {
-    const stringified = this.#qs.stringify(query)
-
-    if (stringified) {
+    if (this.#qs.stringify(query)) {
       /**
-       * Keep the fragment at the end and join with the query string
-       * the url may already have
+       * Keep the fragment at the end, and merge the new query string
+       * with the one the url may already have. The new values replace
+       * the same keys of the url, as in "back()".
        */
       const hashIndex = url.indexOf('#')
       const hash = hashIndex === -1 ? '' : url.slice(hashIndex)
       const base = hashIndex === -1 ? url : url.slice(0, hashIndex)
-      const separator = !base.includes('?')
-        ? '?'
-        : base.endsWith('?') || base.endsWith('&')
-          ? ''
-          : '&'
 
-      url = `${base}${separator}${stringified}${hash}`
+      const queryIndex = base.indexOf('?')
+      const pathname = queryIndex === -1 ? base : base.slice(0, queryIndex)
+      const existingQuery = queryIndex === -1 ? {} : this.#qs.parse(base.slice(queryIndex + 1))
+
+      url = `${pathname}?${this.#qs.stringify(Object.assign(existingQuery, query))}${hash}`
     }
+
     debug('redirecting to url "%s"', url)
 
     this.#response.location(encodeUrl(url))

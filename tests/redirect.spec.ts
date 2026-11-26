@@ -303,6 +303,47 @@ test.group('Redirect', () => {
     assert.equal(response.getHeader('location'), '/users?page=2&success=1#list')
   })
 
+  test('add query string before the fragment of a url without one', ({ assert }) => {
+    const response = new HttpResponseFactory().merge({ encryption, router }).create()
+    response.redirect().withQs({ success: 1 }).toPath('/users#list')
+
+    assert.equal(response.getHeader('location'), '/users?success=1#list')
+  })
+
+  test('replace the keys of the url query string with the custom query string', ({ assert }) => {
+    const response = new HttpResponseFactory().merge({ encryption, router }).create()
+    response.redirect().withQs({ page: 3 }).toPath('/users?page=2')
+
+    assert.equal(response.getHeader('location'), '/users?page=3')
+  })
+
+  test('replace the keys of the url query string with the forwarded query string', async ({
+    assert,
+  }) => {
+    const { url } = await httpServer.create((req, res) => {
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
+      response.redirect('/users?page=2&sort=name', true)
+      response.finish()
+    })
+
+    const { header } = await supertest(url).get('/?page=3').redirects(1)
+    assert.equal(header.location, '/users?page=3&sort=name')
+  })
+
+  test('keep the host of an absolute url when merging the query string', ({ assert }) => {
+    const response = new HttpResponseFactory().merge({ encryption, router }).create()
+    response.redirect().withQs({ success: 1 }).toPath('https://example.com/users?page=2')
+
+    assert.equal(response.getHeader('location'), 'https://example.com/users?page=2&success=1')
+  })
+
+  test('keep the url as it is when there is no query string to add', ({ assert }) => {
+    const response = new HttpResponseFactory().merge({ encryption, router }).create()
+    response.redirect().toPath('/users?page=2&page=3#list')
+
+    assert.equal(response.getHeader('location'), '/users?page=2&page=3#list')
+  })
+
   test('encode route params before redirecting', ({ assert }) => {
     const route = new RouterFactory().merge({ app, encryption }).create()
     route.get('/:page', 'PagesController.show').as('pages.show')
