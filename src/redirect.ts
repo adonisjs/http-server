@@ -129,7 +129,22 @@ export class Redirect extends Macroable {
   #sendResponse(url: string, query: Record<string, any>) {
     const stringified = this.#qs.stringify(query)
 
-    url = stringified ? `${url}?${stringified}` : url
+    if (stringified) {
+      /**
+       * Keep the fragment at the end and join with the query string
+       * the url may already have
+       */
+      const hashIndex = url.indexOf('#')
+      const hash = hashIndex === -1 ? '' : url.slice(hashIndex)
+      const base = hashIndex === -1 ? url : url.slice(0, hashIndex)
+      const separator = !base.includes('?')
+        ? '?'
+        : base.endsWith('?') || base.endsWith('&')
+          ? ''
+          : '&'
+
+      url = `${base}${separator}${stringified}${hash}`
+    }
     debug('redirecting to url "%s"', url)
 
     this.#response.location(encodeUrl(url))

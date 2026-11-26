@@ -289,6 +289,20 @@ test.group('Redirect', () => {
     assert.equal(header.location, '/posts/1')
   })
 
+  test('append query string to a url that already has one', ({ assert }) => {
+    const response = new HttpResponseFactory().merge({ encryption, router }).create()
+    response.redirect().withQs({ success: 1 }).toPath('/users?page=2')
+
+    assert.equal(response.getHeader('location'), '/users?page=2&success=1')
+  })
+
+  test('add query string before the url fragment', ({ assert }) => {
+    const response = new HttpResponseFactory().merge({ encryption, router }).create()
+    response.redirect().withQs({ success: 1 }).toPath('/users?page=2#list')
+
+    assert.equal(response.getHeader('location'), '/users?page=2&success=1#list')
+  })
+
   test('encode route params before redirecting', ({ assert }) => {
     const route = new RouterFactory().merge({ app, encryption }).create()
     route.get('/:page', 'PagesController.show').as('pages.show')
