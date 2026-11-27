@@ -11,7 +11,7 @@ import type { IncomingMessage } from 'node:http'
 
 import debug from './debug.ts'
 import type { Qs } from './qs.ts'
-import { encodeUrl, getPreviousUrl } from './helpers.ts'
+import { encodeUrl, getPreviousUrl, appendQueryString } from './helpers.ts'
 import type { Router } from './router/main.ts'
 import type { HttpResponse } from './response.ts'
 import type { ResponseConfig } from './types/response.ts'
@@ -127,21 +127,13 @@ export class Redirect extends Macroable {
    * @param query - Query string parameters to append
    */
   #sendResponse(url: string, query: Record<string, any>) {
+    /**
+     * Merge the new query string with the one the url may already
+     * have. When there is no query string to add, the url stays as
+     * it is.
+     */
     if (this.#qs.stringify(query)) {
-      /**
-       * Keep the fragment at the end, and merge the new query string
-       * with the one the url may already have. The new values replace
-       * the same keys of the url, as in "back()".
-       */
-      const hashIndex = url.indexOf('#')
-      const hash = hashIndex === -1 ? '' : url.slice(hashIndex)
-      const base = hashIndex === -1 ? url : url.slice(0, hashIndex)
-
-      const queryIndex = base.indexOf('?')
-      const pathname = queryIndex === -1 ? base : base.slice(0, queryIndex)
-      const existingQuery = queryIndex === -1 ? {} : this.#qs.parse(base.slice(queryIndex + 1))
-
-      url = `${pathname}?${this.#qs.stringify(Object.assign(existingQuery, query))}${hash}`
+      url = appendQueryString(url, query, this.#qs)
     }
 
     debug('redirecting to url "%s"', url)
