@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import etag from 'etag'
+import { etag } from 'etag'
 import fsExtra from 'fs-extra'
 import { join } from 'node:path'
 import supertest from 'supertest'

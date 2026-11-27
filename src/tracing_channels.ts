@@ -17,40 +17,34 @@ import type {
 /**
  * Traces every HTTP request handled by the {@link Server} class.
  */
-export const httpRequest = diagnostics_channel.tracingChannel<
-  'adonisjs.http.request',
-  HTTPRequestTracingData
->('adonisjs.http.request')
+export const httpRequest =
+  diagnostics_channel.tracingChannel<HTTPRequestTracingData>('adonisjs.http.request')
 
 /**
  * Traces middleware executed during the HTTP request
  */
-export const httpMiddleware = diagnostics_channel.tracingChannel<
-  'adonisjs.http.middleware',
-  MiddlewareTracingData
->('adonisjs.http.middleware')
+export const httpMiddleware = diagnostics_channel.tracingChannel<MiddlewareTracingData>(
+  'adonisjs.http.middleware'
+)
 
 /**
  * Traces the exception handler that converts errors into HTTP responses
  */
-export const httpExceptionHandler =
-  diagnostics_channel.tracingChannel<'adonisjs:http.exception.handler'>(
-    'adonisjs.http.exception.handler'
-  )
+export const httpExceptionHandler = diagnostics_channel.tracingChannel(
+  'adonisjs.http.exception.handler'
+)
 
 /**
  * Traces route handler executed during the HTTP request
  */
-export const httpRouteHandler = diagnostics_channel.tracingChannel<
-  'adonisjs.http.route.handler',
-  RouteHandlerTracingData
->('adonisjs.http.route.handler')
+export const httpRouteHandler = diagnostics_channel.tracingChannel<RouteHandlerTracingData>(
+  'adonisjs.http.route.handler'
+)
 
 /**
  * Traces non-stream and non-file download responses written by the AdonisJS
  * response class
  */
-export const httpResponseSerializer =
-  diagnostics_channel.tracingChannel<'adonisjs:http.response.serializer'>(
-    'adonisjs.http.response.serializer'
-  )
+export const httpResponseSerializer = diagnostics_channel.tracingChannel(
+  'adonisjs.http.response.serializer'
+)

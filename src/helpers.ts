@@ -132,7 +132,7 @@ export function getPreviousUrl(
  * encodeURI('http://[::1]:8080/foo/bar') // http://%5B::1%5D:8080/foo/bar
  * encodeUrl('http://[::1]:8080/foo/bar') // http://[::1]:8080/foo/bar
  */
-export { default as encodeUrl } from 'encodeurl'
+export { encodeUrl } from 'encodeurl'
 
 /**
  * Re-exports the "https://www.npmjs.com/package/mime-types" package
