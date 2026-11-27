@@ -11,13 +11,13 @@ import { etag } from 'etag'
 import { vary } from 'vary'
 import fresh from 'fresh'
 import destroy from 'destroy'
-import { extname } from 'node:path'
+import { basename, extname } from 'node:path'
 import { Buffer } from 'node:buffer'
 import onFinished from 'on-finished'
 import { stat } from 'node:fs/promises'
 import Macroable from '@poppinss/macroable'
 import { createReadStream } from 'node:fs'
-import contentDisposition from 'content-disposition'
+import { create as contentDisposition } from 'content-disposition'
 import type { Encryption } from '@boringnode/encryption'
 import { RuntimeException } from '@poppinss/utils/exception'
 import { type ServerResponse, type IncomingMessage, type OutgoingHttpHeaders } from 'node:http'
@@ -988,7 +988,11 @@ export class HttpResponse extends Macroable {
     generateEtag?: boolean,
     errorCallback?: (error: NodeJS.ErrnoException) => [string, number?]
   ) {
-    name = name || filePath
+    /**
+     * "content-disposition" sends the name as it is. Using the basename
+     * keeps the directories of the server out of the header.
+     */
+    name = basename(name || filePath)
     this.header('Content-Disposition', contentDisposition(name, { type: disposition }))
     return this.download(filePath, generateEtag, errorCallback)
   }

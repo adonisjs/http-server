@@ -871,7 +871,7 @@ test.group('Response', (group) => {
       .get('/')
       .expect('content-type', 'text/html; charset=utf-8')
       .expect('Content-length', '20')
-      .expect('Content-Disposition', 'attachment; filename="hello.html"')
+      .expect('Content-Disposition', 'attachment; filename=hello.html')
 
     assert.equal(text, '<p> hello world </p>')
   })
@@ -889,7 +889,7 @@ test.group('Response', (group) => {
       .get('/')
       .expect('content-type', 'text/html; charset=utf-8')
       .expect('Content-length', '20')
-      .expect('Content-Disposition', 'attachment; filename="ooo.html"')
+      .expect('Content-Disposition', 'attachment; filename=ooo.html')
 
     assert.equal(text, '<p> hello world </p>')
   })
@@ -907,9 +907,38 @@ test.group('Response', (group) => {
       .get('/')
       .expect('content-type', 'text/html; charset=utf-8')
       .expect('Content-length', '20')
-      .expect('Content-Disposition', 'inline; filename="ooo.html"')
+      .expect('Content-Disposition', 'inline; filename=ooo.html')
 
     assert.equal(text, '<p> hello world </p>')
+  })
+
+  test('remove the directories from a custom file name', async () => {
+    await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
+
+    const { url } = await httpServer.create((req, res) => {
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
+      response.attachment(join(BASE_PATH, 'hello.html'), 'reports/2026/ooo.html')
+      response.finish()
+    })
+
+    await supertest(url).get('/').expect('Content-Disposition', 'attachment; filename=ooo.html')
+  })
+
+  test('encode a file name with non-ASCII characters', async () => {
+    await fsExtra.outputFile(join(BASE_PATH, 'hello.html'), '<p> hello world </p>')
+
+    const { url } = await httpServer.create((req, res) => {
+      const response = new HttpResponseFactory().merge({ req, res, encryption, router }).create()
+      response.attachment(join(BASE_PATH, 'hello.html'), 'naïve.html')
+      response.finish()
+    })
+
+    await supertest(url)
+      .get('/')
+      .expect(
+        'Content-Disposition',
+        'attachment; filename="na?ve.html"; filename*=UTF-8\'\'na%C3%AFve.html'
+      )
   })
 
   test('add multiple vary fields', async () => {
