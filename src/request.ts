@@ -8,7 +8,7 @@
  */
 
 import fresh from 'fresh'
-import typeIs from 'type-is'
+import { TypeIs, hasBody } from 'type-is'
 import accepts from 'accepts'
 import { isIP } from 'node:net'
 import is from '@sindresorhus/is'
@@ -819,7 +819,7 @@ export class HttpRequest extends Macroable {
    * @returns {string | null} Best matching content type or null if no match
    */
   is(types: string[]): string | null {
-    return typeIs(this.request, types) || null
+    return new TypeIs(types).request(this.request) || null
   }
 
   /**
@@ -977,7 +977,7 @@ export class HttpRequest extends Macroable {
    * @returns {boolean} True if request contains a body
    */
   hasBody(): boolean {
-    return typeIs.hasBody(this.request)
+    return hasBody(this.request)
   }
 
   /**

@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import etag from 'etag'
-import vary from 'vary'
+import { etag } from 'etag'
+import { vary } from 'vary'
 import fresh from 'fresh'
 import destroy from 'destroy'
 import { extname } from 'node:path'
@@ -17,7 +17,7 @@ import onFinished from 'on-finished'
 import { stat } from 'node:fs/promises'
 import Macroable from '@poppinss/macroable'
 import { createReadStream } from 'node:fs'
-import contentDisposition from 'content-disposition'
+import { create as contentDisposition } from 'content-disposition'
 import type { Encryption } from '@boringnode/encryption'
 import { RuntimeException } from '@poppinss/utils/exception'
 import { type ServerResponse, type IncomingMessage, type OutgoingHttpHeaders } from 'node:http'
