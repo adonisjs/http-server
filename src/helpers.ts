@@ -303,7 +303,8 @@ export async function routeInfo(route: RouteJSON): Promise<RouteHandlerInfo> {
 
 /**
  * Appends query string parameters to a URI. Existing query parameters
- * in the URI are merged with the new ones.
+ * in the URI are merged with the new ones, and the new values replace
+ * the same keys of the URI. The fragment of the URI stays at the end.
  *
  * @param uri - The base URI to append query string to
  * @param queryString - Object containing query parameters to append
@@ -316,10 +317,23 @@ export async function routeInfo(route: RouteJSON): Promise<RouteHandlerInfo> {
  *
  * const result2 = appendQueryString('/users?sort=name', { page: 1 }, qsParser)
  * // Returns: '/users?sort=name&page=1'
+ *
+ * const result3 = appendQueryString('/users?page=2#list', { page: 3 }, qsParser)
+ * // Returns: '/users?page=3#list'
  * ```
  */
 export function appendQueryString(uri: string, queryString: Record<string, any>, qsParser: Qs) {
-  const { query, pathname } = safeDecodeURI(uri, false)
+  /**
+   * "safeDecodeURI" reads the text after a "#" as the query string.
+   * So remove the fragment first, and add it again at the end.
+   */
+  const fragmentIndex = uri.indexOf('#')
+  const fragment = fragmentIndex === -1 ? '' : uri.slice(fragmentIndex)
+  const { query, pathname } = safeDecodeURI(
+    fragmentIndex === -1 ? uri : uri.slice(0, fragmentIndex),
+    false
+  )
+
   const mergedQueryString = qsParser.stringify(Object.assign(qsParser.parse(query), queryString))
-  return mergedQueryString ? `${pathname}?${mergedQueryString}` : pathname
+  return `${mergedQueryString ? `${pathname}?${mergedQueryString}` : pathname}${fragment}`
 }
